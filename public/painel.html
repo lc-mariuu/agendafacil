@@ -181,32 +181,35 @@
           <tbody id="tbody"></tbody>
         </table>
       </div>
-      <div class="page" id="page-horarios">
-  <div class="page-header">
-    <h1>Horários de Atendimento</h1>
-    <p>Configure os dias e horários que seu negócio atende</p>
-  </div>
-  <div class="config-card">
-    <h2>Intervalo entre atendimentos</h2>
-    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px">
-      <button class="intervalo-btn" onclick="selecionarIntervalo(this,15)">15 min</button>
-      <button class="intervalo-btn" onclick="selecionarIntervalo(this,20)">20 min</button>
-      <button class="intervalo-btn" onclick="selecionarIntervalo(this,30)">30 min</button>
-      <button class="intervalo-btn" onclick="selecionarIntervalo(this,45)">45 min</button>
-      <button class="intervalo-btn" onclick="selecionarIntervalo(this,60)">1 hora</button>
-      <button class="intervalo-btn" onclick="selecionarIntervalo(this,90)">1h30</button>
-      <button class="intervalo-btn" onclick="selecionarIntervalo(this,120)">2 horas</button>
+      </div>
+
     </div>
-  </div>
-  <div class="config-card">
-    <h2>Dias e horários</h2>
-    <div id="dias-container"></div>
-    <div style="display:flex;align-items:center;margin-top:20px">
-      <button class="btn-salvar" onclick="salvarHorarios()">Salvar horários</button>
-      <span class="salvo-msg" id="salvo-horarios">Salvo com sucesso!</span>
-    </div>
-  </div>
-</div>
+
+    <div class="page" id="page-horarios">
+      <div class="page-header">
+        <h1>Horários de Atendimento</h1>
+        <p>Configure os dias e horários que seu negócio atende</p>
+      </div>
+      <div class="config-card">
+        <h2>Intervalo entre atendimentos</h2>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px">
+          <button class="intervalo-btn" onclick="selecionarIntervalo(this,15)">15 min</button>
+          <button class="intervalo-btn" onclick="selecionarIntervalo(this,20)">20 min</button>
+          <button class="intervalo-btn" onclick="selecionarIntervalo(this,30)">30 min</button>
+          <button class="intervalo-btn" onclick="selecionarIntervalo(this,45)">45 min</button>
+          <button class="intervalo-btn" onclick="selecionarIntervalo(this,60)">1 hora</button>
+          <button class="intervalo-btn" onclick="selecionarIntervalo(this,90)">1h30</button>
+          <button class="intervalo-btn" onclick="selecionarIntervalo(this,120)">2 horas</button>
+        </div>
+      </div>
+      <div class="config-card">
+        <h2>Dias e horários</h2>
+        <div id="dias-container"></div>
+        <div style="display:flex;align-items:center;margin-top:20px">
+          <button class="btn-salvar" onclick="salvarHorarios()">Salvar horários</button>
+          <span class="salvo-msg" id="salvo-horarios">Salvo com sucesso!</span>
+        </div>
+      </div>
     </div>
 
     <div class="page" id="page-configuracoes">
