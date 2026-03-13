@@ -594,13 +594,7 @@ async function uploadFoto(input) {
     })
     const data = await res.json()
     if (res.ok) {
-      document.getElementById('bio-foto').value = bio.foto || ''
-if (bio.foto) {
-  const preview = document.getElementById('foto-preview')
-  preview.innerHTML = `<img src="${bio.foto}" style="width:100%;height:100%;object-fit:cover">`
-  document.getElementById('foto-status').textContent = 'Foto atual carregada'
-}
-
+      document.getElementById('bio-foto').value = data.url
       document.getElementById('foto-status').textContent = 'Foto enviada!'
       const preview = document.getElementById('foto-preview')
       preview.innerHTML = `<img src="${data.url}" style="width:100%;height:100%;object-fit:cover">`
