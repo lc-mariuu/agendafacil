@@ -22,7 +22,7 @@
   .btn-auth { width: 100%; background: #1e40af; color: white; border: none; padding: 13px; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; transition: background 0.2s; margin-top: 4px; }
   .btn-auth:hover { background: #1d3a9e; }
   .erro-msg { color: #dc2626; font-size: 13px; text-align: center; margin-bottom: 10px; min-height: 18px; }
-  .sidebar { position: fixed; left: 0; top: 0; bottom: 0; width: 240px; background: #1e293b; padding: 24px 0; display: flex; flex-direction: column; }
+  .sidebar { position: fixed; left: 0; top: 0; bottom: 0; width: 240px; background: #1e293b; padding: 24px 0; display: flex; flex-direction: column; z-index: 100; }
   .sidebar-logo { padding: 0 24px 24px; border-bottom: 1px solid #334155; }
   .sidebar-logo h2 { color: white; font-size: 18px; font-weight: 700; }
   .sidebar-logo p { color: #94a3b8; font-size: 12px; margin-top: 2px; }
@@ -32,7 +32,7 @@
   .sidebar-footer { padding: 16px 24px; border-top: 1px solid #334155; }
   .btn-sair { width: 100%; background: none; border: 1px solid #475569; color: #94a3b8; padding: 8px; border-radius: 8px; cursor: pointer; font-size: 13px; transition: all 0.2s; }
   .btn-sair:hover { background: #dc2626; border-color: #dc2626; color: white; }
-  .main { margin-left: 240px; padding: 32px; min-height: 100vh; }
+  .main { margin-left: 240px; padding: 32px; min-height: 100vh; overflow-x: hidden; }
   .page { display: none; }
   .page.ativo { display: block; }
   .page-header { margin-bottom: 28px; }
@@ -80,19 +80,19 @@
   .btn-salvar { background: #16a34a; color: white; border: none; padding: 12px 28px; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; margin-top: 20px; }
   .btn-salvar:hover { background: #15803d; }
   .salvo-msg { color: #16a34a; font-size: 13px; margin-left: 12px; display: none; }
-  @media (max-width: 768px) { .sidebar { display: none; } .main { margin-left: 0; padding: 16px; } .stats { grid-template-columns: 1fr 1fr; } }
   .intervalo-btn { padding: 8px 16px; border: 1.5px solid #e2e8f0; border-radius: 8px; background: #f8fafc; cursor: pointer; font-size: 13px; font-weight: 500; color: #475569; transition: all 0.2s; }
-.intervalo-btn:hover, .intervalo-btn.selecionado { border-color: #1e40af; background: #1e40af; color: white; }
-.dia-row { display: flex; align-items: center; gap: 16px; padding: 14px 0; border-bottom: 1px solid #f1f5f9; flex-wrap: wrap; }
-.dia-row:last-child { border-bottom: none; }
-.dia-toggle { display: flex; align-items: center; gap: 10px; min-width: 120px; }
-.dia-toggle input[type=checkbox] { width: 18px; height: 18px; cursor: pointer; accent-color: #1e40af; }
-.dia-toggle label { font-size: 14px; font-weight: 500; color: #0f172a; cursor: pointer; }
-.dia-horarios { display: flex; align-items: center; gap: 10px; }
-.dia-horarios input[type=time] { padding: 8px 10px; border: 1.5px solid #e2e8f0; border-radius: 8px; font-size: 13px; outline: none; }
-.dia-horarios input[type=time]:focus { border-color: #3b82f6; }
-.dia-horarios span { font-size: 13px; color: #64748b; }
-.dia-inativo .dia-horarios { opacity: 0.3; pointer-events: none; }
+  .intervalo-btn:hover, .intervalo-btn.selecionado { border-color: #1e40af; background: #1e40af; color: white; }
+  .dia-row { display: flex; align-items: center; gap: 16px; padding: 14px 0; border-bottom: 1px solid #f1f5f9; flex-wrap: wrap; width: 100%; }
+  .dia-row:last-child { border-bottom: none; }
+  .dia-toggle { display: flex; align-items: center; gap: 10px; min-width: 140px; width: 140px; }
+  .dia-toggle input[type=checkbox] { width: 18px; height: 18px; cursor: pointer; accent-color: #1e40af; }
+  .dia-toggle label { font-size: 14px; font-weight: 500; color: #0f172a; cursor: pointer; }
+  .dia-horarios { display: flex; align-items: center; gap: 10px; }
+  .dia-horarios input[type=time] { padding: 8px 10px; border: 1.5px solid #e2e8f0; border-radius: 8px; font-size: 13px; outline: none; }
+  .dia-horarios input[type=time]:focus { border-color: #3b82f6; }
+  .dia-horarios span { font-size: 13px; color: #64748b; }
+  .dia-inativo .dia-horarios { opacity: 0.3; pointer-events: none; }
+  @media (max-width: 768px) { .sidebar { display: none; } .main { margin-left: 0; padding: 16px; } .stats { grid-template-columns: 1fr 1fr; } }
 </style>
 </head>
 <body>
@@ -119,7 +119,7 @@
       <div class="form-group"><label>Nome do negócio</label><input type="text" id="cad-negocio" placeholder="Barbearia do João, Clínica São Lucas..." /></div>
       <div class="form-group">
         <label>Segmento</label>
-        <select id="cad-segmento" onchange="atualizarServicosDefault()">
+        <select id="cad-segmento">
           <option value="Clínica">Clínica / Consultório</option>
           <option value="Barbearia">Barbearia</option>
           <option value="Salão">Salão de Beleza</option>
@@ -143,9 +143,9 @@
       <p id="sidebar-negocio"></p>
     </div>
     <div class="sidebar-menu">
-      <button class="menu-item ativo" onclick="irPara('agendamentos')">Agendamentos</button>
-      <button class="menu-item" onclick="irPara('configuracoes')">Configurações</button>
-      <button class="menu-item" onclick="irPara('horarios')">Horários</button>
+      <button class="menu-item ativo" onclick="irPara('agendamentos', this)">Agendamentos</button>
+      <button class="menu-item" onclick="irPara('horarios', this)">Horários</button>
+      <button class="menu-item" onclick="irPara('configuracoes', this)">Configurações</button>
     </div>
     <div class="sidebar-footer">
       <button class="btn-sair" onclick="sair()">Sair da conta</button>
@@ -154,6 +154,7 @@
 
   <div class="main">
 
+    <!-- PÁGINA: AGENDAMENTOS -->
     <div class="page ativo" id="page-agendamentos">
       <div class="page-header">
         <h1>Agendamentos</h1>
@@ -181,10 +182,9 @@
           <tbody id="tbody"></tbody>
         </table>
       </div>
-      </div>
-
     </div>
 
+    <!-- PÁGINA: HORÁRIOS -->
     <div class="page" id="page-horarios">
       <div class="page-header">
         <h1>Horários de Atendimento</h1>
@@ -212,6 +212,7 @@
       </div>
     </div>
 
+    <!-- PÁGINA: CONFIGURAÇÕES -->
     <div class="page" id="page-configuracoes">
       <div class="page-header">
         <h1>Configurações</h1>
@@ -238,6 +239,9 @@
 const API = 'https://agendafacil-wf3q.onrender.com/api'
 let todosAgendamentos = []
 let servicosAtuais = []
+const diasNomes = ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado']
+let intervaloAtual = 30
+let horariosConfig = {}
 
 const servicosPorSegmento = {
   'Clínica': ['Consulta', 'Retorno', 'Exame', 'Avaliação', 'Procedimento'],
@@ -247,10 +251,6 @@ const servicosPorSegmento = {
   'Academia': ['Avaliação Física', 'Treino Personal', 'Pilates', 'Musculação'],
   'Estúdio': ['Tatuagem', 'Orçamento', 'Retoque', 'Piercing'],
   'Outro': ['Serviço 1', 'Serviço 2', 'Serviço 3']
-}
-
-function atualizarServicosDefault() {
-  const seg = document.getElementById('cad-segmento').value
 }
 
 function trocarTab(tab) {
@@ -303,11 +303,11 @@ function mostrarPainel(negocio) {
   carregarHorariosConfig()
 }
 
-function irPara(pagina) {
+function irPara(pagina, btn) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('ativo'))
   document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('ativo'))
   document.getElementById(`page-${pagina}`).classList.add('ativo')
-  event.target.classList.add('ativo')
+  if (btn) btn.classList.add('ativo')
 }
 
 async function carregarAgendamentos() {
@@ -375,7 +375,7 @@ function renderTabela(lista) {
       <td><span class="badge ${a.status}">${a.status}</span></td>
       <td><div class="acoes">
         ${a.status === 'confirmado' ? `<button class="btn-acao concluir" onclick="atualizar('${a._id}','concluido')">Concluir</button>` : ''}
-       ${a.status === 'confirmado' ? `<button class="btn-acao cancelar" onclick="cancelarComAviso('${a._id}','${a.pacienteNome}','${a.pacienteTelefone}','${a.data}','${a.hora}')">Cancelar</button>` : ''}
+        ${a.status === 'confirmado' ? `<button class="btn-acao cancelar" onclick="cancelarComAviso('${a._id}','${a.pacienteNome}','${a.pacienteTelefone}','${a.data}','${a.hora}')">Cancelar</button>` : ''}
       </div></td>
     </tr>
   `).join('')
@@ -413,13 +413,7 @@ function formatarData(data) {
 
 function sair() { localStorage.clear(); location.reload() }
 
-const token = localStorage.getItem('token')
-const negocio = localStorage.getItem('negocio')
-if (token && negocio) mostrarPainel(negocio)
-
-const diasNomes = ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado']
-let intervaloAtual = 30
-let horariosConfig = {}
+// ---- HORÁRIOS ----
 
 function selecionarIntervalo(btn, valor) {
   document.querySelectorAll('.intervalo-btn').forEach(b => b.classList.remove('selecionado'))
@@ -460,12 +454,16 @@ async function carregarHorariosConfig() {
   horariosConfig = data.horarios || {}
   intervaloAtual = data.intervalo || 30
   document.querySelectorAll('.intervalo-btn').forEach(btn => {
-    if (parseInt(btn.textContent) === intervaloAtual || 
-        (intervaloAtual === 60 && btn.textContent === '1 hora') ||
-        (intervaloAtual === 90 && btn.textContent === '1h30') ||
-        (intervaloAtual === 120 && btn.textContent === '2 horas')) {
-      btn.classList.add('selecionado')
-    }
+    const txt = btn.textContent.trim()
+    if (
+      (intervaloAtual === 15 && txt === '15 min') ||
+      (intervaloAtual === 20 && txt === '20 min') ||
+      (intervaloAtual === 30 && txt === '30 min') ||
+      (intervaloAtual === 45 && txt === '45 min') ||
+      (intervaloAtual === 60 && txt === '1 hora') ||
+      (intervaloAtual === 90 && txt === '1h30') ||
+      (intervaloAtual === 120 && txt === '2 horas')
+    ) btn.classList.add('selecionado')
   })
   renderDias()
 }
@@ -489,6 +487,11 @@ async function salvarHorarios() {
   msg.style.display = 'inline'
   setTimeout(() => msg.style.display = 'none', 2000)
 }
+
+// ---- INIT ----
+const token = localStorage.getItem('token')
+const negocio = localStorage.getItem('negocio')
+if (token && negocio) mostrarPainel(negocio)
 </script>
 </body>
 </html>
