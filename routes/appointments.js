@@ -36,7 +36,7 @@ router.get('/horarios-ocupados', async (req, res) => {
     // Descobre o dia da semana (0=domingo, 1=segunda...)
     const [ano, mes, dia] = data.split('-').map(Number)
     const diaSemana = new Date(ano, mes - 1, dia).getDay()
-    const configDia = user.horarios?.[diaSemana]
+    const configDia = user.horarios?.[diaSemana] || user.horarios?.[String(diaSemana)]
 
     // Se o dia não está ativo, retorna todos os horários bloqueados
     if (!configDia || !configDia.ativo) {
