@@ -27,14 +27,44 @@ router.get('/', autenticar, async (req, res) => {
 router.get('/horarios-ocupados', async (req, res) => {
   try {
     const { clinicaId, data } = req.query
-    const agendamentos = await Appointment.find({
-      clinicaId,
-      data,
-      status: { $ne: 'cancelado' }
-    }).select('hora')
-    const horasOcupadas = agendamentos.map(a => a.hora)
-    res.json(horasOcupadas)
-  } catch {
+    const User = require('../models/User')
+
+    // Busca configuração do negócio
+    const user = await User.findById(clinicaId)
+    if (!user) return res.status(404).json({ erro: 'Negócio não encontrado' })
+
+    // Descobre o dia da semana (0=domingo, 1=segunda...)
+    const [ano, mes, dia] = data.split('-').map(Number)
+    const diaSemana = new Date(ano, mes - 1, dia).getDay()
+    const configDia = user.horarios?.[diaSemana]
+
+    // Se o dia não está ativo, retorna todos os horários bloqueados
+    if (!configDia || !configDia.ativo) {
+      return res.json({ horarios: [], diaInativo: true })
+    }
+
+    // Gera os horários disponíveis baseado no intervalo
+    const intervalo = user.intervalo || 30
+    const horariosDisponiveis = []
+    const [hIni, mIni] = configDia.inicio.split(':').map(Number)
+    const [hFim, mFim] = configDia.fim.split(':').map(Number)
+    let atual = hIni * 60 + mIni
+    const fim = hFim * 60 + mFim
+
+    while (atual < fim) {
+      const h = String(Math.floor(atual / 60)).padStart(2, '0')
+      const m = String(atual % 60).padStart(2, '0')
+      horariosDisponiveis.push(`${h}:${m}`)
+      atual += intervalo
+    }
+
+    // Busca horários já agendados
+    const agendados = await Appointment.find({ clinicaId, data, status: { $ne: 'cancelado' } }).select('hora')
+    const ocupados = agendados.map(a => a.hora)
+
+    res.json({ horarios: horariosDisponiveis, ocupados, diaInativo: false })
+  } catch (err) {
+    console.log(err)
     res.status(500).json({ erro: 'Erro ao buscar horários' })
   }
 })

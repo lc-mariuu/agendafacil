@@ -173,10 +173,21 @@ async function carregarHorarios() {
   const container = document.getElementById('horarios-container')
   container.innerHTML = '<p class="carregando-horarios">Carregando horários...</p>'
   const res = await fetch(`${API}/agendamentos/horarios-ocupados?clinicaId=${clinicaId}&data=${data}`)
-  const ocupados = await res.json()
+  const resultado = await res.json()
+
+  if (resultado.diaInativo) {
+    container.innerHTML = '<p class="carregando-horarios">❌ Este dia não tem atendimento. Escolha outra data.</p>'
+    return
+  }
+
+  if (resultado.horarios.length === 0) {
+    container.innerHTML = '<p class="carregando-horarios">Nenhum horário disponível para este dia.</p>'
+    return
+  }
+
   container.innerHTML = '<div class="horarios">' +
-    todosHorarios.map(h => {
-      const ocupado = ocupados.includes(h)
+    resultado.horarios.map(h => {
+      const ocupado = resultado.ocupados.includes(h)
       return `<button class="horario-btn" ${ocupado ? 'disabled' : ''} onclick="selecionarHorario(this,'${h}')">${h}</button>`
     }).join('') + '</div>'
 }

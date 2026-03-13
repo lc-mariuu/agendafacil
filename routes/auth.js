@@ -37,9 +37,9 @@ router.post('/login', async (req, res) => {
 
 router.get('/negocio/:id', async (req, res) => {
   try {
-    const user = await User.findById(req.params.id).select('nome negocio segmento servicos')
+    const user = await User.findById(req.params.id).select('nome negocio segmento servicos horarios intervalo')
     if (!user) return res.status(404).json({ erro: 'Negócio não encontrado' })
-    res.json({ nome: user.nome, negocio: user.negocio, segmento: user.segmento, servicos: user.servicos })
+    res.json({ nome: user.nome, negocio: user.negocio, segmento: user.segmento, servicos: user.servicos, horarios: user.horarios, intervalo: user.intervalo })
   } catch {
     res.status(500).json({ erro: 'Erro ao buscar negócio' })
   }

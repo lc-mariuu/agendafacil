@@ -81,6 +81,18 @@
   .btn-salvar:hover { background: #15803d; }
   .salvo-msg { color: #16a34a; font-size: 13px; margin-left: 12px; display: none; }
   @media (max-width: 768px) { .sidebar { display: none; } .main { margin-left: 0; padding: 16px; } .stats { grid-template-columns: 1fr 1fr; } }
+  .intervalo-btn { padding: 8px 16px; border: 1.5px solid #e2e8f0; border-radius: 8px; background: #f8fafc; cursor: pointer; font-size: 13px; font-weight: 500; color: #475569; transition: all 0.2s; }
+.intervalo-btn:hover, .intervalo-btn.selecionado { border-color: #1e40af; background: #1e40af; color: white; }
+.dia-row { display: flex; align-items: center; gap: 16px; padding: 14px 0; border-bottom: 1px solid #f1f5f9; flex-wrap: wrap; }
+.dia-row:last-child { border-bottom: none; }
+.dia-toggle { display: flex; align-items: center; gap: 10px; min-width: 120px; }
+.dia-toggle input[type=checkbox] { width: 18px; height: 18px; cursor: pointer; accent-color: #1e40af; }
+.dia-toggle label { font-size: 14px; font-weight: 500; color: #0f172a; cursor: pointer; }
+.dia-horarios { display: flex; align-items: center; gap: 10px; }
+.dia-horarios input[type=time] { padding: 8px 10px; border: 1.5px solid #e2e8f0; border-radius: 8px; font-size: 13px; outline: none; }
+.dia-horarios input[type=time]:focus { border-color: #3b82f6; }
+.dia-horarios span { font-size: 13px; color: #64748b; }
+.dia-inativo .dia-horarios { opacity: 0.3; pointer-events: none; }
 </style>
 </head>
 <body>
@@ -133,6 +145,7 @@
     <div class="sidebar-menu">
       <button class="menu-item ativo" onclick="irPara('agendamentos')">Agendamentos</button>
       <button class="menu-item" onclick="irPara('configuracoes')">Configurações</button>
+      <button class="menu-item" onclick="irPara('horarios')">Horários</button>
     </div>
     <div class="sidebar-footer">
       <button class="btn-sair" onclick="sair()">Sair da conta</button>
@@ -168,6 +181,32 @@
           <tbody id="tbody"></tbody>
         </table>
       </div>
+      <div class="page" id="page-horarios">
+  <div class="page-header">
+    <h1>Horários de Atendimento</h1>
+    <p>Configure os dias e horários que seu negócio atende</p>
+  </div>
+  <div class="config-card">
+    <h2>Intervalo entre atendimentos</h2>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px">
+      <button class="intervalo-btn" onclick="selecionarIntervalo(this,15)">15 min</button>
+      <button class="intervalo-btn" onclick="selecionarIntervalo(this,20)">20 min</button>
+      <button class="intervalo-btn" onclick="selecionarIntervalo(this,30)">30 min</button>
+      <button class="intervalo-btn" onclick="selecionarIntervalo(this,45)">45 min</button>
+      <button class="intervalo-btn" onclick="selecionarIntervalo(this,60)">1 hora</button>
+      <button class="intervalo-btn" onclick="selecionarIntervalo(this,90)">1h30</button>
+      <button class="intervalo-btn" onclick="selecionarIntervalo(this,120)">2 horas</button>
+    </div>
+  </div>
+  <div class="config-card">
+    <h2>Dias e horários</h2>
+    <div id="dias-container"></div>
+    <div style="display:flex;align-items:center;margin-top:20px">
+      <button class="btn-salvar" onclick="salvarHorarios()">Salvar horários</button>
+      <span class="salvo-msg" id="salvo-horarios">Salvo com sucesso!</span>
+    </div>
+  </div>
+</div>
     </div>
 
     <div class="page" id="page-configuracoes">
@@ -258,6 +297,7 @@ function mostrarPainel(negocio) {
   document.getElementById('filtro-data').value = hoje
   carregarAgendamentos()
   carregarServicos()
+  carregarHorariosConfig()
 }
 
 function irPara(pagina) {
@@ -373,6 +413,79 @@ function sair() { localStorage.clear(); location.reload() }
 const token = localStorage.getItem('token')
 const negocio = localStorage.getItem('negocio')
 if (token && negocio) mostrarPainel(negocio)
+
+const diasNomes = ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado']
+let intervaloAtual = 30
+let horariosConfig = {}
+
+function selecionarIntervalo(btn, valor) {
+  document.querySelectorAll('.intervalo-btn').forEach(b => b.classList.remove('selecionado'))
+  btn.classList.add('selecionado')
+  intervaloAtual = valor
+}
+
+function renderDias() {
+  const container = document.getElementById('dias-container')
+  container.innerHTML = diasNomes.map((nome, i) => {
+    const config = horariosConfig[i] || { ativo: false, inicio: '08:00', fim: '18:00' }
+    return `
+      <div class="dia-row ${config.ativo ? '' : 'dia-inativo'}" id="dia-row-${i}">
+        <div class="dia-toggle">
+          <input type="checkbox" id="dia-${i}" ${config.ativo ? 'checked' : ''} onchange="toggleDia(${i})">
+          <label for="dia-${i}">${nome}</label>
+        </div>
+        <div class="dia-horarios">
+          <span>Das</span>
+          <input type="time" id="inicio-${i}" value="${config.inicio}" />
+          <span>às</span>
+          <input type="time" id="fim-${i}" value="${config.fim}" />
+        </div>
+      </div>
+    `
+  }).join('')
+}
+
+function toggleDia(i) {
+  const checked = document.getElementById(`dia-${i}`).checked
+  const row = document.getElementById(`dia-row-${i}`)
+  row.classList.toggle('dia-inativo', !checked)
+}
+
+async function carregarHorariosConfig() {
+  const res = await fetch(`${API}/auth/negocio/${localStorage.getItem('userId')}`)
+  const data = await res.json()
+  horariosConfig = data.horarios || {}
+  intervaloAtual = data.intervalo || 30
+  document.querySelectorAll('.intervalo-btn').forEach(btn => {
+    if (parseInt(btn.textContent) === intervaloAtual || 
+        (intervaloAtual === 60 && btn.textContent === '1 hora') ||
+        (intervaloAtual === 90 && btn.textContent === '1h30') ||
+        (intervaloAtual === 120 && btn.textContent === '2 horas')) {
+      btn.classList.add('selecionado')
+    }
+  })
+  renderDias()
+}
+
+async function salvarHorarios() {
+  const horarios = {}
+  diasNomes.forEach((_, i) => {
+    horarios[i] = {
+      ativo: document.getElementById(`dia-${i}`).checked,
+      inicio: document.getElementById(`inicio-${i}`).value,
+      fim: document.getElementById(`fim-${i}`).value
+    }
+  })
+  const token = localStorage.getItem('token')
+  await fetch(`${API}/auth/horarios`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+    body: JSON.stringify({ horarios, intervalo: intervaloAtual })
+  })
+  const msg = document.getElementById('salvo-horarios')
+  msg.style.display = 'inline'
+  setTimeout(() => msg.style.display = 'none', 2000)
+}
 </script>
 </body>
 </html>
