@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AgendaFacil — Painel</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', sans-serif; background: #f8fafc; color: #1e293b; }
+  .auth-bg { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%); padding: 16px; }
+  .auth-card { background: white; border-radius: 16px; padding: 40px; width: 100%; max-width: 440px; box-shadow: 0 20px 60px rgba(0,0,0,0.15); }
+  .auth-logo { text-align: center; margin-bottom: 28px; }
+  .auth-logo h1 { font-size: 28px; color: #1e40af; font-weight: 700; }
+  .auth-logo p { color: #64748b; font-size: 14px; margin-top: 4px; }
+  .auth-tabs { display: flex; background: #f1f5f9; border-radius: 10px; padding: 4px; margin-bottom: 24px; }
+  .auth-tab { flex: 1; padding: 8px; text-align: center; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 500; color: #64748b; border: none; background: none; transition: all 0.2s; }
+  .auth-tab.ativo { background: white; color: #1e40af; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
+  .form-group { margin-bottom: 14px; }
+  .form-group label { font-size: 13px; font-weight: 500; color: #475569; display: block; margin-bottom: 5px; }
+  .form-group input, .form-group select { width: 100%; padding: 11px 14px; border: 1.5px solid #e2e8f0; border-radius: 10px; font-size: 14px; transition: border 0.2s; outline: none; }
+  .form-group input:focus, .form-group select:focus { border-color: #3b82f6; }
+  .btn-auth { width: 100%; background: #1e40af; color: white; border: none; padding: 13px; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; transition: background 0.2s; margin-top: 4px; }
+  .btn-auth:hover { background: #1d3a9e; }
+  .erro-msg { color: #dc2626; font-size: 13px; text-align: center; margin-bottom: 10px; min-height: 18px; }
+  .sidebar { position: fixed; left: 0; top: 0; bottom: 0; width: 240px; background: #1e293b; padding: 24px 0; display: flex; flex-direction: column; }
+  .sidebar-logo { padding: 0 24px 24px; border-bottom: 1px solid #334155; }
+  .sidebar-logo h2 { color: white; font-size: 18px; font-weight: 700; }
+  .sidebar-logo p { color: #94a3b8; font-size: 12px; margin-top: 2px; }
+  .sidebar-menu { padding: 16px 12px; flex: 1; }
+  .menu-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 8px; color: #94a3b8; font-size: 14px; cursor: pointer; margin-bottom: 4px; transition: all 0.2s; border: none; background: none; width: 100%; text-align: left; }
+  .menu-item:hover, .menu-item.ativo { background: #334155; color: white; }
+  .sidebar-footer { padding: 16px 24px; border-top: 1px solid #334155; }
+  .btn-sair { width: 100%; background: none; border: 1px solid #475569; color: #94a3b8; padding: 8px; border-radius: 8px; cursor: pointer; font-size: 13px; transition: all 0.2s; }
+  .btn-sair:hover { background: #dc2626; border-color: #dc2626; color: white; }
+  .main { margin-left: 240px; padding: 32px; min-height: 100vh; }
+  .page { display: none; }
+  .page.ativo { display: block; }
+  .page-header { margin-bottom: 28px; }
+  .page-header h1 { font-size: 24px; font-weight: 700; color: #0f172a; }
+  .page-header p { color: #64748b; font-size: 14px; margin-top: 4px; }
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 28px; }
+  .stat-card { background: white; border-radius: 12px; padding: 20px; border: 1px solid #e2e8f0; }
+  .stat-card .valor { font-size: 36px; font-weight: 700; color: #1e40af; }
+  .stat-card .label { font-size: 13px; color: #64748b; margin-top: 4px; }
+  .tabela-card { background: white; border-radius: 12px; border: 1px solid #e2e8f0; overflow: hidden; }
+  .tabela-header { padding: 20px 24px; border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center; }
+  .tabela-header h2 { font-size: 16px; font-weight: 600; }
+  .filtro-data { padding: 8px 12px; border: 1.5px solid #e2e8f0; border-radius: 8px; font-size: 13px; outline: none; }
+  .filtro-data:focus { border-color: #3b82f6; }
+  table { width: 100%; border-collapse: collapse; }
+  th { text-align: left; font-size: 12px; font-weight: 600; color: #64748b; padding: 12px 24px; background: #f8fafc; text-transform: uppercase; letter-spacing: 0.05em; }
+  td { padding: 16px 24px; font-size: 14px; border-bottom: 1px solid #f1f5f9; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: #f8fafc; }
+  .paciente-nome { font-weight: 500; color: #0f172a; }
+  .paciente-tel { font-size: 12px; color: #94a3b8; margin-top: 2px; }
+  .badge { padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; display: inline-block; }
+  .confirmado { background: #dcfce7; color: #16a34a; }
+  .cancelado { background: #fee2e2; color: #dc2626; }
+  .concluido { background: #e0e7ff; color: #4338ca; }
+  .acoes { display: flex; gap: 8px; }
+  .btn-acao { padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 500; cursor: pointer; border: 1px solid #e2e8f0; background: white; color: #475569; transition: all 0.2s; }
+  .btn-acao.cancelar:hover { background: #fee2e2; color: #dc2626; border-color: #fca5a5; }
+  .btn-acao.concluir:hover { background: #dcfce7; color: #16a34a; border-color: #86efac; }
+  .vazio { text-align: center; color: #94a3b8; padding: 48px; font-size: 14px; }
+  .link-card { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 12px; padding: 20px 24px; margin-bottom: 28px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+  .link-card p { font-size: 13px; color: #1e40af; font-weight: 500; margin-bottom: 4px; }
+  .link-card span { font-size: 12px; color: #3b82f6; word-break: break-all; }
+  .btn-copiar { background: #1e40af; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer; white-space: nowrap; }
+  .btn-copiar:hover { background: #1d3a9e; }
+  .config-card { background: white; border-radius: 12px; border: 1px solid #e2e8f0; padding: 28px; margin-bottom: 20px; }
+  .config-card h2 { font-size: 16px; font-weight: 600; margin-bottom: 20px; color: #0f172a; }
+  .servico-tag { display: inline-flex; align-items: center; gap: 8px; background: #eff6ff; border: 1px solid #bfdbfe; color: #1e40af; padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 500; margin: 4px; }
+  .servico-tag button { background: none; border: none; color: #93c5fd; cursor: pointer; font-size: 16px; line-height: 1; padding: 0; }
+  .servico-tag button:hover { color: #dc2626; }
+  .add-servico { display: flex; gap: 10px; margin-top: 16px; }
+  .add-servico input { flex: 1; padding: 10px 14px; border: 1.5px solid #e2e8f0; border-radius: 10px; font-size: 14px; outline: none; }
+  .add-servico input:focus { border-color: #3b82f6; }
+  .btn-add { background: #1e40af; color: white; border: none; padding: 10px 20px; border-radius: 10px; font-size: 14px; font-weight: 500; cursor: pointer; white-space: nowrap; }
+  .btn-salvar { background: #16a34a; color: white; border: none; padding: 12px 28px; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; margin-top: 20px; }
+  .btn-salvar:hover { background: #15803d; }
+  .salvo-msg { color: #16a34a; font-size: 13px; margin-left: 12px; display: none; }
+  @media (max-width: 768px) { .sidebar { display: none; } .main { margin-left: 0; padding: 16px; } .stats { grid-template-columns: 1fr 1fr; } }
+</style>
+</head>
+<body>
+
+<div id="tela-auth" class="auth-bg">
+  <div class="auth-card">
+    <div class="auth-logo">
+      <h1>AgendaFacil</h1>
+      <p>Sistema de agendamento para qualquer negócio</p>
+    </div>
+    <div class="auth-tabs">
+      <button class="auth-tab ativo" id="tab-login" onclick="trocarTab('login')">Entrar</button>
+      <button class="auth-tab" id="tab-cadastro" onclick="trocarTab('cadastro')">Criar conta</button>
+    </div>
+    <div id="form-login">
+      <div class="erro-msg" id="erro-login"></div>
+      <div class="form-group"><label>Email</label><input type="email" id="login-email" placeholder="seu@email.com" /></div>
+      <div class="form-group"><label>Senha</label><input type="password" id="login-senha" placeholder="Sua senha" /></div>
+      <button class="btn-auth" onclick="fazerLogin()">Entrar no painel</button>
+    </div>
+    <div id="form-cadastro" style="display:none">
+      <div class="erro-msg" id="erro-cadastro"></div>
+      <div class="form-group"><label>Seu nome</label><input type="text" id="cad-nome" placeholder="João Silva" /></div>
+      <div class="form-group"><label>Nome do negócio</label><input type="text" id="cad-negocio" placeholder="Barbearia do João, Clínica São Lucas..." /></div>
+      <div class="form-group">
+        <label>Segmento</label>
+        <select id="cad-segmento" onchange="atualizarServicosDefault()">
+          <option value="Clínica">Clínica / Consultório</option>
+          <option value="Barbearia">Barbearia</option>
+          <option value="Salão">Salão de Beleza</option>
+          <option value="Pet Shop">Pet Shop</option>
+          <option value="Academia">Academia / Personal</option>
+          <option value="Estúdio">Estúdio de Tatuagem</option>
+          <option value="Outro">Outro</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Email</label><input type="email" id="cad-email" placeholder="seu@email.com" /></div>
+      <div class="form-group"><label>Senha</label><input type="password" id="cad-senha" placeholder="Mínimo 6 caracteres" /></div>
+      <button class="btn-auth" onclick="fazerCadastro()">Criar minha conta</button>
+    </div>
+  </div>
+</div>
+
+<div id="tela-painel" style="display:none">
+  <div class="sidebar">
+    <div class="sidebar-logo">
+      <h2>AgendaFacil</h2>
+      <p id="sidebar-negocio"></p>
+    </div>
+    <div class="sidebar-menu">
+      <button class="menu-item ativo" onclick="irPara('agendamentos')">Agendamentos</button>
+      <button class="menu-item" onclick="irPara('configuracoes')">Configurações</button>
+    </div>
+    <div class="sidebar-footer">
+      <button class="btn-sair" onclick="sair()">Sair da conta</button>
+    </div>
+  </div>
+
+  <div class="main">
+
+    <div class="page ativo" id="page-agendamentos">
+      <div class="page-header">
+        <h1>Agendamentos</h1>
+        <p>Gerencie os horários do seu negócio</p>
+      </div>
+      <div class="link-card">
+        <div>
+          <p>Link de agendamento para clientes</p>
+          <span id="link-agendamento"></span>
+        </div>
+        <button class="btn-copiar" onclick="copiarLink()">Copiar link</button>
+      </div>
+      <div class="stats">
+        <div class="stat-card"><div class="valor" id="stat-hoje">0</div><div class="label">Hoje</div></div>
+        <div class="stat-card"><div class="valor" id="stat-semana">0</div><div class="label">Esta semana</div></div>
+        <div class="stat-card"><div class="valor" id="stat-total">0</div><div class="label">Total geral</div></div>
+      </div>
+      <div class="tabela-card">
+        <div class="tabela-header">
+          <h2>Lista de agendamentos</h2>
+          <input type="date" class="filtro-data" id="filtro-data" onchange="filtrarData()" />
+        </div>
+        <table>
+          <thead><tr><th>Cliente</th><th>Serviço</th><th>Data</th><th>Hora</th><th>Status</th><th>Ações</th></tr></thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="page" id="page-configuracoes">
+      <div class="page-header">
+        <h1>Configurações</h1>
+        <p>Personalize os serviços do seu negócio</p>
+      </div>
+      <div class="config-card">
+        <h2>Serviços oferecidos</h2>
+        <div id="servicos-tags"></div>
+        <div class="add-servico">
+          <input type="text" id="novo-servico" placeholder="Ex: Corte + Barba, Consulta, Massagem..." />
+          <button class="btn-add" onclick="adicionarServico()">Adicionar</button>
+        </div>
+        <div style="display:flex;align-items:center">
+          <button class="btn-salvar" onclick="salvarServicos()">Salvar serviços</button>
+          <span class="salvo-msg" id="salvo-msg">Salvo com sucesso!</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const API = 'http://localhost:3000/api'
+let todosAgendamentos = []
+let servicosAtuais = []
+
+const servicosPorSegmento = {
+  'Clínica': ['Consulta', 'Retorno', 'Exame', 'Avaliação', 'Procedimento'],
+  'Barbearia': ['Corte', 'Barba', 'Corte + Barba', 'Pigmentação', 'Hidratação'],
+  'Salão': ['Corte', 'Coloração', 'Escova', 'Manicure', 'Pedicure'],
+  'Pet Shop': ['Banho', 'Tosa', 'Banho + Tosa', 'Consulta Vet', 'Vacina'],
+  'Academia': ['Avaliação Física', 'Treino Personal', 'Pilates', 'Musculação'],
+  'Estúdio': ['Tatuagem', 'Orçamento', 'Retoque', 'Piercing'],
+  'Outro': ['Serviço 1', 'Serviço 2', 'Serviço 3']
+}
+
+function atualizarServicosDefault() {
+  const seg = document.getElementById('cad-segmento').value
+}
+
+function trocarTab(tab) {
+  document.getElementById('tab-login').classList.toggle('ativo', tab === 'login')
+  document.getElementById('tab-cadastro').classList.toggle('ativo', tab === 'cadastro')
+  document.getElementById('form-login').style.display = tab === 'login' ? 'block' : 'none'
+  document.getElementById('form-cadastro').style.display = tab === 'cadastro' ? 'block' : 'none'
+}
+
+async function fazerLogin() {
+  const email = document.getElementById('login-email').value
+  const senha = document.getElementById('login-senha').value
+  const res = await fetch(`${API}/auth/login`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, senha }) })
+  const data = await res.json()
+  if (!res.ok) { document.getElementById('erro-login').textContent = data.erro; return }
+  salvarSessao(data)
+}
+
+async function fazerCadastro() {
+  const nome = document.getElementById('cad-nome').value
+  const negocio = document.getElementById('cad-negocio').value
+  const segmento = document.getElementById('cad-segmento').value
+  const email = document.getElementById('cad-email').value
+  const senha = document.getElementById('cad-senha').value
+  const servicos = servicosPorSegmento[segmento] || servicosPorSegmento['Outro']
+  const res = await fetch(`${API}/auth/cadastro`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ nome, email, senha, negocio, segmento, servicos }) })
+  const data = await res.json()
+  if (!res.ok) { document.getElementById('erro-cadastro').textContent = data.erro; return }
+  salvarSessao(data)
+}
+
+function salvarSessao(data) {
+  localStorage.setItem('token', data.token)
+  localStorage.setItem('negocio', data.negocio)
+  const payload = JSON.parse(atob(data.token.split('.')[1]))
+  localStorage.setItem('userId', payload.id)
+  mostrarPainel(data.negocio)
+}
+
+function mostrarPainel(negocio) {
+  document.getElementById('tela-auth').style.display = 'none'
+  document.getElementById('tela-painel').style.display = 'block'
+  document.getElementById('sidebar-negocio').textContent = negocio
+  const link = `http://localhost:3000/agendar.html?id=${localStorage.getItem('userId')}`
+  document.getElementById('link-agendamento').textContent = link
+  const hoje = new Date().toISOString().split('T')[0]
+  document.getElementById('filtro-data').value = hoje
+  carregarAgendamentos()
+  carregarServicos()
+}
+
+function irPara(pagina) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('ativo'))
+  document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('ativo'))
+  document.getElementById(`page-${pagina}`).classList.add('ativo')
+  event.target.classList.add('ativo')
+}
+
+async function carregarAgendamentos() {
+  const token = localStorage.getItem('token')
+  const res = await fetch(`${API}/agendamentos`, { headers: { 'Authorization': `Bearer ${token}` } })
+  todosAgendamentos = await res.json()
+  const hoje = new Date().toISOString().split('T')[0]
+  const semana = new Date(Date.now() + 7 * 86400000).toISOString().split('T')[0]
+  document.getElementById('stat-total').textContent = todosAgendamentos.length
+  document.getElementById('stat-hoje').textContent = todosAgendamentos.filter(a => a.data === hoje).length
+  document.getElementById('stat-semana').textContent = todosAgendamentos.filter(a => a.data >= hoje && a.data <= semana).length
+  filtrarData()
+}
+
+async function carregarServicos() {
+  const res = await fetch(`${API}/auth/negocio/${localStorage.getItem('userId')}`)
+  const data = await res.json()
+  servicosAtuais = data.servicos || []
+  renderServicos()
+}
+
+function renderServicos() {
+  document.getElementById('servicos-tags').innerHTML = servicosAtuais.map((s, i) => `
+    <span class="servico-tag">${s}<button onclick="removerServico(${i})">×</button></span>
+  `).join('')
+}
+
+function adicionarServico() {
+  const input = document.getElementById('novo-servico')
+  const val = input.value.trim()
+  if (!val) return
+  if (!servicosAtuais.includes(val)) servicosAtuais.push(val)
+  input.value = ''
+  renderServicos()
+}
+
+function removerServico(i) {
+  servicosAtuais.splice(i, 1)
+  renderServicos()
+}
+
+async function salvarServicos() {
+  const token = localStorage.getItem('token')
+  await fetch(`${API}/auth/servicos`, { method: 'PATCH', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ servicos: servicosAtuais }) })
+  const msg = document.getElementById('salvo-msg')
+  msg.style.display = 'inline'
+  setTimeout(() => msg.style.display = 'none', 2000)
+}
+
+function filtrarData() {
+  const data = document.getElementById('filtro-data').value
+  const filtrados = data ? todosAgendamentos.filter(a => a.data === data) : todosAgendamentos
+  renderTabela(filtrados)
+}
+
+function renderTabela(lista) {
+  const tbody = document.getElementById('tbody')
+  if (lista.length === 0) { tbody.innerHTML = '<tr><td colspan="6" class="vazio">Nenhum agendamento encontrado</td></tr>'; return }
+  tbody.innerHTML = lista.map(a => `
+    <tr>
+      <td><div class="paciente-nome">${a.pacienteNome}</div><div class="paciente-tel">${a.pacienteTelefone}</div></td>
+      <td>${a.servico}</td>
+      <td>${formatarData(a.data)}</td>
+      <td>${a.hora}</td>
+      <td><span class="badge ${a.status}">${a.status}</span></td>
+      <td><div class="acoes">
+        ${a.status === 'confirmado' ? `<button class="btn-acao concluir" onclick="atualizar('${a._id}','concluido')">Concluir</button>` : ''}
+       ${a.status === 'confirmado' ? `<button class="btn-acao cancelar" onclick="cancelarComAviso('${a._id}','${a.pacienteNome}','${a.pacienteTelefone}','${a.data}','${a.hora}')">Cancelar</button>` : ''}
+      </div></td>
+    </tr>
+  `).join('')
+}
+
+async function atualizar(id, status) {
+  const token = localStorage.getItem('token')
+  await fetch(`${API}/agendamentos/${id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ status }) })
+  carregarAgendamentos()
+}
+
+async function cancelarComAviso(id, nome, telefone, data, hora) {
+  const confirmar = confirm(`Cancelar agendamento de ${nome}?\n\nUm link do WhatsApp será aberto para avisar o cliente.`)
+  if (!confirmar) return
+  const token = localStorage.getItem('token')
+  await fetch(`${API}/agendamentos/${id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ status: 'cancelado' }) })
+  const [ano, mes, dia] = data.split('-')
+  const msg = encodeURIComponent(`Olá ${nome}! Infelizmente precisamos cancelar seu agendamento do dia ${dia}/${mes}/${ano} às ${hora}. Por favor entre em contato para reagendar. Pedimos desculpas pelo inconveniente.`)
+  const tel = telefone.replace(/\D/g, '')
+  window.open(`https://wa.me/55${tel}?text=${msg}`, '_blank')
+  carregarAgendamentos()
+}
+
+function copiarLink() {
+  navigator.clipboard.writeText(document.getElementById('link-agendamento').textContent)
+  const btn = document.querySelector('.btn-copiar')
+  btn.textContent = 'Copiado!'
+  setTimeout(() => btn.textContent = 'Copiar link', 2000)
+}
+
+function formatarData(data) {
+  const [ano, mes, dia] = data.split('-')
+  return `${dia}/${mes}/${ano}`
+}
+
+function sair() { localStorage.clear(); location.reload() }
+
+const token = localStorage.getItem('token')
+const negocio = localStorage.getItem('negocio')
+if (token && negocio) mostrarPainel(negocio)
+</script>
+</body>
+</html>

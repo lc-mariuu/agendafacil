@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agendar Consulta</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', sans-serif; background: #f0f4ff; color: #1e293b; min-height: 100vh; }
+
+  .hero { background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%); padding: 40px 24px 80px; text-align: center; }
+  .hero h1 { color: white; font-size: 26px; font-weight: 700; }
+  .hero p { color: #bfdbfe; font-size: 15px; margin-top: 8px; }
+
+  .container { max-width: 520px; margin: -48px auto 40px; padding: 0 16px; }
+
+  .card { background: white; border-radius: 16px; padding: 28px; border: 1px solid #e2e8f0; margin-bottom: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); }
+  .card-titulo { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+  .card-num { width: 28px; height: 28px; background: #1e40af; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; flex-shrink: 0; }
+  .card-titulo h2 { font-size: 16px; font-weight: 600; color: #0f172a; }
+
+  .form-group { margin-bottom: 16px; }
+  .form-group label { font-size: 13px; font-weight: 500; color: #475569; display: block; margin-bottom: 6px; }
+  .form-group input, .form-group select { width: 100%; padding: 12px 14px; border: 1.5px solid #e2e8f0; border-radius: 10px; font-size: 14px; outline: none; transition: border 0.2s; background: #f8fafc; }
+  .form-group input:focus, .form-group select:focus { border-color: #3b82f6; background: white; }
+
+  .servicos { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .servico-btn { padding: 14px 10px; border: 1.5px solid #e2e8f0; border-radius: 10px; background: #f8fafc; cursor: pointer; font-size: 13px; font-weight: 500; color: #475569; text-align: center; transition: all 0.2s; }
+  .servico-btn:hover { border-color: #3b82f6; color: #1e40af; background: #eff6ff; }
+  .servico-btn.selecionado { border-color: #1e40af; background: #1e40af; color: white; }
+
+  .horarios { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .horario-btn { padding: 12px 6px; border: 1.5px solid #e2e8f0; border-radius: 10px; background: #f8fafc; cursor: pointer; font-size: 13px; font-weight: 500; color: #475569; text-align: center; transition: all 0.2s; }
+  .horario-btn:hover:not(:disabled) { border-color: #3b82f6; color: #1e40af; background: #eff6ff; }
+  .horario-btn.selecionado { border-color: #1e40af; background: #1e40af; color: white; }
+  .horario-btn:disabled { background: #f1f5f9; color: #cbd5e1; cursor: not-allowed; text-decoration: line-through; border-color: #f1f5f9; }
+  .carregando-horarios { text-align: center; color: #94a3b8; font-size: 13px; padding: 20px; }
+
+  .btn-agendar { width: 100%; background: linear-gradient(135deg, #1e40af, #3b82f6); color: white; border: none; padding: 16px; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; transition: opacity 0.2s; letter-spacing: 0.02em; }
+  .btn-agendar:hover { opacity: 0.92; }
+  .btn-agendar:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .erro-msg { color: #dc2626; font-size: 13px; text-align: center; margin-bottom: 12px; min-height: 18px; }
+
+  .sucesso-tela { display: none; text-align: center; padding: 20px; }
+  .sucesso-icone { width: 72px; height: 72px; background: #dcfce7; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; }
+  .sucesso-icone svg { width: 36px; height: 36px; }
+  .sucesso-tela h2 { font-size: 22px; font-weight: 700; color: #0f172a; margin-bottom: 8px; }
+  .sucesso-tela p { color: #64748b; font-size: 14px; line-height: 1.6; }
+  .sucesso-detalhe { background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 12px; padding: 16px; margin: 20px 0; text-align: left; }
+  .sucesso-detalhe p { font-size: 13px; color: #0369a1; margin-bottom: 6px; }
+  .sucesso-detalhe p:last-child { margin-bottom: 0; }
+  .sucesso-detalhe strong { color: #0c4a6e; }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1 id="nome-clinica">Carregando...</h1>
+  <p>Agende sua consulta de forma rápida e fácil</p>
+</div>
+
+<div class="container">
+  <div id="formulario">
+
+    <div class="card">
+      <div class="card-titulo">
+        <div class="card-num">1</div>
+        <h2>Seus dados</h2>
+      </div>
+      <div class="form-group">
+        <label>Nome completo</label>
+        <input type="text" id="nome" placeholder="Digite seu nome completo" />
+      </div>
+      <div class="form-group">
+        <label>WhatsApp</label>
+        <input type="tel" id="telefone" placeholder="(11) 99999-9999" />
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-titulo">
+        <div class="card-num">2</div>
+        <h2>Serviço</h2>
+      </div>
+      <div class="servicos">
+        <button class="servico-btn" onclick="selecionarServico(this, 'Consulta')">Consulta</button>
+        <button class="servico-btn" onclick="selecionarServico(this, 'Retorno')">Retorno</button>
+        <button class="servico-btn" onclick="selecionarServico(this, 'Exame')">Exame</button>
+        <button class="servico-btn" onclick="selecionarServico(this, 'Avaliação')">Avaliação</button>
+        <button class="servico-btn" onclick="selecionarServico(this, 'Procedimento')">Procedimento</button>
+        <button class="servico-btn" onclick="selecionarServico(this, 'Emergência')">Emergência</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-titulo">
+        <div class="card-num">3</div>
+        <h2>Data</h2>
+      </div>
+      <div class="form-group">
+        <input type="date" id="data" onchange="carregarHorarios()" />
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-titulo">
+        <div class="card-num">4</div>
+        <h2>Horário</h2>
+      </div>
+      <div id="horarios-container">
+        <p class="carregando-horarios">Selecione uma data para ver os horários disponíveis</p>
+      </div>
+    </div>
+
+    <div class="erro-msg" id="erro-form"></div>
+    <button class="btn-agendar" onclick="agendar()">Confirmar agendamento</button>
+
+  </div>
+
+  <div class="sucesso-tela card" id="sucesso">
+    <div class="sucesso-icone">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="20 6 9 17 4 12"></polyline>
+      </svg>
+    </div>
+    <h2>Agendamento confirmado!</h2>
+    <p>Seu horário foi reservado com sucesso. Até lá!</p>
+    <div class="sucesso-detalhe" id="sucesso-detalhe"></div>
+    <p style="font-size:12px;color:#94a3b8;margin-top:8px">Em caso de dúvidas, entre em contato com a clínica.</p>
+  </div>
+</div>
+
+<script>
+const API = 'http://localhost:3000/api'
+let horarioSelecionado = ''
+let servicoSelecionado = ''
+const params = new URLSearchParams(window.location.search)
+const clinicaId = params.get('id')
+
+const todosHorarios = [
+  '08:00','08:30','09:00','09:30','10:00','10:30','11:00','11:30',
+  '14:00','14:30','15:00','15:30','16:00','16:30','17:00'
+]
+
+const hoje = new Date().toISOString().split('T')[0]
+document.getElementById('data').min = hoje
+document.getElementById('data').value = hoje
+
+async function carregarClinica() {
+  if (!clinicaId) { document.getElementById('nome-clinica').textContent = 'Link inválido'; return }
+  const res = await fetch(`${API}/auth/negocio/${clinicaId}`)
+  const data = await res.json()
+  if (res.ok) {
+    document.getElementById('nome-clinica').textContent = data.negocio
+    document.title = data.negocio
+    renderServicos(data.servicos || [])
+  }
+}
+
+function renderServicos(servicos) {
+  const container = document.querySelector('.servicos')
+  if (!container) return
+  container.innerHTML = servicos.map(s =>
+    `<button class="servico-btn" onclick="selecionarServico(this,'${s}')">${s}</button>`
+  ).join('')
+}
+
+async function carregarHorarios() {
+  const data = document.getElementById('data').value
+  if (!data || !clinicaId) return
+  horarioSelecionado = ''
+  const container = document.getElementById('horarios-container')
+  container.innerHTML = '<p class="carregando-horarios">Carregando horários...</p>'
+  const res = await fetch(`${API}/agendamentos/horarios-ocupados?clinicaId=${clinicaId}&data=${data}`)
+  const ocupados = await res.json()
+  container.innerHTML = '<div class="horarios">' +
+    todosHorarios.map(h => {
+      const ocupado = ocupados.includes(h)
+      return `<button class="horario-btn" ${ocupado ? 'disabled' : ''} onclick="selecionarHorario(this,'${h}')">${h}</button>`
+    }).join('') + '</div>'
+}
+
+function selecionarServico(btn, servico) {
+  document.querySelectorAll('.servico-btn').forEach(b => b.classList.remove('selecionado'))
+  btn.classList.add('selecionado')
+  servicoSelecionado = servico
+}
+
+function selecionarHorario(btn, hora) {
+  document.querySelectorAll('.horario-btn').forEach(b => b.classList.remove('selecionado'))
+  btn.classList.add('selecionado')
+  horarioSelecionado = hora
+}
+
+async function agendar() {
+  const nome = document.getElementById('nome').value.trim()
+  const telefone = document.getElementById('telefone').value.trim()
+  const data = document.getElementById('data').value
+  const erro = document.getElementById('erro-form')
+  if (!nome) { erro.textContent = 'Digite seu nome'; return }
+  if (!telefone) { erro.textContent = 'Digite seu WhatsApp'; return }
+  if (!servicoSelecionado) { erro.textContent = 'Selecione o serviço'; return }
+  if (!data) { erro.textContent = 'Selecione a data'; return }
+  if (!horarioSelecionado) { erro.textContent = 'Selecione um horário'; return }
+  if (!clinicaId) { erro.textContent = 'Link inválido'; return }
+  erro.textContent = ''
+  const btn = document.querySelector('.btn-agendar')
+  btn.disabled = true
+  btn.textContent = 'Agendando...'
+  const res = await fetch(`${API}/agendamentos`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ clinicaId, pacienteNome: nome, pacienteTelefone: telefone, servico: servicoSelecionado, data, hora: horarioSelecionado })
+  })
+  const resposta = await res.json()
+  if (res.ok) {
+    document.getElementById('formulario').style.display = 'none'
+    document.getElementById('sucesso').style.display = 'block'
+    const [ano, mes, dia] = data.split('-')
+    document.getElementById('sucesso-detalhe').innerHTML = `
+      <p>Cliente: <strong>${nome}</strong></p>
+      <p>Serviço: <strong>${servicoSelecionado}</strong></p>
+      <p>Data: <strong>${dia}/${mes}/${ano}</strong></p>
+      <p>Horário: <strong>${horarioSelecionado}</strong></p>
+    `
+  } else {
+    erro.textContent = resposta.erro || 'Erro ao agendar. Tente novamente.'
+    btn.disabled = false
+    btn.textContent = 'Confirmar agendamento'
+  }
+}
+
+carregarClinica()
+carregarHorarios()
+</script>
+</body>
+</html>
