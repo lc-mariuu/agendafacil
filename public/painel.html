@@ -193,7 +193,7 @@
 </div>
 
 <script>
-const API = 'http://localhost:3000/api'
+const API = 'https://agendafacil-production-a064.up.railway.app/api'
 let todosAgendamentos = []
 let servicosAtuais = []
 
@@ -252,7 +252,7 @@ function mostrarPainel(negocio) {
   document.getElementById('tela-auth').style.display = 'none'
   document.getElementById('tela-painel').style.display = 'block'
   document.getElementById('sidebar-negocio').textContent = negocio
-  const link = `http://localhost:3000/agendar.html?id=${localStorage.getItem('userId')}`
+  const link = `https://agendafacil-production-a064.up.railway.app/agendar.html?id=${localStorage.getItem('userId')}`
   document.getElementById('link-agendamento').textContent = link
   const hoje = new Date().toISOString().split('T')[0]
   document.getElementById('filtro-data').value = hoje
