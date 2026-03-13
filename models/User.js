@@ -10,6 +10,13 @@ const userSchema = new mongoose.Schema({
   servicos: { type: [String], default: ['Consulta', 'Retorno', 'Exame'] },
   intervalo: { type: Number, default: 30 },
   horarios: { type: mongoose.Schema.Types.Mixed, default: {} },
+  bio: {
+    descricao: { type: String, default: '' },
+    foto: { type: String, default: '' },
+    instagram: { type: String, default: '' },
+    whatsapp: { type: String, default: '' },
+    endereco: { type: String, default: '' }
+  },
   criadoEm: { type: Date, default: Date.now }
 })
 

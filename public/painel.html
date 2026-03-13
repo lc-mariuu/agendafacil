@@ -145,6 +145,7 @@
     <div class="sidebar-menu">
       <button class="menu-item ativo" onclick="irPara('agendamentos', this)">Agendamentos</button>
       <button class="menu-item" onclick="irPara('horarios', this)">Horários</button>
+      <button class="menu-item" onclick="irPara('bio', this)">Minha Bio</button>
       <button class="menu-item" onclick="irPara('configuracoes', this)">Configurações</button>
     </div>
     <div class="sidebar-footer">
@@ -232,6 +233,48 @@
       </div>
     </div>
 
+    <!-- PÁGINA: BIO -->
+<div class="page" id="page-bio">
+  <div class="page-header">
+    <h1>Minha Página Bio</h1>
+    <p>Personalize sua página pública para o Instagram</p>
+  </div>
+  <div class="link-card">
+    <div>
+      <p>Link da sua página bio</p>
+      <span id="link-bio"></span>
+    </div>
+    <button class="btn-copiar" onclick="copiarLinkBio()">Copiar link</button>
+  </div>
+  <div class="config-card">
+    <h2>Informações da página</h2>
+    <div class="form-group" style="margin-bottom:16px">
+      <label style="font-size:13px;font-weight:500;color:#475569;display:block;margin-bottom:6px">Foto de perfil (URL da imagem)</label>
+      <input type="text" id="bio-foto" placeholder="https://..." style="width:100%;padding:11px 14px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:14px;outline:none" />
+    </div>
+    <div class="form-group" style="margin-bottom:16px">
+      <label style="font-size:13px;font-weight:500;color:#475569;display:block;margin-bottom:6px">Descrição / Bio</label>
+      <textarea id="bio-descricao" placeholder="Ex: Barbearia premium no centro de SP. Atendimento de segunda a sábado." style="width:100%;padding:11px 14px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:14px;outline:none;resize:vertical;min-height:80px"></textarea>
+    </div>
+    <div class="form-group" style="margin-bottom:16px">
+      <label style="font-size:13px;font-weight:500;color:#475569;display:block;margin-bottom:6px">Endereço (para Google Maps)</label>
+      <input type="text" id="bio-endereco" placeholder="Rua das Flores, 123, São Paulo - SP" style="width:100%;padding:11px 14px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:14px;outline:none" />
+    </div>
+    <div class="form-group" style="margin-bottom:16px">
+      <label style="font-size:13px;font-weight:500;color:#475569;display:block;margin-bottom:6px">Instagram</label>
+      <input type="text" id="bio-instagram" placeholder="@seunegocio" style="width:100%;padding:11px 14px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:14px;outline:none" />
+    </div>
+    <div class="form-group" style="margin-bottom:16px">
+      <label style="font-size:13px;font-weight:500;color:#475569;display:block;margin-bottom:6px">WhatsApp</label>
+      <input type="text" id="bio-whatsapp" placeholder="(11) 99999-9999" style="width:100%;padding:11px 14px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:14px;outline:none" />
+    </div>
+    <div style="display:flex;align-items:center">
+      <button class="btn-salvar" onclick="salvarBio()">Salvar bio</button>
+      <span class="salvo-msg" id="salvo-bio">Salvo com sucesso!</span>
+    </div>
+  </div>
+</div>
+
   </div>
 </div>
 
@@ -301,6 +344,7 @@ function mostrarPainel(negocio) {
   carregarAgendamentos()
   carregarServicos()
   carregarHorariosConfig()
+  carregarBioConfig()
 }
 
 function irPara(pagina, btn) {
@@ -486,6 +530,45 @@ async function salvarHorarios() {
   const msg = document.getElementById('salvo-horarios')
   msg.style.display = 'inline'
   setTimeout(() => msg.style.display = 'none', 2000)
+}
+
+// ---- BIO ----
+async function carregarBioConfig() {
+  const res = await fetch(`${API}/auth/negocio/${localStorage.getItem('userId')}`)
+  const data = await res.json()
+  const bio = data.bio || {}
+  document.getElementById('bio-foto').value = bio.foto || ''
+  document.getElementById('bio-descricao').value = bio.descricao || ''
+  document.getElementById('bio-endereco').value = bio.endereco || ''
+  document.getElementById('bio-instagram').value = bio.instagram || ''
+  document.getElementById('bio-whatsapp').value = bio.whatsapp || ''
+  const linkBio = `https://agendafacil-wf3q.onrender.com/bio.html?id=${localStorage.getItem('userId')}`
+  document.getElementById('link-bio').textContent = linkBio
+}
+
+async function salvarBio() {
+  const token = localStorage.getItem('token')
+  await fetch(`${API}/auth/bio`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+    body: JSON.stringify({
+      foto: document.getElementById('bio-foto').value,
+      descricao: document.getElementById('bio-descricao').value,
+      endereco: document.getElementById('bio-endereco').value,
+      instagram: document.getElementById('bio-instagram').value,
+      whatsapp: document.getElementById('bio-whatsapp').value
+    })
+  })
+  const msg = document.getElementById('salvo-bio')
+  msg.style.display = 'inline'
+  setTimeout(() => msg.style.display = 'none', 2000)
+}
+
+function copiarLinkBio() {
+  navigator.clipboard.writeText(document.getElementById('link-bio').textContent)
+  const btn = document.querySelectorAll('.btn-copiar')[1]
+  btn.textContent = 'Copiado!'
+  setTimeout(() => btn.textContent = 'Copiar link', 2000)
 }
 
 // ---- INIT ----
