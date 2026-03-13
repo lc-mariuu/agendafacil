@@ -29,21 +29,24 @@ router.get('/horarios-ocupados', async (req, res) => {
     const { clinicaId, data } = req.query
     const User = require('../models/User')
 
-    // Busca configuração do negócio
-    const user = await User.findById(clinicaId)
+    const user = await User.findById(clinicaId).lean()
     if (!user) return res.status(404).json({ erro: 'Negócio não encontrado' })
 
-    // Descobre o dia da semana (0=domingo, 1=segunda...)
     const [ano, mes, dia] = data.split('-').map(Number)
     const diaSemana = new Date(ano, mes - 1, dia).getDay()
-    const configDia = user.horarios?.[diaSemana] || user.horarios?.[String(diaSemana)]
 
-    // Se o dia não está ativo, retorna todos os horários bloqueados
+    // .lean() retorna objeto puro — tenta as duas formas
+    const horarios = user.horarios || {}
+    const configDia = horarios[diaSemana] || horarios[String(diaSemana)]
+
+    console.log('diaSemana:', diaSemana)
+    console.log('horarios keys:', Object.keys(horarios))
+    console.log('configDia:', JSON.stringify(configDia))
+
     if (!configDia || !configDia.ativo) {
-      return res.json({ horarios: [], diaInativo: true })
+      return res.json({ horarios: [], ocupados: [], diaInativo: true })
     }
 
-    // Gera os horários disponíveis baseado no intervalo
     const intervalo = user.intervalo || 30
     const horariosDisponiveis = []
     const [hIni, mIni] = configDia.inicio.split(':').map(Number)
@@ -58,13 +61,12 @@ router.get('/horarios-ocupados', async (req, res) => {
       atual += intervalo
     }
 
-    // Busca horários já agendados
     const agendados = await Appointment.find({ clinicaId, data, status: { $ne: 'cancelado' } }).select('hora')
     const ocupados = agendados.map(a => a.hora)
 
     res.json({ horarios: horariosDisponiveis, ocupados, diaInativo: false })
   } catch (err) {
-    console.log(err)
+    console.log('ERRO horarios-ocupados:', err.message)
     res.status(500).json({ erro: 'Erro ao buscar horários' })
   }
 })
@@ -72,12 +74,7 @@ router.get('/horarios-ocupados', async (req, res) => {
 router.post('/', async (req, res) => {
   try {
     const { clinicaId, pacienteNome, pacienteTelefone, servico, data, hora } = req.body
-    const jaExiste = await Appointment.findOne({
-      clinicaId,
-      data,
-      hora,
-      status: { $ne: 'cancelado' }
-    })
+    const jaExiste = await Appointment.findOne({ clinicaId, data, hora, status: { $ne: 'cancelado' } })
     if (jaExiste) return res.status(400).json({ erro: 'Horário já ocupado' })
     const agendamento = await Appointment.create({ clinicaId, pacienteNome, pacienteTelefone, servico, data, hora })
     res.json(agendamento)
