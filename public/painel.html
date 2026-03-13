@@ -93,6 +93,15 @@
   .dia-horarios span { font-size: 13px; color: #64748b; }
   .dia-inativo .dia-horarios { opacity: 0.3; pointer-events: none; }
   @media (max-width: 768px) { .sidebar { display: none; } .main { margin-left: 0; padding: 16px; } .stats { grid-template-columns: 1fr 1fr; } }
+
+ .trial-banner { background: #fef9c3; border: 1px solid #fde047; border-radius: 12px; padding: 14px 20px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.trial-banner p { font-size: 13px; color: #854d0e; font-weight: 500; }
+.btn-assinar-banner { background: #1e40af; color: white; border: none; padding: 8px 18px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; }
+.bloqueio { position: fixed; inset: 0; background: rgba(15,23,42,0.85); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 24px; }
+.bloqueio-card { background: white; border-radius: 20px; padding: 40px; max-width: 440px; width: 100%; text-align: center; }
+.bloqueio-card h2 { font-size: 22px; font-weight: 700; margin-bottom: 8px; color: #0f172a; }
+.bloqueio-card p { color: #64748b; font-size: 14px; margin-bottom: 24px; line-height: 1.6; }
+.btn-ver-planos { display: block; background: #1e40af; color: white; padding: 14px; border-radius: 12px; font-size: 15px; font-weight: 600; text-decoration: none; margin-bottom: 10px; }
 </style>
 </head>
 <body>
@@ -137,6 +146,16 @@
 </div>
 
 <div id="tela-painel" style="display:none">
+<div id="bloqueio" class="bloqueio" style="display:none">
+  <div class="bloqueio-card">
+    <div style="font-size:48px;margin-bottom:16px">⏰</div>
+    <h2>Seu trial expirou</h2>
+    <p>Seus 14 dias gratuitos acabaram. Assine um plano para continuar usando o AgendaFacil.</p>
+    <a href="/planos.html" class="btn-ver-planos">Ver planos a partir de R$29/mês</a>
+    <button onclick="sair()" style="background:none;border:none;color:#94a3b8;font-size:13px;cursor:pointer">Sair da conta</button>
+  </div>
+</div>
+
   <div class="sidebar">
     <div class="sidebar-logo">
       <h2>AgendaFacil</h2>
@@ -354,6 +373,7 @@ function mostrarPainel(negocio) {
   carregarServicos()
   carregarHorariosConfig()
   carregarBioConfig()
+  verificarAcesso()
 }
 
 function irPara(pagina, btn) {
@@ -603,6 +623,26 @@ async function uploadFoto(input) {
     }
   }
   reader.readAsDataURL(file)
+}
+
+async function verificarAcesso() {
+  const token = localStorage.getItem('token')
+  if (!token) return
+  const res = await fetch(`${API}/assinatura/status`, { headers: { 'Authorization': `Bearer ${token}` } })
+  const data = await res.json()
+  if (!data.temAcesso) {
+    document.getElementById('bloqueio').style.display = 'flex'
+    return
+  }
+  if (data.plano === 'trial' && data.diasRestantes <= 7) {
+    const banner = document.createElement('div')
+    banner.className = 'trial-banner'
+    banner.innerHTML = `<p>⚠️ Seu trial expira em <strong>${data.diasRestantes} dias</strong>. Assine para não perder o acesso.</p><button class="btn-assinar-banner" onclick="window.location.href='/planos.html'">Ver planos</button>`
+    document.querySelector('.main').prepend(banner)
+  }
+  if (window.location.search.includes('assinatura=sucesso')) {
+    alert('🎉 Assinatura ativada com sucesso! Bem-vindo ao AgendaFacil!')
+  }
 }
 
 // ---- INIT ----
