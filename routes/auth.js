@@ -7,7 +7,6 @@ const router = express.Router()
 router.post('/cadastro', async (req, res) => {
   try {
     const { nome, email, senha, negocio, segmento, servicos } = req.body
-    console.log('Tentando cadastrar:', { nome, email, negocio })
     const existe = await User.findOne({ email })
     if (existe) return res.status(400).json({ erro: 'Email já cadastrado' })
     const senhaCriptografada = await bcrypt.hash(senha, 10)
@@ -37,9 +36,9 @@ router.post('/login', async (req, res) => {
 
 router.get('/negocio/:id', async (req, res) => {
   try {
-    const user = await User.findById(req.params.id).select('nome negocio segmento servicos horarios intervalo')
+    const user = await User.findById(req.params.id).select('nome negocio segmento servicos horarios intervalo bio')
     if (!user) return res.status(404).json({ erro: 'Negócio não encontrado' })
-    res.json({ nome: user.nome, negocio: user.negocio, segmento: user.segmento, servicos: user.servicos, horarios: user.horarios, intervalo: user.intervalo })
+    res.json({ nome: user.nome, negocio: user.negocio, segmento: user.segmento, servicos: user.servicos, horarios: user.horarios, intervalo: user.intervalo, bio: user.bio })
   } catch {
     res.status(500).json({ erro: 'Erro ao buscar negócio' })
   }
@@ -60,10 +59,7 @@ router.patch('/horarios', async (req, res) => {
   try {
     const token = req.headers.authorization?.split(' ')[1]
     const decoded = jwt.verify(token, process.env.JWT_SECRET)
-    await User.findByIdAndUpdate(
-      decoded.id,
-      { $set: { horarios: req.body.horarios, intervalo: req.body.intervalo } }
-    )
+    await User.findByIdAndUpdate(decoded.id, { $set: { horarios: req.body.horarios, intervalo: req.body.intervalo } })
     res.json({ ok: true })
   } catch (err) {
     console.log('Erro salvar horarios:', err.message)
@@ -80,21 +76,6 @@ router.patch('/bio', async (req, res) => {
   } catch (err) {
     console.log('Erro salvar bio:', err.message)
     res.status(500).json({ erro: 'Erro ao salvar bio' })
-  }
-})
-
-router.patch('/horarios', async (req, res) => {
-  try {
-    const token = req.headers.authorization?.split(' ')[1]
-    const decoded = jwt.verify(token, process.env.JWT_SECRET)
-    await User.findByIdAndUpdate(
-      decoded.id,
-      { $set: { horarios: req.body.horarios, intervalo: req.body.intervalo } }
-    )
-    res.json({ ok: true })
-  } catch (err) {
-    console.log('Erro salvar horarios:', err.message)
-    res.status(500).json({ erro: 'Erro ao salvar horários' })
   }
 })
 
