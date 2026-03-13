@@ -56,4 +56,19 @@ router.patch('/servicos', async (req, res) => {
   }
 })
 
+router.patch('/horarios', async (req, res) => {
+  try {
+    const token = req.headers.authorization?.split(' ')[1]
+    const decoded = jwt.verify(token, process.env.JWT_SECRET)
+    await User.findByIdAndUpdate(
+      decoded.id,
+      { $set: { horarios: req.body.horarios, intervalo: req.body.intervalo } }
+    )
+    res.json({ ok: true })
+  } catch (err) {
+    console.log('Erro salvar horarios:', err.message)
+    res.status(500).json({ erro: 'Erro ao salvar horários' })
+  }
+})
+
 module.exports = router
