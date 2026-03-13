@@ -11,6 +11,7 @@ app.use(express.static('public'))
 
 app.use('/api/auth', require('./routes/auth'))
 app.use('/api/agendamentos', require('./routes/appointments'))
+app.use('/api/upload', require('./routes/upload'))
 
 app.get('/', (req, res) => {
   res.json({ mensagem: 'ClinicaFacil API funcionando!' })

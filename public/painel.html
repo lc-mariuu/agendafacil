@@ -249,9 +249,17 @@
   <div class="config-card">
     <h2>Informações da página</h2>
     <div class="form-group" style="margin-bottom:16px">
-      <label style="font-size:13px;font-weight:500;color:#475569;display:block;margin-bottom:6px">Foto de perfil (URL da imagem)</label>
-      <input type="text" id="bio-foto" placeholder="https://..." style="width:100%;padding:11px 14px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:14px;outline:none" />
+  <label style="font-size:13px;font-weight:500;color:#475569;display:block;margin-bottom:6px">Foto de perfil</label>
+  <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">
+    <div id="foto-preview" style="width:64px;height:64px;border-radius:50%;background:#f1f5f9;border:2px solid #e2e8f0;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0">🏪</div>
+    <div style="flex:1">
+      <input type="file" id="foto-input" accept="image/*" onchange="uploadFoto(this)" style="display:none" />
+      <button onclick="document.getElementById('foto-input').click()" style="background:#1e40af;color:white;border:none;padding:10px 20px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer">Escolher foto</button>
+      <p id="foto-status" style="font-size:12px;color:#94a3b8;margin-top:6px">Nenhuma foto selecionada</p>
     </div>
+  </div>
+  <input type="hidden" id="bio-foto" />
+</div>
     <div class="form-group" style="margin-bottom:16px">
       <label style="font-size:13px;font-weight:500;color:#475569;display:block;margin-bottom:6px">Descrição / Bio</label>
       <textarea id="bio-descricao" placeholder="Ex: Barbearia premium no centro de SP. Atendimento de segunda a sábado." style="width:100%;padding:11px 14px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:14px;outline:none;resize:vertical;min-height:80px"></textarea>
@@ -570,6 +578,37 @@ function copiarLinkBio() {
   const btn = document.querySelectorAll('.btn-copiar')[1]
   btn.textContent = 'Copiado!'
   setTimeout(() => btn.textContent = 'Copiar link', 2000)
+}
+
+async function uploadFoto(input) {
+  const file = input.files[0]
+  if (!file) return
+  document.getElementById('foto-status').textContent = 'Enviando...'
+  const reader = new FileReader()
+  reader.onload = async (e) => {
+    const token = localStorage.getItem('token')
+    const res = await fetch(`${API}/upload`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      body: JSON.stringify({ imagem: e.target.result })
+    })
+    const data = await res.json()
+    if (res.ok) {
+      document.getElementById('bio-foto').value = bio.foto || ''
+if (bio.foto) {
+  const preview = document.getElementById('foto-preview')
+  preview.innerHTML = `<img src="${bio.foto}" style="width:100%;height:100%;object-fit:cover">`
+  document.getElementById('foto-status').textContent = 'Foto atual carregada'
+}
+
+      document.getElementById('foto-status').textContent = 'Foto enviada!'
+      const preview = document.getElementById('foto-preview')
+      preview.innerHTML = `<img src="${data.url}" style="width:100%;height:100%;object-fit:cover">`
+    } else {
+      document.getElementById('foto-status').textContent = 'Erro ao enviar foto'
+    }
+  }
+  reader.readAsDataURL(file)
 }
 
 // ---- INIT ----
