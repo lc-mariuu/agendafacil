@@ -6,26 +6,26 @@
 <title>Bio</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { font-family: 'Segoe UI', sans-serif; min-height: 100vh; display: flex; align-items: center; justify-content: center; background: #f0f4ff; padding: 20px; }
-  .card { width: 100%; max-width: 400px; border-radius: 24px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.15); }
-  .header { background: linear-gradient(135deg, #1e40af 0%, #7c3aed 100%); padding: 40px 24px 32px; text-align: center; position: relative; }
-  .foto-container { width: 100px; height: 100px; border-radius: 50%; border: 4px solid rgba(255,255,255,0.4); overflow: hidden; margin: 0 auto 16px; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; }
-  .foto-container img { width: 100%; height: 100%; object-fit: cover; }
-  .foto-placeholder { font-size: 40px; }
-  .negocio-nome { color: white; font-size: 24px; font-weight: 700; margin-bottom: 8px; }
-  .negocio-desc { color: rgba(255,255,255,0.8); font-size: 14px; line-height: 1.5; }
-  .body { background: white; padding: 24px; }
-  .btn-agendar { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; background: #1e40af; color: white; padding: 16px; border-radius: 14px; font-size: 16px; font-weight: 600; text-decoration: none; margin-bottom: 12px; transition: opacity 0.2s; }
-  .btn-agendar:hover { opacity: 0.9; }
-  .btn-secondary { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; background: #f8fafc; border: 1.5px solid #e2e8f0; color: #475569; padding: 14px; border-radius: 14px; font-size: 15px; font-weight: 500; text-decoration: none; margin-bottom: 12px; transition: all 0.2s; }
-  .btn-secondary:hover { background: #f1f5f9; }
-  .sociais { display: flex; justify-content: center; gap: 12px; margin-top: 20px; padding-top: 20px; border-top: 1px solid #f1f5f9; }
-  .social-btn { width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; text-decoration: none; font-size: 20px; transition: transform 0.2s; }
-  .social-btn:hover { transform: scale(1.1); }
-  .social-whats { background: #dcfce7; }
-  .social-insta { background: #fce7f3; }
-  .powered { text-align: center; font-size: 11px; color: #cbd5e1; margin-top: 16px; padding-bottom: 4px; }
-  .nao-encontrado { text-align: center; color: #94a3b8; padding: 40px; }
+  body { font-family: 'Segoe UI', sans-serif; min-height: 100vh; display: flex; align-items: center; justify-content: center; background: #e8eaf0; padding: 20px; }
+  .card { width: 100%; max-width: 390px; border-radius: 28px; overflow: hidden; box-shadow: 0 24px 80px rgba(0,0,0,0.18); background: white; }
+  .header { background: linear-gradient(160deg, #b06a5a 0%, #7c5c8a 60%, #4a4a7a 100%); padding: 36px 24px 32px; text-align: center; position: relative; }
+  .share-btn { position: absolute; top: 16px; right: 16px; width: 36px; height: 36px; border-radius: 50%; background: rgba(255,255,255,0.2); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: white; font-size: 16px; }
+  .foto-wrap { width: 110px; height: 110px; border-radius: 50%; border: 3px solid rgba(255,255,255,0.35); overflow: hidden; margin: 0 auto 18px; background: rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; }
+  .foto-wrap img { width: 100%; height: 100%; object-fit: cover; }
+  .foto-placeholder { font-size: 44px; }
+  .nome { color: white; font-size: 26px; font-weight: 700; margin-bottom: 10px; letter-spacing: -0.3px; }
+  .desc { color: rgba(255,255,255,0.82); font-size: 13.5px; line-height: 1.55; max-width: 300px; margin: 0 auto; }
+  .body { background: white; padding: 22px 20px 20px; }
+  .btn-agendar { display: flex; align-items: center; gap: 12px; width: 100%; background: rgba(180,100,80,0.08); border: 1.5px solid rgba(180,100,80,0.15); color: #5a3a3a; padding: 15px 20px; border-radius: 14px; font-size: 15px; font-weight: 600; text-decoration: none; margin-bottom: 10px; transition: all 0.2s; cursor: pointer; }
+  .btn-agendar:hover { background: rgba(180,100,80,0.14); }
+  .btn-icon { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0; }
+  .icon-green { background: #dcfce7; }
+  .icon-gray { background: #f1f5f9; }
+  .btn-text { flex: 1; text-align: center; }
+  .sociais { display: flex; justify-content: center; gap: 14px; margin-top: 18px; padding-top: 18px; border-top: 1px solid #f1f5f9; }
+  .social-btn { width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; text-decoration: none; font-size: 22px; transition: transform 0.2s; border: 1.5px solid #f1f5f9; }
+  .social-btn:hover { transform: scale(1.08); }
+  .powered { text-align: center; font-size: 11px; color: #c0c8d8; margin-top: 16px; }
 </style>
 </head>
 <body>
@@ -39,40 +39,46 @@ const params = new URLSearchParams(window.location.search)
 const id = params.get('id')
 
 async function carregarBio() {
-  if (!id) { document.getElementById('card').innerHTML = '<div class="nao-encontrado">Link inválido</div>'; return }
+  if (!id) { document.getElementById('card').innerHTML = '<div style="padding:40px;text-align:center;color:#94a3b8">Link inválido</div>'; return }
   const res = await fetch(`${API}/auth/negocio/${id}`)
   const data = await res.json()
-  if (!res.ok) { document.getElementById('card').innerHTML = '<div class="nao-encontrado">Negócio não encontrado</div>'; return }
+  if (!res.ok) { document.getElementById('card').innerHTML = '<div style="padding:40px;text-align:center;color:#94a3b8">Negócio não encontrado</div>'; return }
 
   const bio = data.bio || {}
   const linkAgendar = `https://agendafacil-wf3q.onrender.com/agendar.html?id=${id}`
-  const linkMaps = bio.endereco ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(bio.endereco)}` : null
+  const linkMaps = bio.endereco ? bio.endereco : null
   const tel = (bio.whatsapp || '').replace(/\D/g, '')
   const linkWhats = tel ? `https://wa.me/55${tel}` : null
   const linkInsta = bio.instagram ? `https://instagram.com/${bio.instagram.replace('@','')}` : null
 
   document.title = data.negocio
+
   document.getElementById('card').innerHTML = `
     <div class="header">
-      <div class="foto-container">
+      <button class="share-btn" onclick="navigator.share ? navigator.share({url: window.location.href}) : navigator.clipboard.writeText(window.location.href)">↗</button>
+      <div class="foto-wrap">
         ${bio.foto
           ? `<img src="${bio.foto}" alt="${data.negocio}" />`
           : `<span class="foto-placeholder">🏪</span>`}
       </div>
-      <div class="negocio-nome">${data.negocio}</div>
-      ${bio.descricao ? `<div class="negocio-desc">${bio.descricao}</div>` : ''}
+      <div class="nome">${data.negocio}</div>
+      ${bio.descricao ? `<div class="desc">${bio.descricao}</div>` : ''}
     </div>
     <div class="body">
       <a href="${linkAgendar}" class="btn-agendar">
-        📅 Agendar Horário
+        <span class="btn-icon icon-green">📅</span>
+        <span class="btn-text">Agendar Horário</span>
       </a>
-      ${linkMaps ? `<a href="${linkMaps}" target="_blank" class="btn-secondary">📍 Como Chegar</a>` : ''}
+      ${linkMaps ? `
+      <a href="${linkMaps}" target="_blank" class="btn-agendar">
+        <span class="btn-icon icon-gray">📍</span>
+        <span class="btn-text">Como Chegar</span>
+      </a>` : ''}
       ${(linkWhats || linkInsta) ? `
-        <div class="sociais">
-          ${linkWhats ? `<a href="${linkWhats}" target="_blank" class="social-btn social-whats">💬</a>` : ''}
-          ${linkInsta ? `<a href="${linkInsta}" target="_blank" class="social-btn social-insta">📷</a>` : ''}
-        </div>
-      ` : ''}
+      <div class="sociais">
+        ${linkWhats ? `<a href="${linkWhats}" target="_blank" class="social-btn">💬</a>` : ''}
+        ${linkInsta ? `<a href="${linkInsta}" target="_blank" class="social-btn">📷</a>` : ''}
+      </div>` : ''}
       <div class="powered">AgendaFacil</div>
     </div>
   `
