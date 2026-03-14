@@ -701,6 +701,89 @@ async function verificarAcesso() {
   }
 }
 
+// ---- AGENDAMENTO MANUAL ----
+function abrirModalNovoAgendamento() {
+  const hoje = new Date().toISOString().split('T')[0]
+  document.getElementById('m-data').value = hoje
+  document.getElementById('m-data').min = hoje
+  document.getElementById('m-nome').value = ''
+  document.getElementById('m-telefone').value = ''
+  document.getElementById('m-erro').textContent = ''
+
+  const selectServico = document.getElementById('m-servico')
+  selectServico.innerHTML = servicosAtuais.map(s => `<option value="${s}">${s}</option>`).join('')
+
+  document.getElementById('modal-agendamento').style.display = 'flex'
+  carregarHorariosModal()
+}
+
+function fecharModal() {
+  document.getElementById('modal-agendamento').style.display = 'none'
+}
+
+async function carregarHorariosModal() {
+  const data = document.getElementById('m-data').value
+  const userId = localStorage.getItem('userId')
+  if (!data || !userId) return
+
+  const select = document.getElementById('m-hora')
+  select.innerHTML = '<option>Carregando...</option>'
+
+  const res = await fetch(`${API}/agendamentos/horarios-ocupados?clinicaId=${userId}&data=${data}`)
+  const resultado = await res.json()
+
+  if (resultado.diaInativo || resultado.horarios.length === 0) {
+    select.innerHTML = '<option value="">Sem horários disponíveis</option>'
+    return
+  }
+
+  select.innerHTML = resultado.horarios.map(h => {
+    const ocupado = resultado.ocupados.includes(h)
+    return `<option value="${h}" ${ocupado ? 'disabled' : ''}>${h}${ocupado ? ' (ocupado)' : ''}</option>`
+  }).join('')
+
+  const primeiroLivre = resultado.horarios.find(h => !resultado.ocupados.includes(h))
+  if (primeiroLivre) select.value = primeiroLivre
+}
+
+async function salvarAgendamentoManual() {
+  const nome = document.getElementById('m-nome').value.trim()
+  const telefone = document.getElementById('m-telefone').value.trim()
+  const servico = document.getElementById('m-servico').value
+  const data = document.getElementById('m-data').value
+  const hora = document.getElementById('m-hora').value
+  const erro = document.getElementById('m-erro')
+
+  if (!nome) { erro.textContent = 'Digite o nome do cliente'; return }
+  if (!telefone) { erro.textContent = 'Digite o WhatsApp'; return }
+  if (!hora || hora === '') { erro.textContent = 'Selecione um horário'; return }
+
+  erro.textContent = ''
+  const btn = document.querySelector('.btn-salvar-modal')
+  btn.disabled = true
+  btn.textContent = 'Salvando...'
+
+  const token = localStorage.getItem('token')
+  const userId = localStorage.getItem('userId')
+
+  const res = await fetch(`${API}/agendamentos`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+    body: JSON.stringify({ clinicaId: userId, pacienteNome: nome, pacienteTelefone: telefone, servico, data, hora })
+  })
+
+  const resposta = await res.json()
+  btn.disabled = false
+  btn.textContent = 'Confirmar agendamento'
+
+  if (res.ok) {
+    fecharModal()
+    carregarAgendamentos()
+  } else {
+    erro.textContent = resposta.erro || 'Erro ao criar agendamento'
+  }
+}
+
 // ---- INIT ----
 const token = localStorage.getItem('token')
 const negocio = localStorage.getItem('negocio')
