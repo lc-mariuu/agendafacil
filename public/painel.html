@@ -755,7 +755,6 @@ async function salvarAgendamentoManual() {
   const erro = document.getElementById('m-erro')
 
   if (!nome) { erro.textContent = 'Digite o nome do cliente'; return }
-  if (!telefone) { erro.textContent = 'Digite o WhatsApp'; return }
   if (!hora || hora === '') { erro.textContent = 'Selecione um horário'; return }
 
   erro.textContent = ''
