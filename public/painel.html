@@ -102,6 +102,20 @@
 .bloqueio-card h2 { font-size: 22px; font-weight: 700; margin-bottom: 8px; color: #0f172a; }
 .bloqueio-card p { color: #64748b; font-size: 14px; margin-bottom: 24px; line-height: 1.6; }
 .btn-ver-planos { display: block; background: #1e40af; color: white; padding: 14px; border-radius: 12px; font-size: 15px; font-weight: 600; text-decoration: none; margin-bottom: 10px; }
+
+.modal-overlay { position: fixed; inset: 0; background: rgba(15,23,42,0.6); z-index: 200; display: flex; align-items: center; justify-content: center; padding: 24px; }
+.modal { background: white; border-radius: 16px; padding: 28px; width: 100%; max-width: 480px; box-shadow: 0 20px 60px rgba(0,0,0,0.2); }
+.modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.modal-header h2 { font-size: 18px; font-weight: 700; color: #0f172a; }
+.modal-close { background: none; border: none; font-size: 22px; cursor: pointer; color: #94a3b8; line-height: 1; }
+.modal-close:hover { color: #475569; }
+.modal .form-group { margin-bottom: 14px; }
+.modal .form-group label { font-size: 13px; font-weight: 500; color: #475569; display: block; margin-bottom: 5px; }
+.modal .form-group input, .modal .form-group select { width: 100%; padding: 10px 14px; border: 1.5px solid #e2e8f0; border-radius: 10px; font-size: 14px; outline: none; }
+.modal .form-group input:focus, .modal .form-group select:focus { border-color: #3b82f6; }
+.modal-footer { display: flex; gap: 10px; margin-top: 20px; }
+.btn-cancelar-modal { flex: 1; background: #f1f5f9; color: #475569; border: none; padding: 12px; border-radius: 10px; font-size: 14px; font-weight: 500; cursor: pointer; }
+.btn-salvar-modal { flex: 2; background: #1e40af; color: white; border: none; padding: 12px; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; }
 </style>
 </head>
 <body>
@@ -146,6 +160,40 @@
 </div>
 
 <div id="tela-painel" style="display:none">
+<div class="modal-overlay" id="modal-agendamento" style="display:none">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>Novo Agendamento</h2>
+      <button class="modal-close" onclick="fecharModal()">×</button>
+    </div>
+    <div class="form-group">
+      <label>Nome do cliente</label>
+      <input type="text" id="m-nome" placeholder="João Silva" />
+    </div>
+    <div class="form-group">
+      <label>WhatsApp</label>
+      <input type="tel" id="m-telefone" placeholder="(11) 99999-9999" />
+    </div>
+    <div class="form-group">
+      <label>Serviço</label>
+      <select id="m-servico"></select>
+    </div>
+    <div class="form-group">
+      <label>Data</label>
+      <input type="date" id="m-data" onchange="carregarHorariosModal()" />
+    </div>
+    <div class="form-group">
+      <label>Horário</label>
+      <select id="m-hora"></select>
+    </div>
+    <div class="erro-msg" id="m-erro"></div>
+    <div class="modal-footer">
+      <button class="btn-cancelar-modal" onclick="fecharModal()">Cancelar</button>
+      <button class="btn-salvar-modal" onclick="salvarAgendamentoManual()">Confirmar agendamento</button>
+    </div>
+  </div>
+</div>
+  
 <div id="bloqueio" class="bloqueio" style="display:none">
   <div class="bloqueio-card">
     <div style="font-size:48px;margin-bottom:16px">⏰</div>
@@ -197,9 +245,12 @@
       </div>
       <div class="tabela-card">
         <div class="tabela-header">
-          <h2>Lista de agendamentos</h2>
-          <input type="date" class="filtro-data" id="filtro-data" onchange="filtrarData()" />
-        </div>
+       <h2>Lista de agendamentos</h2>
+       <div style="display:flex;gap:10px;align-items:center">
+       <input type="date" class="filtro-data" id="filtro-data" onchange="filtrarData()" />
+       <button onclick="abrirModalNovoAgendamento()" style="background:#1e40af;color:white;border:none;padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap">+ Novo</button>
+       </div>
+       </div>
         <table>
           <thead><tr><th>Cliente</th><th>Serviço</th><th>Data</th><th>Hora</th><th>Status</th><th>Ações</th></tr></thead>
           <tbody id="tbody"></tbody>
