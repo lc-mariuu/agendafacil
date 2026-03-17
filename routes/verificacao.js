@@ -26,13 +26,14 @@ const router     = express.Router()
 const mongoose   = require('mongoose')
 
 // ------------------------------------------------------------
-// 1. RESEND — cliente de email
+// 1. RESEND — cliente de email (inicializado só quando necessário)
 // ------------------------------------------------------------
-const resend = new Resend(process.env.RESEND_API_KEY)
-
 const EMAIL_FROM = process.env.EMAIL_FROM || 'onboarding@resend.dev'
-// Em testes: onboarding@resend.dev só envia para o email da sua conta Resend
-// Em produção: use um domínio verificado, ex: noreply@seudominio.com
+
+function getResend() {
+  if (!process.env.RESEND_API_KEY) return null
+  return new Resend(process.env.RESEND_API_KEY)
+}
 
 // ------------------------------------------------------------
 // 2. MODEL — CodigoVerificacao
@@ -66,8 +67,8 @@ function gerarCodigo() {
 // 4. HELPER — enviar email via Resend
 // ------------------------------------------------------------
 async function enviarEmail(destinatario, assunto, html) {
-  if (!process.env.RESEND_API_KEY) {
-    // Sem chave: imprime no console para testes locais
+  const resend = getResend()
+  if (!resend) {
     console.log(`\n📧 [RESEND SIMULADO] Para: ${destinatario} | Assunto: ${assunto}\n${html.replace(/<[^>]+>/g, '')}\n`)
     return
   }
