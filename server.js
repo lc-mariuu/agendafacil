@@ -12,7 +12,7 @@ app.use(express.static('public'))
  
 // ── Rotas ──────────────────────────────────────────────────
 app.use('/api/auth',        require('./routes/auth'))
-app.use('/api/auth',        require('./verificacao'))   // ← rotas de verificação/recuperação
+app.use('/api/auth',        require('./routes/verificacao'))  // ← correto
 app.use('/api/agendamentos', require('./routes/appointments'))
 app.use('/api/upload',      require('./routes/upload'))
 app.use('/api/assinatura',  require('./routes/assinatura'))
