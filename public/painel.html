@@ -22,7 +22,9 @@
   .btn-auth { width: 100%; background: #1e40af; color: white; border: none; padding: 13px; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; transition: background 0.2s; margin-top: 4px; }
   .btn-auth:hover { background: #1d3a9e; }
   .erro-msg { color: #dc2626; font-size: 13px; text-align: center; margin-bottom: 10px; min-height: 18px; }
-  .sidebar { position: fixed; left: 0; top: 0; bottom: 0; width: 240px; background: #1e293b; padding: 24px 0; display: flex; flex-direction: column; z-index: 100; }
+
+  /* ===== SIDEBAR ===== */
+  .sidebar { position: fixed; left: 0; top: 0; bottom: 0; width: 240px; background: #1e293b; padding: 24px 0; display: flex; flex-direction: column; z-index: 100; transition: transform 0.3s ease; }
   .sidebar-logo { padding: 0 24px 24px; border-bottom: 1px solid #334155; }
   .sidebar-logo h2 { color: white; font-size: 18px; font-weight: 700; }
   .sidebar-logo p { color: #94a3b8; font-size: 12px; margin-top: 2px; }
@@ -32,90 +34,176 @@
   .sidebar-footer { padding: 16px 24px; border-top: 1px solid #334155; }
   .btn-sair { width: 100%; background: none; border: 1px solid #475569; color: #94a3b8; padding: 8px; border-radius: 8px; cursor: pointer; font-size: 13px; transition: all 0.2s; }
   .btn-sair:hover { background: #dc2626; border-color: #dc2626; color: white; }
+
+  /* ===== TOPBAR MOBILE ===== */
+  .topbar-mobile { display: none; position: fixed; top: 0; left: 0; right: 0; height: 56px; background: #1e293b; z-index: 99; align-items: center; justify-content: space-between; padding: 0 16px; }
+  .topbar-mobile h2 { color: white; font-size: 16px; font-weight: 700; }
+  .btn-hamburger { background: none; border: none; color: white; font-size: 24px; cursor: pointer; padding: 4px; line-height: 1; }
+
+  /* Overlay escuro quando sidebar aberta no mobile */
+  .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 99; }
+  .sidebar-overlay.visivel { display: block; }
+
+  /* ===== MAIN ===== */
   .main { margin-left: 240px; padding: 32px; min-height: 100vh; overflow-x: hidden; }
   .page { display: none; }
   .page.ativo { display: block; }
   .page-header { margin-bottom: 28px; }
   .page-header h1 { font-size: 24px; font-weight: 700; color: #0f172a; }
   .page-header p { color: #64748b; font-size: 14px; margin-top: 4px; }
+
+  /* ===== STATS ===== */
   .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 28px; }
   .stat-card { background: white; border-radius: 12px; padding: 20px; border: 1px solid #e2e8f0; }
   .stat-card .valor { font-size: 36px; font-weight: 700; color: #1e40af; }
   .stat-card .label { font-size: 13px; color: #64748b; margin-top: 4px; }
+
+  /* ===== TABELA ===== */
   .tabela-card { background: white; border-radius: 12px; border: 1px solid #e2e8f0; overflow: hidden; }
-  .tabela-header { padding: 20px 24px; border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center; }
+  .tabela-header { padding: 16px 20px; border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
   .tabela-header h2 { font-size: 16px; font-weight: 600; }
+  .tabela-header-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
   .filtro-data { padding: 8px 12px; border: 1.5px solid #e2e8f0; border-radius: 8px; font-size: 13px; outline: none; }
   .filtro-data:focus { border-color: #3b82f6; }
-  table { width: 100%; border-collapse: collapse; }
-  th { text-align: left; font-size: 12px; font-weight: 600; color: #64748b; padding: 12px 24px; background: #f8fafc; text-transform: uppercase; letter-spacing: 0.05em; }
-  td { padding: 16px 24px; font-size: 14px; border-bottom: 1px solid #f1f5f9; }
+
+  /* Scroll horizontal na tabela em telas pequenas */
+  .tabela-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  table { width: 100%; border-collapse: collapse; min-width: 550px; }
+  th { text-align: left; font-size: 12px; font-weight: 600; color: #64748b; padding: 12px 20px; background: #f8fafc; text-transform: uppercase; letter-spacing: 0.05em; white-space: nowrap; }
+  td { padding: 14px 20px; font-size: 14px; border-bottom: 1px solid #f1f5f9; }
   tr:last-child td { border-bottom: none; }
   tr:hover td { background: #f8fafc; }
   .paciente-nome { font-weight: 500; color: #0f172a; }
   .paciente-tel { font-size: 12px; color: #94a3b8; margin-top: 2px; }
-  .badge { padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; display: inline-block; }
+  .badge { padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; display: inline-block; white-space: nowrap; }
   .confirmado { background: #dcfce7; color: #16a34a; }
   .cancelado { background: #fee2e2; color: #dc2626; }
   .concluido { background: #e0e7ff; color: #4338ca; }
-  .acoes { display: flex; gap: 8px; }
-  .btn-acao { padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 500; cursor: pointer; border: 1px solid #e2e8f0; background: white; color: #475569; transition: all 0.2s; }
+  .acoes { display: flex; gap: 6px; flex-wrap: nowrap; }
+  .btn-acao { padding: 5px 10px; border-radius: 6px; font-size: 12px; font-weight: 500; cursor: pointer; border: 1px solid #e2e8f0; background: white; color: #475569; transition: all 0.2s; white-space: nowrap; }
   .btn-acao.cancelar:hover { background: #fee2e2; color: #dc2626; border-color: #fca5a5; }
   .btn-acao.concluir:hover { background: #dcfce7; color: #16a34a; border-color: #86efac; }
   .vazio { text-align: center; color: #94a3b8; padding: 48px; font-size: 14px; }
-  .link-card { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 12px; padding: 20px 24px; margin-bottom: 28px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+
+  /* ===== PAGINAÇÃO ===== */
+  .paginacao { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; border-top: 1px solid #f1f5f9; gap: 10px; flex-wrap: wrap; }
+  .paginacao-info { font-size: 13px; color: #64748b; }
+  .paginacao-btns { display: flex; gap: 4px; align-items: center; }
+  .pg-btn { width: 32px; height: 32px; border-radius: 8px; border: 1.5px solid #e2e8f0; background: white; color: #475569; font-size: 13px; font-weight: 500; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+  .pg-btn:hover:not(:disabled) { border-color: #1e40af; color: #1e40af; }
+  .pg-btn.ativo { background: #1e40af; border-color: #1e40af; color: white; }
+  .pg-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+  .pg-seta { width: 32px; height: 32px; }
+
+  /* ===== LINK CARD ===== */
+  .link-card { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 12px; padding: 16px 20px; margin-bottom: 28px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
   .link-card p { font-size: 13px; color: #1e40af; font-weight: 500; margin-bottom: 4px; }
   .link-card span { font-size: 12px; color: #3b82f6; word-break: break-all; }
-  .btn-copiar { background: #1e40af; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer; white-space: nowrap; }
+  .btn-copiar { background: #1e40af; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer; white-space: nowrap; flex-shrink: 0; }
   .btn-copiar:hover { background: #1d3a9e; }
-  .config-card { background: white; border-radius: 12px; border: 1px solid #e2e8f0; padding: 28px; margin-bottom: 20px; }
+
+  /* ===== CONFIG CARDS ===== */
+  .config-card { background: white; border-radius: 12px; border: 1px solid #e2e8f0; padding: 24px; margin-bottom: 20px; }
   .config-card h2 { font-size: 16px; font-weight: 600; margin-bottom: 20px; color: #0f172a; }
   .servico-tag { display: inline-flex; align-items: center; gap: 8px; background: #eff6ff; border: 1px solid #bfdbfe; color: #1e40af; padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 500; margin: 4px; }
   .servico-tag button { background: none; border: none; color: #93c5fd; cursor: pointer; font-size: 16px; line-height: 1; padding: 0; }
   .servico-tag button:hover { color: #dc2626; }
   .add-servico { display: flex; gap: 10px; margin-top: 16px; }
-  .add-servico input { flex: 1; padding: 10px 14px; border: 1.5px solid #e2e8f0; border-radius: 10px; font-size: 14px; outline: none; }
+  .add-servico input { flex: 1; padding: 10px 14px; border: 1.5px solid #e2e8f0; border-radius: 10px; font-size: 14px; outline: none; min-width: 0; }
   .add-servico input:focus { border-color: #3b82f6; }
-  .btn-add { background: #1e40af; color: white; border: none; padding: 10px 20px; border-radius: 10px; font-size: 14px; font-weight: 500; cursor: pointer; white-space: nowrap; }
+  .btn-add { background: #1e40af; color: white; border: none; padding: 10px 20px; border-radius: 10px; font-size: 14px; font-weight: 500; cursor: pointer; white-space: nowrap; flex-shrink: 0; }
   .btn-salvar { background: #16a34a; color: white; border: none; padding: 12px 28px; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; margin-top: 20px; }
   .btn-salvar:hover { background: #15803d; }
   .salvo-msg { color: #16a34a; font-size: 13px; margin-left: 12px; display: none; }
   .intervalo-btn { padding: 8px 16px; border: 1.5px solid #e2e8f0; border-radius: 8px; background: #f8fafc; cursor: pointer; font-size: 13px; font-weight: 500; color: #475569; transition: all 0.2s; }
   .intervalo-btn:hover, .intervalo-btn.selecionado { border-color: #1e40af; background: #1e40af; color: white; }
-  .dia-row { display: flex; align-items: center; gap: 16px; padding: 14px 0; border-bottom: 1px solid #f1f5f9; flex-wrap: wrap; width: 100%; }
+
+  /* ===== DIA ROW ===== */
+  .dia-row { display: flex; align-items: center; gap: 12px; padding: 14px 0; border-bottom: 1px solid #f1f5f9; flex-wrap: wrap; width: 100%; }
   .dia-row:last-child { border-bottom: none; }
-  .dia-toggle { display: flex; align-items: center; gap: 10px; min-width: 140px; width: 140px; }
-  .dia-toggle input[type=checkbox] { width: 18px; height: 18px; cursor: pointer; accent-color: #1e40af; }
+  .dia-toggle { display: flex; align-items: center; gap: 10px; min-width: 130px; }
+  .dia-toggle input[type=checkbox] { width: 18px; height: 18px; cursor: pointer; accent-color: #1e40af; flex-shrink: 0; }
   .dia-toggle label { font-size: 14px; font-weight: 500; color: #0f172a; cursor: pointer; }
-  .dia-horarios { display: flex; align-items: center; gap: 10px; }
+  .dia-horarios { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
   .dia-horarios input[type=time] { padding: 8px 10px; border: 1.5px solid #e2e8f0; border-radius: 8px; font-size: 13px; outline: none; }
   .dia-horarios input[type=time]:focus { border-color: #3b82f6; }
   .dia-horarios span { font-size: 13px; color: #64748b; }
   .dia-inativo .dia-horarios { opacity: 0.3; pointer-events: none; }
-  @media (max-width: 768px) { .sidebar { display: none; } .main { margin-left: 0; padding: 16px; } .stats { grid-template-columns: 1fr 1fr; } }
 
- .trial-banner { background: #fef9c3; border: 1px solid #fde047; border-radius: 12px; padding: 14px 20px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-.trial-banner p { font-size: 13px; color: #854d0e; font-weight: 500; }
-.btn-assinar-banner { background: #1e40af; color: white; border: none; padding: 8px 18px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; }
-.bloqueio { position: fixed; inset: 0; background: rgba(15,23,42,0.85); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 24px; }
-.bloqueio-card { background: white; border-radius: 20px; padding: 40px; max-width: 440px; width: 100%; text-align: center; }
-.bloqueio-card h2 { font-size: 22px; font-weight: 700; margin-bottom: 8px; color: #0f172a; }
-.bloqueio-card p { color: #64748b; font-size: 14px; margin-bottom: 24px; line-height: 1.6; }
-.btn-ver-planos { display: block; background: #1e40af; color: white; padding: 14px; border-radius: 12px; font-size: 15px; font-weight: 600; text-decoration: none; margin-bottom: 10px; }
+  /* ===== TRIAL / BLOQUEIO ===== */
+  .trial-banner { background: #fef9c3; border: 1px solid #fde047; border-radius: 12px; padding: 14px 20px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  .trial-banner p { font-size: 13px; color: #854d0e; font-weight: 500; }
+  .btn-assinar-banner { background: #1e40af; color: white; border: none; padding: 8px 18px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; }
+  .bloqueio { position: fixed; inset: 0; background: rgba(15,23,42,0.85); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 24px; }
+  .bloqueio-card { background: white; border-radius: 20px; padding: 40px; max-width: 440px; width: 100%; text-align: center; }
+  .bloqueio-card h2 { font-size: 22px; font-weight: 700; margin-bottom: 8px; color: #0f172a; }
+  .bloqueio-card p { color: #64748b; font-size: 14px; margin-bottom: 24px; line-height: 1.6; }
+  .btn-ver-planos { display: block; background: #1e40af; color: white; padding: 14px; border-radius: 12px; font-size: 15px; font-weight: 600; text-decoration: none; margin-bottom: 10px; }
 
-.modal-overlay { position: fixed; inset: 0; background: rgba(15,23,42,0.6); z-index: 200; display: flex; align-items: center; justify-content: center; padding: 24px; }
-.modal { background: white; border-radius: 16px; padding: 28px; width: 100%; max-width: 480px; box-shadow: 0 20px 60px rgba(0,0,0,0.2); }
-.modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-.modal-header h2 { font-size: 18px; font-weight: 700; color: #0f172a; }
-.modal-close { background: none; border: none; font-size: 22px; cursor: pointer; color: #94a3b8; line-height: 1; }
-.modal-close:hover { color: #475569; }
-.modal .form-group { margin-bottom: 14px; }
-.modal .form-group label { font-size: 13px; font-weight: 500; color: #475569; display: block; margin-bottom: 5px; }
-.modal .form-group input, .modal .form-group select { width: 100%; padding: 10px 14px; border: 1.5px solid #e2e8f0; border-radius: 10px; font-size: 14px; outline: none; }
-.modal .form-group input:focus, .modal .form-group select:focus { border-color: #3b82f6; }
-.modal-footer { display: flex; gap: 10px; margin-top: 20px; }
-.btn-cancelar-modal { flex: 1; background: #f1f5f9; color: #475569; border: none; padding: 12px; border-radius: 10px; font-size: 14px; font-weight: 500; cursor: pointer; }
-.btn-salvar-modal { flex: 2; background: #1e40af; color: white; border: none; padding: 12px; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; }
+  /* ===== MODAL ===== */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(15,23,42,0.6); z-index: 200; display: flex; align-items: center; justify-content: center; padding: 16px; }
+  .modal { background: white; border-radius: 16px; padding: 24px; width: 100%; max-width: 480px; box-shadow: 0 20px 60px rgba(0,0,0,0.2); max-height: 90vh; overflow-y: auto; }
+  .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+  .modal-header h2 { font-size: 18px; font-weight: 700; color: #0f172a; }
+  .modal-close { background: none; border: none; font-size: 22px; cursor: pointer; color: #94a3b8; line-height: 1; }
+  .modal-close:hover { color: #475569; }
+  .modal .form-group { margin-bottom: 14px; }
+  .modal .form-group label { font-size: 13px; font-weight: 500; color: #475569; display: block; margin-bottom: 5px; }
+  .modal .form-group input, .modal .form-group select { width: 100%; padding: 10px 14px; border: 1.5px solid #e2e8f0; border-radius: 10px; font-size: 14px; outline: none; }
+  .modal .form-group input:focus, .modal .form-group select:focus { border-color: #3b82f6; }
+  .modal-footer { display: flex; gap: 10px; margin-top: 20px; }
+  .btn-cancelar-modal { flex: 1; background: #f1f5f9; color: #475569; border: none; padding: 12px; border-radius: 10px; font-size: 14px; font-weight: 500; cursor: pointer; }
+  .btn-salvar-modal { flex: 2; background: #1e40af; color: white; border: none; padding: 12px; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; }
+
+  /* ===== RESPONSIVIDADE MOBILE ===== */
+  @media (max-width: 768px) {
+    /* Sidebar vira drawer */
+    .sidebar { transform: translateX(-240px); }
+    .sidebar.aberta { transform: translateX(0); }
+
+    /* Topbar aparece no mobile */
+    .topbar-mobile { display: flex; }
+
+    /* Main ajusta pra topbar */
+    .main { margin-left: 0; padding: 72px 16px 24px; }
+
+    /* Stats: 1 coluna em telas pequenas */
+    .stats { grid-template-columns: 1fr 1fr; gap: 10px; }
+    .stat-card { padding: 14px; }
+    .stat-card .valor { font-size: 28px; }
+
+    /* Link card em coluna */
+    .link-card { flex-direction: column; align-items: flex-start; }
+    .link-card .btn-copiar { width: 100%; text-align: center; }
+
+    /* Header da tabela empilha em tela muito pequena */
+    .tabela-header { flex-direction: column; align-items: flex-start; }
+    .tabela-header-actions { width: 100%; }
+    .filtro-data { flex: 1; }
+
+    /* Tabela com scroll horizontal */
+    .tabela-scroll { overflow-x: auto; }
+
+    /* Intervalo btns menores */
+    .intervalo-btn { padding: 7px 12px; font-size: 12px; }
+
+    /* Config card menos padding */
+    .config-card { padding: 16px; }
+
+    /* Dia row empilha em telas bem pequenas */
+    .dia-toggle { min-width: 100%; }
+
+    /* Page header */
+    .page-header h1 { font-size: 20px; }
+
+    /* Botão novo agendamento full width */
+    .tabela-header-actions button { flex: 1; }
+  }
+
+  @media (max-width: 400px) {
+    .stats { grid-template-columns: 1fr; }
+    .auth-card { padding: 24px 20px; }
+  }
 </style>
 </head>
 <body>
@@ -160,51 +248,62 @@
 </div>
 
 <div id="tela-painel" style="display:none">
-<div class="modal-overlay" id="modal-agendamento" style="display:none">
-  <div class="modal">
-    <div class="modal-header">
-      <h2>Novo Agendamento</h2>
-      <button class="modal-close" onclick="fecharModal()">×</button>
-    </div>
-    <div class="form-group">
-      <label>Nome do cliente</label>
-      <input type="text" id="m-nome" placeholder="João Silva" />
-    </div>
-    <div class="form-group">
-      <label>WhatsApp</label>
-      <input type="tel" id="m-telefone" placeholder="(11) 99999-9999" />
-    </div>
-    <div class="form-group">
-      <label>Serviço</label>
-      <select id="m-servico"></select>
-    </div>
-    <div class="form-group">
-      <label>Data</label>
-      <input type="date" id="m-data" onchange="carregarHorariosModal()" />
-    </div>
-    <div class="form-group">
-      <label>Horário</label>
-      <select id="m-hora"></select>
-    </div>
-    <div class="erro-msg" id="m-erro"></div>
-    <div class="modal-footer">
-      <button class="btn-cancelar-modal" onclick="fecharModal()">Cancelar</button>
-      <button class="btn-salvar-modal" onclick="salvarAgendamentoManual()">Confirmar agendamento</button>
-    </div>
-  </div>
-</div>
-  
-<div id="bloqueio" class="bloqueio" style="display:none">
-  <div class="bloqueio-card">
-    <div style="font-size:48px;margin-bottom:16px">⏰</div>
-    <h2>Seu trial expirou</h2>
-    <p>Seus 14 dias gratuitos acabaram. Assine um plano para continuar usando o AgendoRapido.</p>
-    <a href="/planos.html" class="btn-ver-planos">Ver planos a partir de R$29/mês</a>
-    <button onclick="sair()" style="background:none;border:none;color:#94a3b8;font-size:13px;cursor:pointer">Sair da conta</button>
-  </div>
-</div>
 
-  <div class="sidebar">
+  <!-- TOPBAR MOBILE -->
+  <div class="topbar-mobile">
+    <button class="btn-hamburger" onclick="toggleSidebar()">☰</button>
+    <h2>AgendoRapido!</h2>
+    <div style="width:32px"></div>
+  </div>
+
+  <!-- OVERLAY SIDEBAR MOBILE -->
+  <div class="sidebar-overlay" id="sidebar-overlay" onclick="fecharSidebar()"></div>
+
+  <div class="modal-overlay" id="modal-agendamento" style="display:none">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>Novo Agendamento</h2>
+        <button class="modal-close" onclick="fecharModal()">×</button>
+      </div>
+      <div class="form-group">
+        <label>Nome do cliente</label>
+        <input type="text" id="m-nome" placeholder="João Silva" />
+      </div>
+      <div class="form-group">
+        <label>WhatsApp</label>
+        <input type="tel" id="m-telefone" placeholder="(11) 99999-9999" />
+      </div>
+      <div class="form-group">
+        <label>Serviço</label>
+        <select id="m-servico"></select>
+      </div>
+      <div class="form-group">
+        <label>Data</label>
+        <input type="date" id="m-data" onchange="carregarHorariosModal()" />
+      </div>
+      <div class="form-group">
+        <label>Horário</label>
+        <select id="m-hora"></select>
+      </div>
+      <div class="erro-msg" id="m-erro"></div>
+      <div class="modal-footer">
+        <button class="btn-cancelar-modal" onclick="fecharModal()">Cancelar</button>
+        <button class="btn-salvar-modal" onclick="salvarAgendamentoManual()">Confirmar agendamento</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="bloqueio" class="bloqueio" style="display:none">
+    <div class="bloqueio-card">
+      <div style="font-size:48px;margin-bottom:16px">⏰</div>
+      <h2>Seu trial expirou</h2>
+      <p>Seus 14 dias gratuitos acabaram. Assine um plano para continuar usando o AgendoRapido.</p>
+      <a href="/planos.html" class="btn-ver-planos">Ver planos a partir de R$29/mês</a>
+      <button onclick="sair()" style="background:none;border:none;color:#94a3b8;font-size:13px;cursor:pointer">Sair da conta</button>
+    </div>
+  </div>
+
+  <div class="sidebar" id="sidebar">
     <div class="sidebar-logo">
       <h2>AgendoRapido!</h2>
       <p id="sidebar-negocio"></p>
@@ -214,9 +313,7 @@
       <button class="menu-item" onclick="irPara('horarios', this)">Horários</button>
       <button class="menu-item" onclick="irPara('bio', this)">Minha Bio</button>
       <button class="menu-item" onclick="irPara('configuracoes', this)">Configurações</button>
-      <button class="menu-item" onclick="window.location.href='planos.html'">
-       Planos
-      </button>
+      <button class="menu-item" onclick="window.location.href='planos.html'">Planos</button>
     </div>
     <div class="sidebar-footer">
       <button class="btn-sair" onclick="sair()">Sair da conta</button>
@@ -245,16 +342,22 @@
       </div>
       <div class="tabela-card">
         <div class="tabela-header">
-       <h2>Lista de agendamentos</h2>
-       <div style="display:flex;gap:10px;align-items:center">
-       <input type="date" class="filtro-data" id="filtro-data" onchange="filtrarData()" />
-       <button onclick="abrirModalNovoAgendamento()" style="background:#1e40af;color:white;border:none;padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap">+ Novo</button>
-       </div>
-       </div>
-        <table>
-          <thead><tr><th>Cliente</th><th>Serviço</th><th>Data</th><th>Hora</th><th>Status</th><th>Ações</th></tr></thead>
-          <tbody id="tbody"></tbody>
-        </table>
+          <h2>Lista de agendamentos</h2>
+          <div class="tabela-header-actions">
+            <input type="date" class="filtro-data" id="filtro-data" onchange="filtrarData()" />
+            <button onclick="abrirModalNovoAgendamento()" style="background:#1e40af;color:white;border:none;padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap">+ Novo</button>
+          </div>
+        </div>
+        <div class="tabela-scroll">
+          <table>
+            <thead><tr><th>Cliente</th><th>Serviço</th><th>Data</th><th>Hora</th><th>Status</th><th>Ações</th></tr></thead>
+            <tbody id="tbody"></tbody>
+          </table>
+        </div>
+        <div class="paginacao" id="paginacao" style="display:none">
+          <span class="paginacao-info" id="pg-info"></span>
+          <div class="paginacao-btns" id="pg-btns"></div>
+        </div>
       </div>
     </div>
 
@@ -309,55 +412,55 @@
     </div>
 
     <!-- PÁGINA: BIO -->
-<div class="page" id="page-bio">
-  <div class="page-header">
-    <h1>Minha Página Bio</h1>
-    <p>Personalize sua página pública para o Instagram</p>
-  </div>
-  <div class="link-card">
-    <div>
-      <p>Link da sua página bio</p>
-      <span id="link-bio"></span>
+    <div class="page" id="page-bio">
+      <div class="page-header">
+        <h1>Minha Página Bio</h1>
+        <p>Personalize sua página pública para o Instagram</p>
+      </div>
+      <div class="link-card">
+        <div>
+          <p>Link da sua página bio</p>
+          <span id="link-bio"></span>
+        </div>
+        <button class="btn-copiar" onclick="copiarLinkBio()">Copiar link</button>
+      </div>
+      <div class="config-card">
+        <h2>Informações da página</h2>
+        <div class="form-group" style="margin-bottom:16px">
+          <label style="font-size:13px;font-weight:500;color:#475569;display:block;margin-bottom:6px">Foto de perfil</label>
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">
+            <div id="foto-preview" style="width:64px;height:64px;border-radius:50%;background:#f1f5f9;border:2px solid #e2e8f0;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0">🏪</div>
+            <div style="flex:1;min-width:0">
+              <input type="file" id="foto-input" accept="image/*" onchange="uploadFoto(this)" style="display:none" />
+              <button onclick="document.getElementById('foto-input').click()" style="background:#1e40af;color:white;border:none;padding:10px 20px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer">Escolher foto</button>
+              <p id="foto-status" style="font-size:12px;color:#94a3b8;margin-top:6px">Nenhuma foto selecionada</p>
+            </div>
+          </div>
+          <input type="hidden" id="bio-foto" />
+        </div>
+        <div class="form-group" style="margin-bottom:16px">
+          <label style="font-size:13px;font-weight:500;color:#475569;display:block;margin-bottom:6px">Descrição / Bio</label>
+          <textarea id="bio-descricao" placeholder="Ex: Barbearia premium no centro de SP. Atendimento de segunda a sábado." style="width:100%;padding:11px 14px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:14px;outline:none;resize:vertical;min-height:80px"></textarea>
+        </div>
+        <div class="form-group" style="margin-bottom:16px">
+          <label style="font-size:13px;font-weight:500;color:#475569;display:block;margin-bottom:6px">Link do Google Maps</label>
+          <input type="text" id="bio-endereco" placeholder="Cole aqui o link do Google Maps do seu negócio" style="width:100%;padding:11px 14px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:14px;outline:none" />
+          <p style="font-size:12px;color:#94a3b8;margin-top:6px">Abra o Google Maps, pesquise seu negócio, clique em "Compartilhar" e cole o link aqui.</p>
+        </div>
+        <div class="form-group" style="margin-bottom:16px">
+          <label style="font-size:13px;font-weight:500;color:#475569;display:block;margin-bottom:6px">Instagram</label>
+          <input type="text" id="bio-instagram" placeholder="@seunegocio" style="width:100%;padding:11px 14px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:14px;outline:none" />
+        </div>
+        <div class="form-group" style="margin-bottom:16px">
+          <label style="font-size:13px;font-weight:500;color:#475569;display:block;margin-bottom:6px">WhatsApp</label>
+          <input type="text" id="bio-whatsapp" placeholder="(11) 99999-9999" style="width:100%;padding:11px 14px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:14px;outline:none" />
+        </div>
+        <div style="display:flex;align-items:center">
+          <button class="btn-salvar" onclick="salvarBio()">Salvar bio</button>
+          <span class="salvo-msg" id="salvo-bio">Salvo com sucesso!</span>
+        </div>
+      </div>
     </div>
-    <button class="btn-copiar" onclick="copiarLinkBio()">Copiar link</button>
-  </div>
-  <div class="config-card">
-    <h2>Informações da página</h2>
-    <div class="form-group" style="margin-bottom:16px">
-  <label style="font-size:13px;font-weight:500;color:#475569;display:block;margin-bottom:6px">Foto de perfil</label>
-  <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">
-    <div id="foto-preview" style="width:64px;height:64px;border-radius:50%;background:#f1f5f9;border:2px solid #e2e8f0;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0">🏪</div>
-    <div style="flex:1">
-      <input type="file" id="foto-input" accept="image/*" onchange="uploadFoto(this)" style="display:none" />
-      <button onclick="document.getElementById('foto-input').click()" style="background:#1e40af;color:white;border:none;padding:10px 20px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer">Escolher foto</button>
-      <p id="foto-status" style="font-size:12px;color:#94a3b8;margin-top:6px">Nenhuma foto selecionada</p>
-    </div>
-  </div>
-  <input type="hidden" id="bio-foto" />
-</div>
-    <div class="form-group" style="margin-bottom:16px">
-      <label style="font-size:13px;font-weight:500;color:#475569;display:block;margin-bottom:6px">Descrição / Bio</label>
-      <textarea id="bio-descricao" placeholder="Ex: Barbearia premium no centro de SP. Atendimento de segunda a sábado." style="width:100%;padding:11px 14px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:14px;outline:none;resize:vertical;min-height:80px"></textarea>
-    </div>
-    <div class="form-group" style="margin-bottom:16px">
-     <label style="font-size:13px;font-weight:500;color:#475569;display:block;margin-bottom:6px">Link do Google Maps</label>
-     <input type="text" id="bio-endereco" placeholder="Cole aqui o link do Google Maps do seu negócio" style="width:100%;padding:11px 14px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:14px;outline:none" />
-     <p style="font-size:12px;color:#94a3b8;margin-top:6px">Abra o Google Maps, pesquise seu negócio, clique em "Compartilhar" e cole o link aqui.</p>
-    </div>
-    <div class="form-group" style="margin-bottom:16px">
-      <label style="font-size:13px;font-weight:500;color:#475569;display:block;margin-bottom:6px">Instagram</label>
-      <input type="text" id="bio-instagram" placeholder="@seunegocio" style="width:100%;padding:11px 14px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:14px;outline:none" />
-    </div>
-    <div class="form-group" style="margin-bottom:16px">
-      <label style="font-size:13px;font-weight:500;color:#475569;display:block;margin-bottom:6px">WhatsApp</label>
-      <input type="text" id="bio-whatsapp" placeholder="(11) 99999-9999" style="width:100%;padding:11px 14px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:14px;outline:none" />
-    </div>
-    <div style="display:flex;align-items:center">
-      <button class="btn-salvar" onclick="salvarBio()">Salvar bio</button>
-      <span class="salvo-msg" id="salvo-bio">Salvo com sucesso!</span>
-    </div>
-  </div>
-</div>
 
   </div>
 </div>
@@ -378,6 +481,19 @@ const servicosPorSegmento = {
   'Academia': ['Avaliação Física', 'Treino Personal', 'Pilates', 'Musculação'],
   'Estúdio': ['Tatuagem', 'Orçamento', 'Retoque', 'Piercing'],
   'Outro': ['Serviço 1', 'Serviço 2', 'Serviço 3']
+}
+
+// ---- SIDEBAR MOBILE ----
+function toggleSidebar() {
+  const sidebar = document.getElementById('sidebar')
+  const overlay = document.getElementById('sidebar-overlay')
+  sidebar.classList.toggle('aberta')
+  overlay.classList.toggle('visivel')
+}
+
+function fecharSidebar() {
+  document.getElementById('sidebar').classList.remove('aberta')
+  document.getElementById('sidebar-overlay').classList.remove('visivel')
 }
 
 function trocarTab(tab) {
@@ -437,6 +553,7 @@ function irPara(pagina, btn) {
   document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('ativo'))
   document.getElementById(`page-${pagina}`).classList.add('ativo')
   if (btn) btn.classList.add('ativo')
+  fecharSidebar() // fecha sidebar no mobile ao navegar
 }
 
 async function carregarAgendamentos() {
@@ -486,16 +603,33 @@ async function salvarServicos() {
   setTimeout(() => msg.style.display = 'none', 2000)
 }
 
+const POR_PAGINA = 8
+let paginaAtual = 1
+let listaFiltrada = []
+
 function filtrarData() {
   const data = document.getElementById('filtro-data').value
-  const filtrados = data ? todosAgendamentos.filter(a => a.data === data) : todosAgendamentos
-  renderTabela(filtrados)
+  listaFiltrada = data ? todosAgendamentos.filter(a => a.data === data) : todosAgendamentos
+  paginaAtual = 1
+  renderTabela()
 }
 
-function renderTabela(lista) {
+function renderTabela() {
   const tbody = document.getElementById('tbody')
-  if (lista.length === 0) { tbody.innerHTML = '<tr><td colspan="6" class="vazio">Nenhum agendamento encontrado</td></tr>'; return }
-  tbody.innerHTML = lista.map(a => `
+  const paginacao = document.getElementById('paginacao')
+
+  if (listaFiltrada.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="6" class="vazio">Nenhum agendamento encontrado</td></tr>'
+    paginacao.style.display = 'none'
+    return
+  }
+
+  const totalPaginas = Math.ceil(listaFiltrada.length / POR_PAGINA)
+  const inicio = (paginaAtual - 1) * POR_PAGINA
+  const fim = inicio + POR_PAGINA
+  const pagina = listaFiltrada.slice(inicio, fim)
+
+  tbody.innerHTML = pagina.map(a => `
     <tr>
       <td><div class="paciente-nome">${a.pacienteNome}</div><div class="paciente-tel">${a.pacienteTelefone}</div></td>
       <td>${a.servico}</td>
@@ -508,6 +642,32 @@ function renderTabela(lista) {
       </div></td>
     </tr>
   `).join('')
+
+  // Info texto
+  document.getElementById('pg-info').textContent =
+    `${inicio + 1}–${Math.min(fim, listaFiltrada.length)} de ${listaFiltrada.length}`
+
+  // Botões
+  let btns = `<button class="pg-btn pg-seta" onclick="irPagina(${paginaAtual - 1})" ${paginaAtual === 1 ? 'disabled' : ''}>‹</button>`
+  for (let i = 1; i <= totalPaginas; i++) {
+    if (totalPaginas <= 7 || i === 1 || i === totalPaginas || Math.abs(i - paginaAtual) <= 1) {
+      btns += `<button class="pg-btn ${i === paginaAtual ? 'ativo' : ''}" onclick="irPagina(${i})">${i}</button>`
+    } else if (Math.abs(i - paginaAtual) === 2) {
+      btns += `<span style="color:#94a3b8;font-size:13px;padding:0 2px">…</span>`
+    }
+  }
+  btns += `<button class="pg-btn pg-seta" onclick="irPagina(${paginaAtual + 1})" ${paginaAtual === totalPaginas ? 'disabled' : ''}>›</button>`
+
+  document.getElementById('pg-btns').innerHTML = btns
+  paginacao.style.display = totalPaginas > 1 ? 'flex' : 'none'
+}
+
+function irPagina(n) {
+  const total = Math.ceil(listaFiltrada.length / POR_PAGINA)
+  if (n < 1 || n > total) return
+  paginaAtual = n
+  renderTabela()
+  document.getElementById('page-agendamentos').scrollIntoView({ behavior: 'smooth', block: 'start' })
 }
 
 async function atualizar(id, status) {
@@ -543,7 +703,6 @@ function formatarData(data) {
 function sair() { localStorage.clear(); location.reload() }
 
 // ---- HORÁRIOS ----
-
 function selecionarIntervalo(btn, valor) {
   document.querySelectorAll('.intervalo-btn').forEach(b => b.classList.remove('selecionado'))
   btn.classList.add('selecionado')
@@ -709,10 +868,8 @@ function abrirModalNovoAgendamento() {
   document.getElementById('m-nome').value = ''
   document.getElementById('m-telefone').value = ''
   document.getElementById('m-erro').textContent = ''
-
   const selectServico = document.getElementById('m-servico')
   selectServico.innerHTML = servicosAtuais.map(s => `<option value="${s}">${s}</option>`).join('')
-
   document.getElementById('modal-agendamento').style.display = 'flex'
   carregarHorariosModal()
 }
@@ -725,23 +882,18 @@ async function carregarHorariosModal() {
   const data = document.getElementById('m-data').value
   const userId = localStorage.getItem('userId')
   if (!data || !userId) return
-
   const select = document.getElementById('m-hora')
   select.innerHTML = '<option>Carregando...</option>'
-
   const res = await fetch(`${API}/agendamentos/horarios-ocupados?clinicaId=${userId}&data=${data}`)
   const resultado = await res.json()
-
   if (resultado.diaInativo || resultado.horarios.length === 0) {
     select.innerHTML = '<option value="">Sem horários disponíveis</option>'
     return
   }
-
   select.innerHTML = resultado.horarios.map(h => {
     const ocupado = resultado.ocupados.includes(h)
     return `<option value="${h}" ${ocupado ? 'disabled' : ''}>${h}${ocupado ? ' (ocupado)' : ''}</option>`
   }).join('')
-
   const primeiroLivre = resultado.horarios.find(h => !resultado.ocupados.includes(h))
   if (primeiroLivre) select.value = primeiroLivre
 }
@@ -753,28 +905,22 @@ async function salvarAgendamentoManual() {
   const data = document.getElementById('m-data').value
   const hora = document.getElementById('m-hora').value
   const erro = document.getElementById('m-erro')
-
   if (!nome) { erro.textContent = 'Digite o nome do cliente'; return }
   if (!hora || hora === '') { erro.textContent = 'Selecione um horário'; return }
-
   erro.textContent = ''
   const btn = document.querySelector('.btn-salvar-modal')
   btn.disabled = true
   btn.textContent = 'Salvando...'
-
   const token = localStorage.getItem('token')
   const userId = localStorage.getItem('userId')
-
   const res = await fetch(`${API}/agendamentos`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
     body: JSON.stringify({ clinicaId: userId, pacienteNome: nome, pacienteTelefone: telefone, servico, data, hora })
   })
-
   const resposta = await res.json()
   btn.disabled = false
   btn.textContent = 'Confirmar agendamento'
-
   if (res.ok) {
     fecharModal()
     carregarAgendamentos()

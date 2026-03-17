@@ -29,4 +29,6 @@ userSchema.methods.temAcesso = function() {
   return false
 }
 
+User = require('./models/User') // ← ajuste para onde está o seu model
+
 module.exports = mongoose.model('User', userSchema)
