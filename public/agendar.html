@@ -21,13 +21,14 @@ nav{background:rgba(255,255,255,0.95);backdrop-filter:blur(16px);border-bottom:1
 .nav-logo{font-size:16px;font-weight:700;color:var(--text);text-decoration:none}
 .nav-logo span{color:var(--accent)}
 
-.hero{background:linear-gradient(135deg,#1e293b 0%,#1e40af 100%);padding:32px 24px 40px;text-align:center;position:relative;overflow:hidden}
-.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 60% 0%,rgba(96,165,250,0.15),transparent 70%);pointer-events:none}
-.hero-avatar{width:72px;height:72px;border-radius:50%;border:3px solid rgba(255,255,255,0.25);margin:0 auto 12px;overflow:hidden;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.1);position:relative;z-index:1;font-size:28px;box-shadow:0 4px 20px rgba(0,0,0,0.3)}
+/* HERO — fundo azul suave com foto em destaque */
+.hero{background:var(--accent-light);border-bottom:1px solid rgba(37,99,235,0.12);padding:32px 24px 28px;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;width:400px;height:400px;border-radius:50%;background:radial-gradient(var(--accent),transparent 70%);top:-200px;left:50%;transform:translateX(-50%);opacity:.06;pointer-events:none}
+.hero-avatar{width:80px;height:80px;border-radius:50%;border:3px solid #fff;margin:0 auto 14px;overflow:hidden;display:flex;align-items:center;justify-content:center;background:var(--accent);position:relative;z-index:1;font-size:28px;box-shadow:0 4px 20px rgba(37,99,235,0.2)}
 .hero-avatar img{width:100%;height:100%;object-fit:cover}
-.hero h1{font-size:clamp(18px,4vw,24px);font-weight:700;color:#fff;letter-spacing:-0.02em;margin-bottom:4px;position:relative;z-index:1}
-.hero-sub{font-size:13px;color:rgba(255,255,255,0.5);position:relative;z-index:1}
-.hero-chip{display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.15);padding:4px 12px;border-radius:100px;font-size:11px;color:rgba(255,255,255,0.7);margin-top:10px;position:relative;z-index:1;font-weight:500}
+.hero h1{font-size:clamp(18px,4vw,24px);font-weight:700;color:var(--text);letter-spacing:-0.02em;margin-bottom:4px;position:relative;z-index:1}
+.hero-sub{font-size:13px;color:var(--text2);position:relative;z-index:1}
+.hero-chip{display:inline-flex;align-items:center;gap:5px;background:rgba(37,99,235,0.08);border:1px solid rgba(37,99,235,0.15);padding:4px 12px;border-radius:100px;font-size:11px;color:var(--accent);margin-top:10px;position:relative;z-index:1;font-weight:600}
 
 .steps-nav{display:flex;align-items:center;justify-content:center;padding:16px 24px;background:var(--bg);border-bottom:1px solid var(--border);position:sticky;top:56px;z-index:9;gap:4px}
 .sn-item{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:500;color:var(--text3);padding:0 4px}
@@ -58,24 +59,14 @@ nav{background:rgba(255,255,255,0.95);backdrop-filter:blur(16px);border-bottom:1
 .servico-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-light)}
 .servico-btn.sel{border-color:var(--accent);background:var(--accent);color:#fff}
 
-.datas-scroll{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 10px;-webkit-overflow-scrolling:touch;scrollbar-width:thin;scrollbar-color:var(--border2) transparent}
-.datas-scroll::-webkit-scrollbar{height:4px}
-.datas-scroll::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px}
-.data-btn{flex-shrink:0;width:58px;padding:10px 6px;border:1.5px solid var(--border2);border-radius:10px;background:var(--bg);cursor:pointer;text-align:center;transition:all .15s;font-family:inherit}
-.data-btn .ds{font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.06em}
-.data-btn .dn{font-size:20px;font-weight:700;color:var(--text);line-height:1.2;margin:2px 0}
-.data-btn .dm{font-size:9px;color:var(--text3)}
-.data-btn:hover{border-color:var(--accent)}
-.data-btn.sel{border-color:var(--accent);background:var(--accent)}
-.data-btn.sel .ds,.data-btn.sel .dn,.data-btn.sel .dm{color:#fff}
+.data-input{width:100%;padding:12px 14px;border:1.5px solid var(--border2);border-radius:10px;font-size:15px;font-family:inherit;background:var(--bg);color:var(--text);outline:none;transition:border-color .15s;cursor:pointer}
+.data-input:focus{border-color:var(--accent)}
 
 .horarios-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
 .horario-btn{padding:10px 4px;border:1.5px solid var(--border2);border-radius:9px;background:var(--bg);cursor:pointer;font-size:13px;font-weight:500;color:var(--text2);text-align:center;transition:all .15s;font-family:inherit}
 .horario-btn:hover:not(:disabled){border-color:var(--accent);color:var(--accent);background:var(--accent-light)}
 .horario-btn.sel{border-color:var(--accent);background:var(--accent);color:#fff}
 .horario-btn:disabled{background:var(--bg2);color:var(--text3);cursor:not-allowed;border-color:var(--border);text-decoration:line-through;opacity:.5}
-.data-input{width:100%;padding:12px 14px;border:1.5px solid var(--border2);border-radius:10px;font-size:15px;font-family:inherit;background:var(--bg);color:var(--text);outline:none;transition:border-color .15s;cursor:pointer}
-.data-input:focus{border-color:var(--accent)}
 .empty-msg{text-align:center;padding:28px;font-size:14px;color:var(--text3)}
 
 .section-label{font-size:12px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px}
@@ -122,7 +113,7 @@ nav{background:rgba(255,255,255,0.95);backdrop-filter:blur(16px);border-bottom:1
 <div class="hero">
   <div class="hero-avatar" id="hero-avatar">🏪</div>
   <h1 id="hero-nome">Carregando...</h1>
-  <div class="hero-sub" id="hero-sub">Agende seu horário de forma rápida</div>
+  <div class="hero-sub">Agende seu horário de forma rápida</div>
   <div class="hero-chip" id="hero-chip" style="display:none"></div>
 </div>
 
@@ -184,7 +175,7 @@ nav{background:rgba(255,255,255,0.95);backdrop-filter:blur(16px);border-bottom:1
     </div>
   </div>
 
-  <!-- TELA 3: DATA E HORARIO v2 -->
+  <!-- TELA 3: DATA E HORÁRIO -->
   <div class="tela" id="tela3">
     <div class="card">
       <div class="card-header">
@@ -281,7 +272,6 @@ function formatarData(iso) {
   return `${dias[dt.getDay()]}, ${d}/${m}/${a}`
 }
 
-// ── STEPS ──────────────────────────────────────────────
 function atualizarSteps(atual) {
   for(let i=1;i<=4;i++) {
     const sn = document.getElementById(`sn${i}`)
@@ -300,7 +290,6 @@ function irTela(n) {
   window.scrollTo({top:0,behavior:'smooth'})
 }
 
-// ── NAVEGAÇÃO ──────────────────────────────────────────
 function irTela2() {
   hideErr('err1')
   const nome = document.getElementById('nome').value.trim()
@@ -313,7 +302,6 @@ function irTela2() {
 function irTela3() {
   hideErr('err2')
   if(!servicoSel) { showErr('err2','Selecione um serviço para continuar'); return }
-  // define min date
   const hoje = new Date().toISOString().split('T')[0]
   document.getElementById('data-input').min = hoje
   if(dataSel) document.getElementById('data-input').value = dataSel
@@ -324,7 +312,6 @@ function irTela4() {
   hideErr('err3')
   if(!dataSel) { showErr('err3','Selecione uma data'); return }
   if(!horarioSel) { showErr('err3','Selecione um horário disponível'); return }
-  // preenche resumo
   document.getElementById('r-nome').textContent = document.getElementById('nome').value.trim()
   document.getElementById('r-tel').textContent = document.getElementById('telefone').value.trim()
   document.getElementById('r-servico').textContent = servicoSel
@@ -333,12 +320,8 @@ function irTela4() {
   irTela(4)
 }
 
-// ── CLÍNICA ────────────────────────────────────────────
 async function carregarClinica() {
-  if(!clinicaId) {
-    document.getElementById('hero-nome').textContent = 'Link inválido'
-    return
-  }
+  if(!clinicaId) { document.getElementById('hero-nome').textContent = 'Link inválido'; return }
   try {
     const res = await fetch(`${API}/auth/negocio/${clinicaId}`)
     const data = await res.json()
@@ -376,7 +359,6 @@ function selecionarServico(btn, s) {
   hideErr('err2')
 }
 
-// ── DATAS ──────────────────────────────────────────────
 function selecionarDataInput(iso) {
   if(!iso) return
   dataSel = iso
@@ -385,11 +367,11 @@ function selecionarDataInput(iso) {
   carregarHorarios(iso)
 }
 
-async function carregarHorarios(data) {
+async function carregarHorarios(dataEscolhida) {
   const container = document.getElementById('horarios-container')
   container.innerHTML = '<div class="empty-msg">Carregando...</div>'
   try {
-    const res = await fetch(`${API}/agendamentos/horarios-ocupados?clinicaId=${clinicaId}&data=${data}`)
+    const res = await fetch(`${API}/agendamentos/horarios-ocupados?clinicaId=${clinicaId}&data=${dataEscolhida}`)
     const result = await res.json()
     if(result.diaInativo || !result.horarios?.length) {
       container.innerHTML = '<div class="empty-msg">Sem atendimento neste dia 😕</div>'
@@ -398,7 +380,7 @@ async function carregarHorarios(data) {
     container.innerHTML = '<div class="horarios-grid">' +
       result.horarios.map(h => {
         const ocu = result.ocupados?.includes(h)
-        return `<button class="horario-btn${ocu?'':''}" ${ocu?'disabled':''} onclick="selecionarHorario(this,'${h}')">${h}</button>`
+        return `<button class="horario-btn" ${ocu?'disabled':''} onclick="selecionarHorario(this,'${h}')">${h}</button>`
       }).join('') + '</div>'
   } catch(e) {
     container.innerHTML = '<div class="empty-msg">Erro ao carregar horários</div>'
@@ -412,7 +394,6 @@ function selecionarHorario(btn, h) {
   hideErr('err3')
 }
 
-// ── CONFIRMAR ──────────────────────────────────────────
 async function confirmarAgendamento() {
   hideErr('err4')
   const btn = document.getElementById('btn-confirmar')
@@ -421,37 +402,45 @@ async function confirmarAgendamento() {
   const nome = document.getElementById('nome').value.trim()
   const telefone = document.getElementById('telefone').value.trim()
 
-  let resposta, resOk
   try {
     const res = await fetch(`${API}/agendamentos`, {
       method: 'POST',
       headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({clinicaId, pacienteNome:nome, pacienteTelefone:telefone, servico:servicoSel, data:dataSel, hora:horarioSel})
+      body: JSON.stringify({
+        clinicaId,
+        pacienteNome: nome,
+        pacienteTelefone: telefone,
+        servico: servicoSel,
+        data: dataSel,
+        hora: horarioSel
+      })
     })
-    resOk = res.ok
-    const texto = await res.text()
-    try { resposta = JSON.parse(texto) } catch(e) { resposta = { erro: texto || 'Erro desconhecido' } }
-  } catch(e) {
-    showErr('err4', 'Servidor indisponível. Tente novamente em instantes.')
-    btn.disabled = false
-    btn.textContent = 'Confirmar agendamento'
-    return
-  }
 
-  if(resOk) {
-    const [a,m,d] = dataSel.split('-')
-    document.getElementById('sucesso-detalhe').innerHTML = `
-      <div class="resumo-row"><span class="resumo-label">Serviço</span><span class="resumo-val">${servicoSel}</span></div>
-      <div class="resumo-row"><span class="resumo-label">Data</span><span class="resumo-val">${d}/${m}/${a}</span></div>
-      <div class="resumo-row"><span class="resumo-label">Horário</span><span class="resumo-val">${horarioSel}</span></div>
-      <div class="resumo-row"><span class="resumo-label">Nome</span><span class="resumo-val">${nome}</span></div>
-    `
-    const tel = telefone.replace(/\D/g,'')
-    const msg = encodeURIComponent(`Olá! Meu agendamento foi confirmado ✅\n\n📋 Serviço: ${servicoSel}\n📅 Data: ${d}/${m}/${a}\n🕐 Horário: ${horarioSel}\n👤 Nome: ${nome}`)
-    document.getElementById('btn-whatsapp').href = `https://wa.me/55${tel}?text=${msg}`
-    irTela(5)
-  } else {
-    showErr('err4', resposta.erro || 'Erro ao agendar. Tente novamente.')
+    // Lê a resposta como texto primeiro para evitar erro de parse
+    const texto = await res.text()
+    let resposta = {}
+    try { resposta = JSON.parse(texto) } catch(e) { resposta = { erro: texto } }
+
+    if(res.ok) {
+      const partes = dataSel.split('-')
+      const d = partes[2], m = partes[1], a = partes[0]
+      document.getElementById('sucesso-detalhe').innerHTML = `
+        <div class="resumo-row"><span class="resumo-label">Serviço</span><span class="resumo-val">${servicoSel}</span></div>
+        <div class="resumo-row"><span class="resumo-label">Data</span><span class="resumo-val">${d}/${m}/${a}</span></div>
+        <div class="resumo-row"><span class="resumo-label">Horário</span><span class="resumo-val">${horarioSel}</span></div>
+        <div class="resumo-row"><span class="resumo-label">Nome</span><span class="resumo-val">${nome}</span></div>
+      `
+      const tel = telefone.replace(/\D/g,'')
+      const msg = encodeURIComponent(`Olá! Meu agendamento foi confirmado ✅\n\n📋 Serviço: ${servicoSel}\n📅 Data: ${d}/${m}/${a}\n🕐 Horário: ${horarioSel}\n👤 Nome: ${nome}`)
+      document.getElementById('btn-whatsapp').href = `https://wa.me/55${tel}?text=${msg}`
+      irTela(5)
+    } else {
+      showErr('err4', resposta.erro || `Erro ${res.status}. Tente novamente.`)
+      btn.disabled = false
+      btn.textContent = 'Confirmar agendamento'
+    }
+  } catch(e) {
+    showErr('err4', 'Erro de conexão. Verifique sua internet e tente novamente.')
     btn.disabled = false
     btn.textContent = 'Confirmar agendamento'
   }
