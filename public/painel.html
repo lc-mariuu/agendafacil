@@ -13,43 +13,6 @@
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { font-family: 'Segoe UI', sans-serif; background: #f8fafc; color: #1e293b; }
-  .auth-bg { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%); padding: 16px; }
-  .auth-card { background: white; border-radius: 16px; padding: 40px; width: 100%; max-width: 440px; box-shadow: 0 20px 60px rgba(0,0,0,0.15); }
-  .auth-logo { text-align: center; margin-bottom: 28px; }
-  .auth-logo h1 { font-size: 28px; color: #1e40af; font-weight: 700; }
-  .auth-logo p { color: #64748b; font-size: 14px; margin-top: 4px; }
-  .auth-tabs { display: flex; background: #f1f5f9; border-radius: 10px; padding: 4px; margin-bottom: 24px; }
-  .auth-tab { flex: 1; padding: 8px; text-align: center; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 500; color: #64748b; border: none; background: none; transition: all 0.2s; }
-  .auth-tab.ativo { background: white; color: #1e40af; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
-  .form-group { margin-bottom: 14px; }
-  .form-group label { font-size: 13px; font-weight: 500; color: #475569; display: block; margin-bottom: 5px; }
-  .form-group input, .form-group select { width: 100%; padding: 11px 14px; border: 1.5px solid #e2e8f0; border-radius: 10px; font-size: 14px; transition: border 0.2s; outline: none; }
-  .form-group input:focus, .form-group select:focus { border-color: #3b82f6; }
-  .btn-auth { width: 100%; background: #1e40af; color: white; border: none; padding: 13px; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; transition: background 0.2s; margin-top: 4px; }
-  .btn-auth:hover { background: #1d3a9e; }
-  .erro-msg { color: #dc2626; font-size: 13px; text-align: center; margin-bottom: 10px; min-height: 18px; }
-  .sucesso-msg-auth { color: #16a34a; font-size: 13px; text-align: center; margin-bottom: 10px; }
-
-  /* Step indicator */
-  .step-indicator { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 24px; }
-  .step { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; background: #f1f5f9; color: #94a3b8; border: 2px solid #e2e8f0; flex-shrink: 0; transition: all 0.3s; }
-  .step.ativo { background: #1e40af; color: white; border-color: #1e40af; }
-  .step.concluido { background: #dcfce7; color: #16a34a; border-color: #86efac; }
-  .step-line { flex: 1; height: 2px; background: #e2e8f0; max-width: 48px; border-radius: 2px; transition: background 0.3s; }
-  .step-line.ativo { background: #1e40af; }
-
-  /* Código OTP */
-  .otp-wrap { display: flex; gap: 8px; justify-content: center; margin: 16px 0; }
-  .otp-wrap input { width: 46px; height: 54px; text-align: center; font-size: 22px; font-weight: 700; border: 2px solid #e2e8f0; border-radius: 10px; outline: none; color: #0f172a; transition: border 0.2s; }
-  .otp-wrap input:focus { border-color: #3b82f6; }
-  .otp-wrap input.preenchido { border-color: #1e40af; background: #eff6ff; }
-  .reenviar-wrap { text-align: center; margin-top: 10px; font-size: 13px; color: #64748b; }
-  .btn-reenviar { background: none; border: none; color: #1e40af; font-size: 13px; font-weight: 600; cursor: pointer; padding: 0; }
-  .btn-reenviar:disabled { color: #94a3b8; cursor: not-allowed; }
-  .btn-voltar-link { background: none; border: none; color: #64748b; font-size: 13px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; margin-bottom: 16px; padding: 0; }
-  .btn-voltar-link:hover { color: #1e40af; }
-
-  /* ===== SIDEBAR ===== */
   .sidebar { position: fixed; left: 0; top: 0; bottom: 0; width: 240px; background: #1e293b; padding: 24px 0; display: flex; flex-direction: column; z-index: 100; transition: transform 0.3s ease; }
   .sidebar-logo { padding: 0 24px 24px; border-bottom: 1px solid #334155; }
   .sidebar-logo h2 { color: white; font-size: 18px; font-weight: 700; }
@@ -60,39 +23,27 @@
   .sidebar-footer { padding: 16px 24px; border-top: 1px solid #334155; }
   .btn-sair { width: 100%; background: none; border: 1px solid #475569; color: #94a3b8; padding: 8px; border-radius: 8px; cursor: pointer; font-size: 13px; transition: all 0.2s; }
   .btn-sair:hover { background: #dc2626; border-color: #dc2626; color: white; }
-
-  /* ===== TOPBAR MOBILE ===== */
   .topbar-mobile { display: none; position: fixed; top: 0; left: 0; right: 0; height: 56px; background: #1e293b; z-index: 99; align-items: center; justify-content: space-between; padding: 0 16px; }
   .topbar-mobile h2 { color: white; font-size: 16px; font-weight: 700; }
   .btn-hamburger { background: none; border: none; color: white; font-size: 24px; cursor: pointer; padding: 4px; line-height: 1; }
-
-  /* Overlay escuro quando sidebar aberta no mobile */
   .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 99; }
   .sidebar-overlay.visivel { display: block; }
-
-  /* ===== MAIN ===== */
   .main { margin-left: 240px; padding: 32px; min-height: 100vh; overflow-x: hidden; }
   .page { display: none; }
   .page.ativo { display: block; }
   .page-header { margin-bottom: 28px; }
   .page-header h1 { font-size: 24px; font-weight: 700; color: #0f172a; }
   .page-header p { color: #64748b; font-size: 14px; margin-top: 4px; }
-
-  /* ===== STATS ===== */
   .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 28px; }
   .stat-card { background: white; border-radius: 12px; padding: 20px; border: 1px solid #e2e8f0; }
   .stat-card .valor { font-size: 36px; font-weight: 700; color: #1e40af; }
   .stat-card .label { font-size: 13px; color: #64748b; margin-top: 4px; }
-
-  /* ===== TABELA ===== */
   .tabela-card { background: white; border-radius: 12px; border: 1px solid #e2e8f0; overflow: hidden; }
   .tabela-header { padding: 16px 20px; border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
   .tabela-header h2 { font-size: 16px; font-weight: 600; }
   .tabela-header-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
   .filtro-data { padding: 8px 12px; border: 1.5px solid #e2e8f0; border-radius: 8px; font-size: 13px; outline: none; }
   .filtro-data:focus { border-color: #3b82f6; }
-
-  /* Scroll horizontal na tabela em telas pequenas */
   .tabela-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
   table { width: 100%; border-collapse: collapse; min-width: 550px; }
   th { text-align: left; font-size: 12px; font-weight: 600; color: #64748b; padding: 12px 20px; background: #f8fafc; text-transform: uppercase; letter-spacing: 0.05em; white-space: nowrap; }
@@ -110,8 +61,6 @@
   .btn-acao.cancelar:hover { background: #fee2e2; color: #dc2626; border-color: #fca5a5; }
   .btn-acao.concluir:hover { background: #dcfce7; color: #16a34a; border-color: #86efac; }
   .vazio { text-align: center; color: #94a3b8; padding: 48px; font-size: 14px; }
-
-  /* ===== PAGINAÇÃO ===== */
   .paginacao { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; border-top: 1px solid #f1f5f9; gap: 10px; flex-wrap: wrap; }
   .paginacao-info { font-size: 13px; color: #64748b; }
   .paginacao-btns { display: flex; gap: 4px; align-items: center; }
@@ -119,16 +68,11 @@
   .pg-btn:hover:not(:disabled) { border-color: #1e40af; color: #1e40af; }
   .pg-btn.ativo { background: #1e40af; border-color: #1e40af; color: white; }
   .pg-btn:disabled { opacity: 0.35; cursor: not-allowed; }
-  .pg-seta { width: 32px; height: 32px; }
-
-  /* ===== LINK CARD ===== */
   .link-card { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 12px; padding: 16px 20px; margin-bottom: 28px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
   .link-card p { font-size: 13px; color: #1e40af; font-weight: 500; margin-bottom: 4px; }
   .link-card span { font-size: 12px; color: #3b82f6; word-break: break-all; }
   .btn-copiar { background: #1e40af; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer; white-space: nowrap; flex-shrink: 0; }
   .btn-copiar:hover { background: #1d3a9e; }
-
-  /* ===== CONFIG CARDS ===== */
   .config-card { background: white; border-radius: 12px; border: 1px solid #e2e8f0; padding: 24px; margin-bottom: 20px; }
   .config-card h2 { font-size: 16px; font-weight: 600; margin-bottom: 20px; color: #0f172a; }
   .servico-tag { display: inline-flex; align-items: center; gap: 8px; background: #eff6ff; border: 1px solid #bfdbfe; color: #1e40af; padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 500; margin: 4px; }
@@ -143,8 +87,6 @@
   .salvo-msg { color: #16a34a; font-size: 13px; margin-left: 12px; display: none; }
   .intervalo-btn { padding: 8px 16px; border: 1.5px solid #e2e8f0; border-radius: 8px; background: #f8fafc; cursor: pointer; font-size: 13px; font-weight: 500; color: #475569; transition: all 0.2s; }
   .intervalo-btn:hover, .intervalo-btn.selecionado { border-color: #1e40af; background: #1e40af; color: white; }
-
-  /* ===== DIA ROW ===== */
   .dia-row { display: flex; align-items: center; gap: 12px; padding: 14px 0; border-bottom: 1px solid #f1f5f9; flex-wrap: wrap; width: 100%; }
   .dia-row:last-child { border-bottom: none; }
   .dia-toggle { display: flex; align-items: center; gap: 10px; min-width: 130px; }
@@ -155,8 +97,6 @@
   .dia-horarios input[type=time]:focus { border-color: #3b82f6; }
   .dia-horarios span { font-size: 13px; color: #64748b; }
   .dia-inativo .dia-horarios { opacity: 0.3; pointer-events: none; }
-
-  /* ===== TRIAL / BLOQUEIO ===== */
   .trial-banner { background: #fef9c3; border: 1px solid #fde047; border-radius: 12px; padding: 14px 20px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
   .trial-banner p { font-size: 13px; color: #854d0e; font-weight: 500; }
   .btn-assinar-banner { background: #1e40af; color: white; border: none; padding: 8px 18px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; }
@@ -165,425 +105,247 @@
   .bloqueio-card h2 { font-size: 22px; font-weight: 700; margin-bottom: 8px; color: #0f172a; }
   .bloqueio-card p { color: #64748b; font-size: 14px; margin-bottom: 24px; line-height: 1.6; }
   .btn-ver-planos { display: block; background: #1e40af; color: white; padding: 14px; border-radius: 12px; font-size: 15px; font-weight: 600; text-decoration: none; margin-bottom: 10px; }
-
-  /* ===== MODAL ===== */
   .modal-overlay { position: fixed; inset: 0; background: rgba(15,23,42,0.6); z-index: 200; display: flex; align-items: center; justify-content: center; padding: 16px; }
   .modal { background: white; border-radius: 16px; padding: 24px; width: 100%; max-width: 480px; box-shadow: 0 20px 60px rgba(0,0,0,0.2); max-height: 90vh; overflow-y: auto; }
   .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
   .modal-header h2 { font-size: 18px; font-weight: 700; color: #0f172a; }
   .modal-close { background: none; border: none; font-size: 22px; cursor: pointer; color: #94a3b8; line-height: 1; }
   .modal-close:hover { color: #475569; }
-  .modal .form-group { margin-bottom: 14px; }
-  .modal .form-group label { font-size: 13px; font-weight: 500; color: #475569; display: block; margin-bottom: 5px; }
-  .modal .form-group input, .modal .form-group select { width: 100%; padding: 10px 14px; border: 1.5px solid #e2e8f0; border-radius: 10px; font-size: 14px; outline: none; }
-  .modal .form-group input:focus, .modal .form-group select:focus { border-color: #3b82f6; }
+  .form-group { margin-bottom: 14px; }
+  .form-group label { font-size: 13px; font-weight: 500; color: #475569; display: block; margin-bottom: 5px; }
+  .form-group input, .form-group select { width: 100%; padding: 10px 14px; border: 1.5px solid #e2e8f0; border-radius: 10px; font-size: 14px; outline: none; }
+  .form-group input:focus, .form-group select:focus { border-color: #3b82f6; }
   .modal-footer { display: flex; gap: 10px; margin-top: 20px; }
   .btn-cancelar-modal { flex: 1; background: #f1f5f9; color: #475569; border: none; padding: 12px; border-radius: 10px; font-size: 14px; font-weight: 500; cursor: pointer; }
   .btn-salvar-modal { flex: 2; background: #1e40af; color: white; border: none; padding: 12px; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; }
-
-  /* ===== RESPONSIVIDADE MOBILE ===== */
+  .erro-msg { color: #dc2626; font-size: 13px; text-align: center; margin-bottom: 10px; min-height: 18px; }
   @media (max-width: 768px) {
-    /* Sidebar vira drawer */
     .sidebar { transform: translateX(-240px); }
     .sidebar.aberta { transform: translateX(0); }
-
-    /* Topbar aparece no mobile */
     .topbar-mobile { display: flex; }
-
-    /* Main ajusta pra topbar */
     .main { margin-left: 0; padding: 72px 16px 24px; }
-
-    /* Stats: 1 coluna em telas pequenas */
     .stats { grid-template-columns: 1fr 1fr; gap: 10px; }
     .stat-card { padding: 14px; }
     .stat-card .valor { font-size: 28px; }
-
-    /* Link card em coluna */
     .link-card { flex-direction: column; align-items: flex-start; }
     .link-card .btn-copiar { width: 100%; text-align: center; }
-
-    /* Header da tabela empilha em tela muito pequena */
     .tabela-header { flex-direction: column; align-items: flex-start; }
     .tabela-header-actions { width: 100%; }
     .filtro-data { flex: 1; }
-
-    /* Tabela com scroll horizontal */
-    .tabela-scroll { overflow-x: auto; }
-
-    /* Intervalo btns menores */
     .intervalo-btn { padding: 7px 12px; font-size: 12px; }
-
-    /* Config card menos padding */
     .config-card { padding: 16px; }
-
-    /* Dia row empilha em telas bem pequenas */
     .dia-toggle { min-width: 100%; }
-
-    /* Page header */
     .page-header h1 { font-size: 20px; }
-
-    /* Botão novo agendamento full width */
     .tabela-header-actions button { flex: 1; }
   }
-
   @media (max-width: 400px) {
     .stats { grid-template-columns: 1fr; }
-    .auth-card { padding: 24px 20px; }
   }
 </style>
 </head>
 <body>
 
-<div id="tela-auth" class="auth-bg">
-  <div class="auth-card">
-    <div class="auth-logo">
-      <h1>AgendoRapido!</h1>
-      <p>Sistema de agendamento para qualquer negócio</p>
-    </div>
+<!-- TOPBAR MOBILE -->
+<div class="topbar-mobile">
+  <button class="btn-hamburger" onclick="toggleSidebar()">☰</button>
+  <h2>AgendoRapido!</h2>
+  <div style="width:32px"></div>
+</div>
 
-    <!-- ===== LOGIN ===== -->
-    <div id="form-login">
-      <div class="auth-tabs">
-        <button class="auth-tab ativo" id="tab-login" onclick="trocarTab('login')">Entrar</button>
-        <button class="auth-tab" id="tab-cadastro" onclick="trocarTab('cadastro')">Criar conta</button>
-      </div>
-      <div class="erro-msg" id="erro-login"></div>
-      <div class="form-group"><label>Email</label><input type="email" id="login-email" placeholder="seu@email.com" /></div>
-      <div class="form-group"><label>Senha</label><input type="password" id="login-senha" placeholder="Sua senha" /></div>
-      <button class="btn-auth" onclick="fazerLogin()">Entrar no painel</button>
-      <div style="text-align:center;margin-top:14px">
-        <button class="btn-voltar-link" style="display:inline-flex;color:#3b82f6" onclick="mostrarTela('recuperar-email')">Esqueci minha senha</button>
-      </div>
-    </div>
+<!-- OVERLAY SIDEBAR MOBILE -->
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="fecharSidebar()"></div>
 
-    <!-- ===== CADASTRO PASSO 1: dados ===== -->
-    <div id="form-cadastro" style="display:none">
-      <div class="auth-tabs">
-        <button class="auth-tab" id="tab-login2" onclick="trocarTab('login')">Entrar</button>
-        <button class="auth-tab ativo" id="tab-cadastro2" onclick="trocarTab('cadastro')">Criar conta</button>
-      </div>
-      <div class="step-indicator">
-        <div class="step ativo" id="cad-step-1">1</div>
-        <div class="step-line" id="cad-line-1"></div>
-        <div class="step" id="cad-step-2">2</div>
-        <div class="step-line" id="cad-line-2"></div>
-        <div class="step" id="cad-step-3">3</div>
-      </div>
-      <div class="erro-msg" id="erro-cadastro"></div>
-      <div class="form-group"><label>Seu nome</label><input type="text" id="cad-nome" placeholder="João Silva" /></div>
-      <div class="form-group"><label>Nome do negócio</label><input type="text" id="cad-negocio" placeholder="Barbearia do João, Clínica São Lucas..." /></div>
-      <div class="form-group">
-        <label>Segmento</label>
-        <select id="cad-segmento">
-          <option value="Clínica">Clínica / Consultório</option>
-          <option value="Barbearia">Barbearia</option>
-          <option value="Salão">Salão de Beleza</option>
-          <option value="Pet Shop">Pet Shop</option>
-          <option value="Academia">Academia / Personal</option>
-          <option value="Estúdio">Estúdio de Tatuagem</option>
-          <option value="Outro">Outro</option>
-        </select>
-      </div>
-      <div class="form-group"><label>Email</label><input type="email" id="cad-email" placeholder="seu@email.com" /></div>
-      <div class="form-group"><label>Senha</label><input type="password" id="cad-senha" placeholder="Mínimo 6 caracteres" /></div>
-      <button class="btn-auth" onclick="avancarParaVerificacao()">Continuar →</button>
+<!-- MODAL NOVO AGENDAMENTO -->
+<div class="modal-overlay" id="modal-agendamento" style="display:none">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>Novo Agendamento</h2>
+      <button class="modal-close" onclick="fecharModal()">×</button>
     </div>
-
-    <!-- ===== CADASTRO PASSO 2: verificar WhatsApp ===== -->
-    <div id="form-verificar" style="display:none">
-      <div class="step-indicator">
-        <div class="step concluido" id="ver-step-1">✓</div>
-        <div class="step-line ativo" id="ver-line-1"></div>
-        <div class="step ativo" id="ver-step-2">2</div>
-        <div class="step-line" id="ver-line-2"></div>
-        <div class="step" id="ver-step-3">3</div>
-      </div>
-      <button class="btn-voltar-link" onclick="mostrarTela('cadastro')">← Voltar</button>
-      <div style="text-align:center;margin-bottom:16px">
-        <div style="font-size:32px;margin-bottom:8px">📧</div>
-        <p style="font-size:15px;font-weight:600;color:#0f172a;margin-bottom:4px">Verifique seu email</p>
-        <p style="font-size:13px;color:#64748b">Enviamos um código de 6 dígitos para<br><strong id="tel-exibido" style="color:#1e40af"></strong></p>
-      </div>
-      <div class="erro-msg" id="erro-verificar"></div>
-      <div class="otp-wrap" id="otp-inputs"></div>
-      <div class="reenviar-wrap">
-        Não recebeu? <button class="btn-reenviar" id="btn-reenviar" onclick="reenviarCodigo()" disabled>Reenviar (<span id="reenviar-timer">60</span>s)</button>
-      </div>
-      <button class="btn-auth" style="margin-top:20px" onclick="verificarCodigo()">Verificar código</button>
+    <div class="form-group"><label>Nome do cliente</label><input type="text" id="m-nome" placeholder="João Silva" /></div>
+    <div class="form-group"><label>WhatsApp</label><input type="tel" id="m-telefone" placeholder="(11) 99999-9999" /></div>
+    <div class="form-group"><label>Serviço</label><select id="m-servico"></select></div>
+    <div class="form-group"><label>Data</label><input type="date" id="m-data" onchange="carregarHorariosModal()" /></div>
+    <div class="form-group"><label>Horário</label><select id="m-hora"></select></div>
+    <div class="erro-msg" id="m-erro"></div>
+    <div class="modal-footer">
+      <button class="btn-cancelar-modal" onclick="fecharModal()">Cancelar</button>
+      <button class="btn-salvar-modal" onclick="salvarAgendamentoManual()">Confirmar agendamento</button>
     </div>
-
-    <!-- ===== CADASTRO PASSO 3: concluído ===== -->
-    <div id="form-concluido" style="display:none">
-      <div style="text-align:center;padding:20px 0">
-        <div style="font-size:48px;margin-bottom:16px">🎉</div>
-        <h2 style="font-size:20px;font-weight:700;color:#0f172a;margin-bottom:8px">Conta criada!</h2>
-        <p style="font-size:14px;color:#64748b;line-height:1.6">Seu email foi verificado com sucesso.<br>Entrando no painel...</p>
-      </div>
-    </div>
-
-    <!-- ===== RECUPERAR SENHA: email ===== -->
-    <div id="form-recuperar-email" style="display:none">
-      <button class="btn-voltar-link" onclick="mostrarTela('login')">← Voltar para login</button>
-      <div style="margin-bottom:20px">
-        <p style="font-size:16px;font-weight:700;color:#0f172a;margin-bottom:4px">Recuperar senha</p>
-        <p style="font-size:13px;color:#64748b">Informe seu email cadastrado para receber o código de verificação.</p>
-      </div>
-      <div class="erro-msg" id="erro-recup-email"></div>
-      <div class="form-group">
-        <label>Email cadastrado</label>
-        <input type="email" id="recup-email" placeholder="seu@email.com" />
-      </div>
-      <button class="btn-auth" onclick="enviarCodigoRecuperacao()">Enviar código por email</button>
-    </div>
-
-    <!-- ===== RECUPERAR SENHA: código ===== -->
-    <div id="form-recuperar-codigo" style="display:none">
-      <button class="btn-voltar-link" onclick="mostrarTela('recuperar-email')">← Voltar</button>
-      <div style="text-align:center;margin-bottom:16px">
-        <div style="font-size:32px;margin-bottom:8px">🔐</div>
-        <p style="font-size:15px;font-weight:600;color:#0f172a;margin-bottom:4px">Código de verificação</p>
-        <p style="font-size:13px;color:#64748b">Código enviado para<br><strong id="recup-tel-exibido" style="color:#1e40af"></strong></p>
-      </div>
-      <div class="erro-msg" id="erro-recup-codigo"></div>
-      <div class="otp-wrap" id="otp-recup-inputs"></div>
-      <div class="reenviar-wrap">
-        Não recebeu? <button class="btn-reenviar" id="btn-reenviar-recup" onclick="reenviarCodigoRecup()" disabled>Reenviar (<span id="reenviar-timer-recup">60</span>s)</button>
-      </div>
-      <button class="btn-auth" style="margin-top:20px" onclick="verificarCodigoRecuperacao()">Confirmar código</button>
-    </div>
-
-    <!-- ===== RECUPERAR SENHA: nova senha ===== -->
-    <div id="form-nova-senha" style="display:none">
-      <button class="btn-voltar-link" onclick="mostrarTela('recuperar-codigo')">← Voltar</button>
-      <div style="margin-bottom:20px">
-        <p style="font-size:16px;font-weight:700;color:#0f172a;margin-bottom:4px">Nova senha</p>
-        <p style="font-size:13px;color:#64748b">Escolha uma senha segura para sua conta.</p>
-      </div>
-      <div class="erro-msg" id="erro-nova-senha"></div>
-      <div class="form-group"><label>Nova senha</label><input type="password" id="nova-senha" placeholder="Mínimo 6 caracteres" /></div>
-      <div class="form-group"><label>Confirmar senha</label><input type="password" id="nova-senha-conf" placeholder="Repita a senha" /></div>
-      <button class="btn-auth" onclick="salvarNovaSenha()">Salvar nova senha</button>
-    </div>
-
   </div>
 </div>
 
-<div id="tela-painel" style="display:none">
+<!-- BLOQUEIO TRIAL -->
+<div id="bloqueio" class="bloqueio" style="display:none">
+  <div class="bloqueio-card">
+    <div style="font-size:48px;margin-bottom:16px">⏰</div>
+    <h2>Seu trial expirou</h2>
+    <p>Seus 14 dias gratuitos acabaram. Assine um plano para continuar usando o AgendoRapido.</p>
+    <a href="/planos.html" class="btn-ver-planos">Ver planos a partir de R$29/mês</a>
+    <button onclick="sair()" style="background:none;border:none;color:#94a3b8;font-size:13px;cursor:pointer">Sair da conta</button>
+  </div>
+</div>
 
-  <!-- TOPBAR MOBILE -->
-  <div class="topbar-mobile">
-    <button class="btn-hamburger" onclick="toggleSidebar()">☰</button>
+<!-- SIDEBAR -->
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
     <h2>AgendoRapido!</h2>
-    <div style="width:32px"></div>
+    <p id="sidebar-negocio"></p>
   </div>
-
-  <!-- OVERLAY SIDEBAR MOBILE -->
-  <div class="sidebar-overlay" id="sidebar-overlay" onclick="fecharSidebar()"></div>
-
-  <div class="modal-overlay" id="modal-agendamento" style="display:none">
-    <div class="modal">
-      <div class="modal-header">
-        <h2>Novo Agendamento</h2>
-        <button class="modal-close" onclick="fecharModal()">×</button>
-      </div>
-      <div class="form-group">
-        <label>Nome do cliente</label>
-        <input type="text" id="m-nome" placeholder="João Silva" />
-      </div>
-      <div class="form-group">
-        <label>WhatsApp</label>
-        <input type="tel" id="m-telefone" placeholder="(11) 99999-9999" />
-      </div>
-      <div class="form-group">
-        <label>Serviço</label>
-        <select id="m-servico"></select>
-      </div>
-      <div class="form-group">
-        <label>Data</label>
-        <input type="date" id="m-data" onchange="carregarHorariosModal()" />
-      </div>
-      <div class="form-group">
-        <label>Horário</label>
-        <select id="m-hora"></select>
-      </div>
-      <div class="erro-msg" id="m-erro"></div>
-      <div class="modal-footer">
-        <button class="btn-cancelar-modal" onclick="fecharModal()">Cancelar</button>
-        <button class="btn-salvar-modal" onclick="salvarAgendamentoManual()">Confirmar agendamento</button>
-      </div>
-    </div>
+  <div class="sidebar-menu">
+    <button class="menu-item ativo" onclick="irPara('agendamentos', this)">Agendamentos</button>
+    <button class="menu-item" onclick="irPara('horarios', this)">Horários</button>
+    <button class="menu-item" onclick="irPara('bio', this)">Minha Bio</button>
+    <button class="menu-item" onclick="irPara('configuracoes', this)">Configurações</button>
+    <button class="menu-item" onclick="window.location.href='planos.html'">Planos</button>
   </div>
-
-  <div id="bloqueio" class="bloqueio" style="display:none">
-    <div class="bloqueio-card">
-      <div style="font-size:48px;margin-bottom:16px">⏰</div>
-      <h2>Seu trial expirou</h2>
-      <p>Seus 14 dias gratuitos acabaram. Assine um plano para continuar usando o AgendoRapido.</p>
-      <a href="/planos.html" class="btn-ver-planos">Ver planos a partir de R$29/mês</a>
-      <button onclick="sair()" style="background:none;border:none;color:#94a3b8;font-size:13px;cursor:pointer">Sair da conta</button>
-    </div>
+  <div class="sidebar-footer">
+    <button id="btn-instalar-app" onclick="instalarApp()" style="display:none;width:100%;background:#1e40af;border:none;color:white;padding:9px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;margin-bottom:8px">Instalar app</button>
+    <button class="btn-sair" onclick="sair()">Sair da conta</button>
   </div>
+</div>
 
-  <div class="sidebar" id="sidebar">
-    <div class="sidebar-logo">
-      <h2>AgendoRapido!</h2>
-      <p id="sidebar-negocio"></p>
-    </div>
-    <div class="sidebar-menu">
-      <button class="menu-item ativo" onclick="irPara('agendamentos', this)">Agendamentos</button>
-      <button class="menu-item" onclick="irPara('horarios', this)">Horários</button>
-      <button class="menu-item" onclick="irPara('bio', this)">Minha Bio</button>
-      <button class="menu-item" onclick="irPara('configuracoes', this)">Configurações</button>
-      <button class="menu-item" onclick="window.location.href='planos.html'">Planos</button>
-    </div>
-    <div class="sidebar-footer">
-      <button id="btn-instalar-app" onclick="instalarApp()" style="display:none;width:100%;background:#1e40af;border:none;color:white;padding:9px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;margin-bottom:8px">Instalar app</button>
-      <button class="btn-sair" onclick="sair()">Sair da conta</button>
-    </div>
-  </div>
+<!-- MAIN -->
+<div class="main">
 
-  <div class="main">
-
-    <!-- PÁGINA: AGENDAMENTOS -->
-    <div class="page ativo" id="page-agendamentos">
-      <div class="page-header">
-        <h1>Agendamentos</h1>
-        <p>Gerencie os horários do seu negócio</p>
+  <!-- AGENDAMENTOS -->
+  <div class="page ativo" id="page-agendamentos">
+    <div class="page-header">
+      <h1>Agendamentos</h1>
+      <p>Gerencie os horários do seu negócio</p>
+    </div>
+    <div class="link-card">
+      <div>
+        <p>Link de agendamento para clientes</p>
+        <span id="link-agendamento"></span>
       </div>
-      <div class="link-card">
-        <div>
-          <p>Link de agendamento para clientes</p>
-          <span id="link-agendamento"></span>
+      <button class="btn-copiar" onclick="copiarLink()">Copiar link</button>
+    </div>
+    <div class="stats">
+      <div class="stat-card"><div class="valor" id="stat-hoje">0</div><div class="label">Hoje</div></div>
+      <div class="stat-card"><div class="valor" id="stat-semana">0</div><div class="label">Esta semana</div></div>
+      <div class="stat-card"><div class="valor" id="stat-total">0</div><div class="label">Total geral</div></div>
+    </div>
+    <div class="tabela-card">
+      <div class="tabela-header">
+        <h2>Lista de agendamentos</h2>
+        <div class="tabela-header-actions">
+          <input type="date" class="filtro-data" id="filtro-data" onchange="filtrarData()" />
+          <button onclick="abrirModalNovoAgendamento()" style="background:#1e40af;color:white;border:none;padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap">+ Novo</button>
         </div>
-        <button class="btn-copiar" onclick="copiarLink()">Copiar link</button>
       </div>
-      <div class="stats">
-        <div class="stat-card"><div class="valor" id="stat-hoje">0</div><div class="label">Hoje</div></div>
-        <div class="stat-card"><div class="valor" id="stat-semana">0</div><div class="label">Esta semana</div></div>
-        <div class="stat-card"><div class="valor" id="stat-total">0</div><div class="label">Total geral</div></div>
+      <div class="tabela-scroll">
+        <table>
+          <thead><tr><th>Cliente</th><th>Serviço</th><th>Data</th><th>Hora</th><th>Status</th><th>Ações</th></tr></thead>
+          <tbody id="tbody"></tbody>
+        </table>
       </div>
-      <div class="tabela-card">
-        <div class="tabela-header">
-          <h2>Lista de agendamentos</h2>
-          <div class="tabela-header-actions">
-            <input type="date" class="filtro-data" id="filtro-data" onchange="filtrarData()" />
-            <button onclick="abrirModalNovoAgendamento()" style="background:#1e40af;color:white;border:none;padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap">+ Novo</button>
+      <div class="paginacao" id="paginacao" style="display:none">
+        <span class="paginacao-info" id="pg-info"></span>
+        <div class="paginacao-btns" id="pg-btns"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HORÁRIOS -->
+  <div class="page" id="page-horarios">
+    <div class="page-header">
+      <h1>Horários de Atendimento</h1>
+      <p>Configure os dias e horários que seu negócio atende</p>
+    </div>
+    <div class="config-card">
+      <h2>Intervalo entre atendimentos</h2>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px">
+        <button class="intervalo-btn" onclick="selecionarIntervalo(this,15)">15 min</button>
+        <button class="intervalo-btn" onclick="selecionarIntervalo(this,20)">20 min</button>
+        <button class="intervalo-btn" onclick="selecionarIntervalo(this,30)">30 min</button>
+        <button class="intervalo-btn" onclick="selecionarIntervalo(this,45)">45 min</button>
+        <button class="intervalo-btn" onclick="selecionarIntervalo(this,60)">1 hora</button>
+        <button class="intervalo-btn" onclick="selecionarIntervalo(this,90)">1h30</button>
+        <button class="intervalo-btn" onclick="selecionarIntervalo(this,120)">2 horas</button>
+        <button class="intervalo-btn" onclick="selecionarIntervalo(this,150)">2h30</button>
+      </div>
+    </div>
+    <div class="config-card">
+      <h2>Dias e horários</h2>
+      <div id="dias-container"></div>
+      <div style="display:flex;align-items:center;margin-top:20px">
+        <button class="btn-salvar" onclick="salvarHorarios()">Salvar horários</button>
+        <span class="salvo-msg" id="salvo-horarios">Salvo com sucesso!</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONFIGURAÇÕES -->
+  <div class="page" id="page-configuracoes">
+    <div class="page-header">
+      <h1>Configurações</h1>
+      <p>Personalize os serviços do seu negócio</p>
+    </div>
+    <div class="config-card">
+      <h2>Serviços oferecidos</h2>
+      <div id="servicos-tags"></div>
+      <div class="add-servico">
+        <input type="text" id="novo-servico" placeholder="Ex: Corte + Barba, Consulta, Massagem..." />
+        <button class="btn-add" onclick="adicionarServico()">Adicionar</button>
+      </div>
+      <div style="display:flex;align-items:center">
+        <button class="btn-salvar" onclick="salvarServicos()">Salvar serviços</button>
+        <span class="salvo-msg" id="salvo-msg">Salvo com sucesso!</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- BIO -->
+  <div class="page" id="page-bio">
+    <div class="page-header">
+      <h1>Minha Página Bio</h1>
+      <p>Personalize sua página pública para o Instagram</p>
+    </div>
+    <div class="link-card">
+      <div>
+        <p>Link da sua página bio</p>
+        <span id="link-bio"></span>
+      </div>
+      <button class="btn-copiar" onclick="copiarLinkBio()">Copiar link</button>
+    </div>
+    <div class="config-card">
+      <h2>Informações da página</h2>
+      <div class="form-group" style="margin-bottom:16px">
+        <label style="font-size:13px;font-weight:500;color:#475569;display:block;margin-bottom:6px">Foto de perfil</label>
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">
+          <div id="foto-preview" style="width:64px;height:64px;border-radius:50%;background:#f1f5f9;border:2px solid #e2e8f0;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0">🏪</div>
+          <div style="flex:1;min-width:0">
+            <input type="file" id="foto-input" accept="image/*" onchange="uploadFoto(this)" style="display:none" />
+            <button onclick="document.getElementById('foto-input').click()" style="background:#1e40af;color:white;border:none;padding:10px 20px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer">Escolher foto</button>
+            <p id="foto-status" style="font-size:12px;color:#94a3b8;margin-top:6px">Nenhuma foto selecionada</p>
           </div>
         </div>
-        <div class="tabela-scroll">
-          <table>
-            <thead><tr><th>Cliente</th><th>Serviço</th><th>Data</th><th>Hora</th><th>Status</th><th>Ações</th></tr></thead>
-            <tbody id="tbody"></tbody>
-          </table>
-        </div>
-        <div class="paginacao" id="paginacao" style="display:none">
-          <span class="paginacao-info" id="pg-info"></span>
-          <div class="paginacao-btns" id="pg-btns"></div>
-        </div>
+        <input type="hidden" id="bio-foto" />
+      </div>
+      <div class="form-group" style="margin-bottom:16px">
+        <label style="font-size:13px;font-weight:500;color:#475569;display:block;margin-bottom:6px">Descrição / Bio</label>
+        <textarea id="bio-descricao" placeholder="Ex: Barbearia premium no centro de SP." style="width:100%;padding:11px 14px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:14px;outline:none;resize:vertical;min-height:80px"></textarea>
+      </div>
+      <div class="form-group" style="margin-bottom:16px">
+        <label style="font-size:13px;font-weight:500;color:#475569;display:block;margin-bottom:6px">Link do Google Maps</label>
+        <input type="text" id="bio-endereco" placeholder="Cole aqui o link do Google Maps" style="width:100%;padding:11px 14px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:14px;outline:none" />
+      </div>
+      <div class="form-group" style="margin-bottom:16px">
+        <label style="font-size:13px;font-weight:500;color:#475569;display:block;margin-bottom:6px">Instagram</label>
+        <input type="text" id="bio-instagram" placeholder="@seunegocio" style="width:100%;padding:11px 14px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:14px;outline:none" />
+      </div>
+      <div class="form-group" style="margin-bottom:16px">
+        <label style="font-size:13px;font-weight:500;color:#475569;display:block;margin-bottom:6px">WhatsApp</label>
+        <input type="text" id="bio-whatsapp" placeholder="(11) 99999-9999" style="width:100%;padding:11px 14px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:14px;outline:none" />
+      </div>
+      <div style="display:flex;align-items:center">
+        <button class="btn-salvar" onclick="salvarBio()">Salvar bio</button>
+        <span class="salvo-msg" id="salvo-bio">Salvo com sucesso!</span>
       </div>
     </div>
-
-    <!-- PÁGINA: HORÁRIOS -->
-    <div class="page" id="page-horarios">
-      <div class="page-header">
-        <h1>Horários de Atendimento</h1>
-        <p>Configure os dias e horários que seu negócio atende</p>
-      </div>
-      <div class="config-card">
-        <h2>Intervalo entre atendimentos</h2>
-        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px">
-          <button class="intervalo-btn" onclick="selecionarIntervalo(this,15)">15 min</button>
-          <button class="intervalo-btn" onclick="selecionarIntervalo(this,20)">20 min</button>
-          <button class="intervalo-btn" onclick="selecionarIntervalo(this,30)">30 min</button>
-          <button class="intervalo-btn" onclick="selecionarIntervalo(this,45)">45 min</button>
-          <button class="intervalo-btn" onclick="selecionarIntervalo(this,60)">1 hora</button>
-          <button class="intervalo-btn" onclick="selecionarIntervalo(this,90)">1h30</button>
-          <button class="intervalo-btn" onclick="selecionarIntervalo(this,120)">2 horas</button>
-          <button class="intervalo-btn" onclick="selecionarIntervalo(this,150)">2h30</button>
-        </div>
-      </div>
-      <div class="config-card">
-        <h2>Dias e horários</h2>
-        <div id="dias-container"></div>
-        <div style="display:flex;align-items:center;margin-top:20px">
-          <button class="btn-salvar" onclick="salvarHorarios()">Salvar horários</button>
-          <span class="salvo-msg" id="salvo-horarios">Salvo com sucesso!</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- PÁGINA: CONFIGURAÇÕES -->
-    <div class="page" id="page-configuracoes">
-      <div class="page-header">
-        <h1>Configurações</h1>
-        <p>Personalize os serviços do seu negócio</p>
-      </div>
-      <div class="config-card">
-        <h2>Serviços oferecidos</h2>
-        <div id="servicos-tags"></div>
-        <div class="add-servico">
-          <input type="text" id="novo-servico" placeholder="Ex: Corte + Barba, Consulta, Massagem..." />
-          <button class="btn-add" onclick="adicionarServico()">Adicionar</button>
-        </div>
-        <div style="display:flex;align-items:center">
-          <button class="btn-salvar" onclick="salvarServicos()">Salvar serviços</button>
-          <span class="salvo-msg" id="salvo-msg">Salvo com sucesso!</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- PÁGINA: BIO -->
-    <div class="page" id="page-bio">
-      <div class="page-header">
-        <h1>Minha Página Bio</h1>
-        <p>Personalize sua página pública para o Instagram</p>
-      </div>
-      <div class="link-card">
-        <div>
-          <p>Link da sua página bio</p>
-          <span id="link-bio"></span>
-        </div>
-        <button class="btn-copiar" onclick="copiarLinkBio()">Copiar link</button>
-      </div>
-      <div class="config-card">
-        <h2>Informações da página</h2>
-        <div class="form-group" style="margin-bottom:16px">
-          <label style="font-size:13px;font-weight:500;color:#475569;display:block;margin-bottom:6px">Foto de perfil</label>
-          <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">
-            <div id="foto-preview" style="width:64px;height:64px;border-radius:50%;background:#f1f5f9;border:2px solid #e2e8f0;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0">🏪</div>
-            <div style="flex:1;min-width:0">
-              <input type="file" id="foto-input" accept="image/*" onchange="uploadFoto(this)" style="display:none" />
-              <button onclick="document.getElementById('foto-input').click()" style="background:#1e40af;color:white;border:none;padding:10px 20px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer">Escolher foto</button>
-              <p id="foto-status" style="font-size:12px;color:#94a3b8;margin-top:6px">Nenhuma foto selecionada</p>
-            </div>
-          </div>
-          <input type="hidden" id="bio-foto" />
-        </div>
-        <div class="form-group" style="margin-bottom:16px">
-          <label style="font-size:13px;font-weight:500;color:#475569;display:block;margin-bottom:6px">Descrição / Bio</label>
-          <textarea id="bio-descricao" placeholder="Ex: Barbearia premium no centro de SP. Atendimento de segunda a sábado." style="width:100%;padding:11px 14px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:14px;outline:none;resize:vertical;min-height:80px"></textarea>
-        </div>
-        <div class="form-group" style="margin-bottom:16px">
-          <label style="font-size:13px;font-weight:500;color:#475569;display:block;margin-bottom:6px">Link do Google Maps</label>
-          <input type="text" id="bio-endereco" placeholder="Cole aqui o link do Google Maps do seu negócio" style="width:100%;padding:11px 14px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:14px;outline:none" />
-          <p style="font-size:12px;color:#94a3b8;margin-top:6px">Abra o Google Maps, pesquise seu negócio, clique em "Compartilhar" e cole o link aqui.</p>
-        </div>
-        <div class="form-group" style="margin-bottom:16px">
-          <label style="font-size:13px;font-weight:500;color:#475569;display:block;margin-bottom:6px">Instagram</label>
-          <input type="text" id="bio-instagram" placeholder="@seunegocio" style="width:100%;padding:11px 14px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:14px;outline:none" />
-        </div>
-        <div class="form-group" style="margin-bottom:16px">
-          <label style="font-size:13px;font-weight:500;color:#475569;display:block;margin-bottom:6px">WhatsApp</label>
-          <input type="text" id="bio-whatsapp" placeholder="(11) 99999-9999" style="width:100%;padding:11px 14px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:14px;outline:none" />
-        </div>
-        <div style="display:flex;align-items:center">
-          <button class="btn-salvar" onclick="salvarBio()">Salvar bio</button>
-          <span class="salvo-msg" id="salvo-bio">Salvo com sucesso!</span>
-        </div>
-      </div>
-    </div>
-
   </div>
+
 </div>
 
 <script>
@@ -604,295 +366,16 @@ const servicosPorSegmento = {
   'Outro': ['Serviço 1', 'Serviço 2', 'Serviço 3']
 }
 
-// ---- SIDEBAR MOBILE ----
 function toggleSidebar() {
-  const sidebar = document.getElementById('sidebar')
-  const overlay = document.getElementById('sidebar-overlay')
-  sidebar.classList.toggle('aberta')
-  overlay.classList.toggle('visivel')
+  document.getElementById('sidebar').classList.toggle('aberta')
+  document.getElementById('sidebar-overlay').classList.toggle('visivel')
 }
-
 function fecharSidebar() {
   document.getElementById('sidebar').classList.remove('aberta')
   document.getElementById('sidebar-overlay').classList.remove('visivel')
 }
 
-// ---- TELAS AUTH ----
-const telasForms = ['login','cadastro','verificar','concluido','recuperar-email','recuperar-codigo','nova-senha']
-function mostrarTela(tela) {
-  telasForms.forEach(t => {
-    const el = document.getElementById(`form-${t}`)
-    if (el) el.style.display = 'none'
-  })
-  document.getElementById(`form-${tela}`).style.display = 'block'
-}
-
-function trocarTab(tab) {
-  mostrarTela(tab === 'login' ? 'login' : 'cadastro')
-}
-
-// ---- LOGIN ----
-async function fazerLogin() {
-  const email = document.getElementById('login-email').value
-  const senha = document.getElementById('login-senha').value
-  const btn = document.querySelector('#form-login .btn-auth')
-  btn.disabled = true; btn.textContent = 'Entrando...'
-  const res = await fetch(`${API}/auth/login`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, senha }) })
-  const data = await res.json()
-  btn.disabled = false; btn.textContent = 'Entrar no painel'
-  if (!res.ok) { document.getElementById('erro-login').textContent = data.erro; return }
-  salvarSessao(data)
-}
-
-// ---- CADASTRO: passo 1 ----
-async function avancarParaVerificacao() {
-  const nome    = document.getElementById('cad-nome').value.trim()
-  const negocio = document.getElementById('cad-negocio').value.trim()
-  const email   = document.getElementById('cad-email').value.trim()
-  const senha   = document.getElementById('cad-senha').value
-  const erro    = document.getElementById('erro-cadastro')
-
-  if (!nome)            { erro.textContent = 'Digite seu nome'; return }
-  if (!negocio)         { erro.textContent = 'Digite o nome do negócio'; return }
-  if (!email.includes('@')) { erro.textContent = 'Digite um email válido'; return }
-  if (senha.length < 6) { erro.textContent = 'Senha precisa ter ao menos 6 caracteres'; return }
-  erro.textContent = ''
-
-  const btn = document.querySelector('#form-cadastro .btn-auth')
-  btn.disabled = true; btn.textContent = 'Enviando código...'
-
-  const res = await fetch(`${API}/auth/enviar-codigo`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email })
-  })
-  btn.disabled = false; btn.textContent = 'Continuar →'
-
-  if (!res.ok) {
-    const d = await res.json()
-    erro.textContent = d.erro || 'Erro ao enviar código. Tente novamente.'
-    return
-  }
-
-  document.getElementById('tel-exibido').textContent = email
-  mostrarTela('verificar')
-  criarOtpInputs('otp-inputs', 'erro-verificar')
-  iniciarTimerReenvio('reenviar-timer', 'btn-reenviar')
-}
-
-// ---- CADASTRO: passo 2 — verificar código ----
-async function verificarCodigo() {
-  const codigo = getOtpValue('otp-inputs')
-  const erro   = document.getElementById('erro-verificar')
-  if (codigo.length < 6) { erro.textContent = 'Digite o código completo de 6 dígitos'; return }
-  erro.textContent = ''
-
-  const btn = document.querySelector('#form-verificar .btn-auth')
-  btn.disabled = true; btn.textContent = 'Verificando...'
-
-  const email = document.getElementById('cad-email').value.trim()
-
-  const resVer = await fetch(`${API}/auth/verificar-codigo`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, codigo, tipo: 'cadastro' })
-  })
-  if (!resVer.ok) {
-    const d = await resVer.json()
-    btn.disabled = false; btn.textContent = 'Verificar código'
-    erro.textContent = d.erro || 'Código inválido ou expirado'
-    return
-  }
-
-  // Código ok → criar conta
-  const nome     = document.getElementById('cad-nome').value.trim()
-  const negocio  = document.getElementById('cad-negocio').value.trim()
-  const segmento = document.getElementById('cad-segmento').value
-  const senha    = document.getElementById('cad-senha').value
-  const servicos = servicosPorSegmento[segmento] || servicosPorSegmento['Outro']
-
-  const resCad = await fetch(`${API}/auth/cadastro`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ nome, email, senha, negocio, segmento, servicos })
-  })
-  const data = await resCad.json()
-  btn.disabled = false; btn.textContent = 'Verificar código'
-  if (!resCad.ok) { erro.textContent = data.erro || 'Erro ao criar conta'; return }
-
-  mostrarTela('concluido')
-  setTimeout(() => salvarSessao(data), 2000)
-}
-
-async function reenviarCodigo() {
-  const email = document.getElementById('cad-email').value.trim()
-  await fetch(`${API}/auth/enviar-codigo`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email }) })
-  iniciarTimerReenvio('reenviar-timer', 'btn-reenviar')
-}
-
-// ---- RECUPERAÇÃO DE SENHA ----
-async function enviarCodigoRecuperacao() {
-  const email = document.getElementById('recup-email').value.trim()
-  const erro  = document.getElementById('erro-recup-email')
-  if (!email.includes('@')) { erro.textContent = 'Digite um email válido'; return }
-  erro.textContent = ''
-
-  const btn = document.querySelector('#form-recuperar-email .btn-auth')
-  btn.disabled = true; btn.textContent = 'Enviando...'
-
-  const res = await fetch(`${API}/auth/recuperar-senha`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email })
-  })
-  btn.disabled = false; btn.textContent = 'Enviar código por email'
-
-  if (!res.ok) {
-    const d = await res.json()
-    erro.textContent = d.erro || 'Email não encontrado'
-    return
-  }
-
-  document.getElementById('recup-tel-exibido').textContent = email
-  mostrarTela('recuperar-codigo')
-  criarOtpInputs('otp-recup-inputs', 'erro-recup-codigo')
-  iniciarTimerReenvio('reenviar-timer-recup', 'btn-reenviar-recup')
-}
-
-async function verificarCodigoRecuperacao() {
-  const codigo = getOtpValue('otp-recup-inputs')
-  const erro   = document.getElementById('erro-recup-codigo')
-  if (codigo.length < 6) { erro.textContent = 'Digite o código completo de 6 dígitos'; return }
-  erro.textContent = ''
-
-  const btn = document.querySelector('#form-recuperar-codigo .btn-auth')
-  btn.disabled = true; btn.textContent = 'Verificando...'
-
-  const email = document.getElementById('recup-email').value.trim()
-  const res = await fetch(`${API}/auth/verificar-codigo`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, codigo, tipo: 'recuperacao' })
-  })
-  btn.disabled = false; btn.textContent = 'Confirmar código'
-
-  if (!res.ok) {
-    const d = await res.json()
-    erro.textContent = d.erro || 'Código inválido ou expirado'
-    return
-  }
-  mostrarTela('nova-senha')
-}
-
-async function reenviarCodigoRecup() {
-  const email = document.getElementById('recup-email').value.trim()
-  await fetch(`${API}/auth/recuperar-senha`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email }) })
-  iniciarTimerReenvio('reenviar-timer-recup', 'btn-reenviar-recup')
-}
-
-async function salvarNovaSenha() {
-  const senha = document.getElementById('nova-senha').value
-  const conf  = document.getElementById('nova-senha-conf').value
-  const erro  = document.getElementById('erro-nova-senha')
-
-  if (senha.length < 6)  { erro.textContent = 'Senha precisa ter ao menos 6 caracteres'; return }
-  if (senha !== conf)    { erro.textContent = 'As senhas não coincidem'; return }
-  erro.textContent = ''
-
-  const btn = document.querySelector('#form-nova-senha .btn-auth')
-  btn.disabled = true; btn.textContent = 'Salvando...'
-
-  const email = document.getElementById('recup-email').value.trim()
-  const res = await fetch(`${API}/auth/nova-senha`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, senha })
-  })
-  btn.disabled = false; btn.textContent = 'Salvar nova senha'
-
-  if (!res.ok) {
-    const d = await res.json()
-    erro.textContent = d.erro || 'Erro ao salvar senha'
-    return
-  }
-
-  mostrarTela('login')
-  const msgEl = document.getElementById('erro-login')
-  msgEl.style.color = '#16a34a'
-  msgEl.textContent = '✓ Senha atualizada! Faça login com a nova senha.'
-  setTimeout(() => { msgEl.style.color = ''; msgEl.textContent = '' }, 5000)
-}
-
-// ---- HELPERS OTP ----
-function criarOtpInputs(containerId, erroId) {
-  const wrap = document.getElementById(containerId)
-  wrap.innerHTML = ''
-  for (let i = 0; i < 6; i++) {
-    const inp = document.createElement('input')
-    inp.type = 'text'
-    inp.inputMode = 'numeric'
-    inp.maxLength = 1
-    inp.autocomplete = 'one-time-code'
-    inp.addEventListener('input', e => {
-      inp.value = inp.value.replace(/\D/g, '')
-      inp.classList.toggle('preenchido', inp.value !== '')
-      document.getElementById(erroId).textContent = ''
-      if (inp.value && i < 5) wrap.children[i + 1].focus()
-    })
-    inp.addEventListener('keydown', e => {
-      if (e.key === 'Backspace' && !inp.value && i > 0) wrap.children[i - 1].focus()
-    })
-    inp.addEventListener('paste', e => {
-      e.preventDefault()
-      const paste = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g, '').slice(0, 6)
-      paste.split('').forEach((c, idx) => {
-        if (wrap.children[idx]) { wrap.children[idx].value = c; wrap.children[idx].classList.add('preenchido') }
-      })
-      const last = wrap.children[Math.min(paste.length, 5)]
-      if (last) last.focus()
-    })
-    wrap.appendChild(inp)
-  }
-  wrap.children[0].focus()
-}
-
-function getOtpValue(containerId) {
-  return Array.from(document.getElementById(containerId).children).map(i => i.value).join('')
-}
-
-let timerInterval = null
-function iniciarTimerReenvio(timerId, btnId) {
-  clearInterval(timerInterval)
-  let seg = 60
-  const btn   = document.getElementById(btnId)
-  const timer = document.getElementById(timerId)
-  btn.disabled = true
-  timer.textContent = seg
-  // Garante que o texto base do botão esteja correto
-  btn.innerHTML = `Reenviar (<span id="${timerId}">${seg}</span>s)`
-  timerInterval = setInterval(() => {
-    seg--
-    const el = document.getElementById(timerId)
-    if (el) el.textContent = seg
-    if (seg <= 0) {
-      clearInterval(timerInterval)
-      btn.disabled = false
-      btn.textContent = 'Reenviar código'
-    }
-  }, 1000)
-}
-
-function salvarSessao(data) {
-  localStorage.setItem('token', data.token)
-  localStorage.setItem('negocio', data.negocio)
-  const payload = JSON.parse(atob(data.token.split('.')[1]))
-  localStorage.setItem('userId', payload.id)
-  mostrarPainel(data.negocio)
-}
-
 function mostrarPainel(negocio) {
-  document.getElementById('tela-auth').style.display = 'none'
-  document.getElementById('tela-painel').style.display = 'block'
   document.getElementById('sidebar-negocio').textContent = negocio
   const link = `https://agendafacil-wf3q.onrender.com/agendar.html?id=${localStorage.getItem('userId')}`
   document.getElementById('link-agendamento').textContent = link
@@ -910,7 +393,7 @@ function irPara(pagina, btn) {
   document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('ativo'))
   document.getElementById(`page-${pagina}`).classList.add('ativo')
   if (btn) btn.classList.add('ativo')
-  fecharSidebar() // fecha sidebar no mobile ao navegar
+  fecharSidebar()
 }
 
 async function carregarAgendamentos() {
@@ -974,18 +457,15 @@ function filtrarData() {
 function renderTabela() {
   const tbody = document.getElementById('tbody')
   const paginacao = document.getElementById('paginacao')
-
   if (listaFiltrada.length === 0) {
     tbody.innerHTML = '<tr><td colspan="6" class="vazio">Nenhum agendamento encontrado</td></tr>'
     paginacao.style.display = 'none'
     return
   }
-
   const totalPaginas = Math.ceil(listaFiltrada.length / POR_PAGINA)
   const inicio = (paginaAtual - 1) * POR_PAGINA
   const fim = inicio + POR_PAGINA
   const pagina = listaFiltrada.slice(inicio, fim)
-
   tbody.innerHTML = pagina.map(a => `
     <tr>
       <td><div class="paciente-nome">${a.pacienteNome}</div><div class="paciente-tel">${a.pacienteTelefone}</div></td>
@@ -999,13 +479,8 @@ function renderTabela() {
       </div></td>
     </tr>
   `).join('')
-
-  // Info texto
-  document.getElementById('pg-info').textContent =
-    `${inicio + 1}–${Math.min(fim, listaFiltrada.length)} de ${listaFiltrada.length}`
-
-  // Botões
-  let btns = `<button class="pg-btn pg-seta" onclick="irPagina(${paginaAtual - 1})" ${paginaAtual === 1 ? 'disabled' : ''}>‹</button>`
+  document.getElementById('pg-info').textContent = `${inicio + 1}–${Math.min(fim, listaFiltrada.length)} de ${listaFiltrada.length}`
+  let btns = `<button class="pg-btn" onclick="irPagina(${paginaAtual - 1})" ${paginaAtual === 1 ? 'disabled' : ''}>‹</button>`
   for (let i = 1; i <= totalPaginas; i++) {
     if (totalPaginas <= 7 || i === 1 || i === totalPaginas || Math.abs(i - paginaAtual) <= 1) {
       btns += `<button class="pg-btn ${i === paginaAtual ? 'ativo' : ''}" onclick="irPagina(${i})">${i}</button>`
@@ -1013,8 +488,7 @@ function renderTabela() {
       btns += `<span style="color:#94a3b8;font-size:13px;padding:0 2px">…</span>`
     }
   }
-  btns += `<button class="pg-btn pg-seta" onclick="irPagina(${paginaAtual + 1})" ${paginaAtual === totalPaginas ? 'disabled' : ''}>›</button>`
-
+  btns += `<button class="pg-btn" onclick="irPagina(${paginaAtual + 1})" ${paginaAtual === totalPaginas ? 'disabled' : ''}>›</button>`
   document.getElementById('pg-btns').innerHTML = btns
   paginacao.style.display = totalPaginas > 1 ? 'flex' : 'none'
 }
@@ -1039,7 +513,7 @@ async function cancelarComAviso(id, nome, telefone, data, hora) {
   const token = localStorage.getItem('token')
   await fetch(`${API}/agendamentos/${id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ status: 'cancelado' }) })
   const [ano, mes, dia] = data.split('-')
-  const msg = encodeURIComponent(`Olá ${nome}! Infelizmente precisamos cancelar seu agendamento do dia ${dia}/${mes}/${ano} às ${hora}. Por favor entre em contato para reagendar. Pedimos desculpas pelo inconveniente.`)
+  const msg = encodeURIComponent(`Olá ${nome}! Infelizmente precisamos cancelar seu agendamento do dia ${dia}/${mes}/${ano} às ${hora}. Por favor entre em contato para reagendar.`)
   const tel = telefone.replace(/\D/g, '')
   window.open(`https://wa.me/55${tel}?text=${msg}`, '_blank')
   carregarAgendamentos()
@@ -1052,14 +526,20 @@ function copiarLink() {
   setTimeout(() => btn.textContent = 'Copiar link', 2000)
 }
 
+function copiarLinkBio() {
+  navigator.clipboard.writeText(document.getElementById('link-bio').textContent)
+  const btn = document.querySelectorAll('.btn-copiar')[1]
+  btn.textContent = 'Copiado!'
+  setTimeout(() => btn.textContent = 'Copiar link', 2000)
+}
+
 function formatarData(data) {
   const [ano, mes, dia] = data.split('-')
   return `${dia}/${mes}/${ano}`
 }
 
-function sair() { localStorage.clear(); location.reload() }
+function sair() { localStorage.clear(); window.location.href = '/auth.html' }
 
-// ---- HORÁRIOS ----
 function selecionarIntervalo(btn, valor) {
   document.querySelectorAll('.intervalo-btn').forEach(b => b.classList.remove('selecionado'))
   btn.classList.add('selecionado')
@@ -1077,20 +557,15 @@ function renderDias() {
           <label for="dia-${i}">${nome}</label>
         </div>
         <div class="dia-horarios">
-          <span>Das</span>
-          <input type="time" id="inicio-${i}" value="${config.inicio}" />
-          <span>às</span>
-          <input type="time" id="fim-${i}" value="${config.fim}" />
+          <span>Das</span><input type="time" id="inicio-${i}" value="${config.inicio}" />
+          <span>às</span><input type="time" id="fim-${i}" value="${config.fim}" />
         </div>
-      </div>
-    `
+      </div>`
   }).join('')
 }
 
 function toggleDia(i) {
-  const checked = document.getElementById(`dia-${i}`).checked
-  const row = document.getElementById(`dia-row-${i}`)
-  row.classList.toggle('dia-inativo', !checked)
+  document.getElementById(`dia-row-${i}`).classList.toggle('dia-inativo', !document.getElementById(`dia-${i}`).checked)
 }
 
 async function carregarHorariosConfig() {
@@ -1100,15 +575,10 @@ async function carregarHorariosConfig() {
   intervaloAtual = data.intervalo || 30
   document.querySelectorAll('.intervalo-btn').forEach(btn => {
     const txt = btn.textContent.trim()
-    if (
-      (intervaloAtual === 15 && txt === '15 min') ||
-      (intervaloAtual === 20 && txt === '20 min') ||
-      (intervaloAtual === 30 && txt === '30 min') ||
-      (intervaloAtual === 45 && txt === '45 min') ||
-      (intervaloAtual === 60 && txt === '1 hora') ||
-      (intervaloAtual === 90 && txt === '1h30') ||
-      (intervaloAtual === 120 && txt === '2 horas')
-    ) btn.classList.add('selecionado')
+    if ((intervaloAtual === 15 && txt === '15 min') || (intervaloAtual === 20 && txt === '20 min') ||
+        (intervaloAtual === 30 && txt === '30 min') || (intervaloAtual === 45 && txt === '45 min') ||
+        (intervaloAtual === 60 && txt === '1 hora') || (intervaloAtual === 90 && txt === '1h30') ||
+        (intervaloAtual === 120 && txt === '2 horas')) btn.classList.add('selecionado')
   })
   renderDias()
 }
@@ -1116,24 +586,15 @@ async function carregarHorariosConfig() {
 async function salvarHorarios() {
   const horarios = {}
   diasNomes.forEach((_, i) => {
-    horarios[i] = {
-      ativo: document.getElementById(`dia-${i}`).checked,
-      inicio: document.getElementById(`inicio-${i}`).value,
-      fim: document.getElementById(`fim-${i}`).value
-    }
+    horarios[i] = { ativo: document.getElementById(`dia-${i}`).checked, inicio: document.getElementById(`inicio-${i}`).value, fim: document.getElementById(`fim-${i}`).value }
   })
   const token = localStorage.getItem('token')
-  await fetch(`${API}/auth/horarios`, {
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-    body: JSON.stringify({ horarios, intervalo: intervaloAtual })
-  })
+  await fetch(`${API}/auth/horarios`, { method: 'PATCH', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ horarios, intervalo: intervaloAtual }) })
   const msg = document.getElementById('salvo-horarios')
   msg.style.display = 'inline'
   setTimeout(() => msg.style.display = 'none', 2000)
 }
 
-// ---- BIO ----
 async function carregarBioConfig() {
   const res = await fetch(`${API}/auth/negocio/${localStorage.getItem('userId')}`)
   const data = await res.json()
@@ -1143,33 +604,15 @@ async function carregarBioConfig() {
   document.getElementById('bio-endereco').value = bio.endereco || ''
   document.getElementById('bio-instagram').value = bio.instagram || ''
   document.getElementById('bio-whatsapp').value = bio.whatsapp || ''
-  const linkBio = `https://agendafacil-wf3q.onrender.com/bio.html?id=${localStorage.getItem('userId')}`
-  document.getElementById('link-bio').textContent = linkBio
+  document.getElementById('link-bio').textContent = `https://agendafacil-wf3q.onrender.com/bio.html?id=${localStorage.getItem('userId')}`
 }
 
 async function salvarBio() {
   const token = localStorage.getItem('token')
-  await fetch(`${API}/auth/bio`, {
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-    body: JSON.stringify({
-      foto: document.getElementById('bio-foto').value,
-      descricao: document.getElementById('bio-descricao').value,
-      endereco: document.getElementById('bio-endereco').value,
-      instagram: document.getElementById('bio-instagram').value,
-      whatsapp: document.getElementById('bio-whatsapp').value
-    })
-  })
+  await fetch(`${API}/auth/bio`, { method: 'PATCH', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ foto: document.getElementById('bio-foto').value, descricao: document.getElementById('bio-descricao').value, endereco: document.getElementById('bio-endereco').value, instagram: document.getElementById('bio-instagram').value, whatsapp: document.getElementById('bio-whatsapp').value }) })
   const msg = document.getElementById('salvo-bio')
   msg.style.display = 'inline'
   setTimeout(() => msg.style.display = 'none', 2000)
-}
-
-function copiarLinkBio() {
-  navigator.clipboard.writeText(document.getElementById('link-bio').textContent)
-  const btn = document.querySelectorAll('.btn-copiar')[1]
-  btn.textContent = 'Copiado!'
-  setTimeout(() => btn.textContent = 'Copiar link', 2000)
 }
 
 async function uploadFoto(input) {
@@ -1179,17 +622,12 @@ async function uploadFoto(input) {
   const reader = new FileReader()
   reader.onload = async (e) => {
     const token = localStorage.getItem('token')
-    const res = await fetch(`${API}/upload`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-      body: JSON.stringify({ imagem: e.target.result })
-    })
+    const res = await fetch(`${API}/upload`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ imagem: e.target.result }) })
     const data = await res.json()
     if (res.ok) {
       document.getElementById('bio-foto').value = data.url
       document.getElementById('foto-status').textContent = 'Foto enviada!'
-      const preview = document.getElementById('foto-preview')
-      preview.innerHTML = `<img src="${data.url}" style="width:100%;height:100%;object-fit:cover">`
+      document.getElementById('foto-preview').innerHTML = `<img src="${data.url}" style="width:100%;height:100%;object-fit:cover">`
     } else {
       document.getElementById('foto-status').textContent = 'Erro ao enviar foto'
     }
@@ -1202,22 +640,16 @@ async function verificarAcesso() {
   if (!token) return
   const res = await fetch(`${API}/assinatura/status`, { headers: { 'Authorization': `Bearer ${token}` } })
   const data = await res.json()
-  if (!data.temAcesso) {
-    document.getElementById('bloqueio').style.display = 'flex'
-    return
-  }
+  if (!data.temAcesso) { document.getElementById('bloqueio').style.display = 'flex'; return }
   if (data.plano === 'trial' && data.diasRestantes <= 7) {
     const banner = document.createElement('div')
     banner.className = 'trial-banner'
     banner.innerHTML = `<p>⚠️ Seu trial expira em <strong>${data.diasRestantes} dias</strong>. Assine para não perder o acesso.</p><button class="btn-assinar-banner" onclick="window.location.href='/planos.html'">Ver planos</button>`
     document.querySelector('.main').prepend(banner)
   }
-  if (window.location.search.includes('assinatura=sucesso')) {
-    alert('🎉 Assinatura ativada com sucesso! Bem-vindo ao AgendaFacil!')
-  }
+  if (window.location.search.includes('assinatura=sucesso')) alert('🎉 Assinatura ativada com sucesso!')
 }
 
-// ---- AGENDAMENTO MANUAL ----
 function abrirModalNovoAgendamento() {
   const hoje = new Date().toISOString().split('T')[0]
   document.getElementById('m-data').value = hoje
@@ -1225,15 +657,12 @@ function abrirModalNovoAgendamento() {
   document.getElementById('m-nome').value = ''
   document.getElementById('m-telefone').value = ''
   document.getElementById('m-erro').textContent = ''
-  const selectServico = document.getElementById('m-servico')
-  selectServico.innerHTML = servicosAtuais.map(s => `<option value="${s}">${s}</option>`).join('')
+  document.getElementById('m-servico').innerHTML = servicosAtuais.map(s => `<option value="${s}">${s}</option>`).join('')
   document.getElementById('modal-agendamento').style.display = 'flex'
   carregarHorariosModal()
 }
 
-function fecharModal() {
-  document.getElementById('modal-agendamento').style.display = 'none'
-}
+function fecharModal() { document.getElementById('modal-agendamento').style.display = 'none' }
 
 async function carregarHorariosModal() {
   const data = document.getElementById('m-data').value
@@ -1243,14 +672,8 @@ async function carregarHorariosModal() {
   select.innerHTML = '<option>Carregando...</option>'
   const res = await fetch(`${API}/agendamentos/horarios-ocupados?clinicaId=${userId}&data=${data}`)
   const resultado = await res.json()
-  if (resultado.diaInativo || resultado.horarios.length === 0) {
-    select.innerHTML = '<option value="">Sem horários disponíveis</option>'
-    return
-  }
-  select.innerHTML = resultado.horarios.map(h => {
-    const ocupado = resultado.ocupados.includes(h)
-    return `<option value="${h}" ${ocupado ? 'disabled' : ''}>${h}${ocupado ? ' (ocupado)' : ''}</option>`
-  }).join('')
+  if (resultado.diaInativo || resultado.horarios.length === 0) { select.innerHTML = '<option value="">Sem horários disponíveis</option>'; return }
+  select.innerHTML = resultado.horarios.map(h => { const ocupado = resultado.ocupados.includes(h); return `<option value="${h}" ${ocupado ? 'disabled' : ''}>${h}${ocupado ? ' (ocupado)' : ''}</option>` }).join('')
   const primeiroLivre = resultado.horarios.find(h => !resultado.ocupados.includes(h))
   if (primeiroLivre) select.value = primeiroLivre
 }
@@ -1263,50 +686,38 @@ async function salvarAgendamentoManual() {
   const hora = document.getElementById('m-hora').value
   const erro = document.getElementById('m-erro')
   if (!nome) { erro.textContent = 'Digite o nome do cliente'; return }
-  if (!hora || hora === '') { erro.textContent = 'Selecione um horário'; return }
+  if (!hora) { erro.textContent = 'Selecione um horário'; return }
   erro.textContent = ''
   const btn = document.querySelector('.btn-salvar-modal')
-  btn.disabled = true
-  btn.textContent = 'Salvando...'
+  btn.disabled = true; btn.textContent = 'Salvando...'
   const token = localStorage.getItem('token')
   const userId = localStorage.getItem('userId')
-  const res = await fetch(`${API}/agendamentos`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-    body: JSON.stringify({ clinicaId: userId, pacienteNome: nome, pacienteTelefone: telefone, servico, data, hora })
-  })
+  const res = await fetch(`${API}/agendamentos`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ clinicaId: userId, pacienteNome: nome, pacienteTelefone: telefone, servico, data, hora }) })
   const resposta = await res.json()
-  btn.disabled = false
-  btn.textContent = 'Confirmar agendamento'
-  if (res.ok) {
-    fecharModal()
-    carregarAgendamentos()
-  } else {
-    erro.textContent = resposta.erro || 'Erro ao criar agendamento'
-  }
+  btn.disabled = false; btn.textContent = 'Confirmar agendamento'
+  if (res.ok) { fecharModal(); carregarAgendamentos() }
+  else erro.textContent = resposta.erro || 'Erro ao criar agendamento'
 }
 
 // ---- INIT ----
 const token = localStorage.getItem('token')
 const negocio = localStorage.getItem('negocio')
-if (token && negocio) mostrarPainel(negocio)
-
-// ---- PWA: registrar service worker ----
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/sw.js')
-    .then(() => console.log('Service Worker registrado'))
-    .catch(err => console.log('SW erro:', err))
+if (token && negocio) {
+  mostrarPainel(negocio)
+} else {
+  window.location.href = '/auth.html'
 }
 
-// ---- PWA: botão instalar ----
+// ---- PWA ----
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js').catch(() => {})
+}
 let deferredPrompt = null
 window.addEventListener('beforeinstallprompt', e => {
-  e.preventDefault()
-  deferredPrompt = e
+  e.preventDefault(); deferredPrompt = e
   const btn = document.getElementById('btn-instalar-app')
   if (btn) btn.style.display = 'block'
 })
-
 function instalarApp() {
   if (!deferredPrompt) return
   deferredPrompt.prompt()
@@ -1316,7 +727,6 @@ function instalarApp() {
     if (btn) btn.style.display = 'none'
   })
 }
-
 window.addEventListener('appinstalled', () => {
   const btn = document.getElementById('btn-instalar-app')
   if (btn) btn.style.display = 'none'
