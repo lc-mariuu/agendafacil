@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Planos — AgendaFacil</title>
+<title>Planos — AgendoRapido</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; }
@@ -22,14 +22,16 @@
   .plano-features { list-style: none; margin-bottom: 28px; }
   .plano-features li { display: flex; align-items: center; gap: 8px; font-size: 14px; color: #475569; margin-bottom: 10px; }
   .plano-features li::before { content: '✓'; color: #16a34a; font-weight: 700; flex-shrink: 0; }
-  .btn-assinar { width: 100%; padding: 14px; border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer; border: none; transition: opacity 0.2s; }
+  .btn-assinar { width: 100%; padding: 14px; border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer; border: none; transition: opacity 0.2s; font-family: inherit; }
   .btn-assinar.basico { background: #f1f5f9; color: #1e40af; }
   .btn-assinar.pro { background: #1e40af; color: white; }
-  .btn-assinar:hover { opacity: 0.85; }
+  .btn-assinar:hover:not(:disabled) { opacity: 0.85; }
+  .btn-assinar:disabled { opacity: 0.6; cursor: not-allowed; }
   .trial-info { text-align: center; color: rgba(255,255,255,0.7); font-size: 13px; margin-top: 20px; }
   .btn-voltar { display: block; text-align: center; color: rgba(255,255,255,0.8); font-size: 14px; margin-top: 16px; text-decoration: none; }
   .btn-voltar:hover { color: white; }
-  @media (max-width: 600px) { .planos { grid-template-columns: 1fr; } }
+  .erro-msg { text-align: center; color: #fca5a5; font-size: 13px; margin-top: 12px; min-height: 18px; }
+  @media (max-width: 600px) { .planos { grid-template-columns: 1fr; } .titulo h1 { font-size: 26px; } }
 </style>
 </head>
 <body>
@@ -51,11 +53,12 @@
         <li>Página bio para Instagram</li>
         <li>Configuração de horários</li>
         <li>Link de agendamento</li>
+        <li>App instalável no celular</li>
       </ul>
-      <button class="btn-assinar basico" onclick="assinar('basico')">Assinar Básico</button>
+      <button class="btn-assinar basico" id="btn-basico" onclick="assinar('basico', this)">Assinar Básico</button>
     </div>
     <div class="plano destaque">
-      <div class="badge-destaque">⭐ Mais popular</div>
+      <div class="badge-destaque">Mais popular</div>
       <div class="plano-nome">Pro</div>
       <div class="plano-preco">
         <span class="valor">R$49</span>
@@ -69,30 +72,52 @@
         <li>Link de agendamento</li>
         <li>Suporte prioritário</li>
       </ul>
-      <button class="btn-assinar pro" onclick="assinar('pro')">Assinar Pro</button>
+      <button class="btn-assinar pro" id="btn-pro" onclick="assinar('pro', this)">Assinar Pro</button>
     </div>
   </div>
-  <div class="trial-info">🔒 Pagamento seguro via Stripe · Cancele quando quiser</div>
+  <div class="erro-msg" id="erro-msg"></div>
+  <div class="trial-info">Pagamento seguro via Stripe · Cancele quando quiser</div>
   <a href="/painel.html" class="btn-voltar">← Voltar ao painel</a>
 </div>
 
 <script>
 const API = 'https://agendafacil-wf3q.onrender.com/api'
 
-async function assinar(plano) {
+async function assinar(plano, btn) {
   const token = localStorage.getItem('token')
   if (!token) { window.location.href = '/painel.html'; return }
-  const btn = event.target
+
+  const textoOriginal = btn.textContent
   btn.textContent = 'Redirecionando...'
   btn.disabled = true
-  const res = await fetch(`${API}/assinatura/checkout`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-    body: JSON.stringify({ plano })
-  })
-  const data = await res.json()
-  if (res.ok) window.location.href = data.url
-  else { btn.textContent = 'Erro, tente novamente'; btn.disabled = false }
+  document.getElementById('btn-basico').disabled = true
+  document.getElementById('btn-pro').disabled = true
+  document.getElementById('erro-msg').textContent = ''
+
+  try {
+    const res = await fetch(`${API}/assinatura/checkout`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ plano })
+    })
+
+    const data = await res.json()
+
+    if (res.ok && data.url) {
+      window.location.href = data.url
+    } else {
+      throw new Error(data.erro || 'Erro ao criar checkout')
+    }
+  } catch (err) {
+    document.getElementById('erro-msg').textContent = err.message
+    btn.textContent = textoOriginal
+    btn.disabled = false
+    document.getElementById('btn-basico').disabled = false
+    document.getElementById('btn-pro').disabled = false
+  }
 }
 </script>
 </body>
