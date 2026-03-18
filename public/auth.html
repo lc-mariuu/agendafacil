@@ -110,14 +110,16 @@ body {
 .forgot-link:hover { color: var(--accent-hover); }
 .success-screen { text-align: center; padding: 20px 0; }
 .success-icon { width: 64px; height: 64px; border-radius: 50%; background: #dcfce7; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; }
-.otp-wrap { display: flex; gap: 8px; margin: 8px 0 20px; }
+.otp-wrap { 
+  display: flex; gap: 8px; margin: 8px 0 20px;
+  justify-content: center;
+}
 .otp-wrap input {
-  flex: 1; height: 52px; text-align: center;
-  font-size: 22px; font-weight: 700;
+  width: 44px; height: 52px; flex-shrink: 0;
+  text-align: center; font-size: 22px; font-weight: 700;
   border: 1.5px solid var(--border2); border-radius: 9px;
   outline: none; padding: 0;
   transition: border-color .15s;
-  min-width: 0; max-width: 52px;
 }
 .otp-wrap input:focus { border-color: var(--accent); }
 .otp-wrap input.filled { border-color: var(--accent); background: var(--accent-light); }
