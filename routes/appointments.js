@@ -15,15 +15,18 @@ const autenticar = (req, res, next) => {
   }
 }
 
+// ── LISTAR agendamentos da clínica ────────────────────
 router.get('/', autenticar, async (req, res) => {
   try {
-    const agendamentos = await Appointment.find({ clinicaId: req.userId }).sort({ data: 1, hora: 1 })
+    const agendamentos = await Appointment.find({ clinicaId: req.userId })
+      .sort({ data: 1, hora: 1 })
     res.json(agendamentos)
   } catch {
     res.status(500).json({ erro: 'Erro ao buscar agendamentos' })
   }
 })
 
+// ── HORÁRIOS OCUPADOS (rota pública para clientes) ────
 router.get('/horarios-ocupados', async (req, res) => {
   try {
     const { clinicaId, data } = req.query
@@ -35,13 +38,8 @@ router.get('/horarios-ocupados', async (req, res) => {
     const [ano, mes, dia] = data.split('-').map(Number)
     const diaSemana = new Date(ano, mes - 1, dia).getDay()
 
-    // .lean() retorna objeto puro — tenta as duas formas
     const horarios = user.horarios || {}
     const configDia = horarios[diaSemana] || horarios[String(diaSemana)]
-
-    console.log('diaSemana:', diaSemana)
-    console.log('horarios keys:', Object.keys(horarios))
-    console.log('configDia:', JSON.stringify(configDia))
 
     if (!configDia || !configDia.ativo) {
       return res.json({ horarios: [], ocupados: [], diaInativo: true })
@@ -61,31 +59,57 @@ router.get('/horarios-ocupados', async (req, res) => {
       atual += intervalo
     }
 
-    const agendados = await Appointment.find({ clinicaId, data, status: { $ne: 'cancelado' } }).select('hora')
+    const agendados = await Appointment.find({
+      clinicaId,
+      data,
+      status: { $ne: 'cancelado' }
+    }).select('hora')
+
     const ocupados = agendados.map(a => a.hora)
 
     res.json({ horarios: horariosDisponiveis, ocupados, diaInativo: false })
   } catch (err) {
-    console.log('ERRO horarios-ocupados:', err.message)
+    console.error('ERRO horarios-ocupados:', err.message)
     res.status(500).json({ erro: 'Erro ao buscar horários' })
   }
 })
 
+// ── CRIAR agendamento (rota pública para clientes) ────
 router.post('/', async (req, res) => {
   try {
     const { clinicaId, pacienteNome, pacienteTelefone, servico, data, hora } = req.body
-    const jaExiste = await Appointment.findOne({ clinicaId, data, hora, status: { $ne: 'cancelado' } })
+
+    const jaExiste = await Appointment.findOne({
+      clinicaId,
+      data,
+      hora,
+      status: { $ne: 'cancelado' }
+    })
     if (jaExiste) return res.status(400).json({ erro: 'Horário já ocupado' })
-    const agendamento = await Appointment.create({ clinicaId, pacienteNome, pacienteTelefone, servico, data, hora })
+
+    const agendamento = await Appointment.create({
+      clinicaId,
+      pacienteNome,
+      pacienteTelefone,
+      servico,
+      data,
+      hora
+    })
     res.json(agendamento)
-  } catch {
+  } catch (err) {
+    console.error('ERRO criar agendamento:', err.message)
     res.status(500).json({ erro: 'Erro ao criar agendamento' })
   }
 })
 
+// ── ATUALIZAR status (autenticado) ───────────────────
 router.patch('/:id', autenticar, async (req, res) => {
   try {
-    const agendamento = await Appointment.findByIdAndUpdate(req.params.id, req.body, { new: true })
+    const agendamento = await Appointment.findByIdAndUpdate(
+      req.params.id,
+      { ...req.body, atualizadoEm: new Date() },
+      { new: true }
+    )
     res.json(agendamento)
   } catch {
     res.status(500).json({ erro: 'Erro ao atualizar' })

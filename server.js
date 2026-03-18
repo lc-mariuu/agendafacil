@@ -30,6 +30,24 @@ app.get('/', (req, res) => {
 // ── Banco + servidor ──────────────────────────────────────────
 const PORT = process.env.PORT || 3000
 
+// ── LIMPEZA AUTOMÁTICA ────────────────────────────────
+// Apaga agendamentos concluídos ou cancelados com mais de 1 hora
+async function limparAgendamentos() {
+  const Appointment = require('./models/Appointment')
+  const umaHoraAtras = new Date(Date.now() - 60 * 60 * 1000)
+  const result = await Appointment.deleteMany({
+    status: { $in: ['concluido', 'cancelado'] },
+    updatedAt: { $lt: umaHoraAtras }
+  })
+  if (result.deletedCount > 0) {
+    console.log(`[limpeza] ${result.deletedCount} agendamentos removidos`)
+  }
+}
+
+// Roda ao iniciar e depois a cada 1 hora
+limparAgendamentos()
+setInterval(limparAgendamentos, 60 * 60 * 1000)
+
 mongoose.connect(process.env.MONGO_URI)
   .then(() => {
     console.log('MongoDB conectado!')
