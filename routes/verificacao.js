@@ -19,20 +19,26 @@
 //
 // ============================================================
 
-const express    = require('express')
-const crypto     = require('crypto')
-const { Resend } = require('resend')
-const router     = express.Router()
-const mongoose   = require('mongoose')
+const express      = require('express')
+const crypto       = require('crypto')
+const nodemailer   = require('nodemailer')
+const router       = express.Router()
+const mongoose     = require('mongoose')
 
 // ------------------------------------------------------------
-// 1. RESEND — cliente de email (inicializado só quando necessário)
+// 1. NODEMAILER — transporte Gmail
 // ------------------------------------------------------------
-const EMAIL_FROM = process.env.EMAIL_FROM || 'onboarding@resend.dev'
-
-function getResend() {
-  if (!process.env.RESEND_API_KEY) return null
-  return new Resend(process.env.RESEND_API_KEY)
+function getTransporter() {
+  if (!process.env.GMAIL_USER || !process.env.GMAIL_PASS) {
+    return null
+  }
+  return nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: process.env.GMAIL_USER,
+      pass: process.env.GMAIL_PASS  // senha de app do Google (não a senha normal)
+    }
+  })
 }
 
 // ------------------------------------------------------------
@@ -63,13 +69,17 @@ function gerarCodigo() {
 // 4. HELPER — enviar email via Resend
 // ------------------------------------------------------------
 async function enviarEmail(destinatario, assunto, html) {
-  const resend = getResend()
-  if (!resend) {
-    console.log(`\n📧 [RESEND SIMULADO] Para: ${destinatario} | Assunto: ${assunto}\n${html.replace(/<[^>]+>/g, '')}\n`)
+  const transporter = getTransporter()
+  if (!transporter) {
+    console.log(`\n📧 [EMAIL SIMULADO] Para: ${destinatario} | Assunto: ${assunto}\n`)
     return
   }
-  const { error } = await resend.emails.send({ from: EMAIL_FROM, to: destinatario, subject: assunto, html })
-  if (error) throw new Error(`Resend erro: ${JSON.stringify(error)}`)
+  await transporter.sendMail({
+    from: `"AgendoRapido" <${process.env.GMAIL_USER}>`,
+    to: destinatario,
+    subject: assunto,
+    html
+  })
 }
 
 // ------------------------------------------------------------
