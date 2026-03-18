@@ -433,34 +433,39 @@ async function confirmarAgendamento() {
   btn.textContent = 'Confirmando...'
   const nome = document.getElementById('nome').value.trim()
   const telefone = document.getElementById('telefone').value.trim()
+
+  let resposta, resOk
   try {
     const res = await fetch(`${API}/agendamentos`, {
       method: 'POST',
       headers: {'Content-Type':'application/json'},
       body: JSON.stringify({clinicaId, pacienteNome:nome, pacienteTelefone:telefone, servico:servicoSel, data:dataSel, hora:horarioSel})
     })
-    const data = await res.json()
-    if(res.ok) {
-      const [a,m,d] = dataSel.split('-')
-      document.getElementById('sucesso-detalhe').innerHTML = `
-        <div class="resumo-row"><span class="resumo-label">Serviço</span><span class="resumo-val">${servicoSel}</span></div>
-        <div class="resumo-row"><span class="resumo-label">Data</span><span class="resumo-val">${d}/${m}/${a}</span></div>
-        <div class="resumo-row"><span class="resumo-label">Horário</span><span class="resumo-val">${horarioSel}</span></div>
-        <div class="resumo-row"><span class="resumo-label">Nome</span><span class="resumo-val">${nome}</span></div>
-      `
-      const tel = telefone.replace(/\D/g,'')
-      const msg = encodeURIComponent(`Olá! Meu agendamento foi confirmado ✅\n\n📋 Serviço: ${servicoSel}\n📅 Data: ${d}/${m}/${a}\n🕐 Horário: ${horarioSel}\n👤 Nome: ${nome}`)
-      document.getElementById('btn-whatsapp').href = `https://wa.me/55${tel}?text=${msg}`
-      irTela(5)
-    } else {
-      showErr('err4', data.erro || 'Erro ao agendar. Tente novamente.')
-      btn.disabled = false
-      btn.innerHTML = 'Confirmar agendamento <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7h8M7.5 3.5L11 7l-3.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>'
-    }
+    resOk = res.ok
+    try { resposta = await res.json() } catch(e) { resposta = {} }
   } catch(e) {
     showErr('err4', 'Erro de conexão. Tente novamente.')
     btn.disabled = false
-    btn.innerHTML = 'Confirmar agendamento'
+    btn.textContent = 'Confirmar agendamento'
+    return
+  }
+
+  if(resOk) {
+    const [a,m,d] = dataSel.split('-')
+    document.getElementById('sucesso-detalhe').innerHTML = `
+      <div class="resumo-row"><span class="resumo-label">Serviço</span><span class="resumo-val">${servicoSel}</span></div>
+      <div class="resumo-row"><span class="resumo-label">Data</span><span class="resumo-val">${d}/${m}/${a}</span></div>
+      <div class="resumo-row"><span class="resumo-label">Horário</span><span class="resumo-val">${horarioSel}</span></div>
+      <div class="resumo-row"><span class="resumo-label">Nome</span><span class="resumo-val">${nome}</span></div>
+    `
+    const tel = telefone.replace(/\D/g,'')
+    const msg = encodeURIComponent(`Olá! Meu agendamento foi confirmado ✅\n\n📋 Serviço: ${servicoSel}\n📅 Data: ${d}/${m}/${a}\n🕐 Horário: ${horarioSel}\n👤 Nome: ${nome}`)
+    document.getElementById('btn-whatsapp').href = `https://wa.me/55${tel}?text=${msg}`
+    irTela(5)
+  } else {
+    showErr('err4', resposta.erro || 'Erro ao agendar. Tente novamente.')
+    btn.disabled = false
+    btn.textContent = 'Confirmar agendamento'
   }
 }
 
