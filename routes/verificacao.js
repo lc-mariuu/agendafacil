@@ -188,7 +188,8 @@ router.post('/nova-senha', async (req, res) => {
     if (!usuario) return res.status(400).json({ erro: 'Usuário não encontrado' })
 
     // Com bcrypt (recomendado): usuario.senha = await require('bcrypt').hash(senha, 10)
-    usuario.senha = senha
+    const bcrypt = require('bcryptjs')
+    usuario.senha = await bcrypt.hash(senha, 10)
     await usuario.save()
     res.json({ ok: true })
   } catch (err) {
