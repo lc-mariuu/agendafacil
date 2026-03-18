@@ -22,6 +22,26 @@
   .btn-auth { width: 100%; background: #1e40af; color: white; border: none; padding: 13px; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; transition: background 0.2s; margin-top: 4px; }
   .btn-auth:hover { background: #1d3a9e; }
   .erro-msg { color: #dc2626; font-size: 13px; text-align: center; margin-bottom: 10px; min-height: 18px; }
+  .sucesso-msg-auth { color: #16a34a; font-size: 13px; text-align: center; margin-bottom: 10px; }
+
+  /* Step indicator */
+  .step-indicator { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 24px; }
+  .step { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; background: #f1f5f9; color: #94a3b8; border: 2px solid #e2e8f0; flex-shrink: 0; transition: all 0.3s; }
+  .step.ativo { background: #1e40af; color: white; border-color: #1e40af; }
+  .step.concluido { background: #dcfce7; color: #16a34a; border-color: #86efac; }
+  .step-line { flex: 1; height: 2px; background: #e2e8f0; max-width: 48px; border-radius: 2px; transition: background 0.3s; }
+  .step-line.ativo { background: #1e40af; }
+
+  /* Código OTP */
+  .otp-wrap { display: flex; gap: 8px; justify-content: center; margin: 16px 0; }
+  .otp-wrap input { width: 46px; height: 54px; text-align: center; font-size: 22px; font-weight: 700; border: 2px solid #e2e8f0; border-radius: 10px; outline: none; color: #0f172a; transition: border 0.2s; }
+  .otp-wrap input:focus { border-color: #3b82f6; }
+  .otp-wrap input.preenchido { border-color: #1e40af; background: #eff6ff; }
+  .reenviar-wrap { text-align: center; margin-top: 10px; font-size: 13px; color: #64748b; }
+  .btn-reenviar { background: none; border: none; color: #1e40af; font-size: 13px; font-weight: 600; cursor: pointer; padding: 0; }
+  .btn-reenviar:disabled { color: #94a3b8; cursor: not-allowed; }
+  .btn-voltar-link { background: none; border: none; color: #64748b; font-size: 13px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; margin-bottom: 16px; padding: 0; }
+  .btn-voltar-link:hover { color: #1e40af; }
 
   /* ===== SIDEBAR ===== */
   .sidebar { position: fixed; left: 0; top: 0; bottom: 0; width: 240px; background: #1e293b; padding: 24px 0; display: flex; flex-direction: column; z-index: 100; transition: transform 0.3s ease; }
@@ -214,17 +234,35 @@
       <h1>AgendoRapido!</h1>
       <p>Sistema de agendamento para qualquer negócio</p>
     </div>
-    <div class="auth-tabs">
-      <button class="auth-tab ativo" id="tab-login" onclick="trocarTab('login')">Entrar</button>
-      <button class="auth-tab" id="tab-cadastro" onclick="trocarTab('cadastro')">Criar conta</button>
-    </div>
+
+    <!-- ===== LOGIN ===== -->
     <div id="form-login">
+      <div class="auth-tabs">
+        <button class="auth-tab ativo" id="tab-login" onclick="trocarTab('login')">Entrar</button>
+        <button class="auth-tab" id="tab-cadastro" onclick="trocarTab('cadastro')">Criar conta</button>
+      </div>
       <div class="erro-msg" id="erro-login"></div>
       <div class="form-group"><label>Email</label><input type="email" id="login-email" placeholder="seu@email.com" /></div>
       <div class="form-group"><label>Senha</label><input type="password" id="login-senha" placeholder="Sua senha" /></div>
       <button class="btn-auth" onclick="fazerLogin()">Entrar no painel</button>
+      <div style="text-align:center;margin-top:14px">
+        <button class="btn-voltar-link" style="display:inline-flex;color:#3b82f6" onclick="mostrarTela('recuperar-email')">Esqueci minha senha</button>
+      </div>
     </div>
+
+    <!-- ===== CADASTRO PASSO 1: dados ===== -->
     <div id="form-cadastro" style="display:none">
+      <div class="auth-tabs">
+        <button class="auth-tab" id="tab-login2" onclick="trocarTab('login')">Entrar</button>
+        <button class="auth-tab ativo" id="tab-cadastro2" onclick="trocarTab('cadastro')">Criar conta</button>
+      </div>
+      <div class="step-indicator">
+        <div class="step ativo" id="cad-step-1">1</div>
+        <div class="step-line" id="cad-line-1"></div>
+        <div class="step" id="cad-step-2">2</div>
+        <div class="step-line" id="cad-line-2"></div>
+        <div class="step" id="cad-step-3">3</div>
+      </div>
       <div class="erro-msg" id="erro-cadastro"></div>
       <div class="form-group"><label>Seu nome</label><input type="text" id="cad-nome" placeholder="João Silva" /></div>
       <div class="form-group"><label>Nome do negócio</label><input type="text" id="cad-negocio" placeholder="Barbearia do João, Clínica São Lucas..." /></div>
@@ -242,8 +280,85 @@
       </div>
       <div class="form-group"><label>Email</label><input type="email" id="cad-email" placeholder="seu@email.com" /></div>
       <div class="form-group"><label>Senha</label><input type="password" id="cad-senha" placeholder="Mínimo 6 caracteres" /></div>
-      <button class="btn-auth" onclick="fazerCadastro()">Criar minha conta</button>
+      <button class="btn-auth" onclick="avancarParaVerificacao()">Continuar →</button>
     </div>
+
+    <!-- ===== CADASTRO PASSO 2: verificar WhatsApp ===== -->
+    <div id="form-verificar" style="display:none">
+      <div class="step-indicator">
+        <div class="step concluido" id="ver-step-1">✓</div>
+        <div class="step-line ativo" id="ver-line-1"></div>
+        <div class="step ativo" id="ver-step-2">2</div>
+        <div class="step-line" id="ver-line-2"></div>
+        <div class="step" id="ver-step-3">3</div>
+      </div>
+      <button class="btn-voltar-link" onclick="mostrarTela('cadastro')">← Voltar</button>
+      <div style="text-align:center;margin-bottom:16px">
+        <div style="font-size:32px;margin-bottom:8px">📧</div>
+        <p style="font-size:15px;font-weight:600;color:#0f172a;margin-bottom:4px">Verifique seu email</p>
+        <p style="font-size:13px;color:#64748b">Enviamos um código de 6 dígitos para<br><strong id="tel-exibido" style="color:#1e40af"></strong></p>
+      </div>
+      <div class="erro-msg" id="erro-verificar"></div>
+      <div class="otp-wrap" id="otp-inputs"></div>
+      <div class="reenviar-wrap">
+        Não recebeu? <button class="btn-reenviar" id="btn-reenviar" onclick="reenviarCodigo()" disabled>Reenviar (<span id="reenviar-timer">60</span>s)</button>
+      </div>
+      <button class="btn-auth" style="margin-top:20px" onclick="verificarCodigo()">Verificar código</button>
+    </div>
+
+    <!-- ===== CADASTRO PASSO 3: concluído ===== -->
+    <div id="form-concluido" style="display:none">
+      <div style="text-align:center;padding:20px 0">
+        <div style="font-size:48px;margin-bottom:16px">🎉</div>
+        <h2 style="font-size:20px;font-weight:700;color:#0f172a;margin-bottom:8px">Conta criada!</h2>
+        <p style="font-size:14px;color:#64748b;line-height:1.6">Seu email foi verificado com sucesso.<br>Entrando no painel...</p>
+      </div>
+    </div>
+
+    <!-- ===== RECUPERAR SENHA: email ===== -->
+    <div id="form-recuperar-email" style="display:none">
+      <button class="btn-voltar-link" onclick="mostrarTela('login')">← Voltar para login</button>
+      <div style="margin-bottom:20px">
+        <p style="font-size:16px;font-weight:700;color:#0f172a;margin-bottom:4px">Recuperar senha</p>
+        <p style="font-size:13px;color:#64748b">Informe seu email cadastrado para receber o código de verificação.</p>
+      </div>
+      <div class="erro-msg" id="erro-recup-email"></div>
+      <div class="form-group">
+        <label>Email cadastrado</label>
+        <input type="email" id="recup-email" placeholder="seu@email.com" />
+      </div>
+      <button class="btn-auth" onclick="enviarCodigoRecuperacao()">Enviar código por email</button>
+    </div>
+
+    <!-- ===== RECUPERAR SENHA: código ===== -->
+    <div id="form-recuperar-codigo" style="display:none">
+      <button class="btn-voltar-link" onclick="mostrarTela('recuperar-email')">← Voltar</button>
+      <div style="text-align:center;margin-bottom:16px">
+        <div style="font-size:32px;margin-bottom:8px">🔐</div>
+        <p style="font-size:15px;font-weight:600;color:#0f172a;margin-bottom:4px">Código de verificação</p>
+        <p style="font-size:13px;color:#64748b">Código enviado para<br><strong id="recup-tel-exibido" style="color:#1e40af"></strong></p>
+      </div>
+      <div class="erro-msg" id="erro-recup-codigo"></div>
+      <div class="otp-wrap" id="otp-recup-inputs"></div>
+      <div class="reenviar-wrap">
+        Não recebeu? <button class="btn-reenviar" id="btn-reenviar-recup" onclick="reenviarCodigoRecup()" disabled>Reenviar (<span id="reenviar-timer-recup">60</span>s)</button>
+      </div>
+      <button class="btn-auth" style="margin-top:20px" onclick="verificarCodigoRecuperacao()">Confirmar código</button>
+    </div>
+
+    <!-- ===== RECUPERAR SENHA: nova senha ===== -->
+    <div id="form-nova-senha" style="display:none">
+      <button class="btn-voltar-link" onclick="mostrarTela('recuperar-codigo')">← Voltar</button>
+      <div style="margin-bottom:20px">
+        <p style="font-size:16px;font-weight:700;color:#0f172a;margin-bottom:4px">Nova senha</p>
+        <p style="font-size:13px;color:#64748b">Escolha uma senha segura para sua conta.</p>
+      </div>
+      <div class="erro-msg" id="erro-nova-senha"></div>
+      <div class="form-group"><label>Nova senha</label><input type="password" id="nova-senha" placeholder="Mínimo 6 caracteres" /></div>
+      <div class="form-group"><label>Confirmar senha</label><input type="password" id="nova-senha-conf" placeholder="Repita a senha" /></div>
+      <button class="btn-auth" onclick="salvarNovaSenha()">Salvar nova senha</button>
+    </div>
+
   </div>
 </div>
 
@@ -496,33 +611,269 @@ function fecharSidebar() {
   document.getElementById('sidebar-overlay').classList.remove('visivel')
 }
 
-function trocarTab(tab) {
-  document.getElementById('tab-login').classList.toggle('ativo', tab === 'login')
-  document.getElementById('tab-cadastro').classList.toggle('ativo', tab === 'cadastro')
-  document.getElementById('form-login').style.display = tab === 'login' ? 'block' : 'none'
-  document.getElementById('form-cadastro').style.display = tab === 'cadastro' ? 'block' : 'none'
+// ---- TELAS AUTH ----
+const telasForms = ['login','cadastro','verificar','concluido','recuperar-email','recuperar-codigo','nova-senha']
+function mostrarTela(tela) {
+  telasForms.forEach(t => {
+    const el = document.getElementById(`form-${t}`)
+    if (el) el.style.display = 'none'
+  })
+  document.getElementById(`form-${tela}`).style.display = 'block'
 }
 
+function trocarTab(tab) {
+  mostrarTela(tab === 'login' ? 'login' : 'cadastro')
+}
+
+// ---- LOGIN ----
 async function fazerLogin() {
   const email = document.getElementById('login-email').value
   const senha = document.getElementById('login-senha').value
+  const btn = document.querySelector('#form-login .btn-auth')
+  btn.disabled = true; btn.textContent = 'Entrando...'
   const res = await fetch(`${API}/auth/login`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, senha }) })
   const data = await res.json()
+  btn.disabled = false; btn.textContent = 'Entrar no painel'
   if (!res.ok) { document.getElementById('erro-login').textContent = data.erro; return }
   salvarSessao(data)
 }
 
-async function fazerCadastro() {
-  const nome = document.getElementById('cad-nome').value
-  const negocio = document.getElementById('cad-negocio').value
+// ---- CADASTRO: passo 1 ----
+async function avancarParaVerificacao() {
+  const nome    = document.getElementById('cad-nome').value.trim()
+  const negocio = document.getElementById('cad-negocio').value.trim()
+  const email   = document.getElementById('cad-email').value.trim()
+  const senha   = document.getElementById('cad-senha').value
+  const erro    = document.getElementById('erro-cadastro')
+
+  if (!nome)            { erro.textContent = 'Digite seu nome'; return }
+  if (!negocio)         { erro.textContent = 'Digite o nome do negócio'; return }
+  if (!email.includes('@')) { erro.textContent = 'Digite um email válido'; return }
+  if (senha.length < 6) { erro.textContent = 'Senha precisa ter ao menos 6 caracteres'; return }
+  erro.textContent = ''
+
+  const btn = document.querySelector('#form-cadastro .btn-auth')
+  btn.disabled = true; btn.textContent = 'Enviando código...'
+
+  const res = await fetch(`${API}/auth/enviar-codigo`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email })
+  })
+  btn.disabled = false; btn.textContent = 'Continuar →'
+
+  if (!res.ok) {
+    const d = await res.json()
+    erro.textContent = d.erro || 'Erro ao enviar código. Tente novamente.'
+    return
+  }
+
+  document.getElementById('tel-exibido').textContent = email
+  mostrarTela('verificar')
+  criarOtpInputs('otp-inputs', 'erro-verificar')
+  iniciarTimerReenvio('reenviar-timer', 'btn-reenviar')
+}
+
+// ---- CADASTRO: passo 2 — verificar código ----
+async function verificarCodigo() {
+  const codigo = getOtpValue('otp-inputs')
+  const erro   = document.getElementById('erro-verificar')
+  if (codigo.length < 6) { erro.textContent = 'Digite o código completo de 6 dígitos'; return }
+  erro.textContent = ''
+
+  const btn = document.querySelector('#form-verificar .btn-auth')
+  btn.disabled = true; btn.textContent = 'Verificando...'
+
+  const email = document.getElementById('cad-email').value.trim()
+
+  const resVer = await fetch(`${API}/auth/verificar-codigo`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, codigo, tipo: 'cadastro' })
+  })
+  if (!resVer.ok) {
+    const d = await resVer.json()
+    btn.disabled = false; btn.textContent = 'Verificar código'
+    erro.textContent = d.erro || 'Código inválido ou expirado'
+    return
+  }
+
+  // Código ok → criar conta
+  const nome     = document.getElementById('cad-nome').value.trim()
+  const negocio  = document.getElementById('cad-negocio').value.trim()
   const segmento = document.getElementById('cad-segmento').value
-  const email = document.getElementById('cad-email').value
-  const senha = document.getElementById('cad-senha').value
+  const senha    = document.getElementById('cad-senha').value
   const servicos = servicosPorSegmento[segmento] || servicosPorSegmento['Outro']
-  const res = await fetch(`${API}/auth/cadastro`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ nome, email, senha, negocio, segmento, servicos }) })
-  const data = await res.json()
-  if (!res.ok) { document.getElementById('erro-cadastro').textContent = data.erro; return }
-  salvarSessao(data)
+
+  const resCad = await fetch(`${API}/auth/cadastro`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ nome, email, senha, negocio, segmento, servicos })
+  })
+  const data = await resCad.json()
+  btn.disabled = false; btn.textContent = 'Verificar código'
+  if (!resCad.ok) { erro.textContent = data.erro || 'Erro ao criar conta'; return }
+
+  mostrarTela('concluido')
+  setTimeout(() => salvarSessao(data), 2000)
+}
+
+async function reenviarCodigo() {
+  const email = document.getElementById('cad-email').value.trim()
+  await fetch(`${API}/auth/enviar-codigo`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email }) })
+  iniciarTimerReenvio('reenviar-timer', 'btn-reenviar')
+}
+
+// ---- RECUPERAÇÃO DE SENHA ----
+async function enviarCodigoRecuperacao() {
+  const email = document.getElementById('recup-email').value.trim()
+  const erro  = document.getElementById('erro-recup-email')
+  if (!email.includes('@')) { erro.textContent = 'Digite um email válido'; return }
+  erro.textContent = ''
+
+  const btn = document.querySelector('#form-recuperar-email .btn-auth')
+  btn.disabled = true; btn.textContent = 'Enviando...'
+
+  const res = await fetch(`${API}/auth/recuperar-senha`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email })
+  })
+  btn.disabled = false; btn.textContent = 'Enviar código por email'
+
+  if (!res.ok) {
+    const d = await res.json()
+    erro.textContent = d.erro || 'Email não encontrado'
+    return
+  }
+
+  document.getElementById('recup-tel-exibido').textContent = email
+  mostrarTela('recuperar-codigo')
+  criarOtpInputs('otp-recup-inputs', 'erro-recup-codigo')
+  iniciarTimerReenvio('reenviar-timer-recup', 'btn-reenviar-recup')
+}
+
+async function verificarCodigoRecuperacao() {
+  const codigo = getOtpValue('otp-recup-inputs')
+  const erro   = document.getElementById('erro-recup-codigo')
+  if (codigo.length < 6) { erro.textContent = 'Digite o código completo de 6 dígitos'; return }
+  erro.textContent = ''
+
+  const btn = document.querySelector('#form-recuperar-codigo .btn-auth')
+  btn.disabled = true; btn.textContent = 'Verificando...'
+
+  const email = document.getElementById('recup-email').value.trim()
+  const res = await fetch(`${API}/auth/verificar-codigo`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, codigo, tipo: 'recuperacao' })
+  })
+  btn.disabled = false; btn.textContent = 'Confirmar código'
+
+  if (!res.ok) {
+    const d = await res.json()
+    erro.textContent = d.erro || 'Código inválido ou expirado'
+    return
+  }
+  mostrarTela('nova-senha')
+}
+
+async function reenviarCodigoRecup() {
+  const email = document.getElementById('recup-email').value.trim()
+  await fetch(`${API}/auth/recuperar-senha`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email }) })
+  iniciarTimerReenvio('reenviar-timer-recup', 'btn-reenviar-recup')
+}
+
+async function salvarNovaSenha() {
+  const senha = document.getElementById('nova-senha').value
+  const conf  = document.getElementById('nova-senha-conf').value
+  const erro  = document.getElementById('erro-nova-senha')
+
+  if (senha.length < 6)  { erro.textContent = 'Senha precisa ter ao menos 6 caracteres'; return }
+  if (senha !== conf)    { erro.textContent = 'As senhas não coincidem'; return }
+  erro.textContent = ''
+
+  const btn = document.querySelector('#form-nova-senha .btn-auth')
+  btn.disabled = true; btn.textContent = 'Salvando...'
+
+  const email = document.getElementById('recup-email').value.trim()
+  const res = await fetch(`${API}/auth/nova-senha`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, senha })
+  })
+  btn.disabled = false; btn.textContent = 'Salvar nova senha'
+
+  if (!res.ok) {
+    const d = await res.json()
+    erro.textContent = d.erro || 'Erro ao salvar senha'
+    return
+  }
+
+  mostrarTela('login')
+  const msgEl = document.getElementById('erro-login')
+  msgEl.style.color = '#16a34a'
+  msgEl.textContent = '✓ Senha atualizada! Faça login com a nova senha.'
+  setTimeout(() => { msgEl.style.color = ''; msgEl.textContent = '' }, 5000)
+}
+
+// ---- HELPERS OTP ----
+function criarOtpInputs(containerId, erroId) {
+  const wrap = document.getElementById(containerId)
+  wrap.innerHTML = ''
+  for (let i = 0; i < 6; i++) {
+    const inp = document.createElement('input')
+    inp.type = 'text'
+    inp.inputMode = 'numeric'
+    inp.maxLength = 1
+    inp.autocomplete = 'one-time-code'
+    inp.addEventListener('input', e => {
+      inp.value = inp.value.replace(/\D/g, '')
+      inp.classList.toggle('preenchido', inp.value !== '')
+      document.getElementById(erroId).textContent = ''
+      if (inp.value && i < 5) wrap.children[i + 1].focus()
+    })
+    inp.addEventListener('keydown', e => {
+      if (e.key === 'Backspace' && !inp.value && i > 0) wrap.children[i - 1].focus()
+    })
+    inp.addEventListener('paste', e => {
+      e.preventDefault()
+      const paste = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g, '').slice(0, 6)
+      paste.split('').forEach((c, idx) => {
+        if (wrap.children[idx]) { wrap.children[idx].value = c; wrap.children[idx].classList.add('preenchido') }
+      })
+      const last = wrap.children[Math.min(paste.length, 5)]
+      if (last) last.focus()
+    })
+    wrap.appendChild(inp)
+  }
+  wrap.children[0].focus()
+}
+
+function getOtpValue(containerId) {
+  return Array.from(document.getElementById(containerId).children).map(i => i.value).join('')
+}
+
+let timerInterval = null
+function iniciarTimerReenvio(timerId, btnId) {
+  clearInterval(timerInterval)
+  let seg = 60
+  const btn   = document.getElementById(btnId)
+  const timer = document.getElementById(timerId)
+  btn.disabled = true
+  timer.textContent = seg
+  // Garante que o texto base do botão esteja correto
+  btn.innerHTML = `Reenviar (<span id="${timerId}">${seg}</span>s)`
+  timerInterval = setInterval(() => {
+    seg--
+    const el = document.getElementById(timerId)
+    if (el) el.textContent = seg
+    if (seg <= 0) {
+      clearInterval(timerInterval)
+      btn.disabled = false
+      btn.textContent = 'Reenviar código'
+    }
+  }, 1000)
 }
 
 function salvarSessao(data) {
