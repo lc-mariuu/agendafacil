@@ -21,26 +21,42 @@
 
 const express      = require('express')
 const crypto       = require('crypto')
-const nodemailer   = require('nodemailer')
+const { Resend }   = require('resend')
 const router       = express.Router()
 const mongoose     = require('mongoose')
 
 // ------------------------------------------------------------
-// 1. NODEMAILER — transporte Gmail
+// 1. RESEND — envia para qualquer email se tiver domínio verificado
+//             ou para GMAIL_USER (dono) se ainda em modo teste
 // ------------------------------------------------------------
-function getTransporter() {
-  if (!process.env.GMAIL_USER || !process.env.GMAIL_PASS) {
-    return null
+function getResend() {
+  if (!process.env.RESEND_API_KEY) return null
+  return new Resend(process.env.RESEND_API_KEY)
+}
+
+async function enviarEmail(destinatario, assunto, html) {
+  const resend = getResend()
+  if (!resend) {
+    console.log(`\n📧 [EMAIL SIMULADO] Para: ${destinatario} | Assunto: ${assunto}\n`)
+    return
   }
-  return nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 587,
-    secure: false,
-    auth: {
-      user: process.env.GMAIL_USER,
-      pass: process.env.GMAIL_PASS
-    }
+
+  // Se não tiver domínio verificado, manda pro email do dono e loga o destinatário real
+  const temDominio = process.env.EMAIL_FROM && !process.env.EMAIL_FROM.includes('onboarding@resend.dev')
+  const emailDestino = temDominio ? destinatario : (process.env.GMAIL_USER || destinatario)
+
+  if (!temDominio) {
+    console.log(`📧 [MODO TESTE] Código destinado a ${destinatario} enviado para ${emailDestino}`)
+    assunto = `[PARA: ${destinatario}] ${assunto}`
+  }
+
+  const { error } = await resend.emails.send({
+    from: process.env.EMAIL_FROM || 'onboarding@resend.dev',
+    to: emailDestino,
+    subject: assunto,
+    html
   })
+  if (error) throw new Error(`Resend erro: ${JSON.stringify(error)}`)
 }
 
 // ------------------------------------------------------------
