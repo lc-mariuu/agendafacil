@@ -50,11 +50,7 @@ codigoSchema.index({ email: 1, tipo: 1 }, { unique: true })
 const CodigoVerificacao = mongoose.models.CodigoVerificacao
   || mongoose.model('CodigoVerificacao', codigoSchema)
 
-// Importe seu model de User — ajuste o caminho
-let User
-try { User = require('./models/User') } catch (e) {
-  console.warn('[verificacao.js] ⚠️  Ajuste o caminho do seu model User')
-}
+const User = require('../models/User')
 
 // ------------------------------------------------------------
 // 3. HELPER — gerar código numérico de 6 dígitos
