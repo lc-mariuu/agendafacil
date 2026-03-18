@@ -51,7 +51,10 @@ const CodigoVerificacao = mongoose.models.CodigoVerificacao
   || mongoose.model('CodigoVerificacao', codigoSchema)
 
 // Importe seu model de User — ajuste o caminho
-const User = require('../models/User')
+let User
+try { User = require('./models/User') } catch (e) {
+  console.warn('[verificacao.js] ⚠️  Ajuste o caminho do seu model User')
+}
 
 // ------------------------------------------------------------
 // 3. HELPER — gerar código numérico de 6 dígitos
@@ -184,13 +187,16 @@ router.post('/nova-senha', async (req, res) => {
     const { email, senha } = req.body
     if (!senha || senha.length < 6) return res.status(400).json({ erro: 'Senha deve ter ao menos 6 caracteres' })
 
-    const usuario = await User.findOne({ email: email.toLowerCase() })
-    if (!usuario) return res.status(400).json({ erro: 'Usuário não encontrado' })
-
-    // Com bcrypt (recomendado): usuario.senha = await require('bcrypt').hash(senha, 10)
     const bcrypt = require('bcryptjs')
-    usuario.senha = await bcrypt.hash(senha, 10)
-    await usuario.save()
+    const hash = await bcrypt.hash(senha, 10)
+
+    const resultado = await User.updateOne(
+      { email: email.toLowerCase() },
+      { $set: { senha: hash } }
+    )
+
+    if (resultado.matchedCount === 0) return res.status(400).json({ erro: 'Usuário não encontrado' })
+
     res.json({ ok: true })
   } catch (err) {
     console.error('[nova-senha]', err)
