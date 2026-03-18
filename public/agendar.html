@@ -3,247 +3,481 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Agendar Consulta</title>
+<title>Agendar — AgendoRapido</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { font-family: 'Segoe UI', sans-serif; background: #f0f4ff; color: #1e293b; min-height: 100vh; }
+:root {
+  --bg: #ffffff;
+  --bg2: #f7f7f8;
+  --border: rgba(0,0,0,0.08);
+  --border2: rgba(0,0,0,0.14);
+  --text: #0d0d0e;
+  --text2: #5a5a6a;
+  --text3: #9a9aaa;
+  --accent: #2563eb;
+  --accent-hover: #1d4ed8;
+  --accent-light: #eff4ff;
+  --green: #16a34a;
+  --green-light: #f0fdf4;
+  --red: #dc2626;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased}
 
-  .hero { background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%); padding: 40px 24px 80px; text-align: center; }
-  .hero h1 { color: white; font-size: 26px; font-weight: 700; }
-  .hero p { color: #bfdbfe; font-size: 15px; margin-top: 8px; }
+/* NAV */
+nav{background:rgba(255,255,255,0.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);height:56px;display:flex;align-items:center;justify-content:center;position:sticky;top:0;z-index:10}
+.nav-logo{font-size:16px;font-weight:700;color:var(--text);text-decoration:none}
+.nav-logo span{color:var(--accent)}
 
-  .container { max-width: 520px; margin: -48px auto 40px; padding: 0 16px; }
+/* HERO */
+.hero{background:var(--text);padding:48px 24px 72px;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;width:600px;height:600px;border-radius:50%;background:radial-gradient(var(--accent),transparent 70%);top:-200px;left:50%;transform:translateX(-50%);opacity:.12;pointer-events:none}
+.hero-avatar{width:72px;height:72px;border-radius:50%;background:var(--accent-light);border:3px solid rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:28px;overflow:hidden;position:relative;z-index:1}
+.hero-avatar img{width:100%;height:100%;object-fit:cover}
+.hero h1{font-size:clamp(22px,4vw,30px);font-weight:700;color:#fff;letter-spacing:-0.02em;margin-bottom:6px;position:relative;z-index:1}
+.hero p{font-size:14px;color:rgba(255,255,255,0.5);position:relative;z-index:1}
+.hero-chips{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:16px;position:relative;z-index:1}
+.hero-chip{display:flex;align-items:center;gap:5px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);padding:5px 12px;border-radius:100px;font-size:12px;color:rgba(255,255,255,0.6)}
+.hero-chip svg{opacity:.5}
 
-  .card { background: white; border-radius: 16px; padding: 28px; border: 1px solid #e2e8f0; margin-bottom: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); }
-  .card-titulo { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
-  .card-num { width: 28px; height: 28px; background: #1e40af; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; flex-shrink: 0; }
-  .card-titulo h2 { font-size: 16px; font-weight: 600; color: #0f172a; }
+/* STEPS NAV */
+.steps-nav{display:flex;align-items:center;justify-content:center;gap:0;padding:20px 24px;background:var(--bg);border-bottom:1px solid var(--border);position:sticky;top:56px;z-index:9}
+.step-nav-item{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:500;color:var(--text3);padding:0 12px}
+.step-nav-num{width:24px;height:24px;border-radius:50%;border:1.5px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;transition:all .2s}
+.step-nav-item.active .step-nav-num{background:var(--accent);border-color:var(--accent);color:#fff}
+.step-nav-item.active{color:var(--text)}
+.step-nav-item.done .step-nav-num{background:var(--green);border-color:var(--green);color:#fff}
+.step-nav-item.done{color:var(--text2)}
+.step-nav-line{flex:1;height:1px;background:var(--border);max-width:32px}
+.step-nav-line.done{background:var(--green)}
 
-  .form-group { margin-bottom: 16px; }
-  .form-group label { font-size: 13px; font-weight: 500; color: #475569; display: block; margin-bottom: 6px; }
-  .form-group input, .form-group select { width: 100%; padding: 12px 14px; border: 1.5px solid #e2e8f0; border-radius: 10px; font-size: 14px; outline: none; transition: border 0.2s; background: #f8fafc; }
-  .form-group input:focus, .form-group select:focus { border-color: #3b82f6; background: white; }
+/* CONTAINER */
+.container{max-width:540px;margin:0 auto;padding:32px 16px 80px}
 
-  .servicos { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .servico-btn { padding: 14px 10px; border: 1.5px solid #e2e8f0; border-radius: 10px; background: #f8fafc; cursor: pointer; font-size: 13px; font-weight: 500; color: #475569; text-align: center; transition: all 0.2s; }
-  .servico-btn:hover { border-color: #3b82f6; color: #1e40af; background: #eff6ff; }
-  .servico-btn.selecionado { border-color: #1e40af; background: #1e40af; color: white; }
+/* CARD */
+.card{background:var(--bg);border:1px solid var(--border);border-radius:16px;padding:28px;margin-bottom:16px;transition:border-color .2s}
+.card.active-card{border-color:rgba(37,99,235,0.3)}
+.card-header{display:flex;align-items:center;gap:12px;margin-bottom:24px}
+.card-step{width:32px;height:32px;border-radius:10px;background:var(--accent-light);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--accent);flex-shrink:0}
+.card-title{font-size:16px;font-weight:600;color:var(--text)}
+.card-sub{font-size:13px;color:var(--text3);margin-top:1px}
 
-  .horarios { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-  .horario-btn { padding: 12px 6px; border: 1.5px solid #e2e8f0; border-radius: 10px; background: #f8fafc; cursor: pointer; font-size: 13px; font-weight: 500; color: #475569; text-align: center; transition: all 0.2s; }
-  .horario-btn:hover:not(:disabled) { border-color: #3b82f6; color: #1e40af; background: #eff6ff; }
-  .horario-btn.selecionado { border-color: #1e40af; background: #1e40af; color: white; }
-  .horario-btn:disabled { background: #f1f5f9; color: #cbd5e1; cursor: not-allowed; text-decoration: line-through; border-color: #f1f5f9; }
-  .carregando-horarios { text-align: center; color: #94a3b8; font-size: 13px; padding: 20px; }
+/* FIELDS */
+.field{margin-bottom:14px}
+.field label{font-size:13px;font-weight:500;color:var(--text2);display:block;margin-bottom:6px}
+.field input{width:100%;padding:11px 14px;border:1.5px solid var(--border2);border-radius:9px;font-size:14px;font-family:inherit;background:var(--bg);color:var(--text);outline:none;transition:border-color .15s}
+.field input:focus{border-color:var(--accent)}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 
-  .btn-agendar { width: 100%; background: linear-gradient(135deg, #1e40af, #3b82f6); color: white; border: none; padding: 16px; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; transition: opacity 0.2s; letter-spacing: 0.02em; }
-  .btn-agendar:hover { opacity: 0.92; }
-  .btn-agendar:disabled { opacity: 0.5; cursor: not-allowed; }
+/* SERVIÇOS */
+.servicos-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.servico-btn{padding:14px 12px;border:1.5px solid var(--border2);border-radius:10px;background:var(--bg);cursor:pointer;font-size:13px;font-weight:500;color:var(--text2);text-align:center;transition:all .15s;font-family:inherit}
+.servico-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-light)}
+.servico-btn.sel{border-color:var(--accent);background:var(--accent);color:#fff}
 
-  .erro-msg { color: #dc2626; font-size: 13px; text-align: center; margin-bottom: 12px; min-height: 18px; }
+/* DATAS */
+.datas-scroll{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
+.datas-scroll::-webkit-scrollbar{display:none}
+.data-btn{flex-shrink:0;width:64px;padding:12px 8px;border:1.5px solid var(--border2);border-radius:10px;background:var(--bg);cursor:pointer;text-align:center;transition:all .15s;font-family:inherit}
+.data-btn .dia-semana{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em}
+.data-btn .dia-num{font-size:20px;font-weight:700;color:var(--text);line-height:1.2;margin:2px 0}
+.data-btn .mes{font-size:10px;color:var(--text3)}
+.data-btn:hover:not(:disabled){border-color:var(--accent)}
+.data-btn.sel{border-color:var(--accent);background:var(--accent)}
+.data-btn.sel .dia-semana,.data-btn.sel .dia-num,.data-btn.sel .mes{color:#fff}
+.data-btn:disabled{opacity:.35;cursor:not-allowed}
 
-  .sucesso-tela { display: none; text-align: center; padding: 20px; }
-  .sucesso-icone { width: 72px; height: 72px; background: #dcfce7; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; }
-  .sucesso-icone svg { width: 36px; height: 36px; }
-  .sucesso-tela h2 { font-size: 22px; font-weight: 700; color: #0f172a; margin-bottom: 8px; }
-  .sucesso-tela p { color: #64748b; font-size: 14px; line-height: 1.6; }
-  .sucesso-detalhe { background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 12px; padding: 16px; margin: 20px 0; text-align: left; }
-  .sucesso-detalhe p { font-size: 13px; color: #0369a1; margin-bottom: 6px; }
-  .sucesso-detalhe p:last-child { margin-bottom: 0; }
-  .sucesso-detalhe strong { color: #0c4a6e; }
+/* HORÁRIOS */
+.horarios-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.horario-btn{padding:11px 6px;border:1.5px solid var(--border2);border-radius:9px;background:var(--bg);cursor:pointer;font-size:13px;font-weight:500;color:var(--text2);text-align:center;transition:all .15s;font-family:inherit}
+.horario-btn:hover:not(:disabled){border-color:var(--accent);color:var(--accent);background:var(--accent-light)}
+.horario-btn.sel{border-color:var(--accent);background:var(--accent);color:#fff}
+.horario-btn:disabled{background:var(--bg2);color:var(--text3);cursor:not-allowed;border-color:var(--border);text-decoration:line-through;opacity:.5}
+.empty-msg{text-align:center;padding:24px;font-size:14px;color:var(--text3)}
+
+/* RESUMO */
+.resumo{background:var(--bg2);border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:12px;margin-bottom:20px}
+.resumo-row{display:flex;justify-content:space-between;align-items:center;font-size:14px}
+.resumo-label{color:var(--text3);font-weight:500}
+.resumo-val{color:var(--text);font-weight:600}
+
+/* BOTÃO */
+.btn-submit{width:100%;padding:14px;background:var(--accent);color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;transition:background .15s,transform .15s;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-submit:hover:not(:disabled){background:var(--accent-hover);transform:translateY(-1px)}
+.btn-submit:disabled{opacity:.6;cursor:not-allowed;transform:none}
+.btn-back{width:100%;padding:12px;background:transparent;color:var(--text2);border:1.5px solid var(--border2);border-radius:10px;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;transition:background .15s;margin-bottom:10px}
+.btn-back:hover{background:var(--bg)}
+
+/* ERRO */
+.err{background:#fef2f2;border:1px solid rgba(220,38,38,0.2);border-radius:8px;padding:10px 14px;font-size:13px;color:var(--red);margin-bottom:14px;display:none}
+.err.show{display:block}
+
+/* SUCESSO */
+.sucesso{display:none;text-align:center;padding:16px 0}
+.sucesso-icon{width:72px;height:72px;border-radius:50%;background:var(--green-light);display:flex;align-items:center;justify-content:center;margin:0 auto 20px}
+.sucesso h2{font-size:22px;font-weight:700;letter-spacing:-0.02em;margin-bottom:8px}
+.sucesso p{font-size:14px;color:var(--text2);line-height:1.6}
+.sucesso-detalhe{background:var(--bg2);border-radius:12px;padding:20px;margin:20px 0;text-align:left;display:flex;flex-direction:column;gap:10px}
+.sucesso-detalhe-row{display:flex;justify-content:space-between;font-size:14px}
+.sucesso-detalhe-row span:first-child{color:var(--text3)}
+.sucesso-detalhe-row span:last-child{font-weight:600;color:var(--text)}
+.whatsapp-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:13px;background:#16a34a;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;text-decoration:none;margin-top:4px}
+.whatsapp-btn:hover{background:#15803d}
+
+/* TELAS */
+.tela{display:none}
+.tela.ativa{display:block}
+
+@media(max-width:480px){
+  .horarios-grid{grid-template-columns:repeat(3,1fr)}
+  .servicos-grid{grid-template-columns:1fr 1fr}
+  .field-row{grid-template-columns:1fr}
+  .container{padding:24px 12px 80px}
+}
 </style>
 </head>
 <body>
 
+<nav>
+  <a href="/" class="nav-logo">Agendo<span>Rapido</span></a>
+</nav>
+
+<!-- HERO -->
 <div class="hero">
-  <h1 id="nome-clinica">Carregando...</h1>
-  <p>Agende sua consulta de forma rápida e fácil</p>
+  <div class="hero-avatar" id="hero-avatar">
+    <svg width="32" height="32" viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="16" fill="rgba(37,99,235,0.2)"/><path d="M16 8a5 5 0 1 1 0 10A5 5 0 0 1 16 8ZM6 26c0-4.4 4.5-8 10-8s10 3.6 10 8" stroke="#93c5fd" stroke-width="1.8" stroke-linecap="round"/></svg>
+  </div>
+  <h1 id="hero-nome">Carregando...</h1>
+  <p id="hero-sub">Escolha o serviço, data e horário</p>
+  <div class="hero-chips" id="hero-chips"></div>
+</div>
+
+<!-- STEPS -->
+<div class="steps-nav">
+  <div class="step-nav-item active" id="snav1">
+    <div class="step-nav-num">1</div>
+    <span class="step-label">Dados</span>
+  </div>
+  <div class="step-nav-line" id="sline1"></div>
+  <div class="step-nav-item" id="snav2">
+    <div class="step-nav-num">2</div>
+    <span class="step-label">Serviço</span>
+  </div>
+  <div class="step-nav-line" id="sline2"></div>
+  <div class="step-nav-item" id="snav3">
+    <div class="step-nav-num">3</div>
+    <span class="step-label">Horário</span>
+  </div>
+  <div class="step-nav-line" id="sline3"></div>
+  <div class="step-nav-item" id="snav4">
+    <div class="step-nav-num">4</div>
+    <span class="step-label">Confirmar</span>
+  </div>
 </div>
 
 <div class="container">
-  <div id="formulario">
 
-    <div class="card">
-      <div class="card-titulo">
-        <div class="card-num">1</div>
-        <h2>Seus dados</h2>
+  <!-- TELA 1: DADOS -->
+  <div class="tela ativa" id="tela1">
+    <div class="card active-card">
+      <div class="card-header">
+        <div class="card-step">1</div>
+        <div><div class="card-title">Seus dados</div><div class="card-sub">Como podemos te identificar?</div></div>
       </div>
-      <div class="form-group">
+      <div class="err" id="err1"></div>
+      <div class="field">
         <label>Nome completo</label>
-        <input type="text" id="nome" placeholder="Digite seu nome completo" />
+        <input type="text" id="nome" placeholder="João Silva" autocomplete="name" />
       </div>
-      <div class="form-group">
+      <div class="field">
         <label>WhatsApp</label>
-        <input type="tel" id="telefone" placeholder="(11) 99999-9999" />
+        <input type="tel" id="telefone" placeholder="(11) 99999-9999" oninput="mascaraTel(this)" autocomplete="tel" />
       </div>
+      <button class="btn-submit" onclick="irTela2()">
+        Continuar
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7h8M7.5 3.5L11 7l-3.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
     </div>
-
-    <div class="card">
-      <div class="card-titulo">
-        <div class="card-num">2</div>
-        <h2>Serviço</h2>
-      </div>
-      <div class="servicos">
-        <button class="servico-btn" onclick="selecionarServico(this, 'Consulta')">Consulta</button>
-        <button class="servico-btn" onclick="selecionarServico(this, 'Retorno')">Retorno</button>
-        <button class="servico-btn" onclick="selecionarServico(this, 'Exame')">Exame</button>
-        <button class="servico-btn" onclick="selecionarServico(this, 'Avaliação')">Avaliação</button>
-        <button class="servico-btn" onclick="selecionarServico(this, 'Procedimento')">Procedimento</button>
-        <button class="servico-btn" onclick="selecionarServico(this, 'Emergência')">Emergência</button>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-titulo">
-        <div class="card-num">3</div>
-        <h2>Data</h2>
-      </div>
-      <div class="form-group">
-        <input type="date" id="data" onchange="carregarHorarios()" />
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-titulo">
-        <div class="card-num">4</div>
-        <h2>Horário</h2>
-      </div>
-      <div id="horarios-container">
-        <p class="carregando-horarios">Selecione uma data para ver os horários disponíveis</p>
-      </div>
-    </div>
-
-    <div class="erro-msg" id="erro-form"></div>
-    <button class="btn-agendar" onclick="agendar()">Confirmar agendamento</button>
-
   </div>
 
-  <div class="sucesso-tela card" id="sucesso">
-    <div class="sucesso-icone">
-      <svg viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <polyline points="20 6 9 17 4 12"></polyline>
-      </svg>
+  <!-- TELA 2: SERVIÇO -->
+  <div class="tela" id="tela2">
+    <div class="card active-card">
+      <div class="card-header">
+        <div class="card-step">2</div>
+        <div><div class="card-title">Serviço</div><div class="card-sub">O que você precisa?</div></div>
+      </div>
+      <div class="err" id="err2"></div>
+      <div class="servicos-grid" id="servicos-grid"></div>
+      <button class="btn-submit" style="margin-top:20px" onclick="irTela3()">
+        Continuar
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7h8M7.5 3.5L11 7l-3.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <button class="btn-back" onclick="irTela(1)">← Voltar</button>
     </div>
-    <h2>Agendamento confirmado!</h2>
-    <p>Seu horário foi reservado com sucesso. Até lá!</p>
-    <div class="sucesso-detalhe" id="sucesso-detalhe"></div>
-    <p style="font-size:12px;color:#94a3b8;margin-top:8px">Em caso de dúvidas, entre em contato com a clínica.</p>
   </div>
+
+  <!-- TELA 3: DATA E HORÁRIO -->
+  <div class="tela" id="tela3">
+    <div class="card active-card">
+      <div class="card-header">
+        <div class="card-step">3</div>
+        <div><div class="card-title">Data e horário</div><div class="card-sub">Escolha quando quer ser atendido</div></div>
+      </div>
+      <div class="err" id="err3"></div>
+      <div style="margin-bottom:20px">
+        <div style="font-size:13px;font-weight:500;color:var(--text2);margin-bottom:10px">Data</div>
+        <div class="datas-scroll" id="datas-scroll"></div>
+      </div>
+      <div>
+        <div style="font-size:13px;font-weight:500;color:var(--text2);margin-bottom:10px">Horários disponíveis</div>
+        <div id="horarios-container"><div class="empty-msg">Selecione uma data</div></div>
+      </div>
+      <button class="btn-submit" style="margin-top:20px" onclick="irTela4()">
+        Continuar
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7h8M7.5 3.5L11 7l-3.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <button class="btn-back" onclick="irTela(2)">← Voltar</button>
+    </div>
+  </div>
+
+  <!-- TELA 4: CONFIRMAR -->
+  <div class="tela" id="tela4">
+    <div class="card active-card">
+      <div class="card-header">
+        <div class="card-step">4</div>
+        <div><div class="card-title">Confirmar agendamento</div><div class="card-sub">Revise os detalhes antes de confirmar</div></div>
+      </div>
+      <div class="err" id="err4"></div>
+      <div class="resumo">
+        <div class="resumo-row"><span class="resumo-label">Nome</span><span class="resumo-val" id="r-nome">—</span></div>
+        <div class="resumo-row"><span class="resumo-label">WhatsApp</span><span class="resumo-val" id="r-tel">—</span></div>
+        <div class="resumo-row"><span class="resumo-label">Serviço</span><span class="resumo-val" id="r-servico">—</span></div>
+        <div class="resumo-row"><span class="resumo-label">Data</span><span class="resumo-val" id="r-data">—</span></div>
+        <div class="resumo-row"><span class="resumo-label">Horário</span><span class="resumo-val" id="r-hora">—</span></div>
+      </div>
+      <button class="btn-submit" id="btn-confirmar" onclick="confirmarAgendamento()">
+        Confirmar agendamento
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7h8M7.5 3.5L11 7l-3.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <button class="btn-back" onclick="irTela(3)">← Voltar</button>
+    </div>
+  </div>
+
+  <!-- SUCESSO -->
+  <div class="tela" id="tela-sucesso">
+    <div class="card">
+      <div class="sucesso">
+        <div class="sucesso-icon">
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none"><path d="M6 16l7 7L26 9" stroke="#16a34a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <h2>Agendamento confirmado!</h2>
+        <p>Seu horário foi reservado com sucesso.<br>Até lá!</p>
+        <div class="sucesso-detalhe" id="sucesso-detalhe"></div>
+        <a class="whatsapp-btn" id="whatsapp-btn" href="#" target="_blank">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.118 1.528 5.852L.057 23.885l6.204-1.628A11.945 11.945 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.808 9.808 0 0 1-5.001-1.366l-.359-.213-3.682.966.983-3.594-.234-.371A9.818 9.818 0 0 1 2.182 12C2.182 6.57 6.57 2.182 12 2.182S21.818 6.57 21.818 12 17.43 21.818 12 21.818z"/></svg>
+          Salvar no WhatsApp
+        </a>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <script>
 const API = 'https://agendafacil-wf3q.onrender.com/api'
-let horarioSelecionado = ''
-let servicoSelecionado = ''
 const params = new URLSearchParams(window.location.search)
 const clinicaId = params.get('id')
+let servicoSelecionado = ''
+let dataSelecionada = ''
+let horarioSelecionado = ''
+let servicosDisponiveis = []
 
-const todosHorarios = [
-  '08:00','08:30','09:00','09:30','10:00','10:30','11:00','11:30',
-  '14:00','14:30','15:00','15:30','16:00','16:30','17:00'
-]
-
-const hoje = new Date().toISOString().split('T')[0]
-document.getElementById('data').min = hoje
-document.getElementById('data').value = hoje
-
-async function carregarClinica() {
-  if (!clinicaId) { document.getElementById('nome-clinica').textContent = 'Link inválido'; return }
-  const res = await fetch(`${API}/auth/negocio/${clinicaId}`)
-  const data = await res.json()
-  if (res.ok) {
-    document.getElementById('nome-clinica').textContent = data.negocio
-    document.title = data.negocio
-    renderServicos(data.servicos || [])
-  }
+// ── UTILS ──────────────────────────────────────────────
+function mascaraTel(inp) {
+  let v = inp.value.replace(/\D/g,'').slice(0,11)
+  if(v.length>=7) v=`(${v.slice(0,2)}) ${v.slice(2,7)}-${v.slice(7)}`
+  else if(v.length>=3) v=`(${v.slice(0,2)}) ${v.slice(2)}`
+  else if(v.length) v=`(${v}`
+  inp.value=v
 }
 
-function renderServicos(servicos) {
-  const container = document.querySelector('.servicos')
-  if (!container) return
-  container.innerHTML = servicos.map(s =>
-    `<button class="servico-btn" onclick="selecionarServico(this,'${s}')">${s}</button>`
+function showErr(id, msg) {
+  const el = document.getElementById(id)
+  el.textContent = msg; el.classList.add('show')
+}
+function hideErr(id) { document.getElementById(id).classList.remove('show') }
+
+function formatarDataBR(iso) {
+  const [a,m,d] = iso.split('-')
+  const dias = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb']
+  const dt = new Date(iso+'T12:00:00')
+  return `${dias[dt.getDay()]}, ${d}/${m}/${a}`
+}
+
+// ── TELAS ──────────────────────────────────────────────
+function irTela(n) {
+  document.querySelectorAll('.tela').forEach(t => t.classList.remove('ativa'))
+  document.getElementById(`tela${n === 'sucesso' ? '-sucesso' : n}`).classList.add('ativa')
+  // steps nav
+  for(let i=1;i<=4;i++){
+    const nav = document.getElementById(`snav${i}`)
+    const line = document.getElementById(`sline${i}`)
+    nav.className = 'step-nav-item'
+    if(line) line.className = 'step-nav-line'
+    if(i < (n === 'sucesso' ? 5 : n)) { nav.classList.add('done'); if(line) line.classList.add('done') }
+    else if(i === n) nav.classList.add('active')
+  }
+  window.scrollTo({top:0,behavior:'smooth'})
+}
+
+function irTela2() {
+  hideErr('err1')
+  const nome = document.getElementById('nome').value.trim()
+  const tel = document.getElementById('telefone').value.trim()
+  if(!nome) { showErr('err1','Digite seu nome completo'); return }
+  if(tel.replace(/\D/g,'').length < 10) { showErr('err1','Digite um WhatsApp válido com DDD'); return }
+  irTela(2)
+}
+
+function irTela3() {
+  hideErr('err2')
+  if(!servicoSelecionado) { showErr('err2','Selecione um serviço'); return }
+  gerarDatas()
+  irTela(3)
+}
+
+function irTela4() {
+  hideErr('err3')
+  if(!dataSelecionada) { showErr('err3','Selecione uma data'); return }
+  if(!horarioSelecionado) { showErr('err3','Selecione um horário'); return }
+  // preenche resumo
+  document.getElementById('r-nome').textContent = document.getElementById('nome').value.trim()
+  document.getElementById('r-tel').textContent = document.getElementById('telefone').value.trim()
+  document.getElementById('r-servico').textContent = servicoSelecionado
+  document.getElementById('r-data').textContent = formatarDataBR(dataSelecionada)
+  document.getElementById('r-hora').textContent = horarioSelecionado
+  irTela(4)
+}
+
+// ── CLINICA ────────────────────────────────────────────
+async function carregarClinica() {
+  if(!clinicaId) { document.getElementById('hero-nome').textContent = 'Link inválido'; return }
+  const res = await fetch(`${API}/auth/negocio/${clinicaId}`)
+  const data = await res.json()
+  if(!res.ok) return
+  document.getElementById('hero-nome').textContent = data.negocio
+  document.title = `Agendar — ${data.negocio}`
+  // segmento chip
+  if(data.segmento) {
+    document.getElementById('hero-chips').innerHTML =
+      `<div class="hero-chip"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="4" stroke="currentColor" stroke-width="1.2"/></svg>${data.segmento}</div>`
+  }
+  if(data.bio?.foto) {
+    document.getElementById('hero-avatar').innerHTML = `<img src="${data.bio.foto}" alt="${data.negocio}">`
+  }
+  servicosDisponiveis = data.servicos || []
+  renderServicos()
+}
+
+function renderServicos() {
+  const grid = document.getElementById('servicos-grid')
+  grid.innerHTML = servicosDisponiveis.map(s =>
+    `<button class="servico-btn" onclick="selecionarServico(this,'${s.replace(/'/g,"\\'")}')">${s}</button>`
   ).join('')
 }
 
-async function carregarHorarios() {
-  const data = document.getElementById('data').value
-  if (!data || !clinicaId) return
+function selecionarServico(btn, s) {
+  document.querySelectorAll('.servico-btn').forEach(b => b.classList.remove('sel'))
+  btn.classList.add('sel')
+  servicoSelecionado = s
+}
+
+// ── DATAS ──────────────────────────────────────────────
+function gerarDatas() {
+  const scroll = document.getElementById('datas-scroll')
+  scroll.innerHTML = ''
+  const dias = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb']
+  const meses = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez']
+  const hoje = new Date()
+  for(let i=0;i<14;i++) {
+    const d = new Date(hoje)
+    d.setDate(hoje.getDate()+i)
+    const iso = d.toISOString().split('T')[0]
+    const btn = document.createElement('button')
+    btn.className = 'data-btn'
+    btn.innerHTML = `<div class="dia-semana">${dias[d.getDay()]}</div><div class="dia-num">${d.getDate()}</div><div class="mes">${meses[d.getMonth()]}</div>`
+    btn.onclick = () => selecionarData(btn, iso)
+    if(iso === dataSelecionada) btn.classList.add('sel')
+    scroll.appendChild(btn)
+  }
+}
+
+function selecionarData(btn, iso) {
+  document.querySelectorAll('.data-btn').forEach(b => b.classList.remove('sel'))
+  btn.classList.add('sel')
+  dataSelecionada = iso
   horarioSelecionado = ''
+  carregarHorarios(iso)
+}
+
+async function carregarHorarios(data) {
   const container = document.getElementById('horarios-container')
-  container.innerHTML = '<p class="carregando-horarios">Carregando horários...</p>'
+  container.innerHTML = '<div class="empty-msg">Carregando...</div>'
   const res = await fetch(`${API}/agendamentos/horarios-ocupados?clinicaId=${clinicaId}&data=${data}`)
-  const resultado = await res.json()
-
-  if (resultado.diaInativo) {
-    container.innerHTML = '<p class="carregando-horarios">❌ Este dia não tem atendimento. Escolha outra data.</p>'
+  const result = await res.json()
+  if(result.diaInativo || !result.horarios?.length) {
+    container.innerHTML = '<div class="empty-msg">Sem atendimento neste dia</div>'
     return
   }
-
-  if (resultado.horarios.length === 0) {
-    container.innerHTML = '<p class="carregando-horarios">Nenhum horário disponível para este dia.</p>'
-    return
-  }
-
-  container.innerHTML = '<div class="horarios">' +
-    resultado.horarios.map(h => {
-      const ocupado = resultado.ocupados.includes(h)
-      return `<button class="horario-btn" ${ocupado ? 'disabled' : ''} onclick="selecionarHorario(this,'${h}')">${h}</button>`
+  container.innerHTML = '<div class="horarios-grid">' +
+    result.horarios.map(h => {
+      const ocu = result.ocupados?.includes(h)
+      return `<button class="horario-btn${ocu?' ':' '}" ${ocu?'disabled':''} onclick="selecionarHorario(this,'${h}')">${h}</button>`
     }).join('') + '</div>'
 }
 
-function selecionarServico(btn, servico) {
-  document.querySelectorAll('.servico-btn').forEach(b => b.classList.remove('selecionado'))
-  btn.classList.add('selecionado')
-  servicoSelecionado = servico
+function selecionarHorario(btn, h) {
+  document.querySelectorAll('.horario-btn').forEach(b => b.classList.remove('sel'))
+  btn.classList.add('sel')
+  horarioSelecionado = h
 }
 
-function selecionarHorario(btn, hora) {
-  document.querySelectorAll('.horario-btn').forEach(b => b.classList.remove('selecionado'))
-  btn.classList.add('selecionado')
-  horarioSelecionado = hora
-}
-
-async function agendar() {
+// ── CONFIRMAR ──────────────────────────────────────────
+async function confirmarAgendamento() {
+  hideErr('err4')
+  const btn = document.getElementById('btn-confirmar')
+  btn.disabled = true; btn.textContent = 'Confirmando...'
   const nome = document.getElementById('nome').value.trim()
   const telefone = document.getElementById('telefone').value.trim()
-  const data = document.getElementById('data').value
-  const erro = document.getElementById('erro-form')
-  if (!nome) { erro.textContent = 'Digite seu nome'; return }
-  if (!telefone) { erro.textContent = 'Digite seu WhatsApp'; return }
-  if (!servicoSelecionado) { erro.textContent = 'Selecione o serviço'; return }
-  if (!data) { erro.textContent = 'Selecione a data'; return }
-  if (!horarioSelecionado) { erro.textContent = 'Selecione um horário'; return }
-  if (!clinicaId) { erro.textContent = 'Link inválido'; return }
-  erro.textContent = ''
-  const btn = document.querySelector('.btn-agendar')
-  btn.disabled = true
-  btn.textContent = 'Agendando...'
   const res = await fetch(`${API}/agendamentos`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ clinicaId, pacienteNome: nome, pacienteTelefone: telefone, servico: servicoSelecionado, data, hora: horarioSelecionado })
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({clinicaId, pacienteNome:nome, pacienteTelefone:telefone, servico:servicoSelecionado, data:dataSelecionada, hora:horarioSelecionado})
   })
-  const resposta = await res.json()
-  if (res.ok) {
-    document.getElementById('formulario').style.display = 'none'
-    document.getElementById('sucesso').style.display = 'block'
-    const [ano, mes, dia] = data.split('-')
+  const data = await res.json()
+  if(res.ok) {
+    irTela('sucesso')
+    const [a,m,d] = dataSelecionada.split('-')
     document.getElementById('sucesso-detalhe').innerHTML = `
-      <p>Cliente: <strong>${nome}</strong></p>
-      <p>Serviço: <strong>${servicoSelecionado}</strong></p>
-      <p>Data: <strong>${dia}/${mes}/${ano}</strong></p>
-      <p>Horário: <strong>${horarioSelecionado}</strong></p>
+      <div class="sucesso-detalhe-row"><span>Serviço</span><span>${servicoSelecionado}</span></div>
+      <div class="sucesso-detalhe-row"><span>Data</span><span>${d}/${m}/${a}</span></div>
+      <div class="sucesso-detalhe-row"><span>Horário</span><span>${horarioSelecionado}</span></div>
+      <div class="sucesso-detalhe-row"><span>Nome</span><span>${nome}</span></div>
     `
+    const tel = telefone.replace(/\D/g,'')
+    const msg = encodeURIComponent(`Olá! Confirmo meu agendamento:\n\n• Serviço: ${servicoSelecionado}\n• Data: ${d}/${m}/${a}\n• Horário: ${horarioSelecionado}\n• Nome: ${nome}`)
+    document.getElementById('whatsapp-btn').href = `https://wa.me/55${tel}?text=${msg}`
   } else {
-    erro.textContent = resposta.erro || 'Erro ao agendar. Tente novamente.'
+    showErr('err4', data.erro || 'Erro ao agendar. Tente novamente.')
     btn.disabled = false
-    btn.textContent = 'Confirmar agendamento'
+    btn.innerHTML = 'Confirmar agendamento <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7h8M7.5 3.5L11 7l-3.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>'
   }
 }
 
 carregarClinica()
-carregarHorarios()
 </script>
 </body>
 </html>
