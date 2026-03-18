@@ -4,6 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AgendoRapido — Painel</title>
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#1e40af">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="AgendoRapido">
+<link rel="apple-touch-icon" href="/icon-192.png">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { font-family: 'Segoe UI', sans-serif; background: #f8fafc; color: #1e293b; }
@@ -493,6 +499,7 @@
           <button class="intervalo-btn" onclick="selecionarIntervalo(this,90)">1h30</button>
           <button class="intervalo-btn" onclick="selecionarIntervalo(this,120)">2 horas</button>
           <button class="intervalo-btn" onclick="selecionarIntervalo(this,150)">2h30</button>
+          <button class="intervalo-btn" onclick="selecionarIntervalo(this,180)">3 horas</button>
         </div>
       </div>
       <div class="config-card">
@@ -1283,6 +1290,13 @@ async function salvarAgendamentoManual() {
 const token = localStorage.getItem('token')
 const negocio = localStorage.getItem('negocio')
 if (token && negocio) mostrarPainel(negocio)
+
+// ---- PWA: registrar service worker ----
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js')
+    .then(() => console.log('Service Worker registrado'))
+    .catch(err => console.log('SW erro:', err))
+}
 </script>
 </body>
 </html>
