@@ -111,7 +111,14 @@ body {
 .success-screen { text-align: center; padding: 20px 0; }
 .success-icon { width: 64px; height: 64px; border-radius: 50%; background: #dcfce7; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; }
 .otp-wrap { display: flex; gap: 8px; margin: 8px 0 20px; }
-.otp-wrap input { flex: 1; height: 52px; text-align: center; font-size: 22px; font-weight: 700; border: 1.5px solid var(--border2); border-radius: 9px; outline: none; padding: 0; transition: border-color .15s; }
+.otp-wrap input {
+  flex: 1; height: 52px; text-align: center;
+  font-size: 22px; font-weight: 700;
+  border: 1.5px solid var(--border2); border-radius: 9px;
+  outline: none; padding: 0;
+  transition: border-color .15s;
+  min-width: 0; max-width: 52px;
+}
 .otp-wrap input:focus { border-color: var(--accent); }
 .otp-wrap input.filled { border-color: var(--accent); background: var(--accent-light); }
 .resend-wrap { text-align: center; font-size: 13px; color: var(--text3); margin-bottom: 16px; }
@@ -275,7 +282,7 @@ body {
       <button class="btn-submit" id="btn-nova" onclick="salvarNovaSenha()">Salvar nova senha <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7h8M7.5 3.5L11 7l-3.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
     </div>
 
-    <p class="terms" style="margin-top:20px">Ao continuar, você concorda com nossos <a href="#">Termos de uso</a> e <a href="#">Política de privacidade</a></p>
+    <p class="terms" style="margin-top:20px">Ao continuar, você concorda com nossos <a href="./termos.html">Termos de uso</a> e <a href="./politica.html">Política de privacidade</a></p>
   </div>
 </div>
 
