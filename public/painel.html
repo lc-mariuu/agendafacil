@@ -437,6 +437,7 @@
       <button class="menu-item" onclick="window.location.href='planos.html'">Planos</button>
     </div>
     <div class="sidebar-footer">
+      <button id="btn-instalar-app" onclick="instalarApp()" style="display:none;width:100%;background:#1e40af;border:none;color:white;padding:9px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;margin-bottom:8px">📲 Instalar app</button>
       <button class="btn-sair" onclick="sair()">Sair da conta</button>
     </div>
   </div>
@@ -1297,6 +1298,30 @@ if ('serviceWorker' in navigator) {
     .then(() => console.log('Service Worker registrado'))
     .catch(err => console.log('SW erro:', err))
 }
+
+// ---- PWA: botão instalar ----
+let deferredPrompt = null
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault()
+  deferredPrompt = e
+  const btn = document.getElementById('btn-instalar-app')
+  if (btn) btn.style.display = 'block'
+})
+
+function instalarApp() {
+  if (!deferredPrompt) return
+  deferredPrompt.prompt()
+  deferredPrompt.userChoice.then(() => {
+    deferredPrompt = null
+    const btn = document.getElementById('btn-instalar-app')
+    if (btn) btn.style.display = 'none'
+  })
+}
+
+window.addEventListener('appinstalled', () => {
+  const btn = document.getElementById('btn-instalar-app')
+  if (btn) btn.style.display = 'none'
+})
 </script>
 </body>
 </html>
