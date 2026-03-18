@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AgendoRapido — O sistema de agendamento que seu negócio merece</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Cal+Sans&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #ffffff;
+  --bg2: #f7f7f8;
+  --bg3: #f0f0f2;
+  --border: rgba(0,0,0,0.08);
+  --border2: rgba(0,0,0,0.12);
+  --text: #0d0d0e;
+  --text2: #5a5a6a;
+  --text3: #8a8a9a;
+  --accent: #2563eb;
+  --accent-light: #eff4ff;
+  --accent-hover: #1d4ed8;
+  --green: #16a34a;
+  --green-light: #f0fdf4;
+  --radius: 12px;
+  --radius-lg: 20px;
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--text); overflow-x: hidden; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+
+/* NAV */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  height: 60px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 6%;
+  background: rgba(255,255,255,0.85);
+  backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid var(--border);
+}
+.logo {
+  font-size: 17px; font-weight: 600; color: var(--text);
+  text-decoration: none; letter-spacing: -0.01em;
+}
+.logo span { color: var(--accent); }
+.nav-center { display: flex; gap: 28px; list-style: none; }
+.nav-center a { font-size: 14px; color: var(--text2); text-decoration: none; font-weight: 500; transition: color .15s; }
+.nav-center a:hover { color: var(--text); }
+.nav-right { display: flex; gap: 10px; align-items: center; }
+.btn-outline { font-size: 14px; font-weight: 500; color: var(--text); text-decoration: none; padding: 7px 16px; border-radius: 8px; border: 1px solid var(--border2); background: var(--bg); transition: background .15s; }
+.btn-outline:hover { background: var(--bg2); }
+.btn-solid { font-size: 14px; font-weight: 600; color: #fff; text-decoration: none; padding: 8px 18px; border-radius: 8px; background: var(--accent); transition: background .15s; }
+.btn-solid:hover { background: var(--accent-hover); }
+
+/* HERO */
+.hero {
+  padding: 130px 6% 90px;
+  display: grid;
+  grid-template-columns: 1fr 1.1fr;
+  gap: 80px;
+  align-items: center;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 7px;
+  background: var(--accent-light); color: var(--accent);
+  padding: 5px 12px; border-radius: 100px;
+  font-size: 12px; font-weight: 600;
+  margin-bottom: 22px;
+  border: 1px solid rgba(37,99,235,0.15);
+}
+.badge-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+
+.hero h1 {
+  font-size: clamp(36px, 4vw, 56px);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  color: var(--text);
+  margin-bottom: 20px;
+}
+.hero h1 span { color: var(--accent); }
+
+.hero-sub {
+  font-size: 17px; line-height: 1.7;
+  color: var(--text2); max-width: 480px;
+  margin-bottom: 36px;
+}
+
+.hero-actions { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; margin-bottom: 48px; }
+.btn-hero {
+  display: inline-flex; align-items: center; gap: 7px;
+  background: var(--accent); color: #fff;
+  padding: 13px 24px; border-radius: 10px; border: none;
+  font-size: 15px; font-weight: 600; cursor: pointer;
+  text-decoration: none; transition: background .15s, transform .15s;
+  font-family: inherit;
+}
+.btn-hero:hover { background: var(--accent-hover); transform: translateY(-1px); }
+.btn-hero-ghost {
+  display: inline-flex; align-items: center; gap: 6px;
+  color: var(--text2); font-size: 14px; font-weight: 500;
+  text-decoration: none; padding: 13px 4px;
+  transition: color .15s;
+}
+.btn-hero-ghost:hover { color: var(--text); }
+
+.hero-social {
+  display: flex; align-items: center; gap: 14px;
+}
+.social-avatars { display: flex; }
+.social-avatars img {
+  width: 32px; height: 32px; border-radius: 50%;
+  border: 2px solid var(--bg);
+  margin-right: -8px; object-fit: cover;
+}
+.social-text { font-size: 13px; color: var(--text2); line-height: 1.4; }
+.social-text strong { color: var(--text); font-weight: 600; }
+.social-stars { color: #f59e0b; font-size: 11px; letter-spacing: 1px; }
+
+/* Hero visual */
+.hero-visual { position: relative; }
+
+.dashboard-mock {
+  background: var(--bg);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.04), 0 20px 60px -10px rgba(0,0,0,0.12);
+  overflow: hidden;
+}
+.mock-bar {
+  padding: 12px 16px;
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 10px;
+}
+.mock-dots { display: flex; gap: 5px; }
+.mock-dot { width: 10px; height: 10px; border-radius: 50%; }
+.mock-url {
+  flex: 1; background: var(--bg); border: 1px solid var(--border);
+  border-radius: 6px; padding: 5px 10px;
+  font-size: 11px; color: var(--text3);
+  font-family: -apple-system, sans-serif;
+}
+.mock-body { padding: 20px; }
+.mock-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 16px; }
+.mock-stat {
+  background: var(--bg2); border-radius: 10px; padding: 14px;
+  border: 1px solid var(--border);
+}
+.mock-stat-val { font-size: 26px; font-weight: 700; color: var(--accent); letter-spacing: -0.02em; line-height: 1; }
+.mock-stat-lbl { font-size: 11px; color: var(--text3); margin-top: 4px; font-weight: 500; }
+.mock-table-head {
+  display: grid; grid-template-columns: 1fr 1fr auto auto;
+  gap: 8px; padding: 8px 12px;
+  font-size: 11px; font-weight: 600; color: var(--text3);
+  text-transform: uppercase; letter-spacing: .06em;
+  border-bottom: 1px solid var(--border);
+}
+.mock-row {
+  display: grid; grid-template-columns: 1fr 1fr auto auto;
+  gap: 8px; padding: 12px;
+  border-bottom: 1px solid var(--border);
+  align-items: center; font-size: 13px;
+  transition: background .1s;
+}
+.mock-row:hover { background: var(--bg2); }
+.mock-row:last-child { border-bottom: none; }
+.mock-name { font-weight: 500; color: var(--text); }
+.mock-service { color: var(--text2); font-size: 12px; }
+.mock-time { color: var(--text2); font-size: 12px; }
+.mock-badge { padding: 3px 10px; border-radius: 100px; font-size: 11px; font-weight: 600; }
+.badge-ok { background: var(--green-light); color: var(--green); }
+.badge-pend { background: #fef9c3; color: #854d0e; }
+
+/* Float card */
+.float-card {
+  position: absolute;
+  background: var(--bg);
+  border-radius: 14px;
+  padding: 14px 18px;
+  border: 1px solid var(--border);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+  min-width: 180px;
+}
+.float-card.fc-1 { bottom: -18px; left: -28px; }
+.float-card.fc-2 { top: 20px; right: -20px; }
+.fc-label { font-size: 11px; color: var(--text3); font-weight: 500; margin-bottom: 5px; text-transform: uppercase; letter-spacing: .06em; }
+.fc-val { font-size: 24px; font-weight: 700; color: var(--text); letter-spacing: -0.02em; }
+.fc-up { font-size: 12px; font-weight: 600; color: var(--green); }
+.fc-link { display: flex; flex-direction: column; gap: 4px; }
+.fc-link-url { font-size: 11px; color: var(--accent); font-family: monospace; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px; }
+.fc-copy-btn { display: inline-flex; align-items: center; gap: 4px; background: var(--accent); color: #fff; border: none; padding: 5px 10px; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer; font-family: inherit; width: fit-content; }
+
+/* LOGOS */
+.logos-bar {
+  background: var(--bg2);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 18px 6%;
+}
+.logos-inner {
+  max-width: 1280px; margin: 0 auto;
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+}
+.logos-label { font-size: 12px; font-weight: 500; color: var(--text3); white-space: nowrap; margin-right: 8px; }
+.seg-chip {
+  padding: 6px 14px; background: var(--bg); border: 1px solid var(--border);
+  border-radius: 100px; font-size: 12px; font-weight: 500; color: var(--text2);
+  white-space: nowrap;
+}
+
+/* SECTIONS */
+.section { padding: 100px 6%; max-width: 1280px; margin: 0 auto; }
+.full-section { padding: 100px 6%; }
+.full-section .inner { max-width: 1280px; margin: 0 auto; }
+
+.label-tag {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 12px; font-weight: 600; color: var(--accent);
+  letter-spacing: .06em; text-transform: uppercase;
+  margin-bottom: 16px;
+}
+.label-tag::before { content: ''; width: 16px; height: 1.5px; background: var(--accent); }
+
+.section-h {
+  font-size: clamp(28px, 3vw, 42px);
+  font-weight: 700; letter-spacing: -0.02em;
+  line-height: 1.15; color: var(--text);
+  margin-bottom: 16px;
+}
+.section-sub { font-size: 17px; color: var(--text2); line-height: 1.6; max-width: 520px; }
+
+/* FEATURES */
+.features-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center; }
+.feat-list { display: flex; flex-direction: column; gap: 28px; }
+.feat-item { display: flex; gap: 16px; }
+.feat-icon-wrap {
+  width: 44px; height: 44px; border-radius: 10px;
+  background: var(--accent-light); display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; border: 1px solid rgba(37,99,235,0.12);
+}
+.feat-icon { width: 20px; height: 20px; }
+.feat-title { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+.feat-desc { font-size: 14px; color: var(--text2); line-height: 1.6; }
+
+/* Feature right side: large screenshot */
+.feat-screen {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+  position: relative;
+}
+.feat-screen img { width: 100%; display: block; }
+.feat-screen-inner { background: var(--bg2); }
+.feat-screen-bar { padding: 10px 14px; display: flex; align-items: center; gap: 8px; background: var(--bg); border-bottom: 1px solid var(--border); }
+.feat-screen-body { padding: 20px; }
+
+/* STEPS */
+.steps-bg { background: var(--text); }
+.steps-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 1px; background: rgba(255,255,255,0.08); }
+.step-cell {
+  background: var(--text); padding: 40px 32px;
+  border-right: 1px solid rgba(255,255,255,0.07);
+  transition: background .2s;
+}
+.step-cell:last-child { border-right: none; }
+.step-cell:hover { background: #1a1a2e; }
+.step-number {
+  font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.3);
+  letter-spacing: .1em; text-transform: uppercase; margin-bottom: 20px;
+}
+.step-title { font-size: 17px; font-weight: 600; color: #fff; margin-bottom: 8px; }
+.step-desc { font-size: 14px; color: rgba(255,255,255,0.45); line-height: 1.6; }
+.step-accent { color: var(--accent); font-size: 13px; font-weight: 600; margin-top: 12px; display: block; }
+
+/* PHOTOS GRID */
+.photos-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr 1fr;
+  grid-template-rows: 260px 260px;
+  gap: 12px;
+}
+.photo-cell { border-radius: var(--radius-lg); overflow: hidden; position: relative; background: var(--bg3); }
+.photo-cell img { width: 100%; height: 100%; object-fit: cover; transition: transform .6s ease; display: block; }
+.photo-cell:hover img { transform: scale(1.04); }
+.photo-cell.tall { grid-row: 1 / 3; }
+.photo-cell.wide { grid-column: 2 / 4; }
+.photo-caption {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  padding: 20px 20px 16px;
+  background: linear-gradient(transparent, rgba(0,0,0,0.55));
+  color: #fff; font-size: 13px; font-weight: 500;
+  opacity: 0; transition: opacity .3s;
+}
+.photo-cell:hover .photo-caption { opacity: 1; }
+
+/* TESTIMONIALS */
+.testi-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; }
+.testi-card {
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 28px;
+  transition: border-color .2s, box-shadow .2s;
+}
+.testi-card:hover { border-color: var(--border2); box-shadow: 0 8px 30px rgba(0,0,0,0.06); }
+.testi-stars { display: flex; gap: 2px; margin-bottom: 14px; }
+.star-icon { width: 14px; height: 14px; fill: #f59e0b; }
+.testi-text { font-size: 14px; line-height: 1.75; color: #333; margin-bottom: 20px; }
+.testi-author { display: flex; align-items: center; gap: 12px; }
+.testi-avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
+.testi-avatar-initial {
+  width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0;
+  background: var(--accent); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; font-weight: 700;
+}
+.testi-name { font-size: 13px; font-weight: 600; }
+.testi-role { font-size: 12px; color: var(--text3); margin-top: 1px; }
+
+/* PRICING */
+.pricing-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 780px; margin: 0 auto; }
+.plan-card {
+  border-radius: var(--radius-lg); padding: 36px;
+  border: 1px solid var(--border);
+  position: relative; transition: border-color .2s, box-shadow .2s;
+}
+.plan-card:hover { border-color: var(--border2); box-shadow: 0 12px 40px rgba(0,0,0,0.08); }
+.plan-card.featured {
+  background: var(--text); border-color: transparent;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+}
+.plan-popular {
+  position: absolute; top: -13px; left: 50%; transform: translateX(-50%);
+  background: var(--accent); color: #fff;
+  padding: 4px 14px; border-radius: 100px;
+  font-size: 11px; font-weight: 700; white-space: nowrap;
+  letter-spacing: .04em;
+}
+.plan-name { font-size: 12px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: .1em; margin-bottom: 16px; }
+.plan-card.featured .plan-name { color: rgba(255,255,255,0.4); }
+.plan-price { font-size: 52px; font-weight: 700; letter-spacing: -0.03em; line-height: 1; margin-bottom: 4px; }
+.plan-card.featured .plan-price { color: #fff; }
+.plan-price sup { font-size: 20px; vertical-align: super; }
+.plan-price sub { font-size: 15px; font-weight: 400; color: var(--text3); }
+.plan-card.featured .plan-price sub { color: rgba(255,255,255,0.35); }
+.plan-desc { font-size: 13px; color: var(--text3); margin-bottom: 28px; }
+.plan-card.featured .plan-desc { color: rgba(255,255,255,0.35); }
+.plan-divider { height: 1px; background: var(--border); margin-bottom: 24px; }
+.plan-card.featured .plan-divider { background: rgba(255,255,255,0.08); }
+.plan-features { list-style: none; display: flex; flex-direction: column; gap: 11px; margin-bottom: 28px; }
+.plan-features li { display: flex; align-items: center; gap: 9px; font-size: 14px; color: #444; }
+.plan-card.featured .plan-features li { color: rgba(255,255,255,0.75); }
+.check-icon { width: 16px; height: 16px; flex-shrink: 0; }
+.btn-plan {
+  display: block; width: 100%; padding: 13px; text-align: center;
+  border-radius: 9px; font-size: 14px; font-weight: 600;
+  text-decoration: none; transition: all .15s; cursor: pointer;
+  font-family: inherit; border: 1.5px solid var(--border2); background: transparent; color: var(--text);
+}
+.btn-plan:hover { background: var(--bg2); }
+.btn-plan.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+.btn-plan.primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+
+/* FAQ */
+.faq-wrap { max-width: 640px; margin: 56px auto 0; }
+.faq-item { border-bottom: 1px solid var(--border); }
+.faq-q {
+  width: 100%; padding: 20px 0; background: none; border: none;
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 15px; font-weight: 500; color: var(--text);
+  cursor: pointer; text-align: left; gap: 16px;
+  font-family: inherit; transition: color .15s;
+}
+.faq-q:hover { color: var(--accent); }
+.faq-icon {
+  width: 22px; height: 22px; border-radius: 50%;
+  border: 1.5px solid var(--border2); display: flex;
+  align-items: center; justify-content: center;
+  font-size: 14px; flex-shrink: 0; color: var(--text2);
+  transition: transform .3s, background .2s, border-color .2s;
+}
+.faq-item.open .faq-icon { transform: rotate(45deg); background: var(--accent); border-color: var(--accent); color: #fff; }
+.faq-a { max-height: 0; overflow: hidden; transition: max-height .35s ease; font-size: 14px; color: var(--text2); line-height: 1.7; }
+.faq-item.open .faq-a { max-height: 160px; padding-bottom: 20px; }
+
+/* CTA FINAL */
+.cta-section {
+  background: var(--accent);
+  padding: 100px 6%;
+  text-align: center;
+  position: relative; overflow: hidden;
+}
+.cta-section::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 50% 0%, rgba(255,255,255,0.15) 0%, transparent 60%);
+  pointer-events: none;
+}
+.cta-section h2 {
+  font-size: clamp(32px, 4vw, 52px);
+  font-weight: 700; color: #fff;
+  letter-spacing: -0.02em; line-height: 1.15;
+  margin-bottom: 16px; position: relative;
+}
+.cta-section p { font-size: 17px; color: rgba(255,255,255,0.7); margin-bottom: 36px; position: relative; }
+.btn-cta {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: #fff; color: var(--accent);
+  padding: 14px 28px; border-radius: 10px;
+  font-size: 15px; font-weight: 700;
+  text-decoration: none; transition: transform .15s, box-shadow .15s;
+  position: relative;
+  font-family: inherit;
+}
+.btn-cta:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(0,0,0,0.2); }
+.cta-note { font-size: 13px; color: rgba(255,255,255,0.5); margin-top: 16px; position: relative; }
+
+/* FOOTER */
+footer {
+  background: var(--bg2); padding: 36px 6%;
+  border-top: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 16px; max-width: none;
+}
+.footer-logo { font-size: 15px; font-weight: 600; color: var(--text); }
+.footer-logo span { color: var(--accent); }
+footer p { font-size: 13px; color: var(--text3); }
+
+/* REVEAL */
+.reveal { opacity: 0; transform: translateY(24px); transition: opacity .65s ease, transform .65s ease; }
+.reveal.vis { opacity: 1; transform: none; }
+.rd1 { transition-delay: .08s; }
+.rd2 { transition-delay: .16s; }
+.rd3 { transition-delay: .24s; }
+
+/* MOBILE */
+@media (max-width: 1024px) {
+  .hero { grid-template-columns: 1fr; gap: 48px; }
+  .float-card { display: none; }
+  .features-grid { grid-template-columns: 1fr; }
+  .feat-screen { display: none; }
+}
+@media (max-width: 768px) {
+  .nav-center { display: none; }
+  .steps-grid { grid-template-columns: 1fr 1fr; }
+  .testi-grid { grid-template-columns: 1fr; }
+  .pricing-grid { grid-template-columns: 1fr; max-width: 420px; }
+  .photos-grid { grid-template-columns: 1fr 1fr; grid-template-rows: auto; }
+  .photo-cell.tall { grid-row: auto; }
+  .photo-cell.wide { grid-column: auto; }
+  .section { padding: 72px 5%; }
+  .full-section { padding: 72px 5%; }
+}
+@media (max-width: 500px) {
+  .steps-grid { grid-template-columns: 1fr; }
+  .photos-grid { grid-template-columns: 1fr; }
+  nav { padding: 0 5%; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="/" class="logo">Agendo<span>Rapido</span></a>
+  <ul class="nav-center">
+    <li><a href="#como-funciona">Como funciona</a></li>
+    <li><a href="#depoimentos">Depoimentos</a></li>
+    <li><a href="#precos">Preços</a></li>
+    <li><a href="#faq">FAQ</a></li>
+  </ul>
+  <div class="nav-right">
+    <a href="/painel.html" class="btn-outline">Entrar</a>
+    <a href="/painel.html" class="btn-solid">Começar grátis</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-left">
+    <div class="hero-badge reveal"><div class="badge-dot"></div> 14 dias grátis, sem cartão</div>
+    <h1 class="reveal rd1">O sistema de agendamento que seu negócio merecia <span>desde ontem</span></h1>
+    <p class="hero-sub reveal rd2">Seus clientes agendam online, você recebe tudo organizado no painel. Sem confusão no WhatsApp, sem horário perdido, sem planilha.</p>
+    <div class="hero-actions reveal rd3">
+      <a href="/painel.html" class="btn-hero">
+        Criar conta grátis
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7h8M7.5 3.5L11 7l-3.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+      <a href="#demo" class="btn-hero-ghost">
+        Ver demonstração
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1.75A5.25 5.25 0 1 1 1.75 7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M7 4.5V7l1.75 1.75" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+    </div>
+    <div class="hero-social reveal">
+      <div class="social-avatars">
+        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=64&h=64&fit=crop&crop=face" alt="">
+        <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=64&h=64&fit=crop&crop=face" alt="">
+        <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=64&h=64&fit=crop&crop=face" alt="">
+        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=64&h=64&fit=crop&crop=face" alt="">
+      </div>
+      <div class="social-text">
+        <div class="social-stars">★★★★★</div>
+        <div><strong>+500 negócios</strong> já usam o AgendoRapido</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-visual reveal rd2" id="demo">
+    <div class="dashboard-mock">
+      <div class="mock-bar">
+        <div class="mock-dots">
+          <div class="mock-dot" style="background:#ff5f57"></div>
+          <div class="mock-dot" style="background:#febc2e"></div>
+          <div class="mock-dot" style="background:#28c840"></div>
+        </div>
+        <div class="mock-url">agendorapido.com/painel</div>
+      </div>
+      <div class="mock-body">
+        <div class="mock-stats">
+          <div class="mock-stat"><div class="mock-stat-val">8</div><div class="mock-stat-lbl">Hoje</div></div>
+          <div class="mock-stat"><div class="mock-stat-val">41</div><div class="mock-stat-lbl">Esta semana</div></div>
+          <div class="mock-stat"><div class="mock-stat-val">312</div><div class="mock-stat-lbl">Total</div></div>
+        </div>
+        <div class="mock-table-head">
+          <span>Cliente</span><span>Serviço</span><span>Horário</span><span>Status</span>
+        </div>
+        <div class="mock-row">
+          <span class="mock-name">João Silva</span>
+          <span class="mock-service">Corte + Barba</span>
+          <span class="mock-time">14:30</span>
+          <span class="mock-badge badge-ok">confirmado</span>
+        </div>
+        <div class="mock-row">
+          <span class="mock-name">Maria Souza</span>
+          <span class="mock-service">Consulta</span>
+          <span class="mock-time">15:00</span>
+          <span class="mock-badge badge-ok">confirmado</span>
+        </div>
+        <div class="mock-row">
+          <span class="mock-name">Pedro Costa</span>
+          <span class="mock-service">Corte</span>
+          <span class="mock-time">16:30</span>
+          <span class="mock-badge badge-pend">pendente</span>
+        </div>
+        <div class="mock-row">
+          <span class="mock-name">Ana Lima</span>
+          <span class="mock-service">Hidratação</span>
+          <span class="mock-time">17:00</span>
+          <span class="mock-badge badge-ok">confirmado</span>
+        </div>
+      </div>
+    </div>
+    <div class="float-card fc-1">
+      <div class="fc-label">Seu link de agendamento</div>
+      <div class="fc-link">
+        <div class="fc-link-url">agendorapido.com/agendar?id=...</div>
+        <button class="fc-copy-btn">
+          <svg width="11" height="11" viewBox="0 0 14 14" fill="none"><rect x="4.5" y="4.5" width="8" height="8" rx="1.5" stroke="currentColor" stroke-width="1.5"/><path d="M1.5 9.5V2.5a1 1 0 0 1 1-1h7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          Copiar link
+        </button>
+      </div>
+    </div>
+    <div class="float-card fc-2">
+      <div class="fc-label">Este mês</div>
+      <div class="fc-val">127 <span class="fc-up">+23%</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- LOGOS BAR -->
+<div class="logos-bar">
+  <div class="logos-inner">
+    <span class="logos-label">Usado por:</span>
+    <span class="seg-chip">Barbearias</span>
+    <span class="seg-chip">Clínicas</span>
+    <span class="seg-chip">Salões de beleza</span>
+    <span class="seg-chip">Pet shops</span>
+    <span class="seg-chip">Academias</span>
+    <span class="seg-chip">Estúdios de tatuagem</span>
+    <span class="seg-chip">Consultórios</span>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<section class="section" id="features">
+  <div class="reveal"><div class="label-tag">Funcionalidades</div></div>
+  <div class="features-grid">
+    <div>
+      <h2 class="section-h reveal rd1">Tudo que você precisa para gerenciar seus horários</h2>
+      <p class="section-sub reveal rd2" style="margin-bottom:48px">Um painel simples e completo. Sem curva de aprendizado, sem funcionalidades que você nunca vai usar.</p>
+      <div class="feat-list">
+        <div class="feat-item reveal">
+          <div class="feat-icon-wrap">
+            <svg class="feat-icon" viewBox="0 0 20 20" fill="none"><path d="M10 2a8 8 0 1 1 0 16A8 8 0 0 1 10 2Z" stroke="#2563eb" stroke-width="1.5"/><path d="M10 6v4l2.5 2.5" stroke="#2563eb" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div>
+            <div class="feat-title">Agendamento online 24h</div>
+            <div class="feat-desc">Seu cliente acessa o link, escolhe o horário disponível e confirma — a qualquer hora, sem depender de você.</div>
+          </div>
+        </div>
+        <div class="feat-item reveal rd1">
+          <div class="feat-icon-wrap">
+            <svg class="feat-icon" viewBox="0 0 20 20" fill="none"><rect x="2" y="4" width="16" height="13" rx="2" stroke="#2563eb" stroke-width="1.5"/><path d="M6 2v4M14 2v4M2 9h16" stroke="#2563eb" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </div>
+          <div>
+            <div class="feat-title">Painel de gestão completo</div>
+            <div class="feat-desc">Veja todos os agendamentos, confirme, cancele e conclua atendimentos direto do painel, com aviso automático no WhatsApp.</div>
+          </div>
+        </div>
+        <div class="feat-item reveal rd2">
+          <div class="feat-icon-wrap">
+            <svg class="feat-icon" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="8" r="4" stroke="#2563eb" stroke-width="1.5"/><path d="M2.5 17c0-3 3.36-5.5 7.5-5.5s7.5 2.5 7.5 5.5" stroke="#2563eb" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </div>
+          <div>
+            <div class="feat-title">Página bio para Instagram</div>
+            <div class="feat-desc">Uma página profissional com seus serviços, localização e link de agendamento. Perfeita para a bio do Instagram.</div>
+          </div>
+        </div>
+        <div class="feat-item reveal rd3">
+          <div class="feat-icon-wrap">
+            <svg class="feat-icon" viewBox="0 0 20 20" fill="none"><path d="M2 10.5l5.5 5.5 10.5-11" stroke="#2563eb" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div>
+            <div class="feat-title">App instalável no celular</div>
+            <div class="feat-desc">Instale como app no celular sem precisar da Play Store. Acesse o painel de qualquer lugar, igual a um app nativo.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: mock agendar page -->
+    <div class="feat-screen reveal rd2">
+      <div class="feat-screen-inner">
+        <div class="feat-screen-bar">
+          <div class="mock-dots"><div class="mock-dot" style="background:#ff5f57"></div><div class="mock-dot" style="background:#febc2e"></div><div class="mock-dot" style="background:#28c840"></div></div>
+          <div class="mock-url">agendorapido.com/agendar?id=barbearia</div>
+        </div>
+        <div class="feat-screen-body">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px">
+            <div style="width:48px;height:48px;border-radius:50%;background:var(--accent-light);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;color:var(--accent);">B</div>
+            <div>
+              <div style="font-weight:600;font-size:15px">Barbearia Premium</div>
+              <div style="font-size:12px;color:var(--text3)">Seg–Sab · 9h às 19h</div>
+            </div>
+          </div>
+          <div style="font-size:12px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">Serviços</div>
+          <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:20px">
+            <div style="padding:12px;border:1.5px solid var(--accent);border-radius:9px;background:var(--accent-light);font-size:13px;font-weight:500;display:flex;justify-content:space-between"><span>Corte + Barba</span><span style="color:var(--accent)">Selecionado</span></div>
+            <div style="padding:12px;border:1px solid var(--border);border-radius:9px;font-size:13px;color:var(--text2);display:flex;justify-content:space-between"><span>Corte simples</span><span>30 min</span></div>
+            <div style="padding:12px;border:1px solid var(--border);border-radius:9px;font-size:13px;color:var(--text2);display:flex;justify-content:space-between"><span>Barba</span><span>20 min</span></div>
+          </div>
+          <div style="font-size:12px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">Horários disponíveis</div>
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px">
+            <div style="padding:8px;text-align:center;border:1px solid var(--border);border-radius:7px;font-size:12px;color:var(--text2)">09:00</div>
+            <div style="padding:8px;text-align:center;border:1.5px solid var(--accent);border-radius:7px;font-size:12px;background:var(--accent);color:#fff;font-weight:600">10:00</div>
+            <div style="padding:8px;text-align:center;border:1px solid var(--border);border-radius:7px;font-size:12px;color:var(--text3);text-decoration:line-through">11:00</div>
+            <div style="padding:8px;text-align:center;border:1px solid var(--border);border-radius:7px;font-size:12px;color:var(--text2)">14:00</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COMO FUNCIONA -->
+<section class="full-section steps-bg" id="como-funciona">
+  <div class="inner">
+    <div style="margin-bottom:52px">
+      <div class="label-tag reveal" style="color:rgba(255,255,255,0.4)"><span style="background:rgba(255,255,255,0.2);width:16px;height:1.5px;display:inline-block;margin-right:6px;vertical-align:middle"></span>Como funciona</div>
+      <h2 class="section-h reveal rd1" style="color:#fff;max-width:600px">Do cadastro ao primeiro agendamento em menos de 5 minutos</h2>
+    </div>
+    <div class="steps-grid">
+      <div class="step-cell reveal">
+        <div class="step-number">Passo 01</div>
+        <div class="step-title">Crie sua conta</div>
+        <div class="step-desc">Cadastre seu negócio em 2 minutos. Informe seus serviços, horários de atendimento e intervalo entre agendamentos.</div>
+        <span class="step-accent">Grátis por 14 dias</span>
+      </div>
+      <div class="step-cell reveal rd1">
+        <div class="step-number">Passo 02</div>
+        <div class="step-title">Receba seu link</div>
+        <div class="step-desc">Você recebe um link único de agendamento. Coloque na bio do Instagram ou mande diretamente no WhatsApp para seus clientes.</div>
+        <span class="step-accent">Link personalizado</span>
+      </div>
+      <div class="step-cell reveal rd2">
+        <div class="step-number">Passo 03</div>
+        <div class="step-title">Cliente agenda sozinho</div>
+        <div class="step-desc">Sem cadastro, sem senha. O cliente escolhe o serviço, a data e o horário disponível — você não precisa fazer nada.</div>
+        <span class="step-accent">Zero fricção</span>
+      </div>
+      <div class="step-cell reveal rd3">
+        <div class="step-number">Passo 04</div>
+        <div class="step-title">Gerencie tudo no painel</div>
+        <div class="step-desc">Acompanhe todos os agendamentos em tempo real. Cancele com um clique e o WhatsApp do cliente é aberto automaticamente.</div>
+        <span class="step-accent">Controle total</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOTOS -->
+<section class="section">
+  <div class="reveal" style="margin-bottom:40px">
+    <div class="label-tag">Para todo tipo de negócio</div>
+    <h2 class="section-h rd1" style="max-width:500px">Feito para quem vive do próprio trabalho</h2>
+  </div>
+  <div class="photos-grid">
+    <div class="photo-cell tall reveal">
+      <img src="https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=600&h=900&fit=crop&crop=center" alt="Barbearia" loading="lazy">
+      <div class="photo-caption">Barbearias</div>
+    </div>
+    <div class="photo-cell reveal rd1">
+      <img src="https://images.unsplash.com/photo-1560066984-138dadb4c035?w=500&h=280&fit=crop&crop=center" alt="Salão" loading="lazy">
+      <div class="photo-caption">Salões de beleza</div>
+    </div>
+    <div class="photo-cell reveal rd2">
+      <img src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=500&h=280&fit=crop&crop=center" alt="Clínica" loading="lazy">
+      <div class="photo-caption">Clínicas e consultórios</div>
+    </div>
+    <div class="photo-cell wide reveal rd1">
+      <img src="https://images.unsplash.com/photo-1601758003122-53c40e686a19?w=900&h=280&fit=crop&crop=center" alt="Pet shop" loading="lazy">
+      <div class="photo-caption">Pet shops</div>
+    </div>
+  </div>
+</section>
+
+<!-- DEPOIMENTOS -->
+<section class="full-section" id="depoimentos" style="background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
+  <div class="inner">
+    <div style="text-align:center;margin-bottom:52px">
+      <div class="label-tag reveal" style="justify-content:center">Depoimentos</div>
+      <h2 class="section-h reveal rd1" style="text-align:center;margin-bottom:0">O que dizem quem já usa</h2>
+    </div>
+    <div class="testi-grid">
+      <div class="testi-card reveal">
+        <div class="testi-stars">
+          <svg class="star-icon" viewBox="0 0 20 20"><path d="M10 1l2.6 5.3L18 7.3l-4 3.9 1 5.5L10 14l-5 2.7 1-5.5-4-3.9 5.4-.7L10 1z"/></svg>
+          <svg class="star-icon" viewBox="0 0 20 20"><path d="M10 1l2.6 5.3L18 7.3l-4 3.9 1 5.5L10 14l-5 2.7 1-5.5-4-3.9 5.4-.7L10 1z"/></svg>
+          <svg class="star-icon" viewBox="0 0 20 20"><path d="M10 1l2.6 5.3L18 7.3l-4 3.9 1 5.5L10 14l-5 2.7 1-5.5-4-3.9 5.4-.7L10 1z"/></svg>
+          <svg class="star-icon" viewBox="0 0 20 20"><path d="M10 1l2.6 5.3L18 7.3l-4 3.9 1 5.5L10 14l-5 2.7 1-5.5-4-3.9 5.4-.7L10 1z"/></svg>
+          <svg class="star-icon" viewBox="0 0 20 20"><path d="M10 1l2.6 5.3L18 7.3l-4 3.9 1 5.5L10 14l-5 2.7 1-5.5-4-3.9 5.4-.7L10 1z"/></svg>
+        </div>
+        <p class="testi-text">"Antes eu passava uma hora por dia só confirmando horário no WhatsApp. Hoje o cliente agenda sozinho e eu só olho o painel de manhã. Mudou tudo."</p>
+        <div class="testi-author">
+          <img class="testi-avatar" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&h=80&fit=crop&crop=face" alt="">
+          <div><div class="testi-name">Rafael Mendes</div><div class="testi-role">Barbearia RM · São Paulo, SP</div></div>
+        </div>
+      </div>
+      <div class="testi-card reveal rd1">
+        <div class="testi-stars">
+          <svg class="star-icon" viewBox="0 0 20 20"><path d="M10 1l2.6 5.3L18 7.3l-4 3.9 1 5.5L10 14l-5 2.7 1-5.5-4-3.9 5.4-.7L10 1z"/></svg>
+          <svg class="star-icon" viewBox="0 0 20 20"><path d="M10 1l2.6 5.3L18 7.3l-4 3.9 1 5.5L10 14l-5 2.7 1-5.5-4-3.9 5.4-.7L10 1z"/></svg>
+          <svg class="star-icon" viewBox="0 0 20 20"><path d="M10 1l2.6 5.3L18 7.3l-4 3.9 1 5.5L10 14l-5 2.7 1-5.5-4-3.9 5.4-.7L10 1z"/></svg>
+          <svg class="star-icon" viewBox="0 0 20 20"><path d="M10 1l2.6 5.3L18 7.3l-4 3.9 1 5.5L10 14l-5 2.7 1-5.5-4-3.9 5.4-.7L10 1z"/></svg>
+          <svg class="star-icon" viewBox="0 0 20 20"><path d="M10 1l2.6 5.3L18 7.3l-4 3.9 1 5.5L10 14l-5 2.7 1-5.5-4-3.9 5.4-.7L10 1z"/></svg>
+        </div>
+        <p class="testi-text">"Coloquei o link na bio numa segunda-feira. Na quarta já tinha 12 agendamentos novos de pessoas que nunca tinham me chamado no WhatsApp antes."</p>
+        <div class="testi-author">
+          <img class="testi-avatar" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=80&h=80&fit=crop&crop=face" alt="">
+          <div><div class="testi-name">Camila Torres</div><div class="testi-role">Studio Camila · Belo Horizonte, MG</div></div>
+        </div>
+      </div>
+      <div class="testi-card reveal rd2">
+        <div class="testi-stars">
+          <svg class="star-icon" viewBox="0 0 20 20"><path d="M10 1l2.6 5.3L18 7.3l-4 3.9 1 5.5L10 14l-5 2.7 1-5.5-4-3.9 5.4-.7L10 1z"/></svg>
+          <svg class="star-icon" viewBox="0 0 20 20"><path d="M10 1l2.6 5.3L18 7.3l-4 3.9 1 5.5L10 14l-5 2.7 1-5.5-4-3.9 5.4-.7L10 1z"/></svg>
+          <svg class="star-icon" viewBox="0 0 20 20"><path d="M10 1l2.6 5.3L18 7.3l-4 3.9 1 5.5L10 14l-5 2.7 1-5.5-4-3.9 5.4-.7L10 1z"/></svg>
+          <svg class="star-icon" viewBox="0 0 20 20"><path d="M10 1l2.6 5.3L18 7.3l-4 3.9 1 5.5L10 14l-5 2.7 1-5.5-4-3.9 5.4-.7L10 1z"/></svg>
+          <svg class="star-icon" viewBox="0 0 20 20"><path d="M10 1l2.6 5.3L18 7.3l-4 3.9 1 5.5L10 14l-5 2.7 1-5.5-4-3.9 5.4-.7L10 1z"/></svg>
+        </div>
+        <p class="testi-text">"Na clínica tínhamos uma recepcionista só para marcar consultas. Com o AgendoRapido os pacientes marcam direto e ela foi realocada para outras funções."</p>
+        <div class="testi-author">
+          <div class="testi-avatar-initial">D</div>
+          <div><div class="testi-name">Dr. Daniel Faria</div><div class="testi-role">Clínica Faria · Curitiba, PR</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PREÇOS -->
+<section class="section" id="precos" style="text-align:center">
+  <div class="reveal"><div class="label-tag" style="justify-content:center">Preços</div></div>
+  <h2 class="section-h reveal rd1" style="text-align:center;margin-bottom:8px">Simples e transparente</h2>
+  <p class="section-sub reveal rd2" style="text-align:center;margin:0 auto 52px;max-width:400px">14 dias grátis em qualquer plano. Sem cartão de crédito. Cancele quando quiser.</p>
+  <div class="pricing-grid">
+    <div class="plan-card reveal">
+      <div class="plan-name">Básico</div>
+      <div class="plan-price"><sup>R$</sup>29<sub>/mês</sub></div>
+      <p class="plan-desc">Para autônomos e pequenos negócios</p>
+      <div class="plan-divider"></div>
+      <ul class="plan-features">
+        <li><svg class="check-icon" viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5L13 5" stroke="#16a34a" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>Agendamentos ilimitados</li>
+        <li><svg class="check-icon" viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5L13 5" stroke="#16a34a" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>Link de agendamento personalizado</li>
+        <li><svg class="check-icon" viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5L13 5" stroke="#16a34a" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>Página bio para Instagram</li>
+        <li><svg class="check-icon" viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5L13 5" stroke="#16a34a" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>Painel de gestão completo</li>
+        <li><svg class="check-icon" viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5L13 5" stroke="#16a34a" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>App instalável (PWA)</li>
+      </ul>
+      <a href="/painel.html" class="btn-plan">Começar grátis</a>
+    </div>
+    <div class="plan-card featured reveal rd1">
+      <div class="plan-popular">Mais popular</div>
+      <div class="plan-name">Profissional</div>
+      <div class="plan-price"><sup>R$</sup>49<sub>/mês</sub></div>
+      <p class="plan-desc">Para quem quer crescer de verdade</p>
+      <div class="plan-divider"></div>
+      <ul class="plan-features">
+        <li><svg class="check-icon" viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5L13 5" stroke="#60a5fa" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>Tudo do plano Básico</li>
+        <li><svg class="check-icon" viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5L13 5" stroke="#60a5fa" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>Múltiplos profissionais</li>
+        <li><svg class="check-icon" viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5L13 5" stroke="#60a5fa" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>Relatórios e métricas</li>
+        <li><svg class="check-icon" viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5L13 5" stroke="#60a5fa" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>Lembretes automáticos</li>
+        <li><svg class="check-icon" viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5L13 5" stroke="#60a5fa" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>Suporte prioritário</li>
+      </ul>
+      <a href="/painel.html" class="btn-plan primary">Começar grátis</a>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="full-section" id="faq" style="background:var(--bg2);border-top:1px solid var(--border)">
+  <div class="inner" style="text-align:center">
+    <div class="reveal"><div class="label-tag" style="justify-content:center">FAQ</div></div>
+    <h2 class="section-h reveal rd1" style="text-align:center;margin-bottom:0">Perguntas frequentes</h2>
+    <div class="faq-wrap" style="text-align:left">
+      <div class="faq-item reveal">
+        <button class="faq-q" onclick="faq(this)">Preciso de cartão de crédito para testar? <span class="faq-icon">+</span></button>
+        <div class="faq-a">Não. Os 14 dias de trial são 100% grátis. Você só coloca os dados de pagamento se decidir assinar depois.</div>
+      </div>
+      <div class="faq-item reveal">
+        <button class="faq-q" onclick="faq(this)">Meu cliente precisa criar uma conta? <span class="faq-icon">+</span></button>
+        <div class="faq-a">Não. Seu cliente acessa o link, escolhe o serviço, data e horário, informa nome e WhatsApp — pronto. Sem cadastro, sem senha, sem fricção.</div>
+      </div>
+      <div class="faq-item reveal">
+        <button class="faq-q" onclick="faq(this)">Funciona para qualquer tipo de negócio? <span class="faq-icon">+</span></button>
+        <div class="faq-a">Sim. Barbearia, salão, clínica, consultório, academia, personal trainer, estúdio de tatuagem, pet shop — qualquer negócio que trabalha com horários marcados.</div>
+      </div>
+      <div class="faq-item reveal">
+        <button class="faq-q" onclick="faq(this)">Posso cancelar quando quiser? <span class="faq-icon">+</span></button>
+        <div class="faq-a">Sim, sem multa e sem burocracia. Você cancela a qualquer momento e mantém o acesso até o fim do período já pago.</div>
+      </div>
+      <div class="faq-item reveal">
+        <button class="faq-q" onclick="faq(this)">O app funciona no iPhone e Android? <span class="faq-icon">+</span></button>
+        <div class="faq-a">Sim. O AgendoRapido é um PWA — você instala diretamente pelo Chrome ou Safari sem precisar da Play Store ou App Store. Funciona como qualquer app nativo.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA FINAL -->
+<section class="cta-section">
+  <h2>Pronto para organizar<br>seus agendamentos?</h2>
+  <p>14 dias grátis. Sem cartão. Cancele quando quiser.</p>
+  <a href="/painel.html" class="btn-cta">
+    Criar conta grátis
+    <svg width="15" height="15" viewBox="0 0 14 14" fill="none"><path d="M3 7h8M7.5 3.5L11 7l-3.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </a>
+  <p class="cta-note">Mais de 500 negócios já usam o AgendoRapido</p>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">Agendo<span>Rapido</span></div>
+  <p>© 2025 AgendoRapido · Feito no Brasil</p>
+</footer>
+
+<script>
+function faq(btn) {
+  const item = btn.closest('.faq-item')
+  const open = item.classList.contains('open')
+  document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'))
+  if (!open) item.classList.add('open')
+}
+
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('vis') })
+}, { threshold: 0.08 })
+document.querySelectorAll('.reveal').forEach(el => obs.observe(el))
+</script>
+</body>
+</html>
