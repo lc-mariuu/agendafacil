@@ -1,6 +1,7 @@
 const express = require('express')
 const jwt = require('jsonwebtoken')
 const Appointment = require('../models/Appointment')
+const Negocio = require('../models/Negocio')
 const router = express.Router()
 
 const autenticar = (req, res, next) => {
@@ -15,43 +16,52 @@ const autenticar = (req, res, next) => {
   }
 }
 
-// ── LISTAR agendamentos da clínica ────────────────────
+// ── LISTAR agendamentos de um negócio ─────────────────
 router.get('/', autenticar, async (req, res) => {
   try {
-    const agendamentos = await Appointment.find({ clinicaId: req.userId })
-      .sort({ data: 1, hora: 1 })
+    const { negocioId } = req.query
+    // Verifica que o negócio pertence ao usuário
+    const neg = await Negocio.findOne({ _id: negocioId, userId: req.userId })
+    if (!neg) return res.status(404).json({ erro: 'Negócio não encontrado' })
+    const agendamentos = await Appointment.find({ clinicaId: negocioId }).sort({ data: 1, hora: 1 })
     res.json(agendamentos)
   } catch {
     res.status(500).json({ erro: 'Erro ao buscar agendamentos' })
   }
 })
 
-// ── HORÁRIOS OCUPADOS (rota pública para clientes) ────
+// ── HORÁRIOS OCUPADOS (rota pública) ──────────────────
 router.get('/horarios-ocupados', async (req, res) => {
   try {
     const { clinicaId, data } = req.query
-    const User = require('../models/User')
 
-    const user = await User.findById(clinicaId).lean()
-    if (!user) return res.status(404).json({ erro: 'Negócio não encontrado' })
+    // Busca negócio (novo sistema) ou user (fallback legado)
+    let horarios = {}, intervalo = 30
+    const neg = await Negocio.findById(clinicaId).lean()
+    if (neg) {
+      horarios = neg.horarios || {}
+      intervalo = neg.intervalo || 30
+    } else {
+      const User = require('../models/User')
+      const user = await User.findById(clinicaId).lean()
+      if (!user) return res.status(404).json({ erro: 'Negócio não encontrado' })
+      horarios = user.horarios || {}
+      intervalo = user.intervalo || 30
+    }
 
     const [ano, mes, dia] = data.split('-').map(Number)
     const diaSemana = new Date(ano, mes - 1, dia).getDay()
-
-    const horarios = user.horarios || {}
     const configDia = horarios[diaSemana] || horarios[String(diaSemana)]
 
     if (!configDia || !configDia.ativo) {
       return res.json({ horarios: [], ocupados: [], diaInativo: true })
     }
 
-    const intervalo = user.intervalo || 30
     const horariosDisponiveis = []
     const [hIni, mIni] = configDia.inicio.split(':').map(Number)
     const [hFim, mFim] = configDia.fim.split(':').map(Number)
     let atual = hIni * 60 + mIni
     const fim = hFim * 60 + mFim
-
     while (atual < fim) {
       const h = String(Math.floor(atual / 60)).padStart(2, '0')
       const m = String(atual % 60).padStart(2, '0')
@@ -59,14 +69,8 @@ router.get('/horarios-ocupados', async (req, res) => {
       atual += intervalo
     }
 
-    const agendados = await Appointment.find({
-      clinicaId,
-      data,
-      status: { $ne: 'cancelado' }
-    }).select('hora')
-
+    const agendados = await Appointment.find({ clinicaId, data, status: { $ne: 'cancelado' } }).select('hora')
     const ocupados = agendados.map(a => a.hora)
-
     res.json({ horarios: horariosDisponiveis, ocupados, diaInativo: false })
   } catch (err) {
     console.error('ERRO horarios-ocupados:', err.message)
@@ -74,27 +78,13 @@ router.get('/horarios-ocupados', async (req, res) => {
   }
 })
 
-// ── CRIAR agendamento (rota pública para clientes) ────
+// ── CRIAR agendamento (público) ───────────────────────
 router.post('/', async (req, res) => {
   try {
     const { clinicaId, pacienteNome, pacienteTelefone, servico, data, hora } = req.body
-
-    const jaExiste = await Appointment.findOne({
-      clinicaId,
-      data,
-      hora,
-      status: { $ne: 'cancelado' }
-    })
+    const jaExiste = await Appointment.findOne({ clinicaId, data, hora, status: { $ne: 'cancelado' } })
     if (jaExiste) return res.status(400).json({ erro: 'Horário já ocupado' })
-
-    const agendamento = await Appointment.create({
-      clinicaId,
-      pacienteNome,
-      pacienteTelefone,
-      servico,
-      data,
-      hora
-    })
+    const agendamento = await Appointment.create({ clinicaId, pacienteNome, pacienteTelefone, servico, data, hora })
     res.json(agendamento)
   } catch (err) {
     console.error('ERRO criar agendamento:', err.message)
@@ -102,7 +92,7 @@ router.post('/', async (req, res) => {
   }
 })
 
-// ── ATUALIZAR status (autenticado) ───────────────────
+// ── ATUALIZAR status ──────────────────────────────────
 router.patch('/:id', autenticar, async (req, res) => {
   try {
     const agendamento = await Appointment.findByIdAndUpdate(
