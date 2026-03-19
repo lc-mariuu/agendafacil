@@ -1,0 +1,14 @@
+const mongoose = require('mongoose')
+
+const negocioSchema = new mongoose.Schema({
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  nome: { type: String, required: true },
+  segmento: { type: String, default: 'Outro' },
+  servicos: { type: [String], default: [] },
+  intervalo: { type: Number, default: 30 },
+  horarios: { type: mongoose.Schema.Types.Mixed, default: {} },
+  bio: { type: mongoose.Schema.Types.Mixed, default: {} },
+  criadoEm: { type: Date, default: Date.now }
+})
+
+module.exports = mongoose.model('Negocio', negocioSchema)
