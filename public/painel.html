@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AgendoRapido — Painel</title>
 <link rel="manifest" href="/manifest.json">
-<meta name="theme-color" content="#0f172a">
+<meta name="theme-color" content="#2563eb">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="AgendoRapido">
@@ -408,6 +408,27 @@ tbody tr:hover td{background:var(--bg)}
         <span class="salvo-msg" id="salvo-horarios">✓ Salvo!</span>
       </div>
     </div>
+    <div class="config-card">
+      <div class="config-card-title">
+        <div class="config-card-title-icon">
+          <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M1.5 6.5h10M6.5 1.5v10" stroke="#2563eb" stroke-width="1.4" stroke-linecap="round"/></svg>
+        </div>
+        Pausas e intervalos
+      </div>
+      <p style="font-size:12.5px;color:var(--text2);margin-bottom:14px">Bloqueie horários para almoço, café ou qualquer pausa. Esses horários não aparecerão para agendamento.</p>
+      <div id="pausas-lista"></div>
+      <div class="add-servico" style="margin-top:12px">
+        <input type="time" id="pausa-inicio" style="flex:1;padding:9px 12px;border:1.5px solid var(--border2);border-radius:8px;font-size:13px;outline:none;font-family:inherit" />
+        <span style="font-size:12px;color:var(--text3);font-weight:500;white-space:nowrap;align-self:center">às</span>
+        <input type="time" id="pausa-fim" style="flex:1;padding:9px 12px;border:1.5px solid var(--border2);border-radius:8px;font-size:13px;outline:none;font-family:inherit" />
+        <input type="text" id="pausa-label" placeholder="Ex: Almoço" style="flex:1.2;padding:9px 12px;border:1.5px solid var(--border2);border-radius:8px;font-size:13px;outline:none;font-family:inherit;min-width:80px" />
+        <button class="btn-add" onclick="adicionarPausa()">Adicionar</button>
+      </div>
+      <div style="display:flex;align-items:center;margin-top:14px">
+        <button class="btn-salvar" onclick="salvarPausas()">Salvar pausas</button>
+        <span class="salvo-msg" id="salvo-pausas">✓ Salvo!</span>
+      </div>
+    </div>
   </div>
 
   <!-- CONFIGURAÇÕES -->
@@ -728,6 +749,8 @@ async function carregarHorariosConfig() {
   const res = await fetch(`${API}/auth/negocio/${negocioAtual._id}`)
   const data = await res.json()
   horariosConfig = data.horarios||{}; intervaloAtual = data.intervalo||30
+  pausasAtuais = data.pausas || []
+  renderPausas()
   document.querySelectorAll('.intervalo-btn').forEach(btn => {
     const txt = btn.textContent.trim()
     if ((intervaloAtual===15&&txt==='15 min')||(intervaloAtual===20&&txt==='20 min')||(intervaloAtual===30&&txt==='30 min')||(intervaloAtual===45&&txt==='45 min')||(intervaloAtual===60&&txt==='1 hora')||(intervaloAtual===90&&txt==='1h30')||(intervaloAtual===120&&txt==='2 horas')) btn.classList.add('selecionado')
@@ -829,6 +852,51 @@ async function salvarAgendamentoManual() {
   const resposta=await res.json(); btn.disabled=false; btn.textContent='Confirmar agendamento'
   if(res.ok){fecharModal();carregarAgendamentos()}
   else erro.textContent=resposta.erro||'Erro ao criar agendamento'
+}
+
+// ── PAUSAS ───────────────────────────────────────────
+let pausasAtuais = []
+
+function renderPausas() {
+  const lista = document.getElementById('pausas-lista')
+  if (!pausasAtuais.length) {
+    lista.innerHTML = '<p style="font-size:12.5px;color:var(--text3);padding:8px 0">Nenhuma pausa configurada</p>'
+    return
+  }
+  lista.innerHTML = pausasAtuais.map((p, i) => `
+    <div style="display:flex;align-items:center;gap:10px;padding:9px 12px;background:var(--bg);border-radius:8px;border:1px solid var(--border);margin-bottom:6px">
+      <span style="font-size:13px;font-weight:600;color:var(--text)">${p.label || 'Pausa'}</span>
+      <span style="font-size:12px;color:var(--text3)">${p.inicio} – ${p.fim}</span>
+      <button onclick="removerPausa(${i})" style="margin-left:auto;background:none;border:none;color:var(--text3);cursor:pointer;font-size:16px;line-height:1;transition:color .15s" onmouseover="this.style.color='var(--red)'" onmouseout="this.style.color='var(--text3)'">×</button>
+    </div>
+  `).join('')
+}
+
+function adicionarPausa() {
+  const inicio = document.getElementById('pausa-inicio').value
+  const fim = document.getElementById('pausa-fim').value
+  const label = document.getElementById('pausa-label').value.trim() || 'Pausa'
+  if (!inicio || !fim) { alert('Preencha o horário de início e fim'); return }
+  if (inicio >= fim) { alert('O horário de início deve ser anterior ao fim'); return }
+  pausasAtuais.push({ inicio, fim, label })
+  document.getElementById('pausa-inicio').value = ''
+  document.getElementById('pausa-fim').value = ''
+  document.getElementById('pausa-label').value = ''
+  renderPausas()
+}
+
+function removerPausa(i) { pausasAtuais.splice(i, 1); renderPausas() }
+
+async function salvarPausas() {
+  if (!negocioAtual) return
+  const token = localStorage.getItem('token')
+  await fetch(`${API}/auth/horarios`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+    body: JSON.stringify({ negocioId: negocioAtual._id, horarios: horariosConfig, intervalo: intervaloAtual, pausas: pausasAtuais })
+  })
+  const msg = document.getElementById('salvo-pausas')
+  msg.style.display = 'inline'; setTimeout(() => msg.style.display = 'none', 2000)
 }
 
 // INIT

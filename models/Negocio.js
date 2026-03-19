@@ -7,6 +7,7 @@ const negocioSchema = new mongoose.Schema({
   servicos: { type: [String], default: [] },
   intervalo: { type: Number, default: 30 },
   horarios: { type: mongoose.Schema.Types.Mixed, default: {} },
+  pausas: { type: [{ inicio: String, fim: String, label: String }], default: [] },
   bio: { type: mongoose.Schema.Types.Mixed, default: {} },
   criadoEm: { type: Date, default: Date.now }
 })

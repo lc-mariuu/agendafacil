@@ -124,6 +124,7 @@ router.get('/negocio/:id', async (req, res) => {
         servicos: neg.servicos,
         horarios: neg.horarios,
         intervalo: neg.intervalo,
+        pausas: neg.pausas || [],
         bio: neg.bio
       })
     }
@@ -167,10 +168,12 @@ router.patch('/servicos', autenticar, async (req, res) => {
 // ── ATUALIZAR HORÁRIOS ────────────────────────────────
 router.patch('/horarios', autenticar, async (req, res) => {
   try {
-    const { negocioId, horarios, intervalo } = req.body
+    const { negocioId, horarios, intervalo, pausas } = req.body
+    const update = { horarios, intervalo }
+    if (pausas !== undefined) update.pausas = pausas
     await Negocio.findOneAndUpdate(
       { _id: negocioId, userId: req.userId },
-      { $set: { horarios, intervalo } }
+      { $set: update }
     )
     res.json({ ok: true })
   } catch (err) {

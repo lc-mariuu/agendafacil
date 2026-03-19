@@ -69,9 +69,25 @@ router.get('/horarios-ocupados', async (req, res) => {
       atual += intervalo
     }
 
+    // Filtra horários que caem dentro de pausas (almoço, café, etc.)
+    const pausas = (neg ? neg.pausas : []) || []
+    const horariosComPausa = horariosDisponiveis.filter(h => {
+      const [hh, mm] = h.split(':').map(Number)
+      const minH = hh * 60 + mm
+      for (const pausa of pausas) {
+        if (!pausa.inicio || !pausa.fim) continue
+        const [pi, pm] = pausa.inicio.split(':').map(Number)
+        const [fi, fm] = pausa.fim.split(':').map(Number)
+        const minI = pi * 60 + pm
+        const minF = fi * 60 + fm
+        if (minH >= minI && minH < minF) return false
+      }
+      return true
+    })
+
     const agendados = await Appointment.find({ clinicaId, data, status: { $ne: 'cancelado' } }).select('hora')
     const ocupados = agendados.map(a => a.hora)
-    res.json({ horarios: horariosDisponiveis, ocupados, diaInativo: false })
+    res.json({ horarios: horariosComPausa, ocupados, diaInativo: false })
   } catch (err) {
     console.error('ERRO horarios-ocupados:', err.message)
     res.status(500).json({ erro: 'Erro ao buscar horários' })
