@@ -8,6 +8,7 @@ app.use(cors())
 
 // ── WEBHOOK STRIPE ────────────────────────────────────────────
 app.use('/api/assinatura/webhook', express.raw({ type: 'application/json' }))
+app.use('/api/pagamento/webhook', express.raw({ type: 'application/json' }))
 
 // ── Middlewares gerais ────────────────────────────────────────
 app.use(express.json({ limit: '10mb' }))
@@ -20,6 +21,7 @@ app.use('/api/auth',          require('./routes/verificacao'))
 app.use('/api/agendamentos',  require('./routes/appointments'))
 app.use('/api/upload',        require('./routes/upload'))
 app.use('/api/assinatura',    require('./routes/assinatura'))
+app.use('/api/pagamento',     require('./routes/pagamento'))
 
 app.get('/', (req, res) => {
   res.json({ mensagem: 'AgendoRapido API funcionando!' })

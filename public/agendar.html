@@ -226,6 +226,38 @@ nav{background:rgba(255,255,255,0.95);backdrop-filter:blur(16px);border-bottom:1
     </div>
   </div>
 
+  <!-- TELA PIX -->
+  <div class="tela" id="tela-pix">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2L11.5 7H16L12.5 10.5L14 15.5L9 12.5L4 15.5L5.5 10.5L2 7H6.5L9 2Z" stroke="#2563eb" stroke-width="1.5" stroke-linejoin="round"/></svg>
+        </div>
+        <div><div class="card-title">Pagamento via Pix</div><div class="card-sub">Escaneie o QR Code para confirmar</div></div>
+      </div>
+      <div id="pix-resumo" class="resumo" style="margin-bottom:16px"></div>
+      <div style="text-align:center;padding:20px 0">
+        <div style="font-size:13px;color:var(--text3);margin-bottom:12px">Valor a pagar</div>
+        <div style="font-size:36px;font-weight:700;color:var(--text);letter-spacing:-0.02em" id="pix-valor">R$ 0,00</div>
+      </div>
+      <div id="pix-qr-wrap" style="text-align:center;padding:16px 0">
+        <div style="font-size:13px;color:var(--text2);margin-bottom:12px">Carregando QR Code...</div>
+      </div>
+      <div id="pix-copia-cola" style="display:none;margin-bottom:16px">
+        <div style="font-size:12px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">Pix Copia e Cola</div>
+        <div style="display:flex;gap:8px">
+          <input type="text" id="pix-code" readonly style="flex:1;padding:9px 12px;border:1.5px solid var(--border2);border-radius:8px;font-size:11px;font-family:monospace;background:var(--bg2);outline:none;overflow:hidden;text-overflow:ellipsis" />
+          <button onclick="copiarPix()" style="background:var(--accent);color:#fff;border:none;padding:9px 14px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;font-family:inherit" id="btn-copiar-pix">Copiar</button>
+        </div>
+      </div>
+      <div id="pix-status-msg" style="text-align:center;padding:12px;background:var(--bg2);border-radius:10px;font-size:13px;color:var(--text2);margin-bottom:16px">
+        ⏳ Aguardando pagamento...
+      </div>
+      <div style="font-size:11px;color:var(--text3);text-align:center;margin-bottom:16px">O QR Code expira em 1 hora. Após o pagamento, o agendamento é confirmado automaticamente.</div>
+      <button class="btn-back" onclick="irTela(4)">← Voltar</button>
+    </div>
+  </div>
+
   <!-- SUCESSO -->
   <div class="tela" id="tela5">
     <div class="card">
@@ -285,8 +317,9 @@ function atualizarSteps(atual) {
 
 function irTela(n) {
   document.querySelectorAll('.tela').forEach(t => t.classList.remove('ativa'))
-  document.getElementById(`tela${n}`).classList.add('ativa')
-  atualizarSteps(n > 4 ? 4 : n)
+  const id = n === 'pix' ? 'tela-pix' : `tela${n}`
+  document.getElementById(id).classList.add('ativa')
+  if (n !== 'pix') atualizarSteps(n > 4 ? 4 : n)
   window.scrollTo({top:0,behavior:'smooth'})
 }
 
@@ -320,6 +353,107 @@ function irTela4() {
   irTela(4)
 }
 
+let pagamentosConfig = {}
+let paymentIntentId = null
+let pixPollInterval = null
+
+async function irTelaPix() {
+  const btn = document.getElementById('btn-confirmar')
+  btn.disabled = true; btn.textContent = 'Criando pagamento...'
+  const nome = document.getElementById('nome').value.trim()
+  const telefone = document.getElementById('telefone').value.trim()
+  const config = pagamentosConfig[servicoSel] || {}
+  const valor = config.valor || 0
+
+  try {
+    const res = await fetch(`${API}/pagamento/criar`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ clinicaId, pacienteNome: nome, pacienteEmail: '', servico: servicoSel, data: dataSel, hora: horarioSel, valor })
+    })
+    const data = await res.json()
+    if (!res.ok) {
+      showErr('err4', data.erro || 'Erro ao criar pagamento')
+      btn.disabled = false; btn.textContent = 'Confirmar agendamento'
+      return
+    }
+
+    paymentIntentId = data.paymentIntentId
+    const partes = dataSel.split('-')
+    const d = partes[2], m = partes[1], a = partes[0]
+
+    document.getElementById('pix-resumo').innerHTML = `
+      <div class="resumo-row"><span class="resumo-label">Serviço</span><span class="resumo-val">${servicoSel}</span></div>
+      <div class="resumo-row"><span class="resumo-label">Data</span><span class="resumo-val">${d}/${m}/${a}</span></div>
+      <div class="resumo-row"><span class="resumo-label">Horário</span><span class="resumo-val">${horarioSel}</span></div>
+    `
+    document.getElementById('pix-valor').textContent = `R$ ${valor.toFixed(2).replace('.', ',')}`
+
+    if (data.pixData) {
+      renderQRCode(data.pixData)
+    }
+
+    irTela('pix')
+    iniciarPollingPix()
+  } catch(e) {
+    showErr('err4', 'Erro de conexão. Tente novamente.')
+    btn.disabled = false; btn.textContent = 'Confirmar agendamento'
+  }
+}
+
+function renderQRCode(pixData) {
+  const wrap = document.getElementById('pix-qr-wrap')
+  if (pixData?.image_url_svg || pixData?.image_url_png) {
+    wrap.innerHTML = `<img src="${pixData.image_url_png || pixData.image_url_svg}" style="width:200px;height:200px;border-radius:12px;border:2px solid var(--border)" />`
+  } else {
+    wrap.innerHTML = '<div style="font-size:13px;color:var(--text2)">Use o código Pix Copia e Cola abaixo</div>'
+  }
+  if (pixData?.data) {
+    document.getElementById('pix-code').value = pixData.data
+    document.getElementById('pix-copia-cola').style.display = 'block'
+  }
+}
+
+function copiarPix() {
+  const code = document.getElementById('pix-code').value
+  navigator.clipboard.writeText(code)
+  const btn = document.getElementById('btn-copiar-pix')
+  btn.textContent = 'Copiado!'; setTimeout(() => btn.textContent = 'Copiar', 2000)
+}
+
+function iniciarPollingPix() {
+  if (pixPollInterval) clearInterval(pixPollInterval)
+  pixPollInterval = setInterval(async () => {
+    try {
+      const res = await fetch(`${API}/pagamento/status/${paymentIntentId}`)
+      const data = await res.json()
+      if (data.status === 'pago') {
+        clearInterval(pixPollInterval)
+        const nome = document.getElementById('nome').value.trim()
+        const telefone = document.getElementById('telefone').value.trim()
+        const partes = dataSel.split('-')
+        const d = partes[2], m = partes[1], a = partes[0]
+        document.getElementById('sucesso-detalhe').innerHTML = `
+          <div class="resumo-row"><span class="resumo-label">Serviço</span><span class="resumo-val">${servicoSel}</span></div>
+          <div class="resumo-row"><span class="resumo-label">Data</span><span class="resumo-val">${d}/${m}/${a}</span></div>
+          <div class="resumo-row"><span class="resumo-label">Horário</span><span class="resumo-val">${horarioSel}</span></div>
+          <div class="resumo-row"><span class="resumo-label">Nome</span><span class="resumo-val">${nome}</span></div>
+          <div class="resumo-row"><span class="resumo-label">Pagamento</span><span class="resumo-val" style="color:var(--green)">✓ Pago via Pix</span></div>
+        `
+        const tel = telefone.replace(/\D/g,'')
+        const msg = encodeURIComponent(`Olá! Meu agendamento foi confirmado ✅\n\n📋 Serviço: ${servicoSel}\n📅 Data: ${d}/${m}/${a}\n🕐 Horário: ${horarioSel}\n👤 Nome: ${nome}\n💰 Pagamento: Pix confirmado`)
+        document.getElementById('btn-whatsapp').href = `https://wa.me/55${tel}?text=${msg}`
+        irTela(5)
+      } else if (data.status === 'expirado' || data.status === 'cancelado') {
+        clearInterval(pixPollInterval)
+        document.getElementById('pix-status-msg').textContent = '❌ Pagamento expirado. Volte e tente novamente.'
+        document.getElementById('pix-status-msg').style.background = 'var(--red-bg)'
+        document.getElementById('pix-status-msg').style.color = 'var(--red)'
+      }
+    } catch(e) {}
+  }, 5000) // verifica a cada 5 segundos
+}
+
 async function carregarClinica() {
   if(!clinicaId) { document.getElementById('hero-nome').textContent = 'Link inválido'; return }
   try {
@@ -337,6 +471,7 @@ async function carregarClinica() {
       document.getElementById('hero-avatar').innerHTML = `<img src="${data.bio.foto}" alt="${data.negocio}">`
     }
     servicosDisponiveis = data.servicos || []
+    pagamentosConfig = data.pagamentos || {}
     renderServicos()
   } catch(e) {}
 }
@@ -396,6 +531,12 @@ function selecionarHorario(btn, h) {
 
 async function confirmarAgendamento() {
   hideErr('err4')
+  // Verifica se serviço tem pagamento obrigatório
+  const config = pagamentosConfig[servicoSel] || {}
+  if (config.obrigatorio && config.valor > 0) {
+    irTelaPix(); return
+  }
+
   const btn = document.getElementById('btn-confirmar')
   btn.disabled = true
   btn.textContent = 'Confirmando...'

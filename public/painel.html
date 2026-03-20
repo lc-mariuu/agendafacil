@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AgendoRapido — Painel</title>
 <link rel="manifest" href="/manifest.json">
-<meta name="theme-color" content="#0f172a">
+<meta name="theme-color" content="#2563eb">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="AgendoRapido">
@@ -316,6 +316,10 @@ tbody tr:hover td{background:var(--bg)}
       Configurações
     </button>
     <div class="menu-section">Conta</div>
+    <button class="menu-item" onclick="irPara('pagamentos',this)">
+      <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M2 4h11v8a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V4Z" stroke="currentColor" stroke-width="1.4"/><path d="M2 4V3a1 1 0 0 1 1-1h9a1 1 0 0 1 1 1v1" stroke="currentColor" stroke-width="1.4"/><path d="M5 8h5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      Pagamentos
+    </button>
     <button class="menu-item" onclick="window.location.href='planos.html'">
       <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><rect x="1.5" y="3.5" width="12" height="9" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M1.5 6.5h12" stroke="currentColor" stroke-width="1.4"/></svg>
       Planos
@@ -487,6 +491,28 @@ tbody tr:hover td{background:var(--bg)}
     </div>
   </div>
 
+  <!-- PAGAMENTOS -->
+  <div class="page" id="page-pagamentos">
+    <div class="page-header">
+      <h1>Pagamentos</h1>
+      <p>Configure cobrança antecipada via Pix por serviço</p>
+    </div>
+    <div class="config-card">
+      <div class="config-card-title">
+        <div class="config-card-title-icon">
+          <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M1.5 3.5h10v7a1 1 0 0 1-1 1h-8a1 1 0 0 1-1-1v-7Z" stroke="#2563eb" stroke-width="1.4"/><path d="M1.5 3.5V3a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v.5" stroke="#2563eb" stroke-width="1.4"/><path d="M4 7h5" stroke="#2563eb" stroke-width="1.4" stroke-linecap="round"/></svg>
+        </div>
+        Cobrança por serviço
+      </div>
+      <p style="font-size:12.5px;color:var(--text2);margin-bottom:16px">Defina o valor e se o pagamento é obrigatório para cada serviço. Quando obrigatório, o cliente paga via Pix antes de confirmar o agendamento.</p>
+      <div id="pagamentos-lista"></div>
+      <div style="display:flex;align-items:center;margin-top:16px">
+        <button class="btn-salvar" onclick="salvarPagamentos()">Salvar configurações</button>
+        <span class="salvo-msg" id="salvo-pagamentos">✓ Salvo!</span>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <script>
@@ -640,7 +666,9 @@ async function carregarServicos() {
   const res = await fetch(`${API}/auth/negocio/${negocioAtual._id}`)
   const data = await res.json()
   servicosAtuais = data.servicos || []
+  pagamentosConfig = data.pagamentos || {}
   renderServicos()
+  renderPagamentos()
 }
 
 function renderServicos() {
@@ -909,6 +937,55 @@ async function salvarPausas() {
     body: JSON.stringify({ negocioId: negocioAtual._id, horarios: horariosConfig, intervalo: intervaloAtual, pausas: pausasAtuais })
   })
   const msg = document.getElementById('salvo-pausas')
+  msg.style.display = 'inline'; setTimeout(() => msg.style.display = 'none', 2000)
+}
+
+// ── PAGAMENTOS ────────────────────────────────────────
+let pagamentosConfig = {}
+
+function renderPagamentos() {
+  const lista = document.getElementById('pagamentos-lista')
+  if (!servicosAtuais.length) {
+    lista.innerHTML = '<p style="font-size:12.5px;color:var(--text3)">Configure seus serviços primeiro na aba Configurações.</p>'
+    return
+  }
+  lista.innerHTML = servicosAtuais.map(s => {
+    const config = pagamentosConfig[s] || { valor: 0, obrigatorio: false }
+    return `
+      <div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);flex-wrap:wrap">
+        <div style="font-size:13.5px;font-weight:600;color:var(--text);min-width:120px;flex:1">${s}</div>
+        <div style="display:flex;align-items:center;gap:6px">
+          <span style="font-size:13px;color:var(--text3);font-weight:500">R$</span>
+          <input type="number" min="0" step="0.01" placeholder="0,00"
+            value="${config.valor || ''}"
+            onchange="atualizarPagamento('${s}', 'valor', parseFloat(this.value)||0)"
+            style="width:90px;padding:7px 10px;border:1.5px solid var(--border2);border-radius:8px;font-size:13.5px;outline:none;font-family:inherit" />
+        </div>
+        <label style="display:flex;align-items:center;gap:7px;cursor:pointer;font-size:13px;color:var(--text2);font-weight:500">
+          <input type="checkbox" ${config.obrigatorio ? 'checked' : ''}
+            onchange="atualizarPagamento('${s}', 'obrigatorio', this.checked)"
+            style="width:15px;height:15px;accent-color:var(--accent);cursor:pointer" />
+          Obrigatório
+        </label>
+      </div>
+    `
+  }).join('')
+}
+
+function atualizarPagamento(servico, campo, valor) {
+  if (!pagamentosConfig[servico]) pagamentosConfig[servico] = { valor: 0, obrigatorio: false }
+  pagamentosConfig[servico][campo] = valor
+}
+
+async function salvarPagamentos() {
+  if (!negocioAtual) return
+  const token = localStorage.getItem('token')
+  await fetch(`${API}/auth/pagamentos`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+    body: JSON.stringify({ negocioId: negocioAtual._id, pagamentos: pagamentosConfig })
+  })
+  const msg = document.getElementById('salvo-pagamentos')
   msg.style.display = 'inline'; setTimeout(() => msg.style.display = 'none', 2000)
 }
 

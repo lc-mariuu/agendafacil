@@ -8,6 +8,11 @@ const appointmentSchema = new mongoose.Schema({
   data: { type: String, required: true },
   hora: { type: String, required: true },
   status: { type: String, default: 'confirmado', enum: ['confirmado', 'cancelado', 'concluido'] },
+  pagamento: {
+    status: { type: String, enum: ['pendente', 'pago', 'reembolsado'], default: 'pendente' },
+    valor: { type: Number, default: 0 },
+    paymentIntentId: { type: String, default: '' }
+  },
   criadoEm: { type: Date, default: Date.now },
   atualizadoEm: { type: Date, default: Date.now }
 })

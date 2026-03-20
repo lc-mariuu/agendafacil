@@ -125,6 +125,7 @@ router.get('/negocio/:id', async (req, res) => {
         horarios: neg.horarios,
         intervalo: neg.intervalo,
         pausas: neg.pausas || [],
+        pagamentos: neg.pagamentos || {},
         bio: neg.bio
       })
     }
@@ -179,6 +180,21 @@ router.patch('/horarios', autenticar, async (req, res) => {
   } catch (err) {
     console.error('Erro salvar horarios:', err.message)
     res.status(500).json({ erro: 'Erro ao salvar horários' })
+  }
+})
+
+// ── ATUALIZAR PAGAMENTOS ─────────────────────────────
+router.patch('/pagamentos', autenticar, async (req, res) => {
+  try {
+    const { negocioId, pagamentos } = req.body
+    await Negocio.findOneAndUpdate(
+      { _id: negocioId, userId: req.userId },
+      { $set: { pagamentos } }
+    )
+    res.json({ ok: true })
+  } catch (err) {
+    console.error('Erro salvar pagamentos:', err.message)
+    res.status(500).json({ erro: 'Erro ao salvar configuração de pagamentos' })
   }
 })
 
