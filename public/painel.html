@@ -492,26 +492,17 @@ tbody tr:hover td{background:var(--bg)}
   </div>
 
   <!-- PAGAMENTOS -->
-  <div class="page" id="page-pagamentos">
-    <div class="page-header">
-      <h1>Pagamentos</h1>
-      <p>Configure cobrança antecipada via Pix por serviço</p>
-    </div>
-    <div class="config-card">
-      <div class="config-card-title">
-        <div class="config-card-title-icon">
-          <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M1.5 3.5h10v7a1 1 0 0 1-1 1h-8a1 1 0 0 1-1-1v-7Z" stroke="#2563eb" stroke-width="1.4"/><path d="M1.5 3.5V3a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v.5" stroke="#2563eb" stroke-width="1.4"/><path d="M4 7h5" stroke="#2563eb" stroke-width="1.4" stroke-linecap="round"/></svg>
-        </div>
-        Cobrança por serviço
-      </div>
-      <p style="font-size:12.5px;color:var(--text2);margin-bottom:16px">Defina o valor e se o pagamento é obrigatório para cada serviço. Quando obrigatório, o cliente paga via Pix antes de confirmar o agendamento.</p>
-      <div id="pagamentos-lista"></div>
-      <div style="display:flex;align-items:center;margin-top:16px">
-        <button class="btn-salvar" onclick="salvarPagamentos()">Salvar configurações</button>
-        <span class="salvo-msg" id="salvo-pagamentos">✓ Salvo!</span>
-      </div>
-    </div>
+<div class="page" id="page-pagamentos">
+  <div class="page-header">
+    <h1>Pagamentos</h1>
+    <p>Configure cobrança antecipada via Pix por serviço</p>
   </div>
+  <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;text-align:center">
+    <div style="width:64px;height:64px;background:var(--accent-light);border-radius:16px;display:flex;align-items:center;justify-content:center;margin-bottom:20px;font-size:28px">🔒</div>
+    <h2 style="font-size:18px;font-weight:700;color:var(--text);margin-bottom:8px">Recurso em breve</h2>
+    <p style="font-size:13.5px;color:var(--text2);max-width:340px;line-height:1.6">A cobrança antecipada via Pix estará disponível em breve. Fique de olho nas novidades!</p>
+  </div>
+</div>
 
 </div>
 
