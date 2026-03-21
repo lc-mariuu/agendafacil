@@ -16,12 +16,9 @@
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased}
-
 nav{background:rgba(255,255,255,0.95);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);height:56px;display:flex;align-items:center;justify-content:center;position:sticky;top:0;z-index:10}
 .nav-logo{font-size:16px;font-weight:700;color:var(--text);text-decoration:none}
 .nav-logo span{color:var(--accent)}
-
-/* HERO — fundo azul suave com foto em destaque */
 .hero{background:var(--accent-light);border-bottom:1px solid rgba(37,99,235,0.12);padding:32px 24px 28px;text-align:center;position:relative;overflow:hidden}
 .hero::before{content:'';position:absolute;width:400px;height:400px;border-radius:50%;background:radial-gradient(var(--accent),transparent 70%);top:-200px;left:50%;transform:translateX(-50%);opacity:.06;pointer-events:none}
 .hero-avatar{width:80px;height:80px;border-radius:50%;border:3px solid #fff;margin:0 auto 14px;overflow:hidden;display:flex;align-items:center;justify-content:center;background:var(--accent);position:relative;z-index:1;font-size:28px;box-shadow:0 4px 20px rgba(37,99,235,0.2)}
@@ -29,7 +26,6 @@ nav{background:rgba(255,255,255,0.95);backdrop-filter:blur(16px);border-bottom:1
 .hero h1{font-size:clamp(18px,4vw,24px);font-weight:700;color:var(--text);letter-spacing:-0.02em;margin-bottom:4px;position:relative;z-index:1}
 .hero-sub{font-size:13px;color:var(--text2);position:relative;z-index:1}
 .hero-chip{display:inline-flex;align-items:center;gap:5px;background:rgba(37,99,235,0.08);border:1px solid rgba(37,99,235,0.15);padding:4px 12px;border-radius:100px;font-size:11px;color:var(--accent);margin-top:10px;position:relative;z-index:1;font-weight:600}
-
 .steps-nav{display:flex;align-items:center;justify-content:center;padding:16px 24px;background:var(--bg);border-bottom:1px solid var(--border);position:sticky;top:56px;z-index:9;gap:4px}
 .sn-item{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:500;color:var(--text3);padding:0 4px}
 .sn-num{width:22px;height:22px;border-radius:50%;border:1.5px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;transition:all .2s;background:var(--bg)}
@@ -39,53 +35,42 @@ nav{background:rgba(255,255,255,0.95);backdrop-filter:blur(16px);border-bottom:1
 .sn-item.done{color:var(--text2)}
 .sn-line{width:24px;height:1.5px;background:var(--border);flex-shrink:0}
 .sn-line.done{background:var(--green)}
-
 .container{max-width:520px;margin:0 auto;padding:28px 16px 80px}
-
 .card{background:var(--bg);border:1.5px solid var(--border);border-radius:16px;padding:24px;animation:fadeUp .25s ease}
 @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 .card-header{display:flex;align-items:center;gap:12px;margin-bottom:22px}
 .card-icon{width:36px;height:36px;border-radius:10px;background:var(--accent-light);display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .card-title{font-size:16px;font-weight:700;color:var(--text);letter-spacing:-0.01em}
 .card-sub{font-size:12px;color:var(--text3);margin-top:2px}
-
 .field{margin-bottom:14px}
 .field label{font-size:13px;font-weight:500;color:var(--text2);display:block;margin-bottom:6px}
 .field input{width:100%;padding:11px 14px;border:1.5px solid var(--border2);border-radius:9px;font-size:14px;font-family:inherit;background:var(--bg);color:var(--text);outline:none;transition:border-color .15s}
 .field input:focus{border-color:var(--accent)}
-
 .servicos-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .servico-btn{padding:13px 10px;border:1.5px solid var(--border2);border-radius:10px;background:var(--bg);cursor:pointer;font-size:13px;font-weight:500;color:var(--text2);text-align:center;transition:all .15s;font-family:inherit;line-height:1.3}
 .servico-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-light)}
 .servico-btn.sel{border-color:var(--accent);background:var(--accent);color:#fff}
-
 .data-input{width:100%;padding:12px 14px;border:1.5px solid var(--border2);border-radius:10px;font-size:15px;font-family:inherit;background:var(--bg);color:var(--text);outline:none;transition:border-color .15s;cursor:pointer}
 .data-input:focus{border-color:var(--accent)}
-
 .horarios-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
 .horario-btn{padding:10px 4px;border:1.5px solid var(--border2);border-radius:9px;background:var(--bg);cursor:pointer;font-size:13px;font-weight:500;color:var(--text2);text-align:center;transition:all .15s;font-family:inherit}
 .horario-btn:hover:not(:disabled){border-color:var(--accent);color:var(--accent);background:var(--accent-light)}
 .horario-btn.sel{border-color:var(--accent);background:var(--accent);color:#fff}
 .horario-btn:disabled{background:var(--bg2);color:var(--text3);cursor:not-allowed;border-color:var(--border);text-decoration:line-through;opacity:.5}
 .empty-msg{text-align:center;padding:28px;font-size:14px;color:var(--text3)}
-
 .section-label{font-size:12px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px}
-
 .resumo{background:var(--bg2);border-radius:12px;overflow:hidden;margin-bottom:20px}
 .resumo-row{display:flex;justify-content:space-between;align-items:center;padding:13px 16px;border-bottom:1px solid var(--border);font-size:14px}
 .resumo-row:last-child{border-bottom:none}
 .resumo-label{color:var(--text3);font-weight:500}
 .resumo-val{color:var(--text);font-weight:600;text-align:right;max-width:60%}
-
 .btn-submit{width:100%;padding:13px;background:var(--accent);color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;transition:background .15s,transform .1s;display:flex;align-items:center;justify-content:center;gap:8px}
 .btn-submit:hover:not(:disabled){background:var(--accent-hover);transform:translateY(-1px)}
 .btn-submit:disabled{opacity:.6;cursor:not-allowed;transform:none}
 .btn-back{width:100%;padding:11px;background:transparent;color:var(--text2);border:1.5px solid var(--border2);border-radius:10px;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;transition:background .15s;margin-top:8px}
 .btn-back:hover{background:var(--bg2)}
-
 .err{background:#fef2f2;border:1px solid rgba(220,38,38,0.2);border-radius:8px;padding:10px 14px;font-size:13px;color:var(--red);margin-bottom:14px;display:none}
 .err.show{display:block}
-
 .sucesso-wrap{text-align:center;padding:8px 0 16px}
 .sucesso-icon{width:72px;height:72px;border-radius:50%;background:var(--green-light);display:flex;align-items:center;justify-content:center;margin:0 auto 20px}
 .sucesso-wrap h2{font-size:22px;font-weight:700;letter-spacing:-0.02em;margin-bottom:8px}
@@ -95,10 +80,8 @@ nav{background:rgba(255,255,255,0.95);backdrop-filter:blur(16px);border-bottom:1
 .btn-whatsapp{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:13px;background:#16a34a;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;text-decoration:none;transition:background .15s}
 .btn-whatsapp:hover{background:#15803d}
 .btn-novo{display:block;text-align:center;margin-top:12px;font-size:13px;color:var(--accent);font-weight:500;cursor:pointer;background:none;border:none;font-family:inherit;width:100%}
-
 .tela{display:none}
 .tela.ativa{display:block}
-
 @media(max-width:420px){
   .horarios-grid{grid-template-columns:repeat(3,1fr)}
   .steps-nav .sn-item span{display:none}
@@ -133,24 +116,13 @@ nav{background:rgba(255,255,255,0.95);backdrop-filter:blur(16px);border-bottom:1
   <div class="tela ativa" id="tela1">
     <div class="card">
       <div class="card-header">
-        <div class="card-icon">
-          <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="6" r="3.5" stroke="#2563eb" stroke-width="1.5"/><path d="M2 16c0-3.3 3.1-6 7-6s7 2.7 7 6" stroke="#2563eb" stroke-width="1.5" stroke-linecap="round"/></svg>
-        </div>
+        <div class="card-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="6" r="3.5" stroke="#2563eb" stroke-width="1.5"/><path d="M2 16c0-3.3 3.1-6 7-6s7 2.7 7 6" stroke="#2563eb" stroke-width="1.5" stroke-linecap="round"/></svg></div>
         <div><div class="card-title">Seus dados</div><div class="card-sub">Como podemos te identificar?</div></div>
       </div>
       <div class="err" id="err1"></div>
-      <div class="field">
-        <label>Nome completo</label>
-        <input type="text" id="nome" placeholder="João Silva" autocomplete="name" />
-      </div>
-      <div class="field">
-        <label>WhatsApp</label>
-        <input type="tel" id="telefone" placeholder="(11) 99999-9999" oninput="mascaraTel(this)" autocomplete="tel" />
-      </div>
-      <button class="btn-submit" onclick="irTela2()">
-        Continuar
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7h8M7.5 3.5L11 7l-3.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </button>
+      <div class="field"><label>Nome completo</label><input type="text" id="nome" placeholder="João Silva" autocomplete="name" /></div>
+      <div class="field"><label>WhatsApp</label><input type="tel" id="telefone" placeholder="(11) 99999-9999" oninput="mascaraTel(this)" autocomplete="tel" /></div>
+      <button class="btn-submit" onclick="irTela2()">Continuar <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7h8M7.5 3.5L11 7l-3.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
     </div>
   </div>
 
@@ -158,19 +130,12 @@ nav{background:rgba(255,255,255,0.95);backdrop-filter:blur(16px);border-bottom:1
   <div class="tela" id="tela2">
     <div class="card">
       <div class="card-header">
-        <div class="card-icon">
-          <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="2" y="2" width="6" height="6" rx="1.5" stroke="#2563eb" stroke-width="1.5"/><rect x="10" y="2" width="6" height="6" rx="1.5" stroke="#2563eb" stroke-width="1.5"/><rect x="2" y="10" width="6" height="6" rx="1.5" stroke="#2563eb" stroke-width="1.5"/><rect x="10" y="10" width="6" height="6" rx="1.5" stroke="#2563eb" stroke-width="1.5"/></svg>
-        </div>
+        <div class="card-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="2" y="2" width="6" height="6" rx="1.5" stroke="#2563eb" stroke-width="1.5"/><rect x="10" y="2" width="6" height="6" rx="1.5" stroke="#2563eb" stroke-width="1.5"/><rect x="2" y="10" width="6" height="6" rx="1.5" stroke="#2563eb" stroke-width="1.5"/><rect x="10" y="10" width="6" height="6" rx="1.5" stroke="#2563eb" stroke-width="1.5"/></svg></div>
         <div><div class="card-title">Serviço</div><div class="card-sub">O que você precisa?</div></div>
       </div>
       <div class="err" id="err2"></div>
-      <div class="servicos-grid" id="servicos-grid">
-        <div style="color:var(--text3);font-size:13px;grid-column:1/-1;text-align:center;padding:20px">Carregando serviços...</div>
-      </div>
-      <button class="btn-submit" style="margin-top:20px" onclick="irTela3()">
-        Continuar
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7h8M7.5 3.5L11 7l-3.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </button>
+      <div class="servicos-grid" id="servicos-grid"><div style="color:var(--text3);font-size:13px;grid-column:1/-1;text-align:center;padding:20px">Carregando serviços...</div></div>
+      <button class="btn-submit" style="margin-top:20px" onclick="irTela3()">Continuar <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7h8M7.5 3.5L11 7l-3.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
       <button class="btn-back" onclick="irTela(1)">← Voltar</button>
     </div>
   </div>
@@ -179,9 +144,7 @@ nav{background:rgba(255,255,255,0.95);backdrop-filter:blur(16px);border-bottom:1
   <div class="tela" id="tela3">
     <div class="card">
       <div class="card-header">
-        <div class="card-icon">
-          <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="2" y="3" width="14" height="13" rx="2" stroke="#2563eb" stroke-width="1.5"/><path d="M2 7h14M6 2v2M12 2v2" stroke="#2563eb" stroke-width="1.5" stroke-linecap="round"/></svg>
-        </div>
+        <div class="card-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="2" y="3" width="14" height="13" rx="2" stroke="#2563eb" stroke-width="1.5"/><path d="M2 7h14M6 2v2M12 2v2" stroke="#2563eb" stroke-width="1.5" stroke-linecap="round"/></svg></div>
         <div><div class="card-title">Data e horário</div><div class="card-sub">Quando quer ser atendido?</div></div>
       </div>
       <div class="err" id="err3"></div>
@@ -193,10 +156,7 @@ nav{background:rgba(255,255,255,0.95);backdrop-filter:blur(16px);border-bottom:1
         <div class="section-label">Horários disponíveis</div>
         <div id="horarios-container"><div class="empty-msg">← Selecione uma data</div></div>
       </div>
-      <button class="btn-submit" style="margin-top:20px" onclick="irTela4()">
-        Continuar
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7h8M7.5 3.5L11 7l-3.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </button>
+      <button class="btn-submit" style="margin-top:20px" onclick="irTela4()">Continuar <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7h8M7.5 3.5L11 7l-3.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
       <button class="btn-back" onclick="irTela(2)">← Voltar</button>
     </div>
   </div>
@@ -205,9 +165,7 @@ nav{background:rgba(255,255,255,0.95);backdrop-filter:blur(16px);border-bottom:1
   <div class="tela" id="tela4">
     <div class="card">
       <div class="card-header">
-        <div class="card-icon">
-          <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M3 9l4.5 4.5L15 5" stroke="#2563eb" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </div>
+        <div class="card-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M3 9l4.5 4.5L15 5" stroke="#2563eb" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
         <div><div class="card-title">Confirmar agendamento</div><div class="card-sub">Revise os detalhes abaixo</div></div>
       </div>
       <div class="err" id="err4"></div>
@@ -218,10 +176,7 @@ nav{background:rgba(255,255,255,0.95);backdrop-filter:blur(16px);border-bottom:1
         <div class="resumo-row"><span class="resumo-label">Data</span><span class="resumo-val" id="r-data">—</span></div>
         <div class="resumo-row"><span class="resumo-label">Horário</span><span class="resumo-val" id="r-hora">—</span></div>
       </div>
-      <button class="btn-submit" id="btn-confirmar" onclick="confirmarAgendamento()">
-        Confirmar agendamento
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7h8M7.5 3.5L11 7l-3.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </button>
+      <button class="btn-submit" id="btn-confirmar" onclick="confirmarAgendamento()">Confirmar agendamento <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7h8M7.5 3.5L11 7l-3.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
       <button class="btn-back" onclick="irTela(3)">← Voltar</button>
     </div>
   </div>
@@ -230,9 +185,7 @@ nav{background:rgba(255,255,255,0.95);backdrop-filter:blur(16px);border-bottom:1
   <div class="tela" id="tela-pix">
     <div class="card">
       <div class="card-header">
-        <div class="card-icon">
-          <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2L11.5 7H16L12.5 10.5L14 15.5L9 12.5L4 15.5L5.5 10.5L2 7H6.5L9 2Z" stroke="#2563eb" stroke-width="1.5" stroke-linejoin="round"/></svg>
-        </div>
+        <div class="card-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2L11.5 7H16L12.5 10.5L14 15.5L9 12.5L4 15.5L5.5 10.5L2 7H6.5L9 2Z" stroke="#2563eb" stroke-width="1.5" stroke-linejoin="round"/></svg></div>
         <div><div class="card-title">Pagamento via Pix</div><div class="card-sub">Escaneie o QR Code para confirmar</div></div>
       </div>
       <div id="pix-resumo" class="resumo" style="margin-bottom:16px"></div>
@@ -240,9 +193,7 @@ nav{background:rgba(255,255,255,0.95);backdrop-filter:blur(16px);border-bottom:1
         <div style="font-size:13px;color:var(--text3);margin-bottom:12px">Valor a pagar</div>
         <div style="font-size:36px;font-weight:700;color:var(--text);letter-spacing:-0.02em" id="pix-valor">R$ 0,00</div>
       </div>
-      <div id="pix-qr-wrap" style="text-align:center;padding:16px 0">
-        <div style="font-size:13px;color:var(--text2);margin-bottom:12px">Carregando QR Code...</div>
-      </div>
+      <div id="pix-qr-wrap" style="text-align:center;padding:16px 0"><div style="font-size:13px;color:var(--text2);margin-bottom:12px">Carregando QR Code...</div></div>
       <div id="pix-copia-cola" style="display:none;margin-bottom:16px">
         <div style="font-size:12px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">Pix Copia e Cola</div>
         <div style="display:flex;gap:8px">
@@ -250,9 +201,7 @@ nav{background:rgba(255,255,255,0.95);backdrop-filter:blur(16px);border-bottom:1
           <button onclick="copiarPix()" style="background:var(--accent);color:#fff;border:none;padding:9px 14px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;font-family:inherit" id="btn-copiar-pix">Copiar</button>
         </div>
       </div>
-      <div id="pix-status-msg" style="text-align:center;padding:12px;background:var(--bg2);border-radius:10px;font-size:13px;color:var(--text2);margin-bottom:16px">
-        ⏳ Aguardando pagamento...
-      </div>
+      <div id="pix-status-msg" style="text-align:center;padding:12px;background:var(--bg2);border-radius:10px;font-size:13px;color:var(--text2);margin-bottom:16px">⏳ Aguardando pagamento...</div>
       <div style="font-size:11px;color:var(--text3);text-align:center;margin-bottom:16px">O QR Code expira em 1 hora. Após o pagamento, o agendamento é confirmado automaticamente.</div>
       <button class="btn-back" onclick="irTela(4)">← Voltar</button>
     </div>
@@ -262,9 +211,7 @@ nav{background:rgba(255,255,255,0.95);backdrop-filter:blur(16px);border-bottom:1
   <div class="tela" id="tela5">
     <div class="card">
       <div class="sucesso-wrap">
-        <div class="sucesso-icon">
-          <svg width="32" height="32" viewBox="0 0 32 32" fill="none"><path d="M6 16l7 7L26 9" stroke="#16a34a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </div>
+        <div class="sucesso-icon"><svg width="32" height="32" viewBox="0 0 32 32" fill="none"><path d="M6 16l7 7L26 9" stroke="#16a34a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
         <h2>Agendamento confirmado!</h2>
         <p>Seu horário foi reservado com sucesso.<br>Estamos te esperando!</p>
         <div class="sucesso-detalhe" id="sucesso-detalhe"></div>
@@ -362,10 +309,8 @@ async function irTelaPix() {
   const btn = document.getElementById('btn-confirmar')
   btn.disabled = true; btn.textContent = 'Criando pagamento...'
   const nome = document.getElementById('nome').value.trim()
-  const telefone = document.getElementById('telefone').value.trim()
   const config = pagamentosConfig[servicoSel] || {}
   const valor = config.valor || 0
-
   try {
     const res = await fetch(`${API}/pagamento/criar`, {
       method: 'POST',
@@ -373,27 +318,13 @@ async function irTelaPix() {
       body: JSON.stringify({ clinicaId, pacienteNome: nome, pacienteEmail: '', servico: servicoSel, data: dataSel, hora: horarioSel, valor })
     })
     const data = await res.json()
-    if (!res.ok) {
-      showErr('err4', data.erro || 'Erro ao criar pagamento')
-      btn.disabled = false; btn.textContent = 'Confirmar agendamento'
-      return
-    }
-
+    if (!res.ok) { showErr('err4', data.erro || 'Erro ao criar pagamento'); btn.disabled = false; btn.textContent = 'Confirmar agendamento'; return }
     paymentIntentId = data.paymentIntentId
     const partes = dataSel.split('-')
     const d = partes[2], m = partes[1], a = partes[0]
-
-    document.getElementById('pix-resumo').innerHTML = `
-      <div class="resumo-row"><span class="resumo-label">Serviço</span><span class="resumo-val">${servicoSel}</span></div>
-      <div class="resumo-row"><span class="resumo-label">Data</span><span class="resumo-val">${d}/${m}/${a}</span></div>
-      <div class="resumo-row"><span class="resumo-label">Horário</span><span class="resumo-val">${horarioSel}</span></div>
-    `
+    document.getElementById('pix-resumo').innerHTML = `<div class="resumo-row"><span class="resumo-label">Serviço</span><span class="resumo-val">${servicoSel}</span></div><div class="resumo-row"><span class="resumo-label">Data</span><span class="resumo-val">${d}/${m}/${a}</span></div><div class="resumo-row"><span class="resumo-label">Horário</span><span class="resumo-val">${horarioSel}</span></div>`
     document.getElementById('pix-valor').textContent = `R$ ${valor.toFixed(2).replace('.', ',')}`
-
-    if (data.pixData) {
-      renderQRCode(data.pixData)
-    }
-
+    if (data.pixData) renderQRCode(data.pixData)
     irTela('pix')
     iniciarPollingPix()
   } catch(e) {
@@ -409,15 +340,11 @@ function renderQRCode(pixData) {
   } else {
     wrap.innerHTML = '<div style="font-size:13px;color:var(--text2)">Use o código Pix Copia e Cola abaixo</div>'
   }
-  if (pixData?.data) {
-    document.getElementById('pix-code').value = pixData.data
-    document.getElementById('pix-copia-cola').style.display = 'block'
-  }
+  if (pixData?.data) { document.getElementById('pix-code').value = pixData.data; document.getElementById('pix-copia-cola').style.display = 'block' }
 }
 
 function copiarPix() {
-  const code = document.getElementById('pix-code').value
-  navigator.clipboard.writeText(code)
+  navigator.clipboard.writeText(document.getElementById('pix-code').value)
   const btn = document.getElementById('btn-copiar-pix')
   btn.textContent = 'Copiado!'; setTimeout(() => btn.textContent = 'Copiar', 2000)
 }
@@ -434,25 +361,17 @@ function iniciarPollingPix() {
         const telefone = document.getElementById('telefone').value.trim()
         const partes = dataSel.split('-')
         const d = partes[2], m = partes[1], a = partes[0]
-        document.getElementById('sucesso-detalhe').innerHTML = `
-          <div class="resumo-row"><span class="resumo-label">Serviço</span><span class="resumo-val">${servicoSel}</span></div>
-          <div class="resumo-row"><span class="resumo-label">Data</span><span class="resumo-val">${d}/${m}/${a}</span></div>
-          <div class="resumo-row"><span class="resumo-label">Horário</span><span class="resumo-val">${horarioSel}</span></div>
-          <div class="resumo-row"><span class="resumo-label">Nome</span><span class="resumo-val">${nome}</span></div>
-          <div class="resumo-row"><span class="resumo-label">Pagamento</span><span class="resumo-val" style="color:var(--green)">✓ Pago via Pix</span></div>
-        `
+        document.getElementById('sucesso-detalhe').innerHTML = `<div class="resumo-row"><span class="resumo-label">Serviço</span><span class="resumo-val">${servicoSel}</span></div><div class="resumo-row"><span class="resumo-label">Data</span><span class="resumo-val">${d}/${m}/${a}</span></div><div class="resumo-row"><span class="resumo-label">Horário</span><span class="resumo-val">${horarioSel}</span></div><div class="resumo-row"><span class="resumo-label">Nome</span><span class="resumo-val">${nome}</span></div><div class="resumo-row"><span class="resumo-label">Pagamento</span><span class="resumo-val" style="color:var(--green)">✓ Pago via Pix</span></div>`
         const tel = telefone.replace(/\D/g,'')
-        const msg = encodeURIComponent(`Olá! Meu agendamento foi confirmado ✅\n\n📋 Serviço: ${servicoSel}\n📅 Data: ${d}/${m}/${a}\n🕐 Horário: ${horarioSel}\n👤 Nome: ${nome}\n💰 Pagamento: Pix confirmado`)
+        const msg = encodeURIComponent(`Olá! Meu agendamento foi confirmado\n\nServiço: ${servicoSel}\nData: ${d}/${m}/${a}\nHorário: ${horarioSel}\nNome: ${nome}\nPagamento: Pix confirmado`)
         document.getElementById('btn-whatsapp').href = `https://wa.me/55${tel}?text=${msg}`
         irTela(5)
       } else if (data.status === 'expirado' || data.status === 'cancelado') {
         clearInterval(pixPollInterval)
-        document.getElementById('pix-status-msg').textContent = '❌ Pagamento expirado. Volte e tente novamente.'
-        document.getElementById('pix-status-msg').style.background = 'var(--red-bg)'
-        document.getElementById('pix-status-msg').style.color = 'var(--red)'
+        document.getElementById('pix-status-msg').textContent = 'Pagamento expirado. Volte e tente novamente.'
       }
     } catch(e) {}
-  }, 5000) // verifica a cada 5 segundos
+  }, 5000)
 }
 
 async function carregarClinica() {
@@ -463,14 +382,8 @@ async function carregarClinica() {
     if(!res.ok) return
     document.getElementById('hero-nome').textContent = data.negocio
     document.title = `Agendar — ${data.negocio}`
-    if(data.segmento) {
-      const chip = document.getElementById('hero-chip')
-      chip.textContent = data.segmento
-      chip.style.display = 'inline-flex'
-    }
-    if(data.bio?.foto) {
-      document.getElementById('hero-avatar').innerHTML = `<img src="${data.bio.foto}" alt="${data.negocio}">`
-    }
+    if(data.segmento) { const chip = document.getElementById('hero-chip'); chip.textContent = data.segmento; chip.style.display = 'inline-flex' }
+    if(data.bio?.foto) document.getElementById('hero-avatar').innerHTML = `<img src="${data.bio.foto}" alt="${data.negocio}">`
     servicosDisponiveis = data.servicos || []
     pagamentosConfig = data.pagamentos || {}
     renderServicos()
@@ -479,28 +392,17 @@ async function carregarClinica() {
 
 function renderServicos() {
   const grid = document.getElementById('servicos-grid')
-  if(!servicosDisponiveis.length) {
-    grid.innerHTML = '<div style="color:var(--text3);font-size:13px;grid-column:1/-1;text-align:center;padding:20px">Nenhum serviço disponível</div>'
-    return
-  }
-  grid.innerHTML = servicosDisponiveis.map(s =>
-    `<button class="servico-btn" onclick="selecionarServico(this,'${s.replace(/'/g,"\\'")}')">${s}</button>`
-  ).join('')
+  if(!servicosDisponiveis.length) { grid.innerHTML = '<div style="color:var(--text3);font-size:13px;grid-column:1/-1;text-align:center;padding:20px">Nenhum serviço disponível</div>'; return }
+  grid.innerHTML = servicosDisponiveis.map(s => `<button class="servico-btn" onclick="selecionarServico(this,'${s.replace(/'/g,"\\'")}')">${s}</button>`).join('')
 }
 
 function selecionarServico(btn, s) {
   document.querySelectorAll('.servico-btn').forEach(b => b.classList.remove('sel'))
-  btn.classList.add('sel')
-  servicoSel = s
-  hideErr('err2')
+  btn.classList.add('sel'); servicoSel = s; hideErr('err2')
 }
 
 function selecionarDataInput(iso) {
-  if(!iso) return
-  dataSel = iso
-  horarioSel = ''
-  hideErr('err3')
-  carregarHorarios(iso)
+  if(!iso) return; dataSel = iso; horarioSel = ''; hideErr('err3'); carregarHorarios(iso)
 }
 
 async function carregarHorarios(dataEscolhida) {
@@ -509,38 +411,20 @@ async function carregarHorarios(dataEscolhida) {
   try {
     const res = await fetch(`${API}/agendamentos/horarios-ocupados?clinicaId=${clinicaId}&data=${dataEscolhida}`)
     const result = await res.json()
-    if(result.diaInativo || !result.horarios?.length) {
-      container.innerHTML = '<div class="empty-msg">Sem atendimento neste dia 😕</div>'
-      return
-    }
-    container.innerHTML = '<div class="horarios-grid">' +
-      result.horarios.map(h => {
-        const ocu = result.ocupados?.includes(h)
-        return `<button class="horario-btn" ${ocu?'disabled':''} onclick="selecionarHorario(this,'${h}')">${h}</button>`
-      }).join('') + '</div>'
-  } catch(e) {
-    container.innerHTML = '<div class="empty-msg">Erro ao carregar horários</div>'
-  }
+    if(result.diaInativo || !result.horarios?.length) { container.innerHTML = '<div class="empty-msg">Sem atendimento neste dia</div>'; return }
+    container.innerHTML = '<div class="horarios-grid">' + result.horarios.map(h => { const ocu = result.ocupados?.includes(h); return `<button class="horario-btn" ${ocu?'disabled':''} onclick="selecionarHorario(this,'${h}')">${h}</button>` }).join('') + '</div>'
+  } catch(e) { container.innerHTML = '<div class="empty-msg">Erro ao carregar horários</div>' }
 }
 
 function selecionarHorario(btn, h) {
   document.querySelectorAll('.horario-btn').forEach(b => b.classList.remove('sel'))
-  btn.classList.add('sel')
-  horarioSel = h
-  hideErr('err3')
+  btn.classList.add('sel'); horarioSel = h; hideErr('err3')
 }
 
 async function confirmarAgendamento() {
   hideErr('err4')
-  // Verifica se serviço tem pagamento obrigatório
   const config = pagamentosConfig[servicoSel] || {}
-  if (config.obrigatorio && config.valor > 0) {
-    irTelaPix(); return
-  }
-
-  if(resposta._id) {
-  document.getElementById('btn-cancelar-link').href = '/cancelar.html?id=' + resposta._id
-}
+  if (config.obrigatorio && config.valor > 0) { irTelaPix(); return }
 
   const btn = document.getElementById('btn-confirmar')
   btn.disabled = true
@@ -552,17 +436,8 @@ async function confirmarAgendamento() {
     const res = await fetch(`${API}/agendamentos`, {
       method: 'POST',
       headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({
-        clinicaId,
-        pacienteNome: nome,
-        pacienteTelefone: telefone,
-        servico: servicoSel,
-        data: dataSel,
-        hora: horarioSel
-      })
+      body: JSON.stringify({ clinicaId, pacienteNome: nome, pacienteTelefone: telefone, servico: servicoSel, data: dataSel, hora: horarioSel })
     })
-
-    // Lê a resposta como texto primeiro para evitar erro de parse
     const texto = await res.text()
     let resposta = {}
     try { resposta = JSON.parse(texto) } catch(e) { resposta = { erro: texto } }
@@ -577,8 +452,16 @@ async function confirmarAgendamento() {
         <div class="resumo-row"><span class="resumo-label">Nome</span><span class="resumo-val">${nome}</span></div>
       `
       const tel = telefone.replace(/\D/g,'')
-      const msg = encodeURIComponent(`Olá! Meu agendamento foi confirmado ✅\n\n📋 Serviço: ${servicoSel}\n📅 Data: ${d}/${m}/${a}\n🕐 Horário: ${horarioSel}\n👤 Nome: ${nome}`)
+      const msg = encodeURIComponent(`Olá! Meu agendamento foi confirmado\n\nServiço: ${servicoSel}\nData: ${d}/${m}/${a}\nHorário: ${horarioSel}\nNome: ${nome}`)
       document.getElementById('btn-whatsapp').href = `https://wa.me/55${tel}?text=${msg}`
+
+      // ── Link de cancelamento ──────────────────────────
+      if (resposta && resposta._id) {
+        document.getElementById('btn-cancelar-link').href = '/cancelar.html?id=' + resposta._id
+      } else {
+        document.getElementById('btn-cancelar-link').style.display = 'none'
+      }
+
       irTela(5)
     } else {
       showErr('err4', resposta.erro || `Erro ${res.status}. Tente novamente.`)

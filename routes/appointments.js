@@ -20,7 +20,6 @@ const autenticar = (req, res, next) => {
 router.get('/', autenticar, async (req, res) => {
   try {
     const { negocioId } = req.query
-    // Verifica que o negócio pertence ao usuário
     const neg = await Negocio.findOne({ _id: negocioId, userId: req.userId })
     if (!neg) return res.status(404).json({ erro: 'Negócio não encontrado' })
     const agendamentos = await Appointment.find({ clinicaId: negocioId }).sort({ data: 1, hora: 1 })
@@ -35,7 +34,6 @@ router.get('/horarios-ocupados', async (req, res) => {
   try {
     const { clinicaId, data } = req.query
 
-    // Busca negócio (novo sistema) ou user (fallback legado)
     let horarios = {}, intervalo = 30
     const neg = await Negocio.findById(clinicaId).lean()
     if (neg) {
@@ -69,7 +67,6 @@ router.get('/horarios-ocupados', async (req, res) => {
       atual += intervalo
     }
 
-    // Filtra horários que caem dentro de pausas (almoço, café, etc.)
     const pausas = (neg ? neg.pausas : []) || []
     const horariosComPausa = horariosDisponiveis.filter(h => {
       const [hh, mm] = h.split(':').map(Number)
@@ -105,6 +102,39 @@ router.post('/', async (req, res) => {
   } catch (err) {
     console.error('ERRO criar agendamento:', err.message)
     res.status(500).json({ erro: 'Erro ao criar agendamento' })
+  }
+})
+
+// ── BUSCAR agendamento público (para página de cancelamento) ──
+router.get('/:id/publico', async (req, res) => {
+  try {
+    const ag = await Appointment.findById(req.params.id)
+    if (!ag) return res.status(404).json({ erro: 'Agendamento não encontrado' })
+    res.json({
+      _id: ag._id,
+      pacienteNome: ag.pacienteNome,
+      servico: ag.servico,
+      data: ag.data,
+      hora: ag.hora,
+      status: ag.status
+    })
+  } catch (err) {
+    res.status(500).json({ erro: 'Erro ao buscar agendamento' })
+  }
+})
+
+// ── CANCELAR agendamento pelo cliente (público) ───────
+router.patch('/:id/cancelar-publico', async (req, res) => {
+  try {
+    const ag = await Appointment.findById(req.params.id)
+    if (!ag) return res.status(404).json({ erro: 'Agendamento não encontrado' })
+    if (ag.status !== 'confirmado') return res.status(400).json({ erro: 'Este agendamento não pode ser cancelado' })
+    ag.status = 'cancelado'
+    ag.atualizadoEm = new Date()
+    await ag.save()
+    res.json({ ok: true })
+  } catch (err) {
+    res.status(500).json({ erro: 'Erro ao cancelar agendamento' })
   }
 })
 
