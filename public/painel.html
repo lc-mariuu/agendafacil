@@ -566,7 +566,45 @@ function removerServico(i){servicosAtuais.splice(i,1);renderServicos()}
 async function salvarServicos(){if(!negocioAtual)return;const token=localStorage.getItem('token');await fetch(`${API}/auth/servicos`,{method:'PATCH',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({negocioId:negocioAtual._id,servicos:servicosAtuais})});const msg=document.getElementById('salvo-msg');msg.style.display='inline';setTimeout(()=>msg.style.display='none',2000)}
 const POR_PAGINA=8;let paginaAtual=1;let listaFiltrada=[]
 function filtrarData(){const data=document.getElementById('filtro-data').value;listaFiltrada=data?todosAgendamentos.filter(a=>a.data===data):todosAgendamentos;paginaAtual=1;renderTabela()}
-function renderTabela(){const tbody=document.getElementById('tbody');const paginacao=document.getElementById('paginacao');if(listaFiltrada.length===0){tbody.innerHTML='<tr><td colspan="6" class="vazio">Nenhum agendamento encontrado</td></tr>';paginacao.style.display='none';return}const totalPaginas=Math.ceil(listaFiltrada.length/POR_PAGINA);const inicio=(paginaAtual-1)*POR_PAGINA;const fim=inicio+POR_PAGINA;tbody.innerHTML=listaFiltrada.slice(inicio,fim).map(a=>`<tr><td><div class="paciente-nome">${a.pacienteNome}</div><div class="paciente-tel">${a.pacienteTelefone}</div></td><td style="color:var(--text2)">${a.servico}</td><td style="color:var(--text2)">${formatarData(a.data)}</td><td style="font-weight:600">${a.hora}</td><td><span class="badge ${a.status}">${a.status}</span></td><td><div class="acoes">${a.status==='confirmado'?`<button class="btn-acao concluir" onclick="atualizar('${a._id}','concluido')">Concluir</button>`:''}${a.status==='confirmado'?`<button class="btn-acao cancelar" onclick="cancelarComAviso('${a._id}','${a.pacienteNome}','${a.pacienteTelefone}','${a.data}','${a.hora}')">Cancelar</button>`:''}</div></td></tr>`).join('');document.getElementById('pg-info').textContent=`${inicio+1}--${Math.min(fim,listaFiltrada.length)} de ${listaFiltrada.length}`;let btns=`<button class="pg-btn" onclick="irPagina(${paginaAtual-1})" ${paginaAtual===1?'disabled':''}>prev</button>`;for(let i=1;i<=totalPaginas;i++){if(totalPaginas<=7||i===1||i===totalPaginas||Math.abs(i-paginaAtual)<=1)btns+=`<button class="pg-btn ${i===paginaAtual?'ativo':''}" onclick="irPagina(${i})">${i}</button>`;else if(Math.abs(i-paginaAtual)===2)btns+=`<span style="color:var(--text3);font-size:13px;padding:0 2px">...</span>`}btns+=`<button class="pg-btn" onclick="irPagina(${paginaAtual+1})" ${paginaAtual===totalPaginas?'disabled':''}>next</button>`;document.getElementById('pg-btns').innerHTML=btns;paginacao.style.display=totalPaginas>1?'flex':'none'}
+function renderTabela(){
+  const tbody=document.getElementById('tbody')
+  const agCards=document.getElementById('ag-cards')
+  const paginacao=document.getElementById('paginacao')
+  if(listaFiltrada.length===0){
+    tbody.innerHTML='<tr><td colspan="6" class="vazio">Nenhum agendamento encontrado</td></tr>'
+    if(agCards)agCards.innerHTML='<div class="vazio">Nenhum agendamento encontrado</div>'
+    paginacao.style.display='none';return
+  }
+  const totalPaginas=Math.ceil(listaFiltrada.length/POR_PAGINA)
+  const inicio=(paginaAtual-1)*POR_PAGINA
+  const fim=inicio+POR_PAGINA
+  const slice=listaFiltrada.slice(inicio,fim)
+  // Desktop table
+  tbody.innerHTML=slice.map(a=>{
+    const acoes=a.status==='confirmado'
+      ?`<button class="btn-acao concluir" onclick="atualizar('${a._id}','concluido')">Concluir</button><button class="btn-acao cancelar" onclick="cancelarComAviso('${a._id}','${a.pacienteNome}','${a.pacienteTelefone}','${a.data}','${a.hora}')">Cancelar</button>`
+      :''
+    return `<tr><td><div class="paciente-nome">${a.pacienteNome}</div><div class="paciente-tel">${a.pacienteTelefone}</div></td><td style="color:var(--text2)">${a.servico}</td><td style="color:var(--text2)">${formatarData(a.data)}</td><td style="font-weight:600">${a.hora}</td><td><span class="badge ${a.status}">${a.status}</span></td><td><div class="acoes">${acoes}</div></td></tr>`
+  }).join('')
+  // Mobile cards
+  if(agCards){
+    agCards.innerHTML=slice.map(a=>{
+      const acoes=a.status==='confirmado'
+        ?`<div class="ag-card-actions"><button class="btn-acao concluir" onclick="atualizar('${a._id}','concluido')">Concluir</button><button class="btn-acao cancelar" onclick="cancelarComAviso('${a._id}','${a.pacienteNome}','${a.pacienteTelefone}','${a.data}','${a.hora}')">Cancelar</button></div>`
+        :''
+      return `<div class="ag-card"><div class="ag-card-top"><div><div class="ag-card-nome">${a.pacienteNome}</div><div class="paciente-tel">${a.pacienteTelefone}</div></div><span class="badge ${a.status}">${a.status}</span></div><div class="ag-card-body"><div class="ag-chip">${formatarData(a.data)}</div><div class="ag-chip">${a.hora}</div><div class="ag-chip">${a.servico}</div></div>${acoes}</div>`
+    }).join('')
+  }
+  document.getElementById('pg-info').textContent=`${inicio+1}–${Math.min(fim,listaFiltrada.length)} de ${listaFiltrada.length}`
+  let btns=`<button class="pg-btn" onclick="irPagina(${paginaAtual-1})" ${paginaAtual===1?'disabled':''}>‹</button>`
+  for(let i=1;i<=totalPaginas;i++){
+    if(totalPaginas<=7||i===1||i===totalPaginas||Math.abs(i-paginaAtual)<=1)btns+=`<button class="pg-btn ${i===paginaAtual?'ativo':''}" onclick="irPagina(${i})">${i}</button>`
+    else if(Math.abs(i-paginaAtual)===2)btns+=`<span style="color:var(--text3);font-size:13px;padding:0 2px">…</span>`
+  }
+  btns+=`<button class="pg-btn" onclick="irPagina(${paginaAtual+1})" ${paginaAtual===totalPaginas?'disabled':''}>›</button>`
+  document.getElementById('pg-btns').innerHTML=btns
+  paginacao.style.display=totalPaginas>1?'flex':'none'
+}
 function irPagina(n){const total=Math.ceil(listaFiltrada.length/POR_PAGINA);if(n<1||n>total)return;paginaAtual=n;renderTabela();document.getElementById('page-agendamentos').scrollIntoView({behavior:'smooth',block:'start'})}
 async function atualizar(id,status){const token=localStorage.getItem('token');await fetch(`${API}/agendamentos/${id}`,{method:'PATCH',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({status})});carregarAgendamentos()}
 async function cancelarComAviso(id,nome,telefone,data,hora){if(!confirm(`Cancelar agendamento de ${nome}?`))return;const token=localStorage.getItem('token');await fetch(`${API}/agendamentos/${id}`,{method:'PATCH',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({status:'cancelado'})});const [ano,mes,dia]=data.split('-');const msg=encodeURIComponent(`Ola ${nome}! Infelizmente precisamos cancelar seu agendamento do dia ${dia}/${mes}/${ano} as ${hora}. Por favor entre em contato para reagendar.`);window.open(`https://wa.me/55${telefone.replace(/\D/g,'')}?text=${msg}`,'_blank');carregarAgendamentos()}
