@@ -24,14 +24,10 @@
 }
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased}
-
-/* SIDEBAR */
 .sidebar{position:fixed;left:0;top:0;bottom:0;width:var(--sidebar-w);background:var(--sidebar-bg);display:flex;flex-direction:column;z-index:100;transition:transform 0.3s cubic-bezier(.4,0,.2,1);border-right:1px solid var(--sidebar-border)}
 .sidebar-top{padding:20px 16px 16px;border-bottom:1px solid var(--sidebar-border)}
 .sidebar-brand{font-size:15px;font-weight:700;color:#fff;letter-spacing:-0.02em;margin-bottom:12px}
 .sidebar-brand span{color:#60a5fa}
-
-/* NEGOCIO SELECTOR */
 .negocio-selector{position:relative}
 .negocio-atual{display:flex;align-items:center;gap:8px;padding:9px 11px;border-radius:9px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);cursor:pointer;transition:all .15s;user-select:none}
 .negocio-atual:hover{background:rgba(255,255,255,0.1)}
@@ -47,7 +43,6 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 .negocio-opt-avatar{width:24px;height:24px;border-radius:6px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;flex-shrink:0}
 .negocio-add{display:flex;align-items:center;gap:8px;padding:10px 12px;cursor:pointer;transition:background .15s;font-size:12px;color:rgba(255,255,255,0.35);border-top:1px solid rgba(255,255,255,0.06)}
 .negocio-add:hover{background:rgba(255,255,255,0.04);color:rgba(255,255,255,0.6)}
-
 .sidebar-menu{padding:10px 10px;flex:1;overflow-y:auto}
 .menu-section{font-size:10px;font-weight:700;color:rgba(255,255,255,0.2);text-transform:uppercase;letter-spacing:.1em;padding:14px 10px 5px}
 .menu-item{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:8px;color:rgba(255,255,255,0.45);font-size:13px;font-weight:500;cursor:pointer;margin-bottom:1px;transition:all .15s;border:none;background:none;width:100%;text-align:left;font-family:inherit}
@@ -55,47 +50,35 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 .menu-item:hover{background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.8)}
 .menu-item.ativo{background:rgba(37,99,235,0.2);color:#93c5fd;font-weight:600}
 .menu-item.ativo svg{opacity:1;color:#60a5fa}
-
 .sidebar-footer{padding:12px 10px;border-top:1px solid var(--sidebar-border)}
 .btn-sair{display:flex;align-items:center;gap:8px;width:100%;padding:8px 10px;border-radius:8px;background:none;border:none;color:rgba(255,255,255,0.3);font-size:13px;font-weight:500;cursor:pointer;transition:all .15s;font-family:inherit}
 .btn-sair:hover{background:rgba(220,38,38,0.15);color:#f87171}
 .btn-instalar{display:none;align-items:center;gap:8px;width:100%;padding:8px 10px;border-radius:8px;background:rgba(37,99,235,0.2);border:none;color:#93c5fd;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;margin-bottom:4px;font-family:inherit}
 .btn-instalar:hover{background:rgba(37,99,235,0.3)}
-
-/* TOPBAR MOBILE */
 .topbar-mobile{display:none;position:fixed;top:0;left:0;right:0;height:56px;background:var(--sidebar-bg);z-index:99;align-items:center;justify-content:space-between;padding:0 16px;border-bottom:1px solid var(--sidebar-border)}
 .topbar-brand{font-size:15px;font-weight:700;color:#fff}
 .topbar-brand span{color:#60a5fa}
 .btn-hamburger{background:none;border:none;color:rgba(255,255,255,0.6);cursor:pointer;padding:6px;display:flex;align-items:center}
 .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:99;backdrop-filter:blur(2px)}
 .sidebar-overlay.visivel{display:block}
-
-/* MAIN */
 .main{margin-left:var(--sidebar-w);padding:28px 28px 48px;min-height:100vh}
 .page{display:none}
 .page.ativo{display:block;animation:fadeIn .2s ease}
 @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
-
 .page-header{margin-bottom:24px}
 .page-header h1{font-size:22px;font-weight:700;color:var(--text);letter-spacing:-0.02em}
 .page-header p{color:var(--text2);font-size:13px;margin-top:3px}
-
-/* STATS */
 .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px}
 .stat-card{background:var(--bg-card);border-radius:var(--radius);padding:20px;border:1px solid var(--border);box-shadow:var(--shadow);position:relative;overflow:hidden}
 .stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--accent);border-radius:2px 2px 0 0}
 .stat-icon{width:36px;height:36px;border-radius:9px;background:var(--accent-light);display:flex;align-items:center;justify-content:center;margin-bottom:12px}
 .stat-valor{font-size:32px;font-weight:700;color:var(--text);letter-spacing:-0.03em;line-height:1}
 .stat-label{font-size:12px;color:var(--text2);margin-top:4px;font-weight:500}
-
-/* LINK CARD */
 .link-card{background:var(--accent-light);border:1px solid rgba(37,99,235,0.15);border-radius:var(--radius);padding:14px 18px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
 .link-card-label{font-size:11px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px}
 .link-card-url{font-size:12px;color:#3b82f6;word-break:break-all;font-weight:500}
 .btn-copiar{display:flex;align-items:center;gap:6px;background:var(--accent);color:white;border:none;padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:background .15s;font-family:inherit}
 .btn-copiar:hover{background:var(--accent-hover)}
-
-/* CARD */
 .card{background:var(--bg-card);border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);overflow:hidden;margin-bottom:16px}
 .card-header{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
 .card-title{font-size:14px;font-weight:600;color:var(--text)}
@@ -104,8 +87,6 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 .filtro-data:focus{border-color:var(--accent)}
 .btn-novo{display:flex;align-items:center;gap:6px;background:var(--accent);color:white;border:none;padding:7px 14px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;transition:background .15s;font-family:inherit}
 .btn-novo:hover{background:var(--accent-hover)}
-
-/* TABELA */
 .tabela-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
 table{width:100%;border-collapse:collapse;min-width:540px}
 thead tr{background:var(--bg)}
@@ -132,8 +113,6 @@ tbody tr:hover td{background:var(--bg)}
 .pg-btn:hover:not(:disabled){border-color:var(--accent);color:var(--accent)}
 .pg-btn.ativo{background:var(--accent);border-color:var(--accent);color:white}
 .pg-btn:disabled{opacity:.3;cursor:not-allowed}
-
-/* CONFIG */
 .config-card{background:var(--bg-card);border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);padding:22px;margin-bottom:16px}
 .config-card-title{font-size:14px;font-weight:600;color:var(--text);margin-bottom:16px;display:flex;align-items:center;gap:8px}
 .config-card-title-icon{width:26px;height:26px;border-radius:7px;background:var(--accent-light);display:flex;align-items:center;justify-content:center;flex-shrink:0}
@@ -190,17 +169,12 @@ tbody tr:hover td{background:var(--bg)}
 .foto-preview img{width:100%;height:100%;object-fit:cover}
 .btn-foto{background:var(--accent-light);color:var(--accent);border:1.5px solid rgba(37,99,235,0.2);padding:7px 14px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit}
 .foto-status{font-size:11px;color:var(--text3);margin-top:4px}
-
-/* MODAL NOVO NEGÓCIO */
 .modal-neg{background:var(--bg-card);border-radius:16px;padding:24px;width:100%;max-width:400px;box-shadow:0 4px 16px rgba(0,0,0,0.12)}
 .plano-badge{display:inline-flex;align-items:center;gap:5px;background:var(--accent-light);color:var(--accent);padding:4px 10px;border-radius:100px;font-size:11px;font-weight:700;margin-bottom:14px}
-
-/* TOGGLE SWITCH */
 .toggle-switch{position:relative;display:inline-block;width:44px;height:24px;flex-shrink:0}
 .toggle-switch input{opacity:0;width:0;height:0}
 .toggle-track{position:absolute;cursor:pointer;inset:0;background:#cbd5e1;border-radius:100px;transition:.3s}
 .toggle-thumb{position:absolute;left:3px;top:3px;width:18px;height:18px;background:white;border-radius:50%;transition:.3s;box-shadow:0 1px 3px rgba(0,0,0,0.2)}
-
 @media(max-width:768px){
   .sidebar{transform:translateX(calc(-1 * var(--sidebar-w)))}
   .sidebar.aberta{transform:translateX(0)}
@@ -219,26 +193,22 @@ tbody tr:hover td{background:var(--bg)}
 </style>
 </head>
 <body>
-
 <div class="topbar-mobile">
-  <button class="btn-hamburger" onclick="toggleSidebar()">
-    <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 5h14M3 10h14M3 15h14" stroke="white" stroke-width="1.6" stroke-linecap="round"/></svg>
-  </button>
+  <button class="btn-hamburger" onclick="toggleSidebar()"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 5h14M3 10h14M3 15h14" stroke="white" stroke-width="1.6" stroke-linecap="round"/></svg></button>
   <div class="topbar-brand">Agendo<span>Rapido</span></div>
   <div style="width:32px"></div>
 </div>
-
 <div class="sidebar-overlay" id="sidebar-overlay" onclick="fecharSidebar()"></div>
 
 <!-- MODAL NOVO AGENDAMENTO -->
 <div class="modal-overlay" id="modal-agendamento" style="display:none">
   <div class="modal">
-    <div class="modal-header"><h2>Novo Agendamento</h2><button class="modal-close" onclick="fecharModal()">×</button></div>
-    <div class="form-group"><label>Nome do cliente</label><input type="text" id="m-nome" placeholder="João Silva" /></div>
+    <div class="modal-header"><h2>Novo Agendamento</h2><button class="modal-close" onclick="fecharModal()">x</button></div>
+    <div class="form-group"><label>Nome do cliente</label><input type="text" id="m-nome" placeholder="Joao Silva" /></div>
     <div class="form-group"><label>WhatsApp</label><input type="tel" id="m-telefone" placeholder="(11) 99999-9999" /></div>
-    <div class="form-group"><label>Serviço</label><select id="m-servico"></select></div>
+    <div class="form-group"><label>Servico</label><select id="m-servico"></select></div>
     <div class="form-group"><label>Data</label><input type="date" id="m-data" onchange="carregarHorariosModal()" /></div>
-    <div class="form-group"><label>Horário</label><select id="m-hora"></select></div>
+    <div class="form-group"><label>Horario</label><select id="m-hora"></select></div>
     <div class="erro-msg" id="m-erro"></div>
     <div class="modal-footer">
       <button class="btn-cancelar-modal" onclick="fecharModal()">Cancelar</button>
@@ -247,21 +217,21 @@ tbody tr:hover td{background:var(--bg)}
   </div>
 </div>
 
-<!-- MODAL NOVO NEGÓCIO -->
+<!-- MODAL NOVO NEGOCIO -->
 <div class="modal-overlay" id="modal-negocio" style="display:none">
   <div class="modal-neg">
-    <div class="modal-header"><h2>Novo Painel</h2><button class="modal-close" onclick="fecharModalNegocio()">×</button></div>
-    <div class="plano-badge" id="badge-plano">✦ Plano Pro</div>
-    <div class="form-group"><label>Nome do negócio</label><input type="text" id="neg-nome" placeholder="Ex: Barbearia Centro" /></div>
+    <div class="modal-header"><h2>Novo Painel</h2><button class="modal-close" onclick="fecharModalNegocio()">x</button></div>
+    <div class="plano-badge" id="badge-plano">Plano Pro</div>
+    <div class="form-group"><label>Nome do negocio</label><input type="text" id="neg-nome" placeholder="Ex: Barbearia Centro" /></div>
     <div class="form-group">
       <label>Segmento</label>
       <select id="neg-segmento">
-        <option value="Clínica">Clínica / Consultório</option>
+        <option value="Clinica">Clinica / Consultorio</option>
         <option value="Barbearia">Barbearia</option>
-        <option value="Salão">Salão de Beleza</option>
+        <option value="Salao">Salao de Beleza</option>
         <option value="Pet Shop">Pet Shop</option>
         <option value="Academia">Academia / Personal</option>
-        <option value="Estúdio">Estúdio de Tatuagem</option>
+        <option value="Estudio">Estudio de Tatuagem</option>
         <option value="Outro">Outro</option>
       </select>
     </div>
@@ -276,10 +246,10 @@ tbody tr:hover td{background:var(--bg)}
 <!-- BLOQUEIO -->
 <div id="bloqueio" class="bloqueio" style="display:none">
   <div class="bloqueio-card">
-    <div style="font-size:48px;margin-bottom:16px">⏰</div>
+    <div style="font-size:48px;margin-bottom:16px">x</div>
     <h2>Seu trial expirou</h2>
     <p>Seus 14 dias gratuitos acabaram. Assine um plano para continuar.</p>
-    <a href="/planos.html" class="btn-ver-planos">Ver planos a partir de R$29/mês</a>
+    <a href="/planos.html" class="btn-ver-planos">Ver planos a partir de R$29/mes</a>
     <button onclick="sair()" style="background:none;border:none;color:var(--text3);font-size:13px;cursor:pointer;margin-top:8px;font-family:inherit">Sair da conta</button>
   </div>
 </div>
@@ -311,7 +281,7 @@ tbody tr:hover td{background:var(--bg)}
     </button>
     <button class="menu-item" onclick="irPara('horarios',this)">
       <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="7.5" r="5.5" stroke="currentColor" stroke-width="1.4"/><path d="M7.5 4.5V8l2 2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
-      Horários
+      Horarios
     </button>
     <button class="menu-item" onclick="irPara('lembretes',this)">
       <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M7.5 1.5a4.5 4.5 0 0 1 4.5 4.5c0 2.5.5 3.5 1 4H2c.5-.5 1-1.5 1-4a4.5 4.5 0 0 1 4.5-4.5Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M6 12.5a1.5 1.5 0 0 0 3 0" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
@@ -323,7 +293,7 @@ tbody tr:hover td{background:var(--bg)}
     </button>
     <button class="menu-item" onclick="irPara('configuracoes',this)">
       <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="7.5" r="2" stroke="currentColor" stroke-width="1.4"/><path d="M7.5 1v1.5M7.5 12.5V14M1 7.5h1.5M12.5 7.5H14M3 3l1 1M11 11l1 1M3 12l1-1M11 4l1-1" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
-      Configurações
+      Configuracoes
     </button>
     <div class="menu-section">Conta</div>
     <button class="menu-item" onclick="irPara('pagamentos',this)">
@@ -335,8 +305,8 @@ tbody tr:hover td{background:var(--bg)}
       Planos
     </button>
     <button class="menu-item" onclick="irPara('suporte',this)">
-    <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="7.5" r="5.5" stroke="currentColor" stroke-width="1.4"/><path d="M7.5 8.5V8a2 2 0 1 0-2-2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><circle cx="7.5" cy="10.5" r=".5" fill="currentColor"/></svg>
-    Suporte
+      <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="7.5" r="5.5" stroke="currentColor" stroke-width="1.4"/><path d="M7.5 8.5V8a2 2 0 1 0-2-2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><circle cx="7.5" cy="10.5" r=".5" fill="currentColor"/></svg>
+      Suporte
     </button>
   </div>
   <div class="sidebar-footer">
@@ -356,42 +326,27 @@ tbody tr:hover td{background:var(--bg)}
 
   <!-- AGENDAMENTOS -->
   <div class="page ativo" id="page-agendamentos">
-    <div class="page-header"><h1>Agendamentos</h1><p>Gerencie os horários do seu negócio</p></div>
+    <div class="page-header"><h1>Agendamentos</h1><p>Gerencie os horarios do seu negocio</p></div>
     <div class="link-card">
       <div><div class="link-card-label">Link de agendamento</div><div class="link-card-url" id="link-agendamento"></div></div>
-      <button class="btn-copiar" onclick="copiarLink()">
-        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M1 8.5V2a1 1 0 0 1 1-1h6.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
-        Copiar link
-      </button>
+      <button class="btn-copiar" onclick="copiarLink()"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M1 8.5V2a1 1 0 0 1 1-1h6.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>Copiar link</button>
     </div>
     <div class="stats">
-      <div class="stat-card">
-        <div class="stat-icon"><svg width="15" height="15" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="7.5" r="5.5" stroke="#2563eb" stroke-width="1.4"/><path d="M7.5 4.5V8l2 2" stroke="#2563eb" stroke-width="1.4" stroke-linecap="round"/></svg></div>
-        <div class="stat-valor" id="stat-hoje">0</div><div class="stat-label">Hoje</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-icon"><svg width="15" height="15" viewBox="0 0 15 15" fill="none"><rect x="1.5" y="2.5" width="12" height="11" rx="1.5" stroke="#2563eb" stroke-width="1.4"/><path d="M5 1.5v2M10 1.5v2M1.5 5.5h12" stroke="#2563eb" stroke-width="1.4" stroke-linecap="round"/></svg></div>
-        <div class="stat-valor" id="stat-semana">0</div><div class="stat-label">Esta semana</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-icon"><svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M1.5 11L5.5 7l3 3L13.5 4" stroke="#2563eb" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-        <div class="stat-valor" id="stat-total">0</div><div class="stat-label">Total geral</div>
-      </div>
+      <div class="stat-card"><div class="stat-icon"><svg width="15" height="15" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="7.5" r="5.5" stroke="#2563eb" stroke-width="1.4"/><path d="M7.5 4.5V8l2 2" stroke="#2563eb" stroke-width="1.4" stroke-linecap="round"/></svg></div><div class="stat-valor" id="stat-hoje">0</div><div class="stat-label">Hoje</div></div>
+      <div class="stat-card"><div class="stat-icon"><svg width="15" height="15" viewBox="0 0 15 15" fill="none"><rect x="1.5" y="2.5" width="12" height="11" rx="1.5" stroke="#2563eb" stroke-width="1.4"/><path d="M5 1.5v2M10 1.5v2M1.5 5.5h12" stroke="#2563eb" stroke-width="1.4" stroke-linecap="round"/></svg></div><div class="stat-valor" id="stat-semana">0</div><div class="stat-label">Esta semana</div></div>
+      <div class="stat-card"><div class="stat-icon"><svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M1.5 11L5.5 7l3 3L13.5 4" stroke="#2563eb" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="stat-valor" id="stat-total">0</div><div class="stat-label">Total geral</div></div>
     </div>
     <div class="card">
       <div class="card-header">
         <div class="card-title">Lista de agendamentos</div>
         <div class="card-actions">
           <input type="date" class="filtro-data" id="filtro-data" onchange="filtrarData()" />
-          <button class="btn-novo" onclick="abrirModalNovoAgendamento()">
-            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
-            Novo
-          </button>
+          <button class="btn-novo" onclick="abrirModalNovoAgendamento()"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>Novo</button>
         </div>
       </div>
       <div class="tabela-scroll">
         <table>
-          <thead><tr><th>Cliente</th><th>Serviço</th><th>Data</th><th>Hora</th><th>Status</th><th>Ações</th></tr></thead>
+          <thead><tr><th>Cliente</th><th>Servico</th><th>Data</th><th>Hora</th><th>Status</th><th>Acoes</th></tr></thead>
           <tbody id="tbody"></tbody>
         </table>
       </div>
@@ -402,9 +357,9 @@ tbody tr:hover td{background:var(--bg)}
     </div>
   </div>
 
-  <!-- HORÁRIOS -->
+  <!-- HORARIOS -->
   <div class="page" id="page-horarios">
-    <div class="page-header"><h1>Horários de Atendimento</h1><p>Configure os dias e horários que seu negócio atende</p></div>
+    <div class="page-header"><h1>Horarios de Atendimento</h1><p>Configure os dias e horarios que seu negocio atende</p></div>
     <div class="config-card">
       <div class="config-card-title"><div class="config-card-title-icon"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="6.5" cy="6.5" r="5" stroke="#2563eb" stroke-width="1.4"/><path d="M6.5 4V7l2 2" stroke="#2563eb" stroke-width="1.4" stroke-linecap="round"/></svg></div>Intervalo entre atendimentos</div>
       <div class="intervalo-grid">
@@ -419,168 +374,114 @@ tbody tr:hover td{background:var(--bg)}
       </div>
     </div>
     <div class="config-card">
-      <div class="config-card-title"><div class="config-card-title-icon"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="1" y="2" width="11" height="10" rx="1.5" stroke="#2563eb" stroke-width="1.4"/><path d="M4 1v2M9 1v2M1 5h11" stroke="#2563eb" stroke-width="1.4" stroke-linecap="round"/></svg></div>Dias e horários</div>
+      <div class="config-card-title"><div class="config-card-title-icon"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="1" y="2" width="11" height="10" rx="1.5" stroke="#2563eb" stroke-width="1.4"/><path d="M4 1v2M9 1v2M1 5h11" stroke="#2563eb" stroke-width="1.4" stroke-linecap="round"/></svg></div>Dias e horarios</div>
       <div id="dias-container"></div>
-      <div style="display:flex;align-items:center">
-        <button class="btn-salvar" onclick="salvarHorarios()">Salvar horários</button>
-        <span class="salvo-msg" id="salvo-horarios">✓ Salvo!</span>
-      </div>
+      <div style="display:flex;align-items:center"><button class="btn-salvar" onclick="salvarHorarios()">Salvar horarios</button><span class="salvo-msg" id="salvo-horarios">Salvo!</span></div>
     </div>
     <div class="config-card">
-      <div class="config-card-title">
-        <div class="config-card-title-icon">
-          <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M1.5 6.5h10M6.5 1.5v10" stroke="#2563eb" stroke-width="1.4" stroke-linecap="round"/></svg>
-        </div>
-        Pausas e intervalos
-      </div>
-      <p style="font-size:12.5px;color:var(--text2);margin-bottom:14px">Bloqueie horários para almoço, café ou qualquer pausa. Esses horários não aparecerão para agendamento.</p>
+      <div class="config-card-title"><div class="config-card-title-icon"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M1.5 6.5h10M6.5 1.5v10" stroke="#2563eb" stroke-width="1.4" stroke-linecap="round"/></svg></div>Pausas e intervalos</div>
+      <p style="font-size:12.5px;color:var(--text2);margin-bottom:14px">Bloqueie horarios para almoco, cafe ou qualquer pausa.</p>
       <div id="pausas-lista"></div>
       <div style="margin-top:12px;display:flex;flex-direction:column;gap:8px">
         <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-          <input type="text" id="pausa-inicio" placeholder="12:00" maxlength="5" inputmode="numeric"
-            style="flex:1;min-width:80px;padding:9px 12px;border:1.5px solid var(--border2);border-radius:8px;font-size:14px;font-weight:600;outline:none;font-family:inherit;text-align:center"
-            oninput="mascaraHora(this)" />
-          <span style="font-size:12px;color:var(--text3);font-weight:500;white-space:nowrap">às</span>
-          <input type="text" id="pausa-fim" placeholder="13:00" maxlength="5" inputmode="numeric"
-            style="flex:1;min-width:80px;padding:9px 12px;border:1.5px solid var(--border2);border-radius:8px;font-size:14px;font-weight:600;outline:none;font-family:inherit;text-align:center"
-            oninput="mascaraHora(this)" />
-          <input type="text" id="pausa-label" placeholder="Ex: Almoço"
-            style="flex:1.5;min-width:100px;padding:9px 12px;border:1.5px solid var(--border2);border-radius:8px;font-size:13px;outline:none;font-family:inherit" />
+          <input type="text" id="pausa-inicio" placeholder="12:00" maxlength="5" inputmode="numeric" style="flex:1;min-width:80px;padding:9px 12px;border:1.5px solid var(--border2);border-radius:8px;font-size:14px;font-weight:600;outline:none;font-family:inherit;text-align:center" oninput="mascaraHora(this)" />
+          <span style="font-size:12px;color:var(--text3);font-weight:500;white-space:nowrap">as</span>
+          <input type="text" id="pausa-fim" placeholder="13:00" maxlength="5" inputmode="numeric" style="flex:1;min-width:80px;padding:9px 12px;border:1.5px solid var(--border2);border-radius:8px;font-size:14px;font-weight:600;outline:none;font-family:inherit;text-align:center" oninput="mascaraHora(this)" />
+          <input type="text" id="pausa-label" placeholder="Ex: Almoco" style="flex:1.5;min-width:100px;padding:9px 12px;border:1.5px solid var(--border2);border-radius:8px;font-size:13px;outline:none;font-family:inherit" />
         </div>
         <button class="btn-add" style="width:100%" onclick="adicionarPausa()">+ Adicionar pausa</button>
       </div>
-      <div style="display:flex;align-items:center;margin-top:14px">
-        <button class="btn-salvar" onclick="salvarPausas()">Salvar pausas</button>
-        <span class="salvo-msg" id="salvo-pausas">✓ Salvo!</span>
-      </div>
+      <div style="display:flex;align-items:center;margin-top:14px"><button class="btn-salvar" onclick="salvarPausas()">Salvar pausas</button><span class="salvo-msg" id="salvo-pausas">Salvo!</span></div>
     </div>
   </div>
 
   <!-- LEMBRETES -->
-<div class="page" id="page-lembretes">
-  <div class="page-header">
-    <h1>Lembretes Automáticos</h1>
-    <p>Avise seus clientes 24h antes do agendamento via WhatsApp</p>
-  </div>
-  <div class="config-card">
-    <div class="config-card-title">
-      <div class="config-card-title-icon">
-        <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1a4 4 0 0 1 4 4c0 2.2.4 3.1.9 3.5H1.6c.5-.4.9-1.3.9-3.5a4 4 0 0 1 4-4Z" stroke="#2563eb" stroke-width="1.4" stroke-linejoin="round"/><path d="M5.2 11a1.3 1.3 0 0 0 2.6 0" stroke="#2563eb" stroke-width="1.4" stroke-linecap="round"/></svg>
-      </div>
-      Lembrete 24h antes
-    </div>
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--border)">
-      <div>
-        <div style="font-size:13.5px;font-weight:600;color:var(--text)">Ativar lembretes automáticos</div>
-        <div style="font-size:12px;color:var(--text2);margin-top:3px">Seus clientes recebem uma mensagem no WhatsApp 24h antes do horário</div>
-      </div>
-      <label class="toggle-switch">
-        <input type="checkbox" id="toggle-lembrete" onchange="salvarLembrete()">
-        <span class="toggle-track" id="toggle-track"></span>
-        <span class="toggle-thumb" id="toggle-thumb"></span>
-      </label>
-    </div>
-    <div id="lembrete-info" style="display:none;margin-top:16px;background:var(--green-bg);border:1px solid #86efac;border-radius:10px;padding:14px 16px">
-      <div style="font-size:13px;font-weight:600;color:var(--green);margin-bottom:4px">✅ Lembretes ativados</div>
-      <div style="font-size:12.5px;color:#166534;line-height:1.6">Seus clientes receberão automaticamente uma mensagem de lembrete 24 horas antes do agendamento via WhatsApp do AgendoRapido.</div>
-    </div>
-    <div style="margin-top:16px">
-      <div class="form-group">
-        <label>Mensagem do lembrete</label>
-        <textarea id="lembrete-msg" style="resize:vertical;min-height:90px">Olá {nome}! A *{negocio}* lembra que você tem um agendamento amanhã, {data} às {hora} — {servico}. Te esperamos! 😊</textarea>
-        <div style="font-size:11px;color:var(--text3);margin-top:5px">Variáveis: <strong>{nome}</strong>, <strong>{negocio}</strong>, <strong>{data}</strong>, <strong>{hora}</strong>, <strong>{servico}</strong></div>
-      </div>
-    </div>
-    <div style="display:flex;align-items:center">
-      <button class="btn-salvar" onclick="salvarConfLembrete()">Salvar configurações</button>
-      <span class="salvo-msg" id="salvo-lembrete">✓ Salvo!</span>
-    </div>
-  </div>
-</div>
-    <!-- SUPORTE -->
-<div class="page" id="page-suporte">
-  <div class="page-header">
-    <h1>Suporte</h1>
-    <p>Estamos aqui para ajudar você</p>
-  </div>
-  <div class="config-card" style="text-align:center;padding:40px 28px">
-    <div style="width:72px;height:72px;background:#dcfce7;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px">
-      <svg width="32" height="32" viewBox="0 0 32 32" fill="none"><path d="M27 20c0 1-.4 2-1 2.7l-1.3 1.4c-.8.7-1.8 1.1-2.7 1.1-3.8 0-7.4-1.5-10.2-4.2C9 18.2 7.5 14.6 7.5 10.8c0-1 .3-2 1-2.7l1.4-1.4c.7-.7 1.8-.7 2.5 0l3 3c.7.7.7 1.8 0 2.5l-1 1c-.2.2-.2.5 0 .7 1 1.5 2.3 2.8 3.8 3.8.2.2.5.2.7 0l1-1c.7-.7 1.8-.7 2.5 0l3 3c.7.6.7 1.7.1 2.3z" stroke="#16a34a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    </div>
-    <h2 style="font-size:20px;font-weight:700;color:var(--text);margin-bottom:8px">Fale com o suporte</h2>
-    <p style="font-size:14px;color:var(--text2);line-height:1.6;margin-bottom:28px;max-width:320px;margin-left:auto;margin-right:auto">Tem alguma dúvida ou problema? Nossa equipe está pronta para te ajudar pelo WhatsApp.</p>
-    <a href="https://wa.me/5500000000000?text=Ol%C3%A1%2C+preciso+de+ajuda+com+o+AgendoRapido!" target="_blank"
-      style="display:inline-flex;align-items:center;gap:10px;background:#16a34a;color:white;padding:13px 28px;border-radius:12px;font-size:15px;font-weight:600;text-decoration:none;font-family:inherit"
-      onmouseover="this.style.background='#15803d'" onmouseout="this.style.background='#16a34a'">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.118 1.528 5.852L.057 23.885l6.204-1.628A11.945 11.945 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.808 9.808 0 0 1-5.001-1.366l-.359-.213-3.682.966.983-3.594-.234-.371A9.818 9.818 0 0 1 2.182 12C2.182 6.57 6.57 2.182 12 2.182S21.818 6.57 21.818 12 17.43 21.818 12 21.818z"/></svg>
-      Chamar no WhatsApp
-    </a>
-    <div style="margin-top:28px;padding-top:24px;border-top:1px solid var(--border)">
-      <div style="font-size:12px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:14px">Horário de atendimento</div>
-      <div style="font-size:13.5px;color:var(--text2);line-height:2">Segunda a Sexta: 9h às 18h<br>Sábado: 9h às 13h</div>
-  </div>
-</div>
-</div>
-
-  <!-- CONFIGURAÇÕES -->
-  <div class="page" id="page-configuracoes">
-    <div class="page-header"><h1>Configurações</h1><p>Personalize os serviços do seu negócio</p></div>
+  <div class="page" id="page-lembretes">
+    <div class="page-header"><h1>Lembretes Automaticos</h1><p>Avise seus clientes 24h antes do agendamento via WhatsApp</p></div>
     <div class="config-card">
-      <div class="config-card-title"><div class="config-card-title-icon"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M1.5 3.5h10M1.5 6.5h6M1.5 9.5h7" stroke="#2563eb" stroke-width="1.4" stroke-linecap="round"/></svg></div>Serviços oferecidos</div>
+      <div class="config-card-title"><div class="config-card-title-icon"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1a4 4 0 0 1 4 4c0 2.2.4 3.1.9 3.5H1.6c.5-.4.9-1.3.9-3.5a4 4 0 0 1 4-4Z" stroke="#2563eb" stroke-width="1.4" stroke-linejoin="round"/><path d="M5.2 11a1.3 1.3 0 0 0 2.6 0" stroke="#2563eb" stroke-width="1.4" stroke-linecap="round"/></svg></div>Lembrete 24h antes</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--border)">
+        <div>
+          <div style="font-size:13.5px;font-weight:600;color:var(--text)">Ativar lembretes automaticos</div>
+          <div style="font-size:12px;color:var(--text2);margin-top:3px">Seus clientes recebem uma mensagem no WhatsApp 24h antes do horario</div>
+        </div>
+        <label class="toggle-switch"><input type="checkbox" id="toggle-lembrete" onchange="salvarLembrete()"><span class="toggle-track" id="toggle-track"></span><span class="toggle-thumb" id="toggle-thumb"></span></label>
+      </div>
+      <div id="lembrete-info" style="display:none;margin-top:16px;background:var(--green-bg);border:1px solid #86efac;border-radius:10px;padding:14px 16px">
+        <div style="font-size:13px;font-weight:600;color:var(--green);margin-bottom:4px">Lembretes ativados</div>
+        <div style="font-size:12.5px;color:#166534;line-height:1.6">Seus clientes receberao automaticamente uma mensagem de lembrete 24 horas antes do agendamento via WhatsApp do AgendoRapido.</div>
+      </div>
+      <div style="margin-top:16px">
+        <div class="form-group">
+          <label>Mensagem do lembrete</label>
+          <textarea id="lembrete-msg" style="resize:vertical;min-height:90px">Ola {nome}! A *{negocio}* lembra que voce tem um agendamento amanha, {data} as {hora} -- {servico}. Te esperamos!</textarea>
+          <div style="font-size:11px;color:var(--text3);margin-top:5px">Variaveis: <strong>{nome}</strong>, <strong>{negocio}</strong>, <strong>{data}</strong>, <strong>{hora}</strong>, <strong>{servico}</strong></div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center"><button class="btn-salvar" onclick="salvarConfLembrete()">Salvar configuracoes</button><span class="salvo-msg" id="salvo-lembrete">Salvo!</span></div>
+    </div>
+  </div>
+
+  <!-- CONFIGURACOES -->
+  <div class="page" id="page-configuracoes">
+    <div class="page-header"><h1>Configuracoes</h1><p>Personalize os servicos do seu negocio</p></div>
+    <div class="config-card">
+      <div class="config-card-title"><div class="config-card-title-icon"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M1.5 3.5h10M1.5 6.5h6M1.5 9.5h7" stroke="#2563eb" stroke-width="1.4" stroke-linecap="round"/></svg></div>Servicos oferecidos</div>
       <div id="servicos-tags"></div>
-      <div class="add-servico">
-        <input type="text" id="novo-servico" placeholder="Ex: Corte + Barba, Consulta..." />
-        <button class="btn-add" onclick="adicionarServico()">Adicionar</button>
-      </div>
-      <div style="display:flex;align-items:center">
-        <button class="btn-salvar" onclick="salvarServicos()">Salvar serviços</button>
-        <span class="salvo-msg" id="salvo-msg">✓ Salvo!</span>
-      </div>
+      <div class="add-servico"><input type="text" id="novo-servico" placeholder="Ex: Corte + Barba, Consulta..." /><button class="btn-add" onclick="adicionarServico()">Adicionar</button></div>
+      <div style="display:flex;align-items:center"><button class="btn-salvar" onclick="salvarServicos()">Salvar servicos</button><span class="salvo-msg" id="salvo-msg">Salvo!</span></div>
     </div>
   </div>
 
   <!-- BIO -->
   <div class="page" id="page-bio">
-    <div class="page-header"><h1>Minha Página Bio</h1><p>Personalize sua página pública para o Instagram</p></div>
+    <div class="page-header"><h1>Minha Pagina Bio</h1><p>Personalize sua pagina publica para o Instagram</p></div>
     <div class="link-card">
       <div><div class="link-card-label">Link da sua bio</div><div class="link-card-url" id="link-bio"></div></div>
-      <button class="btn-copiar" onclick="copiarLinkBio()">
-        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M1 8.5V2a1 1 0 0 1 1-1h6.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
-        Copiar link
-      </button>
+      <button class="btn-copiar" onclick="copiarLinkBio()"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M1 8.5V2a1 1 0 0 1 1-1h6.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>Copiar link</button>
     </div>
     <div class="config-card">
-      <div class="config-card-title"><div class="config-card-title-icon"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="6.5" cy="4" rx="2.5" stroke="#2563eb" stroke-width="1.4"/><path d="M1 12c0-2.8 2.5-5 5.5-5s5.5 2.2 5.5 5" stroke="#2563eb" stroke-width="1.4" stroke-linecap="round"/></svg></div>Informações da página</div>
+      <div class="config-card-title"><div class="config-card-title-icon"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="6.5" cy="4" rx="2.5" stroke="#2563eb" stroke-width="1.4"/><path d="M1 12c0-2.8 2.5-5 5.5-5s5.5 2.2 5.5 5" stroke="#2563eb" stroke-width="1.4" stroke-linecap="round"/></svg></div>Informacoes da pagina</div>
       <div class="foto-wrap">
-        <div id="foto-preview" class="foto-preview">🏪</div>
-        <div>
-          <input type="file" id="foto-input" accept="image/*" onchange="uploadFoto(this)" style="display:none" />
-          <button class="btn-foto" onclick="document.getElementById('foto-input').click()">Escolher foto</button>
-          <div class="foto-status" id="foto-status">Nenhuma foto selecionada</div>
-        </div>
+        <div id="foto-preview" class="foto-preview">x</div>
+        <div><input type="file" id="foto-input" accept="image/*" onchange="uploadFoto(this)" style="display:none" /><button class="btn-foto" onclick="document.getElementById('foto-input').click()">Escolher foto</button><div class="foto-status" id="foto-status">Nenhuma foto selecionada</div></div>
         <input type="hidden" id="bio-foto" />
       </div>
-      <div class="form-group"><label>Descrição / Bio</label><textarea id="bio-descricao" placeholder="Ex: Barbearia premium no centro de SP." style="resize:vertical;min-height:70px"></textarea></div>
+      <div class="form-group"><label>Descricao / Bio</label><textarea id="bio-descricao" placeholder="Ex: Barbearia premium no centro de SP." style="resize:vertical;min-height:70px"></textarea></div>
       <div class="form-group"><label>Link do Google Maps</label><input type="text" id="bio-endereco" placeholder="Cole aqui o link do Google Maps" /></div>
       <div class="form-group"><label>Instagram</label><input type="text" id="bio-instagram" placeholder="@seunegocio" /></div>
       <div class="form-group"><label>WhatsApp</label><input type="text" id="bio-whatsapp" placeholder="(11) 99999-9999" /></div>
-      <div style="display:flex;align-items:center">
-        <button class="btn-salvar" onclick="salvarBio()">Salvar bio</button>
-        <span class="salvo-msg" id="salvo-bio">✓ Salvo!</span>
-      </div>
+      <div style="display:flex;align-items:center"><button class="btn-salvar" onclick="salvarBio()">Salvar bio</button><span class="salvo-msg" id="salvo-bio">Salvo!</span></div>
     </div>
   </div>
 
   <!-- PAGAMENTOS -->
   <div class="page" id="page-pagamentos">
-    <div class="page-header">
-      <h1>Pagamentos</h1>
-      <p>Configure cobrança antecipada via Pix por serviço</p>
-    </div>
+    <div class="page-header"><h1>Pagamentos</h1><p>Configure cobranca antecipada via Pix por servico</p></div>
     <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;text-align:center">
-      <div style="width:64px;height:64px;background:var(--accent-light);border-radius:16px;display:flex;align-items:center;justify-content:center;margin-bottom:20px;font-size:28px">🔒</div>
+      <div style="width:64px;height:64px;background:var(--accent-light);border-radius:16px;display:flex;align-items:center;justify-content:center;margin-bottom:20px;font-size:28px">x</div>
       <h2 style="font-size:18px;font-weight:700;color:var(--text);margin-bottom:8px">Recurso em breve</h2>
-      <p style="font-size:13.5px;color:var(--text2);max-width:340px;line-height:1.6">A cobrança antecipada via Pix estará disponível em breve. Fique de olho nas novidades!</p>
+      <p style="font-size:13.5px;color:var(--text2);max-width:340px;line-height:1.6">A cobranca antecipada via Pix estara disponivel em breve. Fique de olho nas novidades!</p>
+    </div>
+  </div>
+
+  <!-- SUPORTE -->
+  <div class="page" id="page-suporte">
+    <div class="page-header"><h1>Suporte</h1><p>Estamos aqui para ajudar voce</p></div>
+    <div class="config-card" style="text-align:center;padding:40px 28px">
+      <div style="width:72px;height:72px;background:#dcfce7;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px">
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none"><path d="M27 20c0 1-.4 2-1 2.7l-1.3 1.4c-.8.7-1.8 1.1-2.7 1.1-3.8 0-7.4-1.5-10.2-4.2C9 18.2 7.5 14.6 7.5 10.8c0-1 .3-2 1-2.7l1.4-1.4c.7-.7 1.8-.7 2.5 0l3 3c.7.7.7 1.8 0 2.5l-1 1c-.2.2-.2.5 0 .7 1 1.5 2.3 2.8 3.8 3.8.2.2.5.2.7 0l1-1c.7-.7 1.8-.7 2.5 0l3 3c.7.6.7 1.7.1 2.3z" stroke="#16a34a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <h2 style="font-size:20px;font-weight:700;color:var(--text);margin-bottom:8px">Fale com o suporte</h2>
+      <p style="font-size:14px;color:var(--text2);line-height:1.6;margin-bottom:28px;max-width:320px;margin-left:auto;margin-right:auto">Tem alguma duvida ou problema? Nossa equipe esta pronta para te ajudar pelo WhatsApp.</p>
+      <a href="https://wa.me/5500000000000?text=Ola%2C+preciso+de+ajuda+com+o+AgendoRapido!" target="_blank" style="display:inline-flex;align-items:center;gap:10px;background:#16a34a;color:white;padding:13px 28px;border-radius:12px;font-size:15px;font-weight:600;text-decoration:none;font-family:inherit" onmouseover="this.style.background='#15803d'" onmouseout="this.style.background='#16a34a'">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.118 1.528 5.852L.057 23.885l6.204-1.628A11.945 11.945 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.808 9.808 0 0 1-5.001-1.366l-.359-.213-3.682.966.983-3.594-.234-.371A9.818 9.818 0 0 1 2.182 12C2.182 6.57 6.57 2.182 12 2.182S21.818 6.57 21.818 12 17.43 21.818 12 21.818z"/></svg>
+        Chamar no WhatsApp
+      </a>
+      <div style="margin-top:28px;padding-top:24px;border-top:1px solid var(--border)">
+        <div style="font-size:12px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:14px">Horario de atendimento</div>
+        <div style="font-size:13.5px;color:var(--text2);line-height:2">Segunda a Sexta: 9h as 18h<br>Sabado: 9h as 13h</div>
+      </div>
     </div>
   </div>
 
@@ -590,479 +491,76 @@ tbody tr:hover td{background:var(--bg)}
 const API = 'https://agendafacil-wf3q.onrender.com/api'
 let todosAgendamentos = []
 let servicosAtuais = []
-const diasNomes = ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado']
+const diasNomes = ['Domingo','Segunda','Terca','Quarta','Quinta','Sexta','Sabado']
 let intervaloAtual = 30
 let horariosConfig = {}
 let negocioAtual = null
 let todosNegocios = []
-
 const servicosPorSegmento = {
-  'Clínica':['Consulta','Retorno','Exame','Avaliação','Procedimento'],
-  'Barbearia':['Corte','Barba','Corte + Barba','Pigmentação','Hidratação'],
-  'Salão':['Corte','Coloração','Escova','Manicure','Pedicure'],
+  'Clinica':['Consulta','Retorno','Exame','Avaliacao','Procedimento'],
+  'Barbearia':['Corte','Barba','Corte + Barba','Pigmentacao','Hidratacao'],
+  'Salao':['Corte','Coloracao','Escova','Manicure','Pedicure'],
   'Pet Shop':['Banho','Tosa','Banho + Tosa','Consulta Vet','Vacina'],
-  'Academia':['Avaliação Física','Treino Personal','Pilates','Musculação'],
-  'Estúdio':['Tatuagem','Orçamento','Retoque','Piercing'],
-  'Outro':['Serviço 1','Serviço 2','Serviço 3']
+  'Academia':['Avaliacao Fisica','Treino Personal','Pilates','Musculacao'],
+  'Estudio':['Tatuagem','Orcamento','Retoque','Piercing'],
+  'Outro':['Servico 1','Servico 2','Servico 3']
 }
-
 function toggleSidebar(){document.getElementById('sidebar').classList.toggle('aberta');document.getElementById('sidebar-overlay').classList.toggle('visivel')}
 function fecharSidebar(){document.getElementById('sidebar').classList.remove('aberta');document.getElementById('sidebar-overlay').classList.remove('visivel')}
-
-// ── NEGÓCIO SELECTOR ─────────────────────────────────
-function toggleDropdown() {
-  const dd = document.getElementById('neg-dropdown')
-  const ch = document.getElementById('neg-chevron')
-  dd.classList.toggle('show')
-  ch.classList.toggle('open')
-}
-
-document.addEventListener('click', e => {
-  if (!e.target.closest('.negocio-selector')) {
-    document.getElementById('neg-dropdown').classList.remove('show')
-    document.getElementById('neg-chevron').classList.remove('open')
-  }
-})
-
-function renderDropdown() {
-  const lista = document.getElementById('neg-lista')
-  lista.innerHTML = todosNegocios.map(n => `
-    <div class="negocio-opt ${n._id === negocioAtual?._id ? 'ativo' : ''}" onclick="trocarNegocio('${n._id}')">
-      <div class="negocio-opt-avatar">${n.nome[0].toUpperCase()}</div>
-      ${n.nome}
-    </div>
-  `).join('')
-}
-
-function trocarNegocio(id) {
-  negocioAtual = todosNegocios.find(n => n._id === id)
-  localStorage.setItem('negocioId', negocioAtual._id)
-  localStorage.setItem('negocio', negocioAtual.nome)
-  atualizarSidebarNegocio()
-  renderDropdown()
-  document.getElementById('neg-dropdown').classList.remove('show')
-  document.getElementById('neg-chevron').classList.remove('open')
-  carregarDadosNegocio()
-}
-
-function atualizarSidebarNegocio() {
-  document.getElementById('neg-nome-sidebar').textContent = negocioAtual?.nome || ''
-  document.getElementById('neg-avatar').textContent = (negocioAtual?.nome || 'A')[0].toUpperCase()
-  const link = `https://agendafacil-wf3q.onrender.com/agendar.html?id=${negocioAtual?._id}`
-  const linkBio = `https://agendafacil-wf3q.onrender.com/bio.html?id=${negocioAtual?._id}`
-  if (document.getElementById('link-agendamento')) document.getElementById('link-agendamento').textContent = link
-  if (document.getElementById('link-bio')) document.getElementById('link-bio').textContent = linkBio
-}
-
-function abrirModalNegocio() {
-  document.getElementById('neg-dropdown').classList.remove('show')
-  document.getElementById('neg-nome').value = ''
-  document.getElementById('neg-erro').textContent = ''
-  document.getElementById('modal-negocio').style.display = 'flex'
-}
-function fecharModalNegocio() { document.getElementById('modal-negocio').style.display = 'none' }
-
-async function criarNegocio() {
-  const nome = document.getElementById('neg-nome').value.trim()
-  const segmento = document.getElementById('neg-segmento').value
-  const erro = document.getElementById('neg-erro')
-  if (!nome) { erro.textContent = 'Digite o nome do negócio'; return }
-  const token = localStorage.getItem('token')
-  const servicos = servicosPorSegmento[segmento] || servicosPorSegmento['Outro']
-  const res = await fetch(`${API}/auth/negocios`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-    body: JSON.stringify({ nome, segmento, servicos })
-  })
-  const data = await res.json()
-  if (!res.ok) { erro.textContent = data.erro || 'Erro ao criar painel'; return }
-  todosNegocios.push({ _id: data._id, nome: data.nome, segmento: data.segmento })
-  fecharModalNegocio()
-  trocarNegocio(data._id)
-}
-
-// ── INICIAR PAINEL ────────────────────────────────────
-async function mostrarPainel() {
-  const token = localStorage.getItem('token')
-  const res = await fetch(`${API}/auth/negocios`, { headers: { 'Authorization': `Bearer ${token}` } })
-  const negocios = await res.json()
-  todosNegocios = negocios
-  const savedId = localStorage.getItem('negocioId')
-  negocioAtual = negocios.find(n => n._id === savedId) || negocios[0]
-  if (negocioAtual) {
-    localStorage.setItem('negocioId', negocioAtual._id)
-    localStorage.setItem('negocio', negocioAtual.nome)
-  }
-  renderDropdown()
-  atualizarSidebarNegocio()
-  document.getElementById('filtro-data').value = new Date().toISOString().split('T')[0]
-  carregarDadosNegocio()
-  verificarAcesso()
-}
-
-function carregarDadosNegocio() {
-  carregarAgendamentos()
-  carregarServicos()
-  carregarHorariosConfig()
-  carregarBioConfig()
-  carregarLembretes()
-}
-
-function irPara(pagina, btn) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('ativo'))
-  document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('ativo'))
-  document.getElementById(`page-${pagina}`).classList.add('ativo')
-  if (btn) btn.classList.add('ativo')
-  fecharSidebar()
-}
-
-async function carregarAgendamentos() {
-  if (!negocioAtual) return
-  const token = localStorage.getItem('token')
-  const res = await fetch(`${API}/agendamentos?negocioId=${negocioAtual._id}`, { headers: { 'Authorization': `Bearer ${token}` } })
-  todosAgendamentos = await res.json()
-  const hoje = new Date().toISOString().split('T')[0]
-  const semana = new Date(Date.now() + 7 * 86400000).toISOString().split('T')[0]
-  document.getElementById('stat-total').textContent = todosAgendamentos.length
-  document.getElementById('stat-hoje').textContent = todosAgendamentos.filter(a => a.data === hoje).length
-  document.getElementById('stat-semana').textContent = todosAgendamentos.filter(a => a.data >= hoje && a.data <= semana).length
-  filtrarData()
-}
-
-async function carregarServicos() {
-  if (!negocioAtual) return
-  const res = await fetch(`${API}/auth/negocio/${negocioAtual._id}`)
-  const data = await res.json()
-  servicosAtuais = data.servicos || []
-  pagamentosConfig = data.pagamentos || {}
-  renderServicos()
-}
-
-function renderServicos() {
-  document.getElementById('servicos-tags').innerHTML = servicosAtuais.map((s, i) => `
-    <span class="servico-tag">${s}<button onclick="removerServico(${i})">×</button></span>
-  `).join('')
-}
-
-function adicionarServico() {
-  const input = document.getElementById('novo-servico')
-  const val = input.value.trim()
-  if (!val) return
-  if (!servicosAtuais.includes(val)) servicosAtuais.push(val)
-  input.value = ''
-  renderServicos()
-}
-function removerServico(i) { servicosAtuais.splice(i, 1); renderServicos() }
-
-async function salvarServicos() {
-  if (!negocioAtual) return
-  const token = localStorage.getItem('token')
-  await fetch(`${API}/auth/servicos`, { method: 'PATCH', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ negocioId: negocioAtual._id, servicos: servicosAtuais }) })
-  const msg = document.getElementById('salvo-msg'); msg.style.display = 'inline'; setTimeout(() => msg.style.display = 'none', 2000)
-}
-
-const POR_PAGINA = 8; let paginaAtual = 1; let listaFiltrada = []
-function filtrarData() {
-  const data = document.getElementById('filtro-data').value
-  listaFiltrada = data ? todosAgendamentos.filter(a => a.data === data) : todosAgendamentos
-  paginaAtual = 1; renderTabela()
-}
-
-function renderTabela() {
-  const tbody = document.getElementById('tbody'); const paginacao = document.getElementById('paginacao')
-  if (listaFiltrada.length === 0) { tbody.innerHTML = '<tr><td colspan="6" class="vazio">Nenhum agendamento encontrado</td></tr>'; paginacao.style.display = 'none'; return }
-  const totalPaginas = Math.ceil(listaFiltrada.length / POR_PAGINA)
-  const inicio = (paginaAtual - 1) * POR_PAGINA; const fim = inicio + POR_PAGINA
-  tbody.innerHTML = listaFiltrada.slice(inicio, fim).map(a => `
-    <tr>
-      <td><div class="paciente-nome">${a.pacienteNome}</div><div class="paciente-tel">${a.pacienteTelefone}</div></td>
-      <td style="color:var(--text2)">${a.servico}</td>
-      <td style="color:var(--text2)">${formatarData(a.data)}</td>
-      <td style="font-weight:600">${a.hora}</td>
-      <td><span class="badge ${a.status}">${a.status}</span></td>
-      <td><div class="acoes">
-        ${a.status==='confirmado'?`<button class="btn-acao concluir" onclick="atualizar('${a._id}','concluido')">Concluir</button>`:''}
-        ${a.status==='confirmado'?`<button class="btn-acao cancelar" onclick="cancelarComAviso('${a._id}','${a.pacienteNome}','${a.pacienteTelefone}','${a.data}','${a.hora}')">Cancelar</button>`:''}
-      </div></td>
-    </tr>
-  `).join('')
-  document.getElementById('pg-info').textContent = `${inicio+1}–${Math.min(fim,listaFiltrada.length)} de ${listaFiltrada.length}`
-  let btns = `<button class="pg-btn" onclick="irPagina(${paginaAtual-1})" ${paginaAtual===1?'disabled':''}>‹</button>`
-  for (let i=1;i<=totalPaginas;i++) {
-    if (totalPaginas<=7||i===1||i===totalPaginas||Math.abs(i-paginaAtual)<=1) btns+=`<button class="pg-btn ${i===paginaAtual?'ativo':''}" onclick="irPagina(${i})">${i}</button>`
-    else if (Math.abs(i-paginaAtual)===2) btns+=`<span style="color:var(--text3);font-size:13px;padding:0 2px">…</span>`
-  }
-  btns+=`<button class="pg-btn" onclick="irPagina(${paginaAtual+1})" ${paginaAtual===totalPaginas?'disabled':''}>›</button>`
-  document.getElementById('pg-btns').innerHTML = btns
-  paginacao.style.display = totalPaginas > 1 ? 'flex' : 'none'
-}
-
-function irPagina(n) {
-  const total = Math.ceil(listaFiltrada.length/POR_PAGINA)
-  if (n<1||n>total) return; paginaAtual=n; renderTabela()
-  document.getElementById('page-agendamentos').scrollIntoView({behavior:'smooth',block:'start'})
-}
-
-async function atualizar(id, status) {
-  const token = localStorage.getItem('token')
-  await fetch(`${API}/agendamentos/${id}`, { method:'PATCH', headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`}, body:JSON.stringify({status}) })
-  carregarAgendamentos()
-}
-
-async function cancelarComAviso(id, nome, telefone, data, hora) {
-  if (!confirm(`Cancelar agendamento de ${nome}?\n\nUm link do WhatsApp será aberto para avisar o cliente.`)) return
-  const token = localStorage.getItem('token')
-  await fetch(`${API}/agendamentos/${id}`, { method:'PATCH', headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`}, body:JSON.stringify({status:'cancelado'}) })
-  const [ano,mes,dia] = data.split('-')
-  const msg = encodeURIComponent(`Olá ${nome}! Infelizmente precisamos cancelar seu agendamento do dia ${dia}/${mes}/${ano} às ${hora}. Por favor entre em contato para reagendar.`)
-  window.open(`https://wa.me/55${telefone.replace(/\D/g,'')}?text=${msg}`,'_blank')
-  carregarAgendamentos()
-}
-
-function copiarLink() {
-  navigator.clipboard.writeText(document.getElementById('link-agendamento').textContent)
-  const btn = document.querySelectorAll('.btn-copiar')[0]; btn.textContent='Copiado!'; setTimeout(()=>btn.textContent='Copiar link',2000)
-}
-function copiarLinkBio() {
-  navigator.clipboard.writeText(document.getElementById('link-bio').textContent)
-  const btn = document.querySelectorAll('.btn-copiar')[1]; btn.textContent='Copiado!'; setTimeout(()=>btn.textContent='Copiar link',2000)
-}
-function formatarData(data) { const [a,m,d]=data.split('-'); return `${d}/${m}/${a}` }
-function sair() { localStorage.clear(); window.location.href='/auth.html' }
-
-function selecionarIntervalo(btn, valor) {
-  document.querySelectorAll('.intervalo-btn').forEach(b=>b.classList.remove('selecionado'))
-  btn.classList.add('selecionado'); intervaloAtual=valor
-}
-
-function renderDias() {
-  document.getElementById('dias-container').innerHTML = diasNomes.map((nome,i) => {
-    const config = horariosConfig[i]||{ativo:false,inicio:'08:00',fim:'18:00'}
-    return `<div class="dia-row ${config.ativo?'':'dia-inativo'}" id="dia-row-${i}">
-      <div class="dia-toggle"><input type="checkbox" id="dia-${i}" ${config.ativo?'checked':''} onchange="toggleDia(${i})"><label for="dia-${i}">${nome}</label></div>
-      <div class="dia-horarios"><span>Das</span><input type="time" id="inicio-${i}" value="${config.inicio}" /><span>às</span><input type="time" id="fim-${i}" value="${config.fim}" /></div>
-    </div>`
-  }).join('')
-}
+function toggleDropdown(){const dd=document.getElementById('neg-dropdown');const ch=document.getElementById('neg-chevron');dd.classList.toggle('show');ch.classList.toggle('open')}
+document.addEventListener('click',e=>{if(!e.target.closest('.negocio-selector')){document.getElementById('neg-dropdown').classList.remove('show');document.getElementById('neg-chevron').classList.remove('open')}})
+function renderDropdown(){const lista=document.getElementById('neg-lista');lista.innerHTML=todosNegocios.map(n=>`<div class="negocio-opt ${n._id===negocioAtual?._id?'ativo':''}" onclick="trocarNegocio('${n._id}')"><div class="negocio-opt-avatar">${n.nome[0].toUpperCase()}</div>${n.nome}</div>`).join('')}
+function trocarNegocio(id){negocioAtual=todosNegocios.find(n=>n._id===id);localStorage.setItem('negocioId',negocioAtual._id);localStorage.setItem('negocio',negocioAtual.nome);atualizarSidebarNegocio();renderDropdown();document.getElementById('neg-dropdown').classList.remove('show');document.getElementById('neg-chevron').classList.remove('open');carregarDadosNegocio()}
+function atualizarSidebarNegocio(){document.getElementById('neg-nome-sidebar').textContent=negocioAtual?.nome||'';document.getElementById('neg-avatar').textContent=(negocioAtual?.nome||'A')[0].toUpperCase();const link=`https://agendafacil-wf3q.onrender.com/agendar.html?id=${negocioAtual?._id}`;const linkBio=`https://agendafacil-wf3q.onrender.com/bio.html?id=${negocioAtual?._id}`;if(document.getElementById('link-agendamento'))document.getElementById('link-agendamento').textContent=link;if(document.getElementById('link-bio'))document.getElementById('link-bio').textContent=linkBio}
+function abrirModalNegocio(){document.getElementById('neg-dropdown').classList.remove('show');document.getElementById('neg-nome').value='';document.getElementById('neg-erro').textContent='';document.getElementById('modal-negocio').style.display='flex'}
+function fecharModalNegocio(){document.getElementById('modal-negocio').style.display='none'}
+async function criarNegocio(){const nome=document.getElementById('neg-nome').value.trim();const segmento=document.getElementById('neg-segmento').value;const erro=document.getElementById('neg-erro');if(!nome){erro.textContent='Digite o nome do negocio';return}const token=localStorage.getItem('token');const servicos=servicosPorSegmento[segmento]||servicosPorSegmento['Outro'];const res=await fetch(`${API}/auth/negocios`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({nome,segmento,servicos})});const data=await res.json();if(!res.ok){erro.textContent=data.erro||'Erro ao criar painel';return}todosNegocios.push({_id:data._id,nome:data.nome,segmento:data.segmento});fecharModalNegocio();trocarNegocio(data._id)}
+async function mostrarPainel(){const token=localStorage.getItem('token');const res=await fetch(`${API}/auth/negocios`,{headers:{'Authorization':`Bearer ${token}`}});const negocios=await res.json();todosNegocios=negocios;const savedId=localStorage.getItem('negocioId');negocioAtual=negocios.find(n=>n._id===savedId)||negocios[0];if(negocioAtual){localStorage.setItem('negocioId',negocioAtual._id);localStorage.setItem('negocio',negocioAtual.nome)}renderDropdown();atualizarSidebarNegocio();document.getElementById('filtro-data').value=new Date().toISOString().split('T')[0];carregarDadosNegocio();verificarAcesso()}
+function carregarDadosNegocio(){carregarAgendamentos();carregarServicos();carregarHorariosConfig();carregarBioConfig();carregarLembretes()}
+function irPara(pagina,btn){document.querySelectorAll('.page').forEach(p=>p.classList.remove('ativo'));document.querySelectorAll('.menu-item').forEach(m=>m.classList.remove('ativo'));document.getElementById(`page-${pagina}`).classList.add('ativo');if(btn)btn.classList.add('ativo');fecharSidebar()}
+async function carregarAgendamentos(){if(!negocioAtual)return;const token=localStorage.getItem('token');const res=await fetch(`${API}/agendamentos?negocioId=${negocioAtual._id}`,{headers:{'Authorization':`Bearer ${token}`}});todosAgendamentos=await res.json();const hoje=new Date().toISOString().split('T')[0];const semana=new Date(Date.now()+7*86400000).toISOString().split('T')[0];document.getElementById('stat-total').textContent=todosAgendamentos.length;document.getElementById('stat-hoje').textContent=todosAgendamentos.filter(a=>a.data===hoje).length;document.getElementById('stat-semana').textContent=todosAgendamentos.filter(a=>a.data>=hoje&&a.data<=semana).length;filtrarData()}
+async function carregarServicos(){if(!negocioAtual)return;const res=await fetch(`${API}/auth/negocio/${negocioAtual._id}`);const data=await res.json();servicosAtuais=data.servicos||[];pagamentosConfig=data.pagamentos||{};renderServicos()}
+function renderServicos(){document.getElementById('servicos-tags').innerHTML=servicosAtuais.map((s,i)=>`<span class="servico-tag">${s}<button onclick="removerServico(${i})">x</button></span>`).join('')}
+function adicionarServico(){const input=document.getElementById('novo-servico');const val=input.value.trim();if(!val)return;if(!servicosAtuais.includes(val))servicosAtuais.push(val);input.value='';renderServicos()}
+function removerServico(i){servicosAtuais.splice(i,1);renderServicos()}
+async function salvarServicos(){if(!negocioAtual)return;const token=localStorage.getItem('token');await fetch(`${API}/auth/servicos`,{method:'PATCH',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({negocioId:negocioAtual._id,servicos:servicosAtuais})});const msg=document.getElementById('salvo-msg');msg.style.display='inline';setTimeout(()=>msg.style.display='none',2000)}
+const POR_PAGINA=8;let paginaAtual=1;let listaFiltrada=[]
+function filtrarData(){const data=document.getElementById('filtro-data').value;listaFiltrada=data?todosAgendamentos.filter(a=>a.data===data):todosAgendamentos;paginaAtual=1;renderTabela()}
+function renderTabela(){const tbody=document.getElementById('tbody');const paginacao=document.getElementById('paginacao');if(listaFiltrada.length===0){tbody.innerHTML='<tr><td colspan="6" class="vazio">Nenhum agendamento encontrado</td></tr>';paginacao.style.display='none';return}const totalPaginas=Math.ceil(listaFiltrada.length/POR_PAGINA);const inicio=(paginaAtual-1)*POR_PAGINA;const fim=inicio+POR_PAGINA;tbody.innerHTML=listaFiltrada.slice(inicio,fim).map(a=>`<tr><td><div class="paciente-nome">${a.pacienteNome}</div><div class="paciente-tel">${a.pacienteTelefone}</div></td><td style="color:var(--text2)">${a.servico}</td><td style="color:var(--text2)">${formatarData(a.data)}</td><td style="font-weight:600">${a.hora}</td><td><span class="badge ${a.status}">${a.status}</span></td><td><div class="acoes">${a.status==='confirmado'?`<button class="btn-acao concluir" onclick="atualizar('${a._id}','concluido')">Concluir</button>`:''}${a.status==='confirmado'?`<button class="btn-acao cancelar" onclick="cancelarComAviso('${a._id}','${a.pacienteNome}','${a.pacienteTelefone}','${a.data}','${a.hora}')">Cancelar</button>`:''}</div></td></tr>`).join('');document.getElementById('pg-info').textContent=`${inicio+1}--${Math.min(fim,listaFiltrada.length)} de ${listaFiltrada.length}`;let btns=`<button class="pg-btn" onclick="irPagina(${paginaAtual-1})" ${paginaAtual===1?'disabled':''}>prev</button>`;for(let i=1;i<=totalPaginas;i++){if(totalPaginas<=7||i===1||i===totalPaginas||Math.abs(i-paginaAtual)<=1)btns+=`<button class="pg-btn ${i===paginaAtual?'ativo':''}" onclick="irPagina(${i})">${i}</button>`;else if(Math.abs(i-paginaAtual)===2)btns+=`<span style="color:var(--text3);font-size:13px;padding:0 2px">...</span>`}btns+=`<button class="pg-btn" onclick="irPagina(${paginaAtual+1})" ${paginaAtual===totalPaginas?'disabled':''}>next</button>`;document.getElementById('pg-btns').innerHTML=btns;paginacao.style.display=totalPaginas>1?'flex':'none'}
+function irPagina(n){const total=Math.ceil(listaFiltrada.length/POR_PAGINA);if(n<1||n>total)return;paginaAtual=n;renderTabela();document.getElementById('page-agendamentos').scrollIntoView({behavior:'smooth',block:'start'})}
+async function atualizar(id,status){const token=localStorage.getItem('token');await fetch(`${API}/agendamentos/${id}`,{method:'PATCH',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({status})});carregarAgendamentos()}
+async function cancelarComAviso(id,nome,telefone,data,hora){if(!confirm(`Cancelar agendamento de ${nome}?`))return;const token=localStorage.getItem('token');await fetch(`${API}/agendamentos/${id}`,{method:'PATCH',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({status:'cancelado'})});const [ano,mes,dia]=data.split('-');const msg=encodeURIComponent(`Ola ${nome}! Infelizmente precisamos cancelar seu agendamento do dia ${dia}/${mes}/${ano} as ${hora}. Por favor entre em contato para reagendar.`);window.open(`https://wa.me/55${telefone.replace(/\D/g,'')}?text=${msg}`,'_blank');carregarAgendamentos()}
+function copiarLink(){navigator.clipboard.writeText(document.getElementById('link-agendamento').textContent);const btn=document.querySelectorAll('.btn-copiar')[0];btn.textContent='Copiado!';setTimeout(()=>btn.textContent='Copiar link',2000)}
+function copiarLinkBio(){navigator.clipboard.writeText(document.getElementById('link-bio').textContent);const btn=document.querySelectorAll('.btn-copiar')[1];btn.textContent='Copiado!';setTimeout(()=>btn.textContent='Copiar link',2000)}
+function formatarData(data){const[a,m,d]=data.split('-');return`${d}/${m}/${a}`}
+function sair(){localStorage.clear();window.location.href='/auth.html'}
+function selecionarIntervalo(btn,valor){document.querySelectorAll('.intervalo-btn').forEach(b=>b.classList.remove('selecionado'));btn.classList.add('selecionado');intervaloAtual=valor}
+function renderDias(){document.getElementById('dias-container').innerHTML=diasNomes.map((nome,i)=>{const config=horariosConfig[i]||{ativo:false,inicio:'08:00',fim:'18:00'};return`<div class="dia-row ${config.ativo?'':'dia-inativo'}" id="dia-row-${i}"><div class="dia-toggle"><input type="checkbox" id="dia-${i}" ${config.ativo?'checked':''} onchange="toggleDia(${i})"><label for="dia-${i}">${nome}</label></div><div class="dia-horarios"><span>Das</span><input type="time" id="inicio-${i}" value="${config.inicio}" /><span>as</span><input type="time" id="fim-${i}" value="${config.fim}" /></div></div>`}).join('')}
 function toggleDia(i){document.getElementById(`dia-row-${i}`).classList.toggle('dia-inativo',!document.getElementById(`dia-${i}`).checked)}
-
-async function carregarHorariosConfig() {
-  if (!negocioAtual) return
-  const res = await fetch(`${API}/auth/negocio/${negocioAtual._id}`)
-  const data = await res.json()
-  horariosConfig = data.horarios||{}; intervaloAtual = data.intervalo||30
-  pausasAtuais = data.pausas || []
-  renderPausas()
-  document.querySelectorAll('.intervalo-btn').forEach(btn => {
-    const txt = btn.textContent.trim()
-    if ((intervaloAtual===15&&txt==='15 min')||(intervaloAtual===20&&txt==='20 min')||(intervaloAtual===30&&txt==='30 min')||(intervaloAtual===45&&txt==='45 min')||(intervaloAtual===60&&txt==='1 hora')||(intervaloAtual===90&&txt==='1h30')||(intervaloAtual===120&&txt==='2 horas')) btn.classList.add('selecionado')
-    else btn.classList.remove('selecionado')
-  })
-  renderDias()
-}
-
-async function salvarHorarios() {
-  if (!negocioAtual) return
-  const horarios = {}
-  diasNomes.forEach((_,i) => { horarios[i]={ativo:document.getElementById(`dia-${i}`).checked,inicio:document.getElementById(`inicio-${i}`).value,fim:document.getElementById(`fim-${i}`).value} })
-  const token = localStorage.getItem('token')
-  await fetch(`${API}/auth/horarios`, { method:'PATCH', headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`}, body:JSON.stringify({negocioId:negocioAtual._id,horarios,intervalo:intervaloAtual}) })
-  const msg=document.getElementById('salvo-horarios'); msg.style.display='inline'; setTimeout(()=>msg.style.display='none',2000)
-}
-
-async function carregarBioConfig() {
-  if (!negocioAtual) return
-  const res = await fetch(`${API}/auth/negocio/${negocioAtual._id}`)
-  const data = await res.json(); const bio=data.bio||{}
-  document.getElementById('bio-foto').value = bio.foto||''
-  document.getElementById('bio-descricao').value = bio.descricao||''
-  document.getElementById('bio-endereco').value = bio.endereco||''
-  document.getElementById('bio-instagram').value = bio.instagram||''
-  document.getElementById('bio-whatsapp').value = bio.whatsapp||''
-  if (bio.foto) document.getElementById('foto-preview').innerHTML=`<img src="${bio.foto}">`
-  else document.getElementById('foto-preview').textContent='🏪'
-}
-
-async function salvarBio() {
-  if (!negocioAtual) return
-  const token = localStorage.getItem('token')
-  await fetch(`${API}/auth/bio`, { method:'PATCH', headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`}, body:JSON.stringify({negocioId:negocioAtual._id,foto:document.getElementById('bio-foto').value,descricao:document.getElementById('bio-descricao').value,endereco:document.getElementById('bio-endereco').value,instagram:document.getElementById('bio-instagram').value,whatsapp:document.getElementById('bio-whatsapp').value}) })
-  const msg=document.getElementById('salvo-bio'); msg.style.display='inline'; setTimeout(()=>msg.style.display='none',2000)
-}
-
-async function uploadFoto(input) {
-  const file=input.files[0]; if(!file) return
-  document.getElementById('foto-status').textContent='Enviando...'
-  const reader=new FileReader()
-  reader.onload=async(e)=>{
-    const token=localStorage.getItem('token')
-    const res=await fetch(`${API}/upload`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({imagem:e.target.result})})
-    const data=await res.json()
-    if(res.ok){document.getElementById('bio-foto').value=data.url;document.getElementById('foto-status').textContent='Foto enviada!';document.getElementById('foto-preview').innerHTML=`<img src="${data.url}">`}
-    else document.getElementById('foto-status').textContent='Erro ao enviar foto'
-  }
-  reader.readAsDataURL(file)
-}
-
-async function verificarAcesso() {
-  const token=localStorage.getItem('token'); if(!token) return
-  const res=await fetch(`${API}/assinatura/status`,{headers:{'Authorization':`Bearer ${token}`}})
-  const data=await res.json()
-  if(!data.temAcesso){document.getElementById('bloqueio').style.display='flex';return}
-  if(data.plano==='trial'&&data.diasRestantes<=7){
-    const banner=document.createElement('div'); banner.className='trial-banner'
-    banner.innerHTML=`<p>⚠️ Seu trial expira em <strong>${data.diasRestantes} dias</strong>. Assine para não perder o acesso.</p><button class="btn-assinar-banner" onclick="window.location.href='/planos.html'">Ver planos</button>`
-    document.querySelector('.main').prepend(banner)
-  }
-  if(window.location.search.includes('assinatura=sucesso')) alert('🎉 Assinatura ativada com sucesso!')
-}
-
-function abrirModalNovoAgendamento() {
-  if (!negocioAtual) return
-  const hoje=new Date().toISOString().split('T')[0]
-  document.getElementById('m-data').value=hoje; document.getElementById('m-data').min=hoje
-  document.getElementById('m-nome').value=''; document.getElementById('m-telefone').value=''
-  document.getElementById('m-erro').textContent=''
-  document.getElementById('m-servico').innerHTML=servicosAtuais.map(s=>`<option value="${s}">${s}</option>`).join('')
-  document.getElementById('modal-agendamento').style.display='flex'
-  carregarHorariosModal()
-}
+async function carregarHorariosConfig(){if(!negocioAtual)return;const res=await fetch(`${API}/auth/negocio/${negocioAtual._id}`);const data=await res.json();horariosConfig=data.horarios||{};intervaloAtual=data.intervalo||30;pausasAtuais=data.pausas||[];renderPausas();document.querySelectorAll('.intervalo-btn').forEach(btn=>{const txt=btn.textContent.trim();if((intervaloAtual===15&&txt==='15 min')||(intervaloAtual===20&&txt==='20 min')||(intervaloAtual===30&&txt==='30 min')||(intervaloAtual===45&&txt==='45 min')||(intervaloAtual===60&&txt==='1 hora')||(intervaloAtual===90&&txt==='1h30')||(intervaloAtual===120&&txt==='2 horas'))btn.classList.add('selecionado');else btn.classList.remove('selecionado')});renderDias()}
+async function salvarHorarios(){if(!negocioAtual)return;const horarios={};diasNomes.forEach((_,i)=>{horarios[i]={ativo:document.getElementById(`dia-${i}`).checked,inicio:document.getElementById(`inicio-${i}`).value,fim:document.getElementById(`fim-${i}`).value}});const token=localStorage.getItem('token');await fetch(`${API}/auth/horarios`,{method:'PATCH',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({negocioId:negocioAtual._id,horarios,intervalo:intervaloAtual})});const msg=document.getElementById('salvo-horarios');msg.style.display='inline';setTimeout(()=>msg.style.display='none',2000)}
+async function carregarBioConfig(){if(!negocioAtual)return;const res=await fetch(`${API}/auth/negocio/${negocioAtual._id}`);const data=await res.json();const bio=data.bio||{};document.getElementById('bio-foto').value=bio.foto||'';document.getElementById('bio-descricao').value=bio.descricao||'';document.getElementById('bio-endereco').value=bio.endereco||'';document.getElementById('bio-instagram').value=bio.instagram||'';document.getElementById('bio-whatsapp').value=bio.whatsapp||'';if(bio.foto)document.getElementById('foto-preview').innerHTML=`<img src="${bio.foto}">`;else document.getElementById('foto-preview').textContent='x'}
+async function salvarBio(){if(!negocioAtual)return;const token=localStorage.getItem('token');await fetch(`${API}/auth/bio`,{method:'PATCH',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({negocioId:negocioAtual._id,foto:document.getElementById('bio-foto').value,descricao:document.getElementById('bio-descricao').value,endereco:document.getElementById('bio-endereco').value,instagram:document.getElementById('bio-instagram').value,whatsapp:document.getElementById('bio-whatsapp').value})});const msg=document.getElementById('salvo-bio');msg.style.display='inline';setTimeout(()=>msg.style.display='none',2000)}
+async function uploadFoto(input){const file=input.files[0];if(!file)return;document.getElementById('foto-status').textContent='Enviando...';const reader=new FileReader();reader.onload=async(e)=>{const token=localStorage.getItem('token');const res=await fetch(`${API}/upload`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({imagem:e.target.result})});const data=await res.json();if(res.ok){document.getElementById('bio-foto').value=data.url;document.getElementById('foto-status').textContent='Foto enviada!';document.getElementById('foto-preview').innerHTML=`<img src="${data.url}">`}else document.getElementById('foto-status').textContent='Erro ao enviar foto'};reader.readAsDataURL(file)}
+async function verificarAcesso(){const token=localStorage.getItem('token');if(!token)return;const res=await fetch(`${API}/assinatura/status`,{headers:{'Authorization':`Bearer ${token}`}});const data=await res.json();if(!data.temAcesso){document.getElementById('bloqueio').style.display='flex';return}if(data.plano==='trial'&&data.diasRestantes<=7){const banner=document.createElement('div');banner.className='trial-banner';banner.innerHTML=`<p>Seu trial expira em <strong>${data.diasRestantes} dias</strong>. Assine para nao perder o acesso.</p><button class="btn-assinar-banner" onclick="window.location.href='/planos.html'">Ver planos</button>`;document.querySelector('.main').prepend(banner)}if(window.location.search.includes('assinatura=sucesso'))alert('Assinatura ativada com sucesso!')}
+function abrirModalNovoAgendamento(){if(!negocioAtual)return;const hoje=new Date().toISOString().split('T')[0];document.getElementById('m-data').value=hoje;document.getElementById('m-data').min=hoje;document.getElementById('m-nome').value='';document.getElementById('m-telefone').value='';document.getElementById('m-erro').textContent='';document.getElementById('m-servico').innerHTML=servicosAtuais.map(s=>`<option value="${s}">${s}</option>`).join('');document.getElementById('modal-agendamento').style.display='flex';carregarHorariosModal()}
 function fecharModal(){document.getElementById('modal-agendamento').style.display='none'}
-
-async function carregarHorariosModal() {
-  const data=document.getElementById('m-data').value; if(!data||!negocioAtual) return
-  const select=document.getElementById('m-hora'); select.innerHTML='<option>Carregando...</option>'
-  const res=await fetch(`${API}/agendamentos/horarios-ocupados?clinicaId=${negocioAtual._id}&data=${data}`)
-  const resultado=await res.json()
-  if(resultado.diaInativo||resultado.horarios.length===0){select.innerHTML='<option value="">Sem horários disponíveis</option>';return}
-  select.innerHTML=resultado.horarios.map(h=>{const ocu=resultado.ocupados.includes(h);return`<option value="${h}" ${ocu?'disabled':''}>${h}${ocu?' (ocupado)':''}</option>`}).join('')
-  const livre=resultado.horarios.find(h=>!resultado.ocupados.includes(h)); if(livre) select.value=livre
-}
-
-async function salvarAgendamentoManual() {
-  const nome=document.getElementById('m-nome').value.trim()
-  const telefone=document.getElementById('m-telefone').value.trim()
-  const servico=document.getElementById('m-servico').value
-  const data=document.getElementById('m-data').value; const hora=document.getElementById('m-hora').value
-  const erro=document.getElementById('m-erro')
-  if(!nome){erro.textContent='Digite o nome do cliente';return}
-  if(!hora){erro.textContent='Selecione um horário';return}
-  erro.textContent=''
-  const btn=document.querySelector('.btn-salvar-modal'); btn.disabled=true; btn.textContent='Salvando...'
-  const token=localStorage.getItem('token')
-  const res=await fetch(`${API}/agendamentos`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({clinicaId:negocioAtual._id,pacienteNome:nome,pacienteTelefone:telefone,servico,data,hora})})
-  const resposta=await res.json(); btn.disabled=false; btn.textContent='Confirmar agendamento'
-  if(res.ok){fecharModal();carregarAgendamentos()}
-  else erro.textContent=resposta.erro||'Erro ao criar agendamento'
-}
-
-// ── PAUSAS ───────────────────────────────────────────
-let pausasAtuais = []
-
-function mascaraHora(inp) {
-  let v = inp.value.replace(/\D/g,'').slice(0,4)
-  if (v.length >= 3) v = v.slice(0,2) + ':' + v.slice(2)
-  inp.value = v
-}
-
-function renderPausas() {
-  const lista = document.getElementById('pausas-lista')
-  if (!pausasAtuais.length) {
-    lista.innerHTML = '<p style="font-size:12.5px;color:var(--text3);padding:8px 0">Nenhuma pausa configurada</p>'
-    return
-  }
-  lista.innerHTML = pausasAtuais.map((p, i) => `
-    <div style="display:flex;align-items:center;gap:10px;padding:9px 12px;background:var(--bg);border-radius:8px;border:1px solid var(--border);margin-bottom:6px">
-      <span style="font-size:13px;font-weight:600;color:var(--text)">${p.label || 'Pausa'}</span>
-      <span style="font-size:12px;color:var(--text3)">${p.inicio} – ${p.fim}</span>
-      <button onclick="removerPausa(${i})" style="margin-left:auto;background:none;border:none;color:var(--text3);cursor:pointer;font-size:16px;line-height:1;transition:color .15s" onmouseover="this.style.color='var(--red)'" onmouseout="this.style.color='var(--text3)'">×</button>
-    </div>
-  `).join('')
-}
-
-function adicionarPausa() {
-  const inicio = document.getElementById('pausa-inicio').value
-  const fim = document.getElementById('pausa-fim').value
-  const label = document.getElementById('pausa-label').value.trim() || 'Pausa'
-  if (!inicio || !fim) { alert('Preencha o horário de início e fim'); return }
-  if (inicio >= fim) { alert('O horário de início deve ser anterior ao fim'); return }
-  pausasAtuais.push({ inicio, fim, label })
-  document.getElementById('pausa-inicio').value = ''
-  document.getElementById('pausa-fim').value = ''
-  document.getElementById('pausa-label').value = ''
-  renderPausas()
-}
-
-function removerPausa(i) { pausasAtuais.splice(i, 1); renderPausas() }
-
-async function salvarPausas() {
-  if (!negocioAtual) return
-  const token = localStorage.getItem('token')
-  await fetch(`${API}/auth/horarios`, {
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-    body: JSON.stringify({ negocioId: negocioAtual._id, horarios: horariosConfig, intervalo: intervaloAtual, pausas: pausasAtuais })
-  })
-  const msg = document.getElementById('salvo-pausas')
-  msg.style.display = 'inline'; setTimeout(() => msg.style.display = 'none', 2000)
-}
-
-// ── PAGAMENTOS ────────────────────────────────────────
-let pagamentosConfig = {}
-
-// ── LEMBRETES ─────────────────────────────────────────
-function atualizarToggleVisual(ativo) {
-  const track = document.getElementById('toggle-track')
-  const thumb = document.getElementById('toggle-thumb')
-  if (!track || !thumb) return
-  track.style.background = ativo ? 'var(--accent)' : '#cbd5e1'
-  thumb.style.left = ativo ? '23px' : '3px'
-  document.getElementById('lembrete-info').style.display = ativo ? 'block' : 'none'
-}
-
-async function carregarLembretes() {
-  if (!negocioAtual) return
-  const res = await fetch(`${API}/auth/negocio/${negocioAtual._id}`)
-  const data = await res.json()
-  const lembrete = data.lembrete || {}
-  const checkbox = document.getElementById('toggle-lembrete')
-  if (checkbox) checkbox.checked = !!lembrete.ativo
-  atualizarToggleVisual(!!lembrete.ativo)
-  if (lembrete.mensagem) document.getElementById('lembrete-msg').value = lembrete.mensagem
-}
-
-async function salvarLembrete() {
-  const ativo = document.getElementById('toggle-lembrete').checked
-  atualizarToggleVisual(ativo)
-  if (!negocioAtual) return
-  const token = localStorage.getItem('token')
-  await fetch(`${API}/auth/lembretes`, {
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-    body: JSON.stringify({ negocioId: negocioAtual._id, ativo })
-  })
-}
-
-async function salvarConfLembrete() {
-  if (!negocioAtual) return
-  const token = localStorage.getItem('token')
-  const ativo = document.getElementById('toggle-lembrete').checked
-  const mensagem = document.getElementById('lembrete-msg').value
-  await fetch(`${API}/auth/lembretes`, {
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-    body: JSON.stringify({ negocioId: negocioAtual._id, ativo, mensagem })
-  })
-  const msg = document.getElementById('salvo-lembrete')
-  msg.style.display = 'inline'; setTimeout(() => msg.style.display = 'none', 2000)
-}
-
-// INIT
+async function carregarHorariosModal(){const data=document.getElementById('m-data').value;if(!data||!negocioAtual)return;const select=document.getElementById('m-hora');select.innerHTML='<option>Carregando...</option>';const res=await fetch(`${API}/agendamentos/horarios-ocupados?clinicaId=${negocioAtual._id}&data=${data}`);const resultado=await res.json();if(resultado.diaInativo||resultado.horarios.length===0){select.innerHTML='<option value="">Sem horarios disponiveis</option>';return}select.innerHTML=resultado.horarios.map(h=>{const ocu=resultado.ocupados.includes(h);return`<option value="${h}" ${ocu?'disabled':''}>${h}${ocu?' (ocupado)':''}</option>`}).join('');const livre=resultado.horarios.find(h=>!resultado.ocupados.includes(h));if(livre)select.value=livre}
+async function salvarAgendamentoManual(){const nome=document.getElementById('m-nome').value.trim();const telefone=document.getElementById('m-telefone').value.trim();const servico=document.getElementById('m-servico').value;const data=document.getElementById('m-data').value;const hora=document.getElementById('m-hora').value;const erro=document.getElementById('m-erro');if(!nome){erro.textContent='Digite o nome do cliente';return}if(!hora){erro.textContent='Selecione um horario';return}erro.textContent='';const btn=document.querySelector('.btn-salvar-modal');btn.disabled=true;btn.textContent='Salvando...';const token=localStorage.getItem('token');const res=await fetch(`${API}/agendamentos`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({clinicaId:negocioAtual._id,pacienteNome:nome,pacienteTelefone:telefone,servico,data,hora})});const resposta=await res.json();btn.disabled=false;btn.textContent='Confirmar agendamento';if(res.ok){fecharModal();carregarAgendamentos()}else erro.textContent=resposta.erro||'Erro ao criar agendamento'}
+let pausasAtuais=[]
+function mascaraHora(inp){let v=inp.value.replace(/\D/g,'').slice(0,4);if(v.length>=3)v=v.slice(0,2)+':'+v.slice(2);inp.value=v}
+function renderPausas(){const lista=document.getElementById('pausas-lista');if(!pausasAtuais.length){lista.innerHTML='<p style="font-size:12.5px;color:var(--text3);padding:8px 0">Nenhuma pausa configurada</p>';return}lista.innerHTML=pausasAtuais.map((p,i)=>`<div style="display:flex;align-items:center;gap:10px;padding:9px 12px;background:var(--bg);border-radius:8px;border:1px solid var(--border);margin-bottom:6px"><span style="font-size:13px;font-weight:600;color:var(--text)">${p.label||'Pausa'}</span><span style="font-size:12px;color:var(--text3)">${p.inicio} - ${p.fim}</span><button onclick="removerPausa(${i})" style="margin-left:auto;background:none;border:none;color:var(--text3);cursor:pointer;font-size:16px;line-height:1" onmouseover="this.style.color='var(--red)'" onmouseout="this.style.color='var(--text3)'">x</button></div>`).join('')}
+function adicionarPausa(){const inicio=document.getElementById('pausa-inicio').value;const fim=document.getElementById('pausa-fim').value;const label=document.getElementById('pausa-label').value.trim()||'Pausa';if(!inicio||!fim){alert('Preencha o horario de inicio e fim');return}if(inicio>=fim){alert('O horario de inicio deve ser anterior ao fim');return}pausasAtuais.push({inicio,fim,label});document.getElementById('pausa-inicio').value='';document.getElementById('pausa-fim').value='';document.getElementById('pausa-label').value='';renderPausas()}
+function removerPausa(i){pausasAtuais.splice(i,1);renderPausas()}
+async function salvarPausas(){if(!negocioAtual)return;const token=localStorage.getItem('token');await fetch(`${API}/auth/horarios`,{method:'PATCH',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({negocioId:negocioAtual._id,horarios:horariosConfig,intervalo:intervaloAtual,pausas:pausasAtuais})});const msg=document.getElementById('salvo-pausas');msg.style.display='inline';setTimeout(()=>msg.style.display='none',2000)}
+let pagamentosConfig={}
+function atualizarToggleVisual(ativo){const track=document.getElementById('toggle-track');const thumb=document.getElementById('toggle-thumb');if(!track||!thumb)return;track.style.background=ativo?'var(--accent)':'#cbd5e1';thumb.style.left=ativo?'23px':'3px';document.getElementById('lembrete-info').style.display=ativo?'block':'none'}
+async function carregarLembretes(){if(!negocioAtual)return;const res=await fetch(`${API}/auth/negocio/${negocioAtual._id}`);const data=await res.json();const lembrete=data.lembrete||{};const checkbox=document.getElementById('toggle-lembrete');if(checkbox)checkbox.checked=!!lembrete.ativo;atualizarToggleVisual(!!lembrete.ativo);if(lembrete.mensagem)document.getElementById('lembrete-msg').value=lembrete.mensagem}
+async function salvarLembrete(){const ativo=document.getElementById('toggle-lembrete').checked;atualizarToggleVisual(ativo);if(!negocioAtual)return;const token=localStorage.getItem('token');await fetch(`${API}/auth/lembretes`,{method:'PATCH',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({negocioId:negocioAtual._id,ativo})})}
+async function salvarConfLembrete(){if(!negocioAtual)return;const token=localStorage.getItem('token');const ativo=document.getElementById('toggle-lembrete').checked;const mensagem=document.getElementById('lembrete-msg').value;await fetch(`${API}/auth/lembretes`,{method:'PATCH',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({negocioId:negocioAtual._id,ativo,mensagem})});const msg=document.getElementById('salvo-lembrete');msg.style.display='inline';setTimeout(()=>msg.style.display='none',2000)}
 const token=localStorage.getItem('token')
 if(token){mostrarPainel()}else{window.location.href='/auth.html'}
-
-// PWA
-if('serviceWorker'in navigator) navigator.serviceWorker.register('/sw.js').catch(()=>{})
+if('serviceWorker'in navigator)navigator.serviceWorker.register('/sw.js').catch(()=>{})
 let deferredPrompt=null
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;const btn=document.getElementById('btn-instalar-app');if(btn)btn.style.display='flex'})
 function instalarApp(){if(!deferredPrompt)return;deferredPrompt.prompt();deferredPrompt.userChoice.then(()=>{deferredPrompt=null;const btn=document.getElementById('btn-instalar-app');if(btn)btn.style.display='none'})}
