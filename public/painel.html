@@ -106,6 +106,42 @@ tbody tr:hover td{background:var(--bg)}
 .btn-acao.concluir:hover{background:var(--green-bg);color:var(--green);border-color:#86efac}
 .btn-acao.cancelar:hover{background:var(--red-bg);color:var(--red);border-color:#fca5a5}
 .vazio{text-align:center;color:var(--text3);padding:48px 20px;font-size:14px}
+/* SECTION BLOCK - paginas internas melhoradas */
+.section-block{background:var(--bg-card);border-radius:16px;border:1px solid var(--border);box-shadow:0 2px 8px rgba(0,0,0,0.06);overflow:hidden;margin-bottom:20px}
+.section-block-header{padding:18px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,#fff 0%,var(--bg) 100%)}
+.section-block-icon{width:40px;height:40px;border-radius:11px;background:var(--accent-light);display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid rgba(37,99,235,0.15)}
+.section-block-title{font-size:15px;font-weight:700;color:var(--text)}
+.section-block-sub{font-size:12px;color:var(--text3);margin-top:2px}
+.section-block-body{padding:22px}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:16px 0;border-bottom:1px solid var(--border)}
+.toggle-row-label{font-size:14px;font-weight:600;color:var(--text)}
+.toggle-row-desc{font-size:12.5px;color:var(--text2);margin-top:3px}
+.info-box{border-radius:10px;padding:14px 16px;font-size:13px;line-height:1.6}
+.info-box.green{background:var(--green-bg);border:1px solid #86efac;color:#166534}
+.form-hint{font-size:11px;color:var(--text3);margin-top:5px}
+.foto-wrap{display:flex;align-items:center;gap:16px;margin-bottom:18px;padding:16px;background:var(--bg);border-radius:12px;border:1px solid var(--border)}
+.pausa-item{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--bg);border-radius:9px;border:1px solid var(--border);margin-bottom:8px}
+.pausa-item-label{font-size:13px;font-weight:600;color:var(--text);flex:1}
+.pausa-item-hora{font-size:12px;color:var(--text3);background:var(--accent-light);padding:3px 9px;border-radius:100px;font-weight:500}
+.suporte-hero{text-align:center;padding:40px 20px 28px}
+.suporte-avatar{width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,#16a34a,#22c55e);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;box-shadow:0 8px 24px rgba(22,163,74,0.25)}
+.btn-whatsapp-suporte{display:inline-flex;align-items:center;gap:10px;background:#16a34a;color:white;padding:14px 32px;border-radius:12px;font-size:15px;font-weight:600;text-decoration:none;transition:all .15s;box-shadow:0 4px 12px rgba(22,163,74,0.3);font-family:inherit;border:none;cursor:pointer}
+.btn-whatsapp-suporte:hover{background:#15803d;transform:translateY(-1px)}
+.horario-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+.horario-item{background:var(--bg);border-radius:10px;padding:14px;border:1px solid var(--border);text-align:center}
+.horario-item-dia{font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.horario-item-hora{font-size:16px;font-weight:700;color:var(--text)}
+
+/* CARDS MOBILE para agendamentos */
+.ag-cards{display:none;padding:4px 0}
+.ag-card{padding:14px 16px;border-bottom:1px solid var(--border)}
+.ag-card:last-child{border-bottom:none}
+.ag-card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:10px}
+.ag-card-nome{font-size:14px;font-weight:600;color:var(--text)}
+.ag-card-body{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.ag-chip{display:inline-flex;align-items:center;gap:4px;background:var(--bg);border:1px solid var(--border);border-radius:100px;padding:4px 10px;font-size:12px;font-weight:500;color:var(--text2)}
+.ag-card-actions{display:flex;gap:6px}
+
 .paginacao{display:flex;align-items:center;justify-content:space-between;padding:11px 18px;border-top:1px solid var(--border);gap:10px;flex-wrap:wrap}
 .paginacao-info{font-size:12px;color:var(--text3);font-weight:500}
 .paginacao-btns{display:flex;gap:3px}
@@ -124,7 +160,7 @@ tbody tr:hover td{background:var(--bg)}
 .add-servico input:focus{border-color:var(--accent)}
 .btn-add{background:var(--accent);color:white;border:none;padding:9px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;font-family:inherit;transition:background .15s}
 .btn-add:hover{background:var(--accent-hover)}
-.btn-salvar{background:var(--green);color:white;border:none;padding:9px 20px;border-radius:8px;font-size:13.5px;font-weight:600;cursor:pointer;margin-top:14px;font-family:inherit;transition:background .15s}
+.btn-salvar{display:inline-flex;align-items:center;gap:7px;background:var(--green);color:white;border:none;padding:10px 22px;border-radius:9px;font-size:13.5px;font-weight:600;cursor:pointer;margin-top:16px;font-family:inherit;transition:background .15s}
 .btn-salvar:hover{background:#15803d}
 .salvo-msg{color:var(--green);font-size:12px;margin-left:10px;display:none;font-weight:500}
 .intervalo-grid{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:4px}
@@ -188,6 +224,8 @@ tbody tr:hover td{background:var(--bg)}
   .card-actions{width:100%}
   .filtro-data{flex:1}
   .page-header h1{font-size:19px}
+  .tabela-scroll{display:none}
+  .ag-cards{display:block}
 }
 @media(max-width:400px){.stats{grid-template-columns:1fr}}
 </style>
@@ -350,6 +388,8 @@ tbody tr:hover td{background:var(--bg)}
           <tbody id="tbody"></tbody>
         </table>
       </div>
+      <!-- CARDS MOBILE -->
+      <div class="ag-cards" id="ag-cards"></div>
       <div class="paginacao" id="paginacao" style="display:none">
         <span class="paginacao-info" id="pg-info"></span>
         <div class="paginacao-btns" id="pg-btns"></div>
