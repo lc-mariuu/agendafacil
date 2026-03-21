@@ -28,7 +28,6 @@ app.get('/', (req, res) => {
 })
 
 // ── LIMPEZA AUTOMÁTICA ────────────────────────────────────────
-// Apaga agendamentos concluídos ou cancelados com mais de 1 hora
 async function limparAgendamentos() {
   try {
     const Appointment = require('./models/Appointment')
@@ -52,8 +51,13 @@ mongoose.connect(process.env.MONGO_URI)
   .then(() => {
     console.log('MongoDB conectado!')
     app.listen(PORT, () => console.log(`Servidor rodando em http://localhost:${PORT}`))
-    // Roda limpeza ao iniciar e depois a cada 1 hora
+
+    // Limpeza automática de agendamentos
     limparAgendamentos()
     setInterval(limparAgendamentos, 60 * 60 * 1000)
+
+    // Cron job de lembretes via WhatsApp
+    const { iniciarCronLembretes } = require('./jobs/lembretes')
+    iniciarCronLembretes()
   })
   .catch(err => console.error('Erro ao conectar MongoDB:', err))

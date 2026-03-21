@@ -195,6 +195,12 @@ tbody tr:hover td{background:var(--bg)}
 .modal-neg{background:var(--bg-card);border-radius:16px;padding:24px;width:100%;max-width:400px;box-shadow:0 4px 16px rgba(0,0,0,0.12)}
 .plano-badge{display:inline-flex;align-items:center;gap:5px;background:var(--accent-light);color:var(--accent);padding:4px 10px;border-radius:100px;font-size:11px;font-weight:700;margin-bottom:14px}
 
+/* TOGGLE SWITCH */
+.toggle-switch{position:relative;display:inline-block;width:44px;height:24px;flex-shrink:0}
+.toggle-switch input{opacity:0;width:0;height:0}
+.toggle-track{position:absolute;cursor:pointer;inset:0;background:#cbd5e1;border-radius:100px;transition:.3s}
+.toggle-thumb{position:absolute;left:3px;top:3px;width:18px;height:18px;background:white;border-radius:50%;transition:.3s;box-shadow:0 1px 3px rgba(0,0,0,0.2)}
+
 @media(max-width:768px){
   .sidebar{transform:translateX(calc(-1 * var(--sidebar-w)))}
   .sidebar.aberta{transform:translateX(0)}
@@ -306,6 +312,10 @@ tbody tr:hover td{background:var(--bg)}
     <button class="menu-item" onclick="irPara('horarios',this)">
       <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="7.5" r="5.5" stroke="currentColor" stroke-width="1.4"/><path d="M7.5 4.5V8l2 2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
       Horários
+    </button>
+    <button class="menu-item" onclick="irPara('lembretes',this)">
+      <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M7.5 1.5a4.5 4.5 0 0 1 4.5 4.5c0 2.5.5 3.5 1 4H2c.5-.5 1-1.5 1-4a4.5 4.5 0 0 1 4.5-4.5Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M6 12.5a1.5 1.5 0 0 0 3 0" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      Lembretes
     </button>
     <button class="menu-item" onclick="irPara('bio',this)">
       <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="5" r="2.5" stroke="currentColor" stroke-width="1.4"/><path d="M2 13c0-2.8 2.5-5 5.5-5s5.5 2.2 5.5 5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
@@ -442,6 +452,63 @@ tbody tr:hover td{background:var(--bg)}
     </div>
   </div>
 
+  <!-- LEMBRETES -->
+  <div class="page" id="page-lembretes">
+    <div class="page-header">
+      <h1>Lembretes Automáticos</h1>
+      <p>Avise seus clientes 24h antes do agendamento via WhatsApp</p>
+    </div>
+    <div class="config-card">
+      <div class="config-card-title">
+        <div class="config-card-title-icon">
+          <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1a4 4 0 0 1 4 4c0 2.2.4 3.1.9 3.5H1.6c.5-.4.9-1.3.9-3.5a4 4 0 0 1 4-4Z" stroke="#2563eb" stroke-width="1.4" stroke-linejoin="round"/><path d="M5.2 11a1.3 1.3 0 0 0 2.6 0" stroke="#2563eb" stroke-width="1.4" stroke-linecap="round"/></svg>
+        </div>
+        Lembrete 24h antes
+      </div>
+
+      <!-- TOGGLE -->
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--border)">
+        <div>
+          <div style="font-size:13.5px;font-weight:600;color:var(--text)">Ativar lembretes automáticos</div>
+          <div style="font-size:12px;color:var(--text2);margin-top:3px">O cliente recebe uma mensagem no WhatsApp 24h antes do horário</div>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="toggle-lembrete" onchange="salvarLembrete()">
+          <span class="toggle-track" id="toggle-track"></span>
+          <span class="toggle-thumb" id="toggle-thumb"></span>
+        </label>
+      </div>
+
+      <!-- ATIVO INFO -->
+      <div id="lembrete-info" style="display:none;margin-top:16px;background:var(--green-bg);border:1px solid #86efac;border-radius:10px;padding:14px 16px">
+        <div style="font-size:13px;font-weight:600;color:var(--green);margin-bottom:4px">✅ Lembretes ativados</div>
+        <div style="font-size:12.5px;color:#166534;line-height:1.6">Seus clientes receberão automaticamente uma mensagem de lembrete 24 horas antes do agendamento via WhatsApp.</div>
+      </div>
+
+      <!-- AVISO SETUP -->
+      <div id="lembrete-setup" style="margin-top:16px">
+        <div style="background:var(--yellow-bg);border:1px solid rgba(234,179,8,0.3);border-radius:10px;padding:14px 16px;margin-bottom:16px">
+          <div style="font-size:13px;font-weight:600;color:var(--yellow);margin-bottom:4px">⚙️ Configuração necessária</div>
+          <div style="font-size:12px;color:#92400e;line-height:1.6">Para os lembretes funcionarem, conecte sua conta do <strong>WhatsApp Business (Meta)</strong>. É gratuito até 1.000 mensagens/mês.</div>
+        </div>
+        <div class="form-group">
+          <label>Número do WhatsApp Business</label>
+          <input type="tel" id="lembrete-numero" placeholder="(11) 99999-9999" />
+        </div>
+        <div class="form-group">
+          <label>Mensagem do lembrete</label>
+          <textarea id="lembrete-msg" style="resize:vertical;min-height:90px">Olá {nome}! Lembrando que você tem um agendamento amanhã, {data} às {hora} — {servico}. Te esperamos! 😊</textarea>
+          <div style="font-size:11px;color:var(--text3);margin-top:5px">Variáveis disponíveis: <strong>{nome}</strong>, <strong>{data}</strong>, <strong>{hora}</strong>, <strong>{servico}</strong></div>
+        </div>
+      </div>
+
+      <div style="display:flex;align-items:center">
+        <button class="btn-salvar" onclick="salvarConfLembrete()">Salvar configurações</button>
+        <span class="salvo-msg" id="salvo-lembrete">✓ Salvo!</span>
+      </div>
+    </div>
+  </div>
+
   <!-- CONFIGURAÇÕES -->
   <div class="page" id="page-configuracoes">
     <div class="page-header"><h1>Configurações</h1><p>Personalize os serviços do seu negócio</p></div>
@@ -492,17 +559,17 @@ tbody tr:hover td{background:var(--bg)}
   </div>
 
   <!-- PAGAMENTOS -->
-<div class="page" id="page-pagamentos">
-  <div class="page-header">
-    <h1>Pagamentos</h1>
-    <p>Configure cobrança antecipada via Pix por serviço</p>
+  <div class="page" id="page-pagamentos">
+    <div class="page-header">
+      <h1>Pagamentos</h1>
+      <p>Configure cobrança antecipada via Pix por serviço</p>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;text-align:center">
+      <div style="width:64px;height:64px;background:var(--accent-light);border-radius:16px;display:flex;align-items:center;justify-content:center;margin-bottom:20px;font-size:28px">🔒</div>
+      <h2 style="font-size:18px;font-weight:700;color:var(--text);margin-bottom:8px">Recurso em breve</h2>
+      <p style="font-size:13.5px;color:var(--text2);max-width:340px;line-height:1.6">A cobrança antecipada via Pix estará disponível em breve. Fique de olho nas novidades!</p>
+    </div>
   </div>
-  <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;text-align:center">
-    <div style="width:64px;height:64px;background:var(--accent-light);border-radius:16px;display:flex;align-items:center;justify-content:center;margin-bottom:20px;font-size:28px">🔒</div>
-    <h2 style="font-size:18px;font-weight:700;color:var(--text);margin-bottom:8px">Recurso em breve</h2>
-    <p style="font-size:13.5px;color:var(--text2);max-width:340px;line-height:1.6">A cobrança antecipada via Pix estará disponível em breve. Fique de olho nas novidades!</p>
-  </div>
-</div>
 
 </div>
 
@@ -513,7 +580,7 @@ let servicosAtuais = []
 const diasNomes = ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado']
 let intervaloAtual = 30
 let horariosConfig = {}
-let negocioAtual = null // { _id, nome, segmento }
+let negocioAtual = null
 let todosNegocios = []
 
 const servicosPorSegmento = {
@@ -604,19 +671,15 @@ async function criarNegocio() {
 // ── INICIAR PAINEL ────────────────────────────────────
 async function mostrarPainel() {
   const token = localStorage.getItem('token')
-  // Carrega negócios do usuário
   const res = await fetch(`${API}/auth/negocios`, { headers: { 'Authorization': `Bearer ${token}` } })
   const negocios = await res.json()
   todosNegocios = negocios
-
-  // Seleciona negócio salvo ou o primeiro
   const savedId = localStorage.getItem('negocioId')
   negocioAtual = negocios.find(n => n._id === savedId) || negocios[0]
   if (negocioAtual) {
     localStorage.setItem('negocioId', negocioAtual._id)
     localStorage.setItem('negocio', negocioAtual.nome)
   }
-
   renderDropdown()
   atualizarSidebarNegocio()
   document.getElementById('filtro-data').value = new Date().toISOString().split('T')[0]
@@ -629,6 +692,7 @@ function carregarDadosNegocio() {
   carregarServicos()
   carregarHorariosConfig()
   carregarBioConfig()
+  carregarLembretes()
 }
 
 function irPara(pagina, btn) {
@@ -659,7 +723,6 @@ async function carregarServicos() {
   servicosAtuais = data.servicos || []
   pagamentosConfig = data.pagamentos || {}
   renderServicos()
-  renderPagamentos()
 }
 
 function renderServicos() {
@@ -934,49 +997,52 @@ async function salvarPausas() {
 // ── PAGAMENTOS ────────────────────────────────────────
 let pagamentosConfig = {}
 
-function renderPagamentos() {
-  const lista = document.getElementById('pagamentos-lista')
-  if (!servicosAtuais.length) {
-    lista.innerHTML = '<p style="font-size:12.5px;color:var(--text3)">Configure seus serviços primeiro na aba Configurações.</p>'
-    return
-  }
-  lista.innerHTML = servicosAtuais.map(s => {
-    const config = pagamentosConfig[s] || { valor: 0, obrigatorio: false }
-    return `
-      <div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);flex-wrap:wrap">
-        <div style="font-size:13.5px;font-weight:600;color:var(--text);min-width:120px;flex:1">${s}</div>
-        <div style="display:flex;align-items:center;gap:6px">
-          <span style="font-size:13px;color:var(--text3);font-weight:500">R$</span>
-          <input type="number" min="0" step="0.01" placeholder="0,00"
-            value="${config.valor || ''}"
-            onchange="atualizarPagamento('${s}', 'valor', parseFloat(this.value)||0)"
-            style="width:90px;padding:7px 10px;border:1.5px solid var(--border2);border-radius:8px;font-size:13.5px;outline:none;font-family:inherit" />
-        </div>
-        <label style="display:flex;align-items:center;gap:7px;cursor:pointer;font-size:13px;color:var(--text2);font-weight:500">
-          <input type="checkbox" ${config.obrigatorio ? 'checked' : ''}
-            onchange="atualizarPagamento('${s}', 'obrigatorio', this.checked)"
-            style="width:15px;height:15px;accent-color:var(--accent);cursor:pointer" />
-          Obrigatório
-        </label>
-      </div>
-    `
-  }).join('')
+// ── LEMBRETES ─────────────────────────────────────────
+function atualizarToggleVisual(ativo) {
+  const track = document.getElementById('toggle-track')
+  const thumb = document.getElementById('toggle-thumb')
+  if (!track || !thumb) return
+  track.style.background = ativo ? 'var(--accent)' : '#cbd5e1'
+  thumb.style.left = ativo ? '23px' : '3px'
+  document.getElementById('lembrete-info').style.display = ativo ? 'block' : 'none'
 }
 
-function atualizarPagamento(servico, campo, valor) {
-  if (!pagamentosConfig[servico]) pagamentosConfig[servico] = { valor: 0, obrigatorio: false }
-  pagamentosConfig[servico][campo] = valor
+async function carregarLembretes() {
+  if (!negocioAtual) return
+  const res = await fetch(`${API}/auth/negocio/${negocioAtual._id}`)
+  const data = await res.json()
+  const lembrete = data.lembrete || {}
+  const checkbox = document.getElementById('toggle-lembrete')
+  if (checkbox) checkbox.checked = !!lembrete.ativo
+  atualizarToggleVisual(!!lembrete.ativo)
+  if (lembrete.numero) document.getElementById('lembrete-numero').value = lembrete.numero
+  if (lembrete.mensagem) document.getElementById('lembrete-msg').value = lembrete.mensagem
 }
 
-async function salvarPagamentos() {
+async function salvarLembrete() {
+  const ativo = document.getElementById('toggle-lembrete').checked
+  atualizarToggleVisual(ativo)
   if (!negocioAtual) return
   const token = localStorage.getItem('token')
-  await fetch(`${API}/auth/pagamentos`, {
+  await fetch(`${API}/auth/lembretes`, {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-    body: JSON.stringify({ negocioId: negocioAtual._id, pagamentos: pagamentosConfig })
+    body: JSON.stringify({ negocioId: negocioAtual._id, ativo })
   })
-  const msg = document.getElementById('salvo-pagamentos')
+}
+
+async function salvarConfLembrete() {
+  if (!negocioAtual) return
+  const token = localStorage.getItem('token')
+  const ativo = document.getElementById('toggle-lembrete').checked
+  const numero = document.getElementById('lembrete-numero').value
+  const mensagem = document.getElementById('lembrete-msg').value
+  await fetch(`${API}/auth/lembretes`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+    body: JSON.stringify({ negocioId: negocioAtual._id, ativo, numero, mensagem })
+  })
+  const msg = document.getElementById('salvo-lembrete')
   msg.style.display = 'inline'; setTimeout(() => msg.style.display = 'none', 2000)
 }
 

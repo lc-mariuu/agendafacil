@@ -229,4 +229,19 @@ router.patch('/negocios/:negocioId', autenticar, async (req, res) => {
   }
 })
 
+// ── ATUALIZAR LEMBRETES ───────────────────────────────
+router.patch('/lembretes', autenticar, async (req, res) => {
+  try {
+    const { negocioId, ativo, numero, mensagem } = req.body
+    await Negocio.findOneAndUpdate(
+      { _id: negocioId, userId: req.userId },
+      { $set: { lembrete: { ativo, numero, mensagem } } }
+    )
+    res.json({ ok: true })
+  } catch (err) {
+    console.error('Erro salvar lembrete:', err.message)
+    res.status(500).json({ erro: 'Erro ao salvar configuração de lembretes' })
+  }
+})
+
 module.exports = router
