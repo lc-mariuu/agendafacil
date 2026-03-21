@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cancelar Agendamento — AgendoRapido</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',-apple-system,sans-serif;background:#f7f7f8;color:#0d0d0e;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;-webkit-font-smoothing:antialiased}
+nav{position:fixed;top:0;left:0;right:0;height:56px;background:rgba(255,255,255,0.95);backdrop-filter:blur(16px);border-bottom:1px solid rgba(0,0,0,0.08);display:flex;align-items:center;justify-content:center;z-index:10}
+.nav-logo{font-size:16px;font-weight:700;color:#0d0d0e;text-decoration:none}
+.nav-logo span{color:#2563eb}
+.card{background:white;border:1.5px solid rgba(0,0,0,0.08);border-radius:16px;padding:32px 28px;max-width:440px;width:100%;text-align:center;margin-top:56px}
+.icon-wrap{width:72px;height:72px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px}
+.icon-warn{background:#fef2f2}
+.icon-ok{background:#f0fdf4}
+h2{font-size:22px;font-weight:700;letter-spacing:-0.02em;margin-bottom:8px}
+p{font-size:14px;color:#5a5a6a;line-height:1.6;margin-bottom:20px}
+.resumo{background:#f7f7f8;border-radius:12px;overflow:hidden;margin-bottom:24px;text-align:left}
+.resumo-row{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid rgba(0,0,0,0.06);font-size:13.5px}
+.resumo-row:last-child{border-bottom:none}
+.resumo-label{color:#9a9aaa;font-weight:500}
+.resumo-val{color:#0d0d0e;font-weight:600}
+.btn-cancelar{width:100%;padding:13px;background:#dc2626;color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;transition:background .15s;margin-bottom:10px}
+.btn-cancelar:hover:not(:disabled){background:#b91c1c}
+.btn-cancelar:disabled{opacity:.6;cursor:not-allowed}
+.btn-voltar{width:100%;padding:11px;background:transparent;color:#5a5a6a;border:1.5px solid rgba(0,0,0,0.14);border-radius:10px;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;transition:background .15s;text-decoration:none;display:block}
+.btn-voltar:hover{background:#f7f7f8}
+.loading{color:#9a9aaa;font-size:14px;padding:40px 0}
+.err-box{background:#fef2f2;border:1px solid rgba(220,38,38,0.2);border-radius:8px;padding:12px 16px;font-size:13px;color:#dc2626;margin-bottom:16px}
+</style>
+</head>
+<body>
+<nav><a href="/" class="nav-logo">Agendo<span>Rapido</span></a></nav>
+
+<div class="card" id="card-loading"><div class="loading">Carregando agendamento...</div></div>
+
+<div class="card" id="card-confirmar" style="display:none">
+  <div class="icon-wrap icon-warn">
+    <svg width="32" height="32" viewBox="0 0 32 32" fill="none"><path d="M16 10v8M16 22v.5" stroke="#dc2626" stroke-width="2.5" stroke-linecap="round"/><path d="M14 4.27L2.5 24a2 2 0 0 0 1.74 3h23.52a2 2 0 0 0 1.74-3L18 4.27a2 2 0 0 0-3.48 0Z" stroke="#dc2626" stroke-width="2" stroke-linejoin="round"/></svg>
+  </div>
+  <h2>Cancelar agendamento?</h2>
+  <p>Tem certeza que deseja cancelar? Essa acao nao pode ser desfeita.</p>
+  <div class="resumo" id="resumo"></div>
+  <div class="err-box" id="err-box" style="display:none"></div>
+  <button class="btn-cancelar" id="btn-cancelar" onclick="cancelar()">Sim, cancelar agendamento</button>
+  <a class="btn-voltar" href="javascript:history.back()">Voltar</a>
+</div>
+
+<div class="card" id="card-sucesso" style="display:none">
+  <div class="icon-wrap icon-ok">
+    <svg width="32" height="32" viewBox="0 0 32 32" fill="none"><path d="M6 16l7 7L26 9" stroke="#16a34a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </div>
+  <h2>Agendamento cancelado</h2>
+  <p>Seu agendamento foi cancelado com sucesso.</p>
+</div>
+
+<div class="card" id="card-erro" style="display:none">
+  <div class="icon-wrap icon-warn">
+    <svg width="32" height="32" viewBox="0 0 32 32" fill="none"><path d="M16 10v8M16 22v.5" stroke="#dc2626" stroke-width="2.5" stroke-linecap="round"/><path d="M14 4.27L2.5 24a2 2 0 0 0 1.74 3h23.52a2 2 0 0 0 1.74-3L18 4.27a2 2 0 0 0-3.48 0Z" stroke="#dc2626" stroke-width="2" stroke-linejoin="round"/></svg>
+  </div>
+  <h2>Link invalido</h2>
+  <p>Este link de cancelamento e invalido ou o agendamento ja foi cancelado.</p>
+</div>
+
+<script>
+const API = 'https://agendafacil-wf3q.onrender.com/api'
+const params = new URLSearchParams(window.location.search)
+const agendamentoId = params.get('id')
+
+function mostrar(id) {
+  ['card-loading','card-confirmar','card-sucesso','card-erro'].forEach(c => {
+    document.getElementById(c).style.display = c === id ? 'block' : 'none'
+  })
+}
+
+function formatarData(iso) {
+  if (!iso) return '-'
+  const [a,m,d] = iso.split('-')
+  const dias = ['Domingo','Segunda','Terca','Quarta','Quinta','Sexta','Sabado']
+  const dt = new Date(iso + 'T12:00:00')
+  return dias[dt.getDay()] + ', ' + d + '/' + m + '/' + a
+}
+
+async function carregarAgendamento() {
+  if (!agendamentoId) { mostrar('card-erro'); return }
+  try {
+    const res = await fetch(API + '/agendamentos/' + agendamentoId + '/publico')
+    if (!res.ok) { mostrar('card-erro'); return }
+    const data = await res.json()
+    if (data.status !== 'confirmado') { mostrar('card-erro'); return }
+    document.getElementById('resumo').innerHTML =
+      '<div class="resumo-row"><span class="resumo-label">Cliente</span><span class="resumo-val">' + data.pacienteNome + '</span></div>' +
+      '<div class="resumo-row"><span class="resumo-label">Servico</span><span class="resumo-val">' + data.servico + '</span></div>' +
+      '<div class="resumo-row"><span class="resumo-label">Data</span><span class="resumo-val">' + formatarData(data.data) + '</span></div>' +
+      '<div class="resumo-row"><span class="resumo-label">Horario</span><span class="resumo-val">' + data.hora + '</span></div>'
+    mostrar('card-confirmar')
+  } catch(e) { mostrar('card-erro') }
+}
+
+async function cancelar() {
+  const btn = document.getElementById('btn-cancelar')
+  btn.disabled = true; btn.textContent = 'Cancelando...'
+  document.getElementById('err-box').style.display = 'none'
+  try {
+    const res = await fetch(API + '/agendamentos/' + agendamentoId + '/cancelar-publico', {
+      method: 'PATCH', headers: { 'Content-Type': 'application/json' }
+    })
+    if (res.ok) { mostrar('card-sucesso') }
+    else {
+      const data = await res.json()
+      document.getElementById('err-box').textContent = data.erro || 'Erro ao cancelar. Tente novamente.'
+      document.getElementById('err-box').style.display = 'block'
+      btn.disabled = false; btn.textContent = 'Sim, cancelar agendamento'
+    }
+  } catch(e) {
+    document.getElementById('err-box').textContent = 'Erro de conexao. Tente novamente.'
+    document.getElementById('err-box').style.display = 'block'
+    btn.disabled = false; btn.textContent = 'Sim, cancelar agendamento'
+  }
+}
+
+carregarAgendamento()
+</script>
+</body>
+</html>

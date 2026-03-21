@@ -273,6 +273,7 @@ nav{background:rgba(255,255,255,0.95);backdrop-filter:blur(16px);border-bottom:1
           Salvar no WhatsApp
         </a>
         <button class="btn-novo" onclick="novoAgendamento()">Fazer outro agendamento</button>
+        <a id="btn-cancelar-link" href="#" style="display:block;text-align:center;margin-top:8px;font-size:13px;color:#dc2626;font-weight:500;text-decoration:none">Cancelar este agendamento</a>
       </div>
     </div>
   </div>
@@ -536,6 +537,10 @@ async function confirmarAgendamento() {
   if (config.obrigatorio && config.valor > 0) {
     irTelaPix(); return
   }
+
+  if(resposta._id) {
+  document.getElementById('btn-cancelar-link').href = '/cancelar.html?id=' + resposta._id
+}
 
   const btn = document.getElementById('btn-confirmar')
   btn.disabled = true

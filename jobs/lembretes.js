@@ -5,6 +5,7 @@ const Appointment = require('../models/Appointment')
 const EVOLUTION_API_URL = process.env.EVOLUTION_API_URL || 'https://evolution-api-gpdc.onrender.com'
 const EVOLUTION_API_KEY = process.env.EVOLUTION_API_KEY || 'agendorapido123'
 const EVOLUTION_INSTANCE = process.env.EVOLUTION_INSTANCE || 'agendorapido'
+const BASE_URL = process.env.BASE_URL || 'https://agendafacil-wf3q.onrender.com'
 
 async function enviarLembrete(telefone, mensagem) {
   const numero = telefone.replace(/\D/g, '')
@@ -13,10 +14,7 @@ async function enviarLembrete(telefone, mensagem) {
     const res = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'apikey': EVOLUTION_API_KEY },
-      body: JSON.stringify({
-        number: `55${numero}`,
-        textMessage: { text: mensagem }
-      })
+      body: JSON.stringify({ number: `55${numero}`, textMessage: { text: mensagem } })
     })
     const data = await res.json()
     console.log(`[Lembrete] Enviado para ${numero}:`, data)
@@ -33,31 +31,32 @@ function formatarData(dataStr) {
 }
 
 function montarMensagem(template, agendamento, nomeNegocio) {
+  const linkCancelamento = `${BASE_URL}/cancelar.html?id=${agendamento._id}`
   return template
     .replace('{nome}', agendamento.pacienteNome)
     .replace('{data}', formatarData(agendamento.data))
     .replace('{hora}', agendamento.hora)
     .replace('{servico}', agendamento.servico)
     .replace('{negocio}', nomeNegocio)
+    + `\n\nPrecisa cancelar? Acesse: ${linkCancelamento}`
 }
 
 async function dispararLembretes() {
   try {
-    console.log('[Lembretes] Verificando agendamentos para amanhã...')
-
+    console.log('[Lembretes] Verificando agendamentos para amanha...')
     const amanha = new Date()
     amanha.setDate(amanha.getDate() + 1)
     const dataAmanha = amanha.toISOString().split('T')[0]
 
     const negocios = await Negocio.find({ 'lembrete.ativo': true })
-    console.log(`[Lembretes] ${negocios.length} negócio(s) com lembrete ativo`)
+    console.log(`[Lembretes] ${negocios.length} negocio(s) com lembrete ativo`)
 
     for (const negocio of negocios) {
       const { lembrete } = negocio
       if (!lembrete?.ativo) continue
 
       const mensagemTemplate = lembrete.mensagem ||
-        'Olá {nome}! A *{negocio}* lembra que você tem um agendamento amanhã, {data} às {hora} — {servico}. Te esperamos! 😊'
+        'Ola {nome}! A *{negocio}* lembra que voce tem um agendamento amanha, {data} as {hora} -- {servico}. Te esperamos!'
 
       const agendamentos = await Appointment.find({
         clinicaId: negocio._id,
@@ -65,7 +64,7 @@ async function dispararLembretes() {
         status: 'confirmado'
       })
 
-      console.log(`[Lembretes] ${negocio.nome}: ${agendamentos.length} agendamento(s) amanhã`)
+      console.log(`[Lembretes] ${negocio.nome}: ${agendamentos.length} agendamento(s) amanha`)
 
       for (const ag of agendamentos) {
         if (!ag.pacienteTelefone) continue
@@ -75,13 +74,13 @@ async function dispararLembretes() {
       }
     }
 
-    console.log('[Lembretes] Verificação concluída!')
+    console.log('[Lembretes] Verificacao concluida!')
   } catch (err) {
     console.error('[Lembretes] Erro geral:', err.message)
   }
 }
 
-// Roda todo dia às 09:00 da manhã (horário de Brasília = UTC-3, então 12:00 UTC)
+// Roda todo dia as 09:00 da manha (horario de Brasilia = UTC-3, entao 12:00 UTC)
 function iniciarCronLembretes() {
   cron.schedule('0 12 * * *', () => {
     console.log('[Lembretes] Cron disparado!')
