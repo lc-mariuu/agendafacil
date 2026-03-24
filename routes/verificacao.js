@@ -5,11 +5,18 @@ const router       = express.Router()
 const mongoose     = require('mongoose')
 const User         = require('../models/User')
 
+// ─── Resend ───────────────────────────────────────────────────────────────────
 function getResend() {
   if (!process.env.RESEND_API_KEY) return null
   return new Resend(process.env.RESEND_API_KEY)
 }
 
+// ─── Validação de email ───────────────────────────────────────────────────────
+function emailValido(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+}
+
+// ─── Envio de email ───────────────────────────────────────────────────────────
 async function enviarEmail(destinatario, assunto, html) {
   const resend = getResend()
   if (!resend) {
@@ -31,20 +38,24 @@ async function enviarEmail(destinatario, assunto, html) {
   if (error) throw new Error(`Resend erro: ${JSON.stringify(error)}`)
 }
 
+// ─── Schema de verificação ────────────────────────────────────────────────────
 const codigoSchema = new mongoose.Schema({
-  email:    { type: String, required: true },
-  codigo:   { type: String, required: true },
-  tipo:     { type: String, enum: ['cadastro', 'recuperacao'], default: 'cadastro' },
-  criadoEm: { type: Date, default: Date.now, expires: 600 }
+  email:     { type: String, required: true },
+  codigo:    { type: String, required: true },
+  tipo:      { type: String, enum: ['cadastro', 'recuperacao'], default: 'cadastro' },
+  verificado: { type: Boolean, default: false }, // ✅ novo campo
+  criadoEm:  { type: Date, default: Date.now, expires: 600 }
 })
 codigoSchema.index({ email: 1, tipo: 1 }, { unique: true })
 const CodigoVerificacao = mongoose.models.CodigoVerificacao
   || mongoose.model('CodigoVerificacao', codigoSchema)
 
+// ─── Gerar código ─────────────────────────────────────────────────────────────
 function gerarCodigo() {
   return String(crypto.randomInt(100000, 999999))
 }
 
+// ─── Templates de email ───────────────────────────────────────────────────────
 function templateCadastro(codigo) {
   return `<div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:32px 24px;background:#f8fafc;border-radius:16px"><h1 style="color:#1e40af;font-size:22px;margin-bottom:4px">AgendoRapido!</h1><p style="color:#64748b;font-size:13px;margin-bottom:24px">Confirme seu email para criar sua conta</p><div style="background:white;border-radius:12px;padding:28px;text-align:center;border:1px solid #e2e8f0"><p style="color:#475569;font-size:14px;margin-bottom:12px">Seu código de verificação:</p><div style="font-size:42px;font-weight:700;letter-spacing:12px;color:#1e40af;padding:8px 0">${codigo}</div><p style="color:#94a3b8;font-size:12px;margin-top:16px">Válido por <strong>10 minutos</strong>. Não compartilhe com ninguém.</p></div><p style="color:#cbd5e1;font-size:11px;text-align:center;margin-top:20px">Se não foi você, ignore este email.</p></div>`
 }
@@ -53,14 +64,17 @@ function templateRecuperacao(codigo) {
   return `<div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:32px 24px;background:#f8fafc;border-radius:16px"><h1 style="color:#1e40af;font-size:22px;margin-bottom:4px">AgendoRapido!</h1><p style="color:#64748b;font-size:13px;margin-bottom:24px">Redefinição de senha solicitada</p><div style="background:white;border-radius:12px;padding:28px;text-align:center;border:1px solid #e2e8f0"><p style="color:#475569;font-size:14px;margin-bottom:12px">Use este código para criar uma nova senha:</p><div style="font-size:42px;font-weight:700;letter-spacing:12px;color:#1e40af;padding:8px 0">${codigo}</div><p style="color:#94a3b8;font-size:12px;margin-top:16px">Válido por <strong>10 minutos</strong>.</p></div><p style="color:#cbd5e1;font-size:11px;text-align:center;margin-top:20px">Se não foi você, sua senha permanece a mesma.</p></div>`
 }
 
+// ─── Rotas ────────────────────────────────────────────────────────────────────
+
+// Enviar código de cadastro
 router.post('/enviar-codigo', async (req, res) => {
   try {
     const { email } = req.body
-    if (!email || !email.includes('@')) return res.status(400).json({ erro: 'Email inválido' })
+    if (!email || !emailValido(email)) return res.status(400).json({ erro: 'Email inválido' })
     const codigo = gerarCodigo()
     await CodigoVerificacao.findOneAndUpdate(
       { email: email.toLowerCase(), tipo: 'cadastro' },
-      { codigo, criadoEm: new Date() },
+      { codigo, criadoEm: new Date(), verificado: false },
       { upsert: true, returnDocument: 'after' }
     )
     await enviarEmail(email, '🔐 Seu código de verificação — AgendoRapido', templateCadastro(codigo))
@@ -71,16 +85,28 @@ router.post('/enviar-codigo', async (req, res) => {
   }
 })
 
+// Verificar código (cadastro ou recuperação)
 router.post('/verificar-codigo', async (req, res) => {
   try {
     const { email, codigo, tipo = 'cadastro' } = req.body
+    if (!email || !emailValido(email)) return res.status(400).json({ erro: 'Email inválido' })
+
     const registro = await CodigoVerificacao.findOne({ email: email.toLowerCase(), tipo })
     if (!registro) return res.status(400).json({ erro: 'Código expirado. Solicite um novo.' })
+
     const esperado = Buffer.from(registro.codigo)
     const recebido = Buffer.from(String(codigo))
     const valido = esperado.length === recebido.length && crypto.timingSafeEqual(esperado, recebido)
     if (!valido) return res.status(400).json({ erro: 'Código incorreto. Verifique e tente novamente.' })
-    await CodigoVerificacao.deleteOne({ _id: registro._id })
+
+    if (tipo === 'cadastro') {
+      // Para cadastro, exclui o código — frontend segue para criar a conta
+      await CodigoVerificacao.deleteOne({ _id: registro._id })
+    } else {
+      // Para recuperação, marca como verificado — libera a rota /nova-senha
+      await CodigoVerificacao.updateOne({ _id: registro._id }, { $set: { verificado: true } })
+    }
+
     res.json({ ok: true })
   } catch (err) {
     console.error('[verificar-codigo]', err)
@@ -88,16 +114,20 @@ router.post('/verificar-codigo', async (req, res) => {
   }
 })
 
+// Enviar código de recuperação de senha
 router.post('/recuperar-senha', async (req, res) => {
   try {
     const { email } = req.body
-    if (!email || !email.includes('@')) return res.status(400).json({ erro: 'Email inválido' })
+    if (!email || !emailValido(email)) return res.status(400).json({ erro: 'Email inválido' })
+
     const usuario = await User.findOne({ email: email.toLowerCase() })
-    if (!usuario) return res.status(400).json({ erro: 'Email não encontrado. Verifique se digitou corretamente.' })
+    // Retorna ok mesmo se não encontrar (evita enumeração de emails)
+    if (!usuario) return res.json({ ok: true })
+
     const codigo = gerarCodigo()
     await CodigoVerificacao.findOneAndUpdate(
       { email: email.toLowerCase(), tipo: 'recuperacao' },
-      { codigo, criadoEm: new Date() },
+      { codigo, criadoEm: new Date(), verificado: false },
       { upsert: true, returnDocument: 'after' }
     )
     await enviarEmail(email, '🔑 Redefinição de senha — AgendoRapido', templateRecuperacao(codigo))
@@ -108,10 +138,21 @@ router.post('/recuperar-senha', async (req, res) => {
   }
 })
 
+// Trocar senha — só funciona se o código foi verificado antes
 router.post('/nova-senha', async (req, res) => {
   try {
     const { email, senha } = req.body
+    if (!email || !emailValido(email)) return res.status(400).json({ erro: 'Email inválido' })
     if (!senha || senha.length < 6) return res.status(400).json({ erro: 'Senha deve ter ao menos 6 caracteres' })
+
+    // 🔒 Verifica se o código de recuperação foi confirmado
+    const registro = await CodigoVerificacao.findOne({
+      email: email.toLowerCase(),
+      tipo: 'recuperacao',
+      verificado: true
+    })
+    if (!registro) return res.status(403).json({ erro: 'Verificação não concluída. Solicite um novo código.' })
+
     const bcrypt = require('bcryptjs')
     const hash = await bcrypt.hash(senha, 10)
     const resultado = await User.updateOne(
@@ -119,6 +160,10 @@ router.post('/nova-senha', async (req, res) => {
       { $set: { senha: hash } }
     )
     if (resultado.matchedCount === 0) return res.status(400).json({ erro: 'Usuário não encontrado' })
+
+    // Remove o registro de verificação após trocar a senha
+    await CodigoVerificacao.deleteOne({ _id: registro._id })
+
     res.json({ ok: true })
   } catch (err) {
     console.error('[nova-senha]', err)
