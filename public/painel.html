@@ -223,6 +223,101 @@ tbody tr:hover td{background:var(--accent-light)}
   .section-block-body{padding:18px}
 }
 @media(max-width:400px){.stats{grid-template-columns:1fr}}
+
+/* ── FORMS ───────────────────────────────────────── */
+.form-group{margin-bottom:16px}
+.form-group label{font-size:11px;font-weight:700;color:var(--text2);display:block;margin-bottom:6px;text-transform:uppercase;letter-spacing:.06em}
+.form-group input,.form-group select,.form-group textarea{width:100%;padding:11px 14px;border:1.5px solid var(--border2);border-radius:10px;font-size:14px;outline:none;font-family:inherit;color:var(--text);background:var(--bg-card);transition:all .2s}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--accent);box-shadow:0 0 0 4px rgba(37,99,235,0.08)}
+.form-group input:hover:not(:focus),.form-group select:hover:not(:focus),.form-group textarea:hover:not(:focus){border-color:rgba(0,0,0,0.2)}
+
+/* ── MODAL ───────────────────────────────────────── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:200;display:flex;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(4px)}
+.modal{background:var(--bg-card);border-radius:18px;padding:24px;width:100%;max-width:460px;box-shadow:0 8px 40px rgba(0,0,0,0.15);max-height:90vh;overflow-y:auto}
+.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+.modal-header h2{font-size:17px;font-weight:700;color:var(--text)}
+.modal-close{background:var(--bg);border:none;width:30px;height:30px;border-radius:8px;cursor:pointer;color:var(--text3);font-size:18px;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.modal-close:hover{background:var(--red-bg);color:var(--red)}
+.modal-footer{display:flex;gap:10px;margin-top:20px}
+.btn-cancelar-modal{flex:1;background:var(--bg);color:var(--text2);border:1.5px solid var(--border2);padding:11px;border-radius:10px;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;transition:all .15s}
+.btn-cancelar-modal:hover{border-color:var(--border2);background:#f1f5f9}
+.btn-salvar-modal{flex:2;background:linear-gradient(135deg,var(--accent),#3b82f6);color:white;border:none;padding:11px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s;box-shadow:0 2px 8px rgba(37,99,235,0.3)}
+.btn-salvar-modal:hover{background:linear-gradient(135deg,var(--accent-hover),var(--accent));transform:translateY(-1px)}
+.erro-msg{color:var(--red);font-size:12.5px;text-align:center;margin-bottom:10px;min-height:18px}
+.modal-neg{background:var(--bg-card);border-radius:18px;padding:24px;width:100%;max-width:400px;box-shadow:0 8px 40px rgba(0,0,0,0.15)}
+.plano-badge{display:inline-flex;align-items:center;gap:5px;background:var(--accent-light);color:var(--accent);padding:5px 12px;border-radius:100px;font-size:11px;font-weight:700;margin-bottom:14px;border:1px solid var(--accent-mid)}
+
+/* ── BLOQUEIO ────────────────────────────────────── */
+.bloqueio{position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:1000;display:flex;align-items:center;justify-content:center;padding:24px;backdrop-filter:blur(6px)}
+.bloqueio-card{background:white;border-radius:24px;padding:44px;max-width:420px;width:100%;text-align:center;box-shadow:0 24px 80px rgba(0,0,0,0.25)}
+.bloqueio-card h2{font-size:22px;font-weight:800;margin-bottom:8px;letter-spacing:-0.03em}
+.bloqueio-card p{color:var(--text2);font-size:14px;margin-bottom:28px;line-height:1.7}
+.btn-ver-planos{display:block;background:linear-gradient(135deg,var(--accent),#3b82f6);color:white;padding:14px;border-radius:12px;font-size:15px;font-weight:700;text-decoration:none;margin-bottom:12px;box-shadow:0 4px 12px rgba(37,99,235,0.3)}
+
+/* ── TRIAL BANNER ────────────────────────────────── */
+.trial-banner{background:linear-gradient(135deg,var(--yellow-bg),#fef9c3);border:1px solid var(--yellow-border);border-radius:var(--radius);padding:14px 20px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.trial-banner p{font-size:13px;color:var(--yellow);font-weight:600}
+.btn-assinar-banner{background:var(--accent);color:white;border:none;padding:7px 16px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;font-family:inherit;box-shadow:0 2px 6px rgba(37,99,235,0.3)}
+
+/* ── CONFIG CARD (paginas internas legado) ───────── */
+.config-card{background:var(--bg-card);border-radius:18px;border:1px solid var(--border);box-shadow:0 2px 12px rgba(0,0,0,0.05);padding:24px;margin-bottom:20px;transition:all .25s;position:relative;overflow:hidden}
+.config-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(180deg,var(--accent),#60a5fa)}
+.config-card:hover{box-shadow:0 6px 24px rgba(0,0,0,0.08);transform:translateY(-1px)}
+.config-card-title{font-size:15px;font-weight:700;color:var(--text);margin-bottom:18px;display:flex;align-items:center;gap:10px;letter-spacing:-0.01em}
+.config-card-title-icon{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,var(--accent-light),var(--accent-mid));display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid rgba(37,99,235,0.15);box-shadow:0 2px 6px rgba(37,99,235,0.1)}
+
+/* ── SERVICOS ────────────────────────────────────── */
+.servico-tag-wrap{display:inline-block;margin:3px}
+.servico-tag{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--accent-light),var(--accent-mid));border:1px solid rgba(37,99,235,0.2);color:var(--accent);padding:6px 14px;border-radius:100px;font-size:12.5px;font-weight:600;transition:all .2s;box-shadow:0 1px 4px rgba(37,99,235,0.1)}
+.servico-tag:hover{box-shadow:0 3px 10px rgba(37,99,235,0.2);transform:translateY(-1px)}
+.servico-preco{background:linear-gradient(135deg,var(--accent),#3b82f6);color:white;padding:2px 9px;border-radius:100px;font-size:11px;font-weight:700;box-shadow:0 1px 4px rgba(37,99,235,0.3)}
+.servico-tag button{background:none;border:none;color:#93c5fd;cursor:pointer;font-size:16px;line-height:1;padding:0;display:flex;transition:color .15s}
+.servico-tag button:hover{color:var(--red)}
+.add-servico{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+.add-servico input{flex:1;min-width:120px;padding:10px 14px;border:1.5px solid var(--border2);border-radius:10px;font-size:14px;outline:none;font-family:inherit;transition:all .2s;background:white}
+.add-servico input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(37,99,235,0.08)}
+.btn-add{background:linear-gradient(135deg,var(--accent),#3b82f6);color:white;border:none;padding:10px 20px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;font-family:inherit;transition:all .2s;box-shadow:0 2px 8px rgba(37,99,235,0.25)}
+.btn-add:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(37,99,235,0.35)}
+
+/* ── BTN SALVAR ──────────────────────────────────── */
+.btn-salvar{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--green),#22c55e);color:white;border:none;padding:11px 24px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;margin-top:18px;font-family:inherit;transition:all .2s;box-shadow:0 2px 8px rgba(22,163,74,0.25)}
+.btn-salvar:hover{background:linear-gradient(135deg,#15803d,var(--green));transform:translateY(-1px);box-shadow:0 4px 16px rgba(22,163,74,0.3)}
+.salvo-msg{color:var(--green);font-size:12.5px;margin-left:12px;display:none;font-weight:700;animation:fadeUp .3s ease}
+
+/* ── TOGGLE SWITCH ───────────────────────────────── */
+.toggle-switch{position:relative;display:inline-block;width:48px;height:26px;flex-shrink:0}
+.toggle-switch input{opacity:0;width:0;height:0}
+.toggle-track{position:absolute;cursor:pointer;inset:0;background:#cbd5e1;border-radius:100px;transition:.3s;box-shadow:inset 0 1px 3px rgba(0,0,0,0.1)}
+.toggle-thumb{position:absolute;left:3px;top:3px;width:20px;height:20px;background:white;border-radius:50%;transition:.3s;box-shadow:0 1px 4px rgba(0,0,0,0.2)}
+
+/* ── INTERVALO ───────────────────────────────────── */
+.intervalo-grid{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px}
+.intervalo-btn{padding:8px 16px;border:1.5px solid var(--border2);border-radius:10px;background:white;cursor:pointer;font-size:13px;font-weight:600;color:var(--text2);transition:all .2s;font-family:inherit}
+.intervalo-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-light);transform:translateY(-1px)}
+.intervalo-btn.selecionado{border-color:var(--accent);background:linear-gradient(135deg,var(--accent),#3b82f6);color:white;box-shadow:0 2px 8px rgba(37,99,235,0.3)}
+
+/* ── DIA ROW ─────────────────────────────────────── */
+.dia-row{display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid var(--border);flex-wrap:wrap;transition:background .15s}
+.dia-row:last-child{border-bottom:none}
+.dia-toggle{display:flex;align-items:center;gap:10px;min-width:120px}
+.dia-toggle input[type=checkbox]{width:17px;height:17px;cursor:pointer;accent-color:var(--accent);flex-shrink:0}
+.dia-toggle label{font-size:13.5px;font-weight:600;color:var(--text);cursor:pointer}
+.dia-horarios{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.dia-horarios input[type=time]{padding:8px 11px;border:1.5px solid var(--border2);border-radius:9px;font-size:13px;outline:none;font-family:inherit;transition:all .2s;background:white}
+.dia-horarios input[type=time]:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(37,99,235,0.08)}
+.dia-horarios span{font-size:12px;color:var(--text3);font-weight:600}
+.dia-inativo .dia-horarios{opacity:.3;pointer-events:none}
+.dia-inativo .dia-toggle label{color:var(--text3)}
+
+/* ── SUPORTE EXTRA ───────────────────────────────── */
+.suporte-title{font-size:22px;font-weight:700;color:var(--text);margin-bottom:10px;letter-spacing:-0.02em}
+.suporte-desc{font-size:14px;color:var(--text2);line-height:1.7;margin-bottom:32px;max-width:340px;margin-left:auto;margin-right:auto}
+
+
+.form-hint{font-size:11.5px;color:var(--text3);margin-top:6px;line-height:1.5}
+.toggle-row-label{font-size:14px;font-weight:600;color:var(--text)}
+.toggle-row-desc{font-size:12.5px;color:var(--text2);margin-top:4px;line-height:1.5}
+.info-box-title{font-weight:700;margin-bottom:4px;font-size:14px}
 </style>
 </head>
 <body>
@@ -396,80 +491,123 @@ tbody tr:hover td{background:var(--accent-light)}
   <!-- HORARIOS -->
   <div class="page" id="page-horarios">
     <div class="page-header"><h1>Horarios de Atendimento</h1><p>Configure os dias e horarios que seu negocio atende</p></div>
-    <div class="config-card">
-      <div class="config-card-title"><div class="config-card-title-icon"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="6.5" cy="6.5" r="5" stroke="#2563eb" stroke-width="1.4"/><path d="M6.5 4V7l2 2" stroke="#2563eb" stroke-width="1.4" stroke-linecap="round"/></svg></div>Intervalo entre atendimentos</div>
-      <div class="intervalo-grid">
-        <button class="intervalo-btn" onclick="selecionarIntervalo(this,15)">15 min</button>
-        <button class="intervalo-btn" onclick="selecionarIntervalo(this,20)">20 min</button>
-        <button class="intervalo-btn" onclick="selecionarIntervalo(this,30)">30 min</button>
-        <button class="intervalo-btn" onclick="selecionarIntervalo(this,45)">45 min</button>
-        <button class="intervalo-btn" onclick="selecionarIntervalo(this,60)">1 hora</button>
-        <button class="intervalo-btn" onclick="selecionarIntervalo(this,90)">1h30</button>
-        <button class="intervalo-btn" onclick="selecionarIntervalo(this,120)">2 horas</button>
-        <button class="intervalo-btn" onclick="selecionarIntervalo(this,150)">2h30</button>
+
+    <div class="section-block">
+      <div class="section-block-header">
+        <div class="section-block-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7.5" stroke="#2563eb" stroke-width="1.6"/><path d="M10 6v5l3 3" stroke="#2563eb" stroke-width="1.6" stroke-linecap="round"/></svg></div>
+        <div><div class="section-block-title">Intervalo entre atendimentos</div><div class="section-block-sub">Tempo minimo reservado entre um agendamento e outro</div></div>
       </div>
-    </div>
-    <div class="config-card">
-      <div class="config-card-title"><div class="config-card-title-icon"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="1" y="2" width="11" height="10" rx="1.5" stroke="#2563eb" stroke-width="1.4"/><path d="M4 1v2M9 1v2M1 5h11" stroke="#2563eb" stroke-width="1.4" stroke-linecap="round"/></svg></div>Dias e horarios</div>
-      <div id="dias-container"></div>
-      <div style="display:flex;align-items:center"><button class="btn-salvar" onclick="salvarHorarios()"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Salvar horarios</button><span class="salvo-msg" id="salvo-horarios">Salvo!</span></div>
-    </div>
-    <div class="config-card">
-      <div class="config-card-title"><div class="config-card-title-icon"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M1.5 6.5h10M6.5 1.5v10" stroke="#2563eb" stroke-width="1.4" stroke-linecap="round"/></svg></div>Pausas e intervalos</div>
-      <p style="font-size:12.5px;color:var(--text2);margin-bottom:14px">Bloqueie horarios para almoco, cafe ou qualquer pausa.</p>
-      <div id="pausas-lista"></div>
-      <div style="margin-top:12px;display:flex;flex-direction:column;gap:8px">
-        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-          <input type="text" id="pausa-inicio" placeholder="12:00" maxlength="5" inputmode="numeric" style="flex:1;min-width:80px;padding:9px 12px;border:1.5px solid var(--border2);border-radius:8px;font-size:14px;font-weight:600;outline:none;font-family:inherit;text-align:center" oninput="mascaraHora(this)" />
-          <span style="font-size:12px;color:var(--text3);font-weight:500;white-space:nowrap">as</span>
-          <input type="text" id="pausa-fim" placeholder="13:00" maxlength="5" inputmode="numeric" style="flex:1;min-width:80px;padding:9px 12px;border:1.5px solid var(--border2);border-radius:8px;font-size:14px;font-weight:600;outline:none;font-family:inherit;text-align:center" oninput="mascaraHora(this)" />
-          <input type="text" id="pausa-label" placeholder="Ex: Almoco" style="flex:1.5;min-width:100px;padding:9px 12px;border:1.5px solid var(--border2);border-radius:8px;font-size:13px;outline:none;font-family:inherit" />
+      <div class="section-block-body">
+        <div class="intervalo-grid">
+          <button class="intervalo-btn" onclick="selecionarIntervalo(this,15)">15 min</button>
+          <button class="intervalo-btn" onclick="selecionarIntervalo(this,20)">20 min</button>
+          <button class="intervalo-btn" onclick="selecionarIntervalo(this,30)">30 min</button>
+          <button class="intervalo-btn" onclick="selecionarIntervalo(this,45)">45 min</button>
+          <button class="intervalo-btn" onclick="selecionarIntervalo(this,60)">1 hora</button>
+          <button class="intervalo-btn" onclick="selecionarIntervalo(this,90)">1h30</button>
+          <button class="intervalo-btn" onclick="selecionarIntervalo(this,120)">2 horas</button>
+          <button class="intervalo-btn" onclick="selecionarIntervalo(this,150)">2h30</button>
         </div>
-        <button class="btn-add" style="width:100%" onclick="adicionarPausa()">+ Adicionar pausa</button>
       </div>
-      <div style="display:flex;align-items:center;margin-top:14px"><button class="btn-salvar" onclick="salvarPausas()"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Salvar pausas</button><span class="salvo-msg" id="salvo-pausas">Salvo!</span></div>
+    </div>
+
+    <div class="section-block">
+      <div class="section-block-header">
+        <div class="section-block-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="2.5" y="3.5" width="15" height="13.5" rx="2.5" stroke="#2563eb" stroke-width="1.6"/><path d="M2.5 7.5h15M7 2v3M13 2v3" stroke="#2563eb" stroke-width="1.6" stroke-linecap="round"/></svg></div>
+        <div><div class="section-block-title">Dias e horarios de atendimento</div><div class="section-block-sub">Defina em quais dias e horarios voce recebe clientes</div></div>
+      </div>
+      <div class="section-block-body">
+        <div id="dias-container"></div>
+        <div style="display:flex;align-items:center;margin-top:8px">
+          <button class="btn-salvar" onclick="salvarHorarios()"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Salvar horarios</button>
+          <span class="salvo-msg" id="salvo-horarios">Salvo!</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-block">
+      <div class="section-block-header">
+        <div class="section-block-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7.5" stroke="#2563eb" stroke-width="1.6"/><path d="M10 6.5v4M10 13v.5" stroke="#2563eb" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+        <div><div class="section-block-title">Pausas e intervalos</div><div class="section-block-sub">Bloqueie horarios para almoco, cafe ou qualquer pausa</div></div>
+      </div>
+      <div class="section-block-body">
+        <div id="pausas-lista"></div>
+        <div style="margin-top:14px;display:flex;flex-direction:column;gap:8px">
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:14px;background:var(--bg);border-radius:12px;border:1.5px dashed var(--border2)">
+            <input type="text" id="pausa-inicio" placeholder="12:00" maxlength="5" inputmode="numeric" style="flex:1;min-width:80px;padding:10px 12px;border:1.5px solid var(--border2);border-radius:9px;font-size:14px;font-weight:600;outline:none;font-family:inherit;text-align:center;background:white;transition:all .2s" oninput="mascaraHora(this)" />
+            <span style="font-size:12px;color:var(--text3);font-weight:700">as</span>
+            <input type="text" id="pausa-fim" placeholder="13:00" maxlength="5" inputmode="numeric" style="flex:1;min-width:80px;padding:10px 12px;border:1.5px solid var(--border2);border-radius:9px;font-size:14px;font-weight:600;outline:none;font-family:inherit;text-align:center;background:white;transition:all .2s" oninput="mascaraHora(this)" />
+            <input type="text" id="pausa-label" placeholder="Nome da pausa" style="flex:1.5;min-width:100px;padding:10px 12px;border:1.5px solid var(--border2);border-radius:9px;font-size:13.5px;outline:none;font-family:inherit;background:white;transition:all .2s" />
+          </div>
+          <button class="btn-add" style="width:100%" onclick="adicionarPausa()">+ Adicionar pausa</button>
+        </div>
+        <div style="display:flex;align-items:center;margin-top:4px">
+          <button class="btn-salvar" onclick="salvarPausas()"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Salvar pausas</button>
+          <span class="salvo-msg" id="salvo-pausas">Salvo!</span>
+        </div>
+      </div>
     </div>
   </div>
 
   <!-- LEMBRETES -->
   <div class="page" id="page-lembretes">
     <div class="page-header"><h1>Lembretes Automaticos</h1><p>Avise seus clientes 24h antes do agendamento via WhatsApp</p></div>
-    <div class="config-card">
-      <div class="config-card-title"><div class="config-card-title-icon"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1a4 4 0 0 1 4 4c0 2.2.4 3.1.9 3.5H1.6c.5-.4.9-1.3.9-3.5a4 4 0 0 1 4-4Z" stroke="#2563eb" stroke-width="1.4" stroke-linejoin="round"/><path d="M5.2 11a1.3 1.3 0 0 0 2.6 0" stroke="#2563eb" stroke-width="1.4" stroke-linecap="round"/></svg></div>Lembrete 24h antes</div>
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--border)">
-        <div>
-          <div style="font-size:13.5px;font-weight:600;color:var(--text)">Ativar lembretes automaticos</div>
-          <div style="font-size:12px;color:var(--text2);margin-top:3px">Seus clientes recebem uma mensagem no WhatsApp 24h antes do horario</div>
+    <div class="section-block">
+      <div class="section-block-header">
+        <div class="section-block-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 2a6 6 0 0 1 6 6c0 3.3.7 4.7 1.4 5.5H2.6C3.3 12.7 4 11.3 4 8a6 6 0 0 1 6-6Z" stroke="#2563eb" stroke-width="1.6" stroke-linejoin="round"/><path d="M8 16.5a2 2 0 0 0 4 0" stroke="#2563eb" stroke-width="1.6" stroke-linecap="round"/></svg></div>
+        <div><div class="section-block-title">Lembrete automatico 24h antes</div><div class="section-block-sub">Mensagem enviada pelo WhatsApp do AgendoRapido</div></div>
+      </div>
+      <div class="section-block-body">
+        <div class="toggle-row">
+          <div>
+            <div class="toggle-row-label">Ativar lembretes automaticos</div>
+            <div class="toggle-row-desc">Seus clientes recebem uma mensagem no WhatsApp 24h antes do horario</div>
+          </div>
+          <label class="toggle-switch"><input type="checkbox" id="toggle-lembrete" onchange="salvarLembrete()"><span class="toggle-track" id="toggle-track"></span><span class="toggle-thumb" id="toggle-thumb"></span></label>
         </div>
-        <label class="toggle-switch"><input type="checkbox" id="toggle-lembrete" onchange="salvarLembrete()"><span class="toggle-track" id="toggle-track"></span><span class="toggle-thumb" id="toggle-thumb"></span></label>
-      </div>
-      <div id="lembrete-info" style="display:none;margin-top:16px;background:var(--green-bg);border:1px solid #86efac;border-radius:10px;padding:14px 16px">
-        <div style="font-size:13px;font-weight:600;color:var(--green);margin-bottom:4px">Lembretes ativados</div>
-        <div style="font-size:12.5px;color:#166534;line-height:1.6">Seus clientes receberao automaticamente uma mensagem de lembrete 24 horas antes do agendamento via WhatsApp do AgendoRapido.</div>
-      </div>
-      <div style="margin-top:16px">
-        <div class="form-group">
-          <label>Mensagem do lembrete</label>
-          <textarea id="lembrete-msg" style="resize:vertical;min-height:90px">Ola {nome}! A *{negocio}* lembra que voce tem um agendamento amanha, {data} as {hora} -- {servico}. Te esperamos!</textarea>
-          <div style="font-size:11px;color:var(--text3);margin-top:5px">Variaveis: <strong>{nome}</strong>, <strong>{negocio}</strong>, <strong>{data}</strong>, <strong>{hora}</strong>, <strong>{servico}</strong></div>
+        <div id="lembrete-info" style="display:none" class="info-box green">
+          <div class="info-box-title">Lembretes ativados</div>
+          Seus clientes receberao automaticamente uma mensagem de lembrete 24 horas antes do agendamento via WhatsApp do AgendoRapido.
+        </div>
+        <div style="margin-top:20px">
+          <div class="form-group">
+            <label>Mensagem do lembrete</label>
+            <textarea id="lembrete-msg" style="resize:vertical;min-height:100px">Ola {nome}! A *{negocio}* lembra que voce tem um agendamento amanha, {data} as {hora} -- {servico}. Te esperamos!</textarea>
+            <div class="form-hint">Variaveis: <strong>{nome}</strong>, <strong>{negocio}</strong>, <strong>{data}</strong>, <strong>{hora}</strong>, <strong>{servico}</strong></div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center">
+          <button class="btn-salvar" onclick="salvarConfLembrete()"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Salvar configuracoes</button>
+          <span class="salvo-msg" id="salvo-lembrete">Salvo!</span>
         </div>
       </div>
-      <div style="display:flex;align-items:center"><button class="btn-salvar" onclick="salvarConfLembrete()"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Salvar configuracoes</button><span class="salvo-msg" id="salvo-lembrete">Salvo!</span></div>
     </div>
   </div>
 
   <!-- CONFIGURACOES -->
   <div class="page" id="page-configuracoes">
     <div class="page-header"><h1>Configuracoes</h1><p>Personalize os servicos do seu negocio</p></div>
-    <div class="config-card">
-      <div class="config-card-title"><div class="config-card-title-icon"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M1.5 3.5h10M1.5 6.5h6M1.5 9.5h7" stroke="#2563eb" stroke-width="1.4" stroke-linecap="round"/></svg></div>Servicos oferecidos</div>
-      <div id="servicos-tags"></div>
-      <div class="add-servico" style="flex-wrap:wrap;gap:8px">
-        <input type="text" id="novo-servico" placeholder="Ex: Corte + Barba, Consulta..." style="flex:2;min-width:140px" />
-        <input type="number" id="novo-preco" placeholder="Preco R$" min="0" step="0.01" style="flex:1;min-width:90px;padding:9px 12px;border:1.5px solid var(--border2);border-radius:8px;font-size:13.5px;outline:none;font-family:inherit;transition:border-color .15s" />
-        <button class="btn-add" onclick="adicionarServico()">Adicionar</button>
+    <div class="section-block">
+      <div class="section-block-header">
+        <div class="section-block-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M2 5h16M2 10h10M2 15h12" stroke="#2563eb" stroke-width="1.6" stroke-linecap="round"/></svg></div>
+        <div><div class="section-block-title">Servicos oferecidos</div><div class="section-block-sub">Adicione os servicos com seus respectivos precos</div></div>
       </div>
-      <div style="display:flex;align-items:center"><button class="btn-salvar" onclick="salvarServicos()"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Salvar servicos</button><span class="salvo-msg" id="salvo-msg">Salvo!</span></div>
+      <div class="section-block-body">
+        <div id="servicos-tags" style="margin-bottom:12px;min-height:36px"></div>
+        <div class="info-box blue" style="margin-top:0;margin-bottom:16px">
+          <div class="info-box-title">Como funciona</div>
+          Adicione o nome e o preco de cada servico. O preco sera usado para calcular o lucro do mes no dashboard.
+        </div>
+        <div class="add-servico">
+          <input type="text" id="novo-servico" placeholder="Nome do servico" style="flex:2;min-width:140px" />
+          <input type="number" id="novo-preco" placeholder="R$ 0,00" min="0" step="0.01" style="flex:1;min-width:100px;padding:10px 14px;border:1.5px solid var(--border2);border-radius:10px;font-size:14px;outline:none;font-family:inherit;background:white;transition:all .2s" />
+          <button class="btn-add" onclick="adicionarServico()">Adicionar</button>
+        </div>
+        <div style="display:flex;align-items:center">
+          <button class="btn-salvar" onclick="salvarServicos()"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Salvar servicos</button>
+          <span class="salvo-msg" id="salvo-msg">Salvo!</span>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -480,18 +618,32 @@ tbody tr:hover td{background:var(--accent-light)}
       <div><div class="link-card-label">Link da sua bio</div><div class="link-card-url" id="link-bio"></div></div>
       <button class="btn-copiar" onclick="copiarLinkBio()"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M1 8.5V2a1 1 0 0 1 1-1h6.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>Copiar link</button>
     </div>
-    <div class="config-card">
-      <div class="config-card-title"><div class="config-card-title-icon"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="6.5" cy="4" rx="2.5" stroke="#2563eb" stroke-width="1.4"/><path d="M1 12c0-2.8 2.5-5 5.5-5s5.5 2.2 5.5 5" stroke="#2563eb" stroke-width="1.4" stroke-linecap="round"/></svg></div>Informacoes da pagina</div>
-      <div class="foto-wrap">
-        <div id="foto-preview" class="foto-preview">x</div>
-        <div><input type="file" id="foto-input" accept="image/*" onchange="uploadFoto(this)" style="display:none" /><button class="btn-foto" onclick="document.getElementById('foto-input').click()">Escolher foto</button><div class="foto-status" id="foto-status">Nenhuma foto selecionada</div></div>
-        <input type="hidden" id="bio-foto" />
+    <div class="section-block">
+      <div class="section-block-header">
+        <div class="section-block-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="3.5" stroke="#2563eb" stroke-width="1.6"/><path d="M3 18c0-3.9 3.1-7 7-7s7 3.1 7 7" stroke="#2563eb" stroke-width="1.6" stroke-linecap="round"/></svg></div>
+        <div><div class="section-block-title">Informacoes da pagina</div><div class="section-block-sub">Foto, descricao e dados de contato da sua bio</div></div>
       </div>
-      <div class="form-group"><label>Descricao / Bio</label><textarea id="bio-descricao" placeholder="Ex: Barbearia premium no centro de SP." style="resize:vertical;min-height:70px"></textarea></div>
-      <div class="form-group"><label>Link do Google Maps</label><input type="text" id="bio-endereco" placeholder="Cole aqui o link do Google Maps" /></div>
-      <div class="form-group"><label>Instagram</label><input type="text" id="bio-instagram" placeholder="@seunegocio" /></div>
-      <div class="form-group"><label>WhatsApp</label><input type="text" id="bio-whatsapp" placeholder="(11) 99999-9999" /></div>
-      <div style="display:flex;align-items:center"><button class="btn-salvar" onclick="salvarBio()"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Salvar bio</button><span class="salvo-msg" id="salvo-bio">Salvo!</span></div>
+      <div class="section-block-body">
+        <div class="foto-wrap">
+          <div id="foto-preview" class="foto-preview">x</div>
+          <div class="foto-info">
+            <input type="file" id="foto-input" accept="image/*" onchange="uploadFoto(this)" style="display:none" />
+            <button class="btn-foto" onclick="document.getElementById('foto-input').click()">Escolher foto</button>
+            <div class="foto-status" id="foto-status">Nenhuma foto selecionada</div>
+          </div>
+          <input type="hidden" id="bio-foto" />
+        </div>
+        <div class="form-group"><label>Descricao / Bio</label><textarea id="bio-descricao" placeholder="Ex: Barbearia premium no centro de SP. Atendemos com hora marcada." style="resize:vertical;min-height:80px"></textarea></div>
+        <div class="form-group"><label>Link do Google Maps</label><input type="text" id="bio-endereco" placeholder="Cole aqui o link do Google Maps" /></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+          <div class="form-group" style="margin-bottom:0"><label>Instagram</label><input type="text" id="bio-instagram" placeholder="@seunegocio" /></div>
+          <div class="form-group" style="margin-bottom:0"><label>WhatsApp</label><input type="text" id="bio-whatsapp" placeholder="(11) 99999-9999" /></div>
+        </div>
+        <div style="display:flex;align-items:center">
+          <button class="btn-salvar" onclick="salvarBio()"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Salvar bio</button>
+          <span class="salvo-msg" id="salvo-bio">Salvo!</span>
+        </div>
+      </div>
     </div>
   </div>
 
