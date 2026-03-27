@@ -4,9 +4,10 @@ const negocioSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   nome: { type: String, required: true },
   segmento: { type: String, default: 'Outro' },
-  servicos: { type: [String], default: [] },
-  // Configuração de pagamento por serviço
-  // ex: { 'Corte': { valor: 30, obrigatorio: true } }
+  servicos: {
+    type: mongoose.Schema.Types.Mixed,
+    default: []
+  },
   pagamentos: { type: mongoose.Schema.Types.Mixed, default: {} },
   intervalo: { type: Number, default: 30 },
   horarios: { type: mongoose.Schema.Types.Mixed, default: {} },
