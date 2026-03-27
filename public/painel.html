@@ -1,4 +1,4 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -29,8 +29,6 @@
 }
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased}
-
-/* ── SIDEBAR ─────────────────────────────────────── */
 .sidebar{position:fixed;left:0;top:0;bottom:0;width:var(--sidebar-w);background:var(--sidebar-bg);display:flex;flex-direction:column;z-index:100;transition:transform 0.3s cubic-bezier(.4,0,.2,1);border-right:1px solid var(--sidebar-border)}
 .sidebar-top{padding:20px 16px 16px;border-bottom:1px solid var(--sidebar-border)}
 .sidebar-brand{font-size:15px;font-weight:700;color:#fff;letter-spacing:-0.02em;margin-bottom:12px}
@@ -62,27 +60,20 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 .btn-sair:hover{background:rgba(220,38,38,0.15);color:#f87171}
 .btn-instalar{display:none;align-items:center;gap:8px;width:100%;padding:8px 10px;border-radius:8px;background:rgba(37,99,235,0.2);border:none;color:#93c5fd;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;margin-bottom:4px;font-family:inherit}
 .btn-instalar:hover{background:rgba(37,99,235,0.3)}
-
-/* ── TOPBAR MOBILE ───────────────────────────────── */
 .topbar-mobile{display:none;position:fixed;top:0;left:0;right:0;height:56px;background:var(--sidebar-bg);z-index:99;align-items:center;justify-content:space-between;padding:0 16px;border-bottom:1px solid var(--sidebar-border)}
 .topbar-brand{font-size:15px;font-weight:700;color:#fff}
 .topbar-brand span{color:#60a5fa}
 .btn-hamburger{background:none;border:none;color:rgba(255,255,255,0.6);cursor:pointer;padding:6px;display:flex;align-items:center}
 .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:99;backdrop-filter:blur(2px)}
 .sidebar-overlay.visivel{display:block}
-
-/* ── MAIN LAYOUT ─────────────────────────────────── */
 .main{margin-left:var(--sidebar-w);padding:32px 32px 60px;min-height:100vh}
 .page{display:none}
 .page.ativo{display:block;animation:pageIn .25s ease}
 @keyframes pageIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
-
-/* ── PAGE HEADER ─────────────────────────────────── */
-.page-header{margin-bottom:28px;padding-bottom:24px;border-bottom:1px solid var(--border)}
-.page-header h1{font-size:24px;font-weight:800;color:var(--text);letter-spacing:-0.03em;line-height:1.2}
-.page-header p{color:var(--text3);font-size:13.5px;margin-top:5px;font-weight:400}
-
-/* ── STATS ───────────────────────────────────────── */
+.page-header{margin-bottom:32px;padding-bottom:20px;border-bottom:1px solid var(--border);position:relative}
+.page-header::after{content:'';position:absolute;bottom:-1px;left:0;width:48px;height:2.5px;background:linear-gradient(90deg,var(--accent),#60a5fa);border-radius:2px}
+.page-header h1{font-size:24px;font-weight:700;color:var(--text);letter-spacing:-0.03em}
+.page-header p{color:var(--text2);font-size:13.5px;margin-top:5px}
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}
 .stat-card{background:var(--bg-card);border-radius:var(--radius);padding:22px;border:1px solid var(--border);box-shadow:var(--shadow);position:relative;overflow:hidden;transition:transform .2s,box-shadow .2s}
 .stat-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-md)}
@@ -90,15 +81,11 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 .stat-icon{width:40px;height:40px;border-radius:10px;background:var(--accent-light);display:flex;align-items:center;justify-content:center;margin-bottom:14px;border:1px solid var(--accent-mid)}
 .stat-valor{font-size:34px;font-weight:800;color:var(--text);letter-spacing:-0.04em;line-height:1}
 .stat-label{font-size:12px;color:var(--text3);margin-top:5px;font-weight:600;text-transform:uppercase;letter-spacing:.04em}
-
-/* ── LINK CARD ───────────────────────────────────── */
 .link-card{background:linear-gradient(135deg,var(--accent-light),#dbeafe);border:1px solid var(--accent-mid);border-radius:var(--radius);padding:16px 20px;margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
 .link-card-label{font-size:10px;font-weight:800;color:var(--accent);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px}
 .link-card-url{font-size:12px;color:#1d4ed8;word-break:break-all;font-weight:500}
 .btn-copiar{display:flex;align-items:center;gap:7px;background:var(--accent);color:white;border:none;padding:9px 18px;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:all .15s;font-family:inherit;box-shadow:0 2px 8px rgba(37,99,235,0.3)}
-.btn-copiar:hover{background:var(--accent-hover);transform:translateY(-1px);box-shadow:0 4px 12px rgba(37,99,235,0.4)}
-
-/* ── CARD BASE ───────────────────────────────────── */
+.btn-copiar:hover{background:var(--accent-hover);transform:translateY(-1px)}
 .card{background:var(--bg-card);border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);overflow:hidden;margin-bottom:20px}
 .card-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;background:linear-gradient(to right,#fff,var(--bg))}
 .card-title{font-size:14px;font-weight:700;color:var(--text)}
@@ -107,8 +94,6 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 .filtro-data:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(37,99,235,0.1)}
 .btn-novo{display:flex;align-items:center;gap:7px;background:var(--accent);color:white;border:none;padding:8px 16px;border-radius:var(--radius-sm);font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;transition:all .15s;font-family:inherit;box-shadow:0 2px 6px rgba(37,99,235,0.25)}
 .btn-novo:hover{background:var(--accent-hover);transform:translateY(-1px)}
-
-/* ── TABELA DESKTOP ──────────────────────────────── */
 .tabela-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
 table{width:100%;border-collapse:collapse;min-width:540px}
 thead tr{background:var(--bg)}
@@ -119,8 +104,6 @@ tbody tr{transition:background .12s}
 tbody tr:hover td{background:var(--accent-light)}
 .paciente-nome{font-weight:700;color:var(--text);font-size:13.5px}
 .paciente-tel{font-size:11.5px;color:var(--text3);margin-top:2px}
-
-/* ── MOBILE CARDS ────────────────────────────────── */
 .ag-cards{display:none;padding:4px 0}
 .ag-card{padding:16px 20px;border-bottom:1px solid var(--border);transition:background .15s}
 .ag-card:hover{background:var(--accent-light)}
@@ -130,8 +113,6 @@ tbody tr:hover td{background:var(--accent-light)}
 .ag-card-body{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:10px}
 .ag-chip{display:inline-flex;align-items:center;gap:4px;background:var(--bg);border:1px solid var(--border);border-radius:100px;padding:4px 11px;font-size:12px;font-weight:500;color:var(--text2)}
 .ag-card-actions{display:flex;gap:6px}
-
-/* ── BADGES ──────────────────────────────────────── */
 .badge{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:100px;font-size:11px;font-weight:700;white-space:nowrap;letter-spacing:.02em}
 .badge::before{content:'';width:5px;height:5px;border-radius:50%}
 .confirmado{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border)}.confirmado::before{background:var(--green)}
@@ -149,18 +130,15 @@ tbody tr:hover td{background:var(--accent-light)}
 .pg-btn:hover:not(:disabled){border-color:var(--accent);color:var(--accent);background:var(--accent-light)}
 .pg-btn.ativo{background:var(--accent);border-color:var(--accent);color:white;box-shadow:0 2px 6px rgba(37,99,235,0.3)}
 .pg-btn:disabled{opacity:.3;cursor:not-allowed}
-
-/* ── SECTION BLOCK (paginas internas) ────────────── */
-.section-block{background:var(--bg-card);border-radius:18px;border:1px solid var(--border);box-shadow:0 2px 12px rgba(0,0,0,0.05),0 1px 3px rgba(0,0,0,0.04);overflow:hidden;margin-bottom:24px;transition:all .25s}
-.section-block:hover{box-shadow:0 6px 28px rgba(0,0,0,0.09),0 1px 3px rgba(0,0,0,0.04);transform:translateY(-1px)}
-.section-block-header{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:14px;background:linear-gradient(135deg,#ffffff 0%,#f8fafc 100%);position:relative}
+.section-block{background:var(--bg-card);border-radius:18px;border:1px solid var(--border);box-shadow:0 2px 12px rgba(0,0,0,0.05);overflow:hidden;margin-bottom:24px;transition:all .25s}
+.section-block:hover{box-shadow:0 6px 28px rgba(0,0,0,0.09);transform:translateY(-1px)}
+.section-block-header{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:14px;background:linear-gradient(135deg,#ffffff,#f8fafc);position:relative}
 .section-block-header::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(180deg,var(--accent),#60a5fa);border-radius:0 2px 2px 0}
 .section-block-icon{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,var(--accent-light),#dbeafe);display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid rgba(37,99,235,0.15);box-shadow:0 2px 8px rgba(37,99,235,0.1)}
-.section-block-title{font-size:15px;font-weight:700;color:var(--text);letter-spacing:-0.01em}
+.section-block-title{font-size:15px;font-weight:700;color:var(--text)}
 .section-block-sub{font-size:12px;color:var(--text3);margin-top:2px}
 .section-block-body{padding:24px}
 .toggle-row{display:flex;align-items:center;justify-content:space-between;padding:18px 0;border-bottom:1px solid var(--border);gap:16px}
-.toggle-row:last-of-type{border-bottom:none}
 .toggle-row-label{font-size:14px;font-weight:600;color:var(--text)}
 .toggle-row-desc{font-size:12.5px;color:var(--text2);margin-top:4px;line-height:1.5}
 .info-box{border-radius:12px;padding:16px 18px;font-size:13.5px;line-height:1.6;margin-top:16px}
@@ -172,19 +150,17 @@ tbody tr:hover td{background:var(--accent-light)}
 .foto-preview{width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,var(--accent-light),#dbeafe);border:3px solid white;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;box-shadow:0 4px 16px rgba(37,99,235,0.15)}
 .foto-preview img{width:100%;height:100%;object-fit:cover}
 .foto-info{flex:1}
-.btn-foto{background:white;color:var(--accent);border:1.5px solid rgba(37,99,235,0.25);padding:8px 18px;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s;box-shadow:0 1px 4px rgba(0,0,0,0.08)}
-.btn-foto:hover{background:var(--accent-light);transform:translateY(-1px)}
+.btn-foto{background:white;color:var(--accent);border:1.5px solid rgba(37,99,235,0.25);padding:8px 18px;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s}
+.btn-foto:hover{background:var(--accent-light)}
 .foto-status{font-size:11.5px;color:var(--text3);margin-top:6px}
-.pausa-item{display:flex;align-items:center;gap:12px;padding:12px 16px;background:linear-gradient(135deg,var(--bg),#f1f5f9);border-radius:12px;border:1px solid var(--border);margin-bottom:8px;transition:all .2s;animation:slideIn .2s ease both}
-.pausa-item:hover{border-color:rgba(37,99,235,0.2);box-shadow:0 2px 8px rgba(0,0,0,0.06)}
+.pausa-item{display:flex;align-items:center;gap:12px;padding:12px 16px;background:linear-gradient(135deg,var(--bg),#f1f5f9);border-radius:12px;border:1px solid var(--border);margin-bottom:8px;transition:all .2s}
+.pausa-item:hover{border-color:rgba(37,99,235,0.2)}
 .pausa-item-label{font-size:13.5px;font-weight:600;color:var(--text);flex:1}
 .pausa-item-hora{font-size:12px;color:var(--accent);background:var(--accent-light);padding:4px 12px;border-radius:100px;font-weight:600;border:1px solid rgba(37,99,235,0.15)}
-.pausa-item-del{background:none;border:none;color:var(--text3);cursor:pointer;font-size:18px;line-height:1;transition:all .2s;flex-shrink:0;width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center}
-.pausa-item-del:hover{background:var(--red-bg);color:var(--red)}
 .suporte-hero{text-align:center;padding:48px 24px 32px}
-.suporte-avatar{width:88px;height:88px;border-radius:50%;background:linear-gradient(135deg,#16a34a,#22c55e);display:flex;align-items:center;justify-content:center;margin:0 auto 24px;box-shadow:0 8px 32px rgba(22,163,74,0.3),0 2px 8px rgba(22,163,74,0.15)}
+.suporte-avatar{width:88px;height:88px;border-radius:50%;background:linear-gradient(135deg,#16a34a,#22c55e);display:flex;align-items:center;justify-content:center;margin:0 auto 24px;box-shadow:0 8px 32px rgba(22,163,74,0.3)}
 .btn-whatsapp-suporte{display:inline-flex;align-items:center;gap:10px;background:linear-gradient(135deg,#16a34a,#22c55e);color:white;padding:14px 36px;border-radius:14px;font-size:15px;font-weight:700;text-decoration:none;transition:all .2s;box-shadow:0 4px 16px rgba(22,163,74,0.35);font-family:inherit;border:none;cursor:pointer}
-.btn-whatsapp-suporte:hover{background:linear-gradient(135deg,#15803d,#16a34a);transform:translateY(-2px);box-shadow:0 8px 24px rgba(22,163,74,0.4)}
+.btn-whatsapp-suporte:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(22,163,74,0.4)}
 .suporte-divider{height:1px;background:var(--border);margin:0 24px}
 .suporte-horarios{padding:24px}
 .suporte-horarios-title{font-size:11.5px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:16px}
@@ -192,18 +168,79 @@ tbody tr:hover td{background:var(--accent-light)}
 .horario-item{background:linear-gradient(135deg,var(--bg),#f1f5f9);border-radius:12px;padding:16px;border:1px solid var(--border);text-align:center;transition:all .2s}
 .horario-item:hover{border-color:rgba(37,99,235,0.2);transform:translateY(-1px)}
 .horario-item-dia{font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px}
-.horario-item-hora{font-size:17px;font-weight:700;color:var(--text);letter-spacing:-0.02em}
-.em-breve-wrap{text-align:center;padding:60px 20px}
-.em-breve-icon{width:80px;height:80px;background:linear-gradient(135deg,var(--accent-light),#dbeafe);border-radius:20px;display:flex;align-items:center;justify-content:center;margin:0 auto 24px;border:1px solid rgba(37,99,235,0.2);box-shadow:0 8px 24px rgba(37,99,235,0.1)}
-.em-breve-title{font-size:20px;font-weight:700;color:var(--text);margin-bottom:10px;letter-spacing:-0.02em}
-.em-breve-desc{font-size:14px;color:var(--text2);max-width:320px;margin:0 auto;line-height:1.7}
-@keyframes slideIn{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:translateX(0)}}
-@keyframes scaleIn{from{opacity:0;transform:scale(.97)}to{opacity:1;transform:scale(1)}}
-.section-block{animation:scaleIn .22s ease both}
-.page-header{margin-bottom:32px;padding-bottom:20px;border-bottom:1px solid var(--border);position:relative}
-.page-header::after{content:'';position:absolute;bottom:-1px;left:0;width:48px;height:2.5px;background:linear-gradient(90deg,var(--accent),#60a5fa);border-radius:2px}
-.page-header h1{font-size:24px;font-weight:700;color:var(--text);letter-spacing:-0.03em}
-.page-header p{color:var(--text2);font-size:13.5px;margin-top:5px}
+.horario-item-hora{font-size:17px;font-weight:700;color:var(--text)}
+.form-group{margin-bottom:16px}
+.form-group label{font-size:11px;font-weight:700;color:var(--text2);display:block;margin-bottom:6px;text-transform:uppercase;letter-spacing:.06em}
+.form-group input,.form-group select,.form-group textarea{width:100%;padding:11px 14px;border:1.5px solid var(--border2);border-radius:10px;font-size:14px;outline:none;font-family:inherit;color:var(--text);background:var(--bg-card);transition:all .2s}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--accent);box-shadow:0 0 0 4px rgba(37,99,235,0.08)}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:200;display:flex;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(4px)}
+.modal{background:var(--bg-card);border-radius:18px;padding:24px;width:100%;max-width:460px;box-shadow:0 8px 40px rgba(0,0,0,0.15);max-height:90vh;overflow-y:auto}
+.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+.modal-header h2{font-size:17px;font-weight:700;color:var(--text)}
+.modal-close{background:var(--bg);border:none;width:30px;height:30px;border-radius:8px;cursor:pointer;color:var(--text3);font-size:18px;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.modal-close:hover{background:var(--red-bg);color:var(--red)}
+.modal-footer{display:flex;gap:10px;margin-top:20px}
+.btn-cancelar-modal{flex:1;background:var(--bg);color:var(--text2);border:1.5px solid var(--border2);padding:11px;border-radius:10px;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;transition:all .15s}
+.btn-cancelar-modal:hover{background:#f1f5f9}
+.btn-salvar-modal{flex:2;background:linear-gradient(135deg,var(--accent),#3b82f6);color:white;border:none;padding:11px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s;box-shadow:0 2px 8px rgba(37,99,235,0.3)}
+.btn-salvar-modal:hover{transform:translateY(-1px)}
+.erro-msg{color:var(--red);font-size:12.5px;text-align:center;margin-bottom:10px;min-height:18px}
+.modal-neg{background:var(--bg-card);border-radius:18px;padding:24px;width:100%;max-width:400px;box-shadow:0 8px 40px rgba(0,0,0,0.15)}
+.plano-badge{display:inline-flex;align-items:center;gap:5px;background:var(--accent-light);color:var(--accent);padding:5px 12px;border-radius:100px;font-size:11px;font-weight:700;margin-bottom:14px;border:1px solid var(--accent-mid)}
+.bloqueio{position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:1000;display:flex;align-items:center;justify-content:center;padding:24px;backdrop-filter:blur(6px)}
+.bloqueio-card{background:white;border-radius:24px;padding:44px;max-width:420px;width:100%;text-align:center;box-shadow:0 24px 80px rgba(0,0,0,0.25)}
+.bloqueio-card h2{font-size:22px;font-weight:800;margin-bottom:8px}
+.bloqueio-card p{color:var(--text2);font-size:14px;margin-bottom:28px;line-height:1.7}
+.btn-ver-planos{display:block;background:linear-gradient(135deg,var(--accent),#3b82f6);color:white;padding:14px;border-radius:12px;font-size:15px;font-weight:700;text-decoration:none;margin-bottom:12px}
+.trial-banner{background:linear-gradient(135deg,var(--yellow-bg),#fef9c3);border:1px solid var(--yellow-border);border-radius:var(--radius);padding:14px 20px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.trial-banner p{font-size:13px;color:var(--yellow);font-weight:600}
+.btn-assinar-banner{background:var(--accent);color:white;border:none;padding:7px 16px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit}
+
+/* ── SERVIÇOS ── */
+.servico-tag-wrap{display:inline-block;margin:3px}
+.servico-tag{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--accent-light),var(--accent-mid));border:1px solid rgba(37,99,235,0.2);color:var(--accent);padding:6px 14px;border-radius:100px;font-size:12.5px;font-weight:600;transition:all .2s}
+.servico-preco{background:linear-gradient(135deg,var(--accent),#3b82f6);color:white;padding:2px 9px;border-radius:100px;font-size:11px;font-weight:700}
+.servico-tag button{background:none;border:none;color:#93c5fd;cursor:pointer;font-size:16px;line-height:1;padding:0;display:flex;transition:color .15s}
+.servico-tag button:hover{color:var(--red)}
+
+/* ── ADD SERVIÇO — layout melhorado ── */
+.add-servico-wrap{margin-top:14px}
+.add-servico-row{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end}
+.add-field-group{display:flex;flex-direction:column;gap:5px}
+.add-field-group label{font-size:10.5px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.06em}
+.add-field-group input{padding:10px 14px;border:1.5px solid var(--border2);border-radius:10px;font-size:14px;outline:none;font-family:inherit;background:white;transition:all .2s}
+.add-field-group input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(37,99,235,0.08)}
+.add-field-group input.campo-erro{border-color:var(--red);box-shadow:0 0 0 3px rgba(220,38,38,0.08)}
+.add-field-nome{flex:2;min-width:160px}
+.add-field-preco{flex:1;min-width:110px;max-width:140px}
+.btn-add{background:linear-gradient(135deg,var(--accent),#3b82f6);color:white;border:none;padding:10px 20px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;font-family:inherit;transition:all .2s;box-shadow:0 2px 8px rgba(37,99,235,0.25);align-self:flex-end}
+.btn-add:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(37,99,235,0.35)}
+.add-servico-erro{font-size:12px;color:var(--red);font-weight:600;margin-top:8px;min-height:16px}
+
+.btn-salvar{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--green),#22c55e);color:white;border:none;padding:11px 24px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;margin-top:18px;font-family:inherit;transition:all .2s;box-shadow:0 2px 8px rgba(22,163,74,0.25)}
+.btn-salvar:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(22,163,74,0.3)}
+.salvo-msg{color:var(--green);font-size:12.5px;margin-left:12px;display:none;font-weight:700}
+.toggle-switch{position:relative;display:inline-block;width:48px;height:26px;flex-shrink:0}
+.toggle-switch input{opacity:0;width:0;height:0}
+.toggle-track{position:absolute;cursor:pointer;inset:0;background:#cbd5e1;border-radius:100px;transition:.3s}
+.toggle-thumb{position:absolute;left:3px;top:3px;width:20px;height:20px;background:white;border-radius:50%;transition:.3s;box-shadow:0 1px 4px rgba(0,0,0,0.2)}
+.intervalo-grid{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px}
+.intervalo-btn{padding:8px 16px;border:1.5px solid var(--border2);border-radius:10px;background:white;cursor:pointer;font-size:13px;font-weight:600;color:var(--text2);transition:all .2s;font-family:inherit}
+.intervalo-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-light)}
+.intervalo-btn.selecionado{border-color:var(--accent);background:linear-gradient(135deg,var(--accent),#3b82f6);color:white;box-shadow:0 2px 8px rgba(37,99,235,0.3)}
+.dia-row{display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid var(--border);flex-wrap:wrap}
+.dia-row:last-child{border-bottom:none}
+.dia-toggle{display:flex;align-items:center;gap:10px;min-width:120px}
+.dia-toggle input[type=checkbox]{width:17px;height:17px;cursor:pointer;accent-color:var(--accent);flex-shrink:0}
+.dia-toggle label{font-size:13.5px;font-weight:600;color:var(--text);cursor:pointer}
+.dia-horarios{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.dia-horarios input[type=time]{padding:8px 11px;border:1.5px solid var(--border2);border-radius:9px;font-size:13px;outline:none;font-family:inherit;transition:all .2s;background:white}
+.dia-horarios input[type=time]:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(37,99,235,0.08)}
+.dia-horarios span{font-size:12px;color:var(--text3);font-weight:600}
+.dia-inativo .dia-horarios{opacity:.3;pointer-events:none}
+.dia-inativo .dia-toggle label{color:var(--text3)}
+.suporte-title{font-size:22px;font-weight:700;color:var(--text);margin-bottom:10px;letter-spacing:-0.02em}
+.suporte-desc{font-size:14px;color:var(--text2);line-height:1.7;margin-bottom:32px;max-width:340px;margin-left:auto;margin-right:auto}
 @media(max-width:768px){
   .sidebar{transform:translateX(calc(-1 * var(--sidebar-w)))}
   .sidebar.aberta{transform:translateX(0)}
@@ -221,103 +258,10 @@ tbody tr:hover td{background:var(--accent-light)}
   .ag-cards{display:block}
   .horario-grid{grid-template-columns:1fr}
   .section-block-body{padding:18px}
+  .add-servico-row{flex-direction:column}
+  .add-field-preco{max-width:100%}
 }
 @media(max-width:400px){.stats{grid-template-columns:1fr}}
-
-/* ── FORMS ───────────────────────────────────────── */
-.form-group{margin-bottom:16px}
-.form-group label{font-size:11px;font-weight:700;color:var(--text2);display:block;margin-bottom:6px;text-transform:uppercase;letter-spacing:.06em}
-.form-group input,.form-group select,.form-group textarea{width:100%;padding:11px 14px;border:1.5px solid var(--border2);border-radius:10px;font-size:14px;outline:none;font-family:inherit;color:var(--text);background:var(--bg-card);transition:all .2s}
-.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--accent);box-shadow:0 0 0 4px rgba(37,99,235,0.08)}
-.form-group input:hover:not(:focus),.form-group select:hover:not(:focus),.form-group textarea:hover:not(:focus){border-color:rgba(0,0,0,0.2)}
-
-/* ── MODAL ───────────────────────────────────────── */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:200;display:flex;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(4px)}
-.modal{background:var(--bg-card);border-radius:18px;padding:24px;width:100%;max-width:460px;box-shadow:0 8px 40px rgba(0,0,0,0.15);max-height:90vh;overflow-y:auto}
-.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
-.modal-header h2{font-size:17px;font-weight:700;color:var(--text)}
-.modal-close{background:var(--bg);border:none;width:30px;height:30px;border-radius:8px;cursor:pointer;color:var(--text3);font-size:18px;display:flex;align-items:center;justify-content:center;transition:all .15s}
-.modal-close:hover{background:var(--red-bg);color:var(--red)}
-.modal-footer{display:flex;gap:10px;margin-top:20px}
-.btn-cancelar-modal{flex:1;background:var(--bg);color:var(--text2);border:1.5px solid var(--border2);padding:11px;border-radius:10px;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;transition:all .15s}
-.btn-cancelar-modal:hover{border-color:var(--border2);background:#f1f5f9}
-.btn-salvar-modal{flex:2;background:linear-gradient(135deg,var(--accent),#3b82f6);color:white;border:none;padding:11px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s;box-shadow:0 2px 8px rgba(37,99,235,0.3)}
-.btn-salvar-modal:hover{background:linear-gradient(135deg,var(--accent-hover),var(--accent));transform:translateY(-1px)}
-.erro-msg{color:var(--red);font-size:12.5px;text-align:center;margin-bottom:10px;min-height:18px}
-.modal-neg{background:var(--bg-card);border-radius:18px;padding:24px;width:100%;max-width:400px;box-shadow:0 8px 40px rgba(0,0,0,0.15)}
-.plano-badge{display:inline-flex;align-items:center;gap:5px;background:var(--accent-light);color:var(--accent);padding:5px 12px;border-radius:100px;font-size:11px;font-weight:700;margin-bottom:14px;border:1px solid var(--accent-mid)}
-
-/* ── BLOQUEIO ────────────────────────────────────── */
-.bloqueio{position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:1000;display:flex;align-items:center;justify-content:center;padding:24px;backdrop-filter:blur(6px)}
-.bloqueio-card{background:white;border-radius:24px;padding:44px;max-width:420px;width:100%;text-align:center;box-shadow:0 24px 80px rgba(0,0,0,0.25)}
-.bloqueio-card h2{font-size:22px;font-weight:800;margin-bottom:8px;letter-spacing:-0.03em}
-.bloqueio-card p{color:var(--text2);font-size:14px;margin-bottom:28px;line-height:1.7}
-.btn-ver-planos{display:block;background:linear-gradient(135deg,var(--accent),#3b82f6);color:white;padding:14px;border-radius:12px;font-size:15px;font-weight:700;text-decoration:none;margin-bottom:12px;box-shadow:0 4px 12px rgba(37,99,235,0.3)}
-
-/* ── TRIAL BANNER ────────────────────────────────── */
-.trial-banner{background:linear-gradient(135deg,var(--yellow-bg),#fef9c3);border:1px solid var(--yellow-border);border-radius:var(--radius);padding:14px 20px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
-.trial-banner p{font-size:13px;color:var(--yellow);font-weight:600}
-.btn-assinar-banner{background:var(--accent);color:white;border:none;padding:7px 16px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;font-family:inherit;box-shadow:0 2px 6px rgba(37,99,235,0.3)}
-
-/* ── CONFIG CARD (paginas internas legado) ───────── */
-.config-card{background:var(--bg-card);border-radius:18px;border:1px solid var(--border);box-shadow:0 2px 12px rgba(0,0,0,0.05);padding:24px;margin-bottom:20px;transition:all .25s;position:relative;overflow:hidden}
-.config-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(180deg,var(--accent),#60a5fa)}
-.config-card:hover{box-shadow:0 6px 24px rgba(0,0,0,0.08);transform:translateY(-1px)}
-.config-card-title{font-size:15px;font-weight:700;color:var(--text);margin-bottom:18px;display:flex;align-items:center;gap:10px;letter-spacing:-0.01em}
-.config-card-title-icon{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,var(--accent-light),var(--accent-mid));display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid rgba(37,99,235,0.15);box-shadow:0 2px 6px rgba(37,99,235,0.1)}
-
-/* ── SERVICOS ────────────────────────────────────── */
-.servico-tag-wrap{display:inline-block;margin:3px}
-.servico-tag{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--accent-light),var(--accent-mid));border:1px solid rgba(37,99,235,0.2);color:var(--accent);padding:6px 14px;border-radius:100px;font-size:12.5px;font-weight:600;transition:all .2s;box-shadow:0 1px 4px rgba(37,99,235,0.1)}
-.servico-tag:hover{box-shadow:0 3px 10px rgba(37,99,235,0.2);transform:translateY(-1px)}
-.servico-preco{background:linear-gradient(135deg,var(--accent),#3b82f6);color:white;padding:2px 9px;border-radius:100px;font-size:11px;font-weight:700;box-shadow:0 1px 4px rgba(37,99,235,0.3)}
-.servico-tag button{background:none;border:none;color:#93c5fd;cursor:pointer;font-size:16px;line-height:1;padding:0;display:flex;transition:color .15s}
-.servico-tag button:hover{color:var(--red)}
-.add-servico{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
-.add-servico input{flex:1;min-width:120px;padding:10px 14px;border:1.5px solid var(--border2);border-radius:10px;font-size:14px;outline:none;font-family:inherit;transition:all .2s;background:white}
-.add-servico input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(37,99,235,0.08)}
-.btn-add{background:linear-gradient(135deg,var(--accent),#3b82f6);color:white;border:none;padding:10px 20px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;font-family:inherit;transition:all .2s;box-shadow:0 2px 8px rgba(37,99,235,0.25)}
-.btn-add:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(37,99,235,0.35)}
-
-/* ── BTN SALVAR ──────────────────────────────────── */
-.btn-salvar{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--green),#22c55e);color:white;border:none;padding:11px 24px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;margin-top:18px;font-family:inherit;transition:all .2s;box-shadow:0 2px 8px rgba(22,163,74,0.25)}
-.btn-salvar:hover{background:linear-gradient(135deg,#15803d,var(--green));transform:translateY(-1px);box-shadow:0 4px 16px rgba(22,163,74,0.3)}
-.salvo-msg{color:var(--green);font-size:12.5px;margin-left:12px;display:none;font-weight:700;animation:fadeUp .3s ease}
-
-/* ── TOGGLE SWITCH ───────────────────────────────── */
-.toggle-switch{position:relative;display:inline-block;width:48px;height:26px;flex-shrink:0}
-.toggle-switch input{opacity:0;width:0;height:0}
-.toggle-track{position:absolute;cursor:pointer;inset:0;background:#cbd5e1;border-radius:100px;transition:.3s;box-shadow:inset 0 1px 3px rgba(0,0,0,0.1)}
-.toggle-thumb{position:absolute;left:3px;top:3px;width:20px;height:20px;background:white;border-radius:50%;transition:.3s;box-shadow:0 1px 4px rgba(0,0,0,0.2)}
-
-/* ── INTERVALO ───────────────────────────────────── */
-.intervalo-grid{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px}
-.intervalo-btn{padding:8px 16px;border:1.5px solid var(--border2);border-radius:10px;background:white;cursor:pointer;font-size:13px;font-weight:600;color:var(--text2);transition:all .2s;font-family:inherit}
-.intervalo-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-light);transform:translateY(-1px)}
-.intervalo-btn.selecionado{border-color:var(--accent);background:linear-gradient(135deg,var(--accent),#3b82f6);color:white;box-shadow:0 2px 8px rgba(37,99,235,0.3)}
-
-/* ── DIA ROW ─────────────────────────────────────── */
-.dia-row{display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid var(--border);flex-wrap:wrap;transition:background .15s}
-.dia-row:last-child{border-bottom:none}
-.dia-toggle{display:flex;align-items:center;gap:10px;min-width:120px}
-.dia-toggle input[type=checkbox]{width:17px;height:17px;cursor:pointer;accent-color:var(--accent);flex-shrink:0}
-.dia-toggle label{font-size:13.5px;font-weight:600;color:var(--text);cursor:pointer}
-.dia-horarios{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.dia-horarios input[type=time]{padding:8px 11px;border:1.5px solid var(--border2);border-radius:9px;font-size:13px;outline:none;font-family:inherit;transition:all .2s;background:white}
-.dia-horarios input[type=time]:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(37,99,235,0.08)}
-.dia-horarios span{font-size:12px;color:var(--text3);font-weight:600}
-.dia-inativo .dia-horarios{opacity:.3;pointer-events:none}
-.dia-inativo .dia-toggle label{color:var(--text3)}
-
-/* ── SUPORTE EXTRA ───────────────────────────────── */
-.suporte-title{font-size:22px;font-weight:700;color:var(--text);margin-bottom:10px;letter-spacing:-0.02em}
-.suporte-desc{font-size:14px;color:var(--text2);line-height:1.7;margin-bottom:32px;max-width:340px;margin-left:auto;margin-right:auto}
-
-
-.form-hint{font-size:11.5px;color:var(--text3);margin-top:6px;line-height:1.5}
-.toggle-row-label{font-size:14px;font-weight:600;color:var(--text)}
-.toggle-row-desc{font-size:12.5px;color:var(--text2);margin-top:4px;line-height:1.5}
-.info-box-title{font-weight:700;margin-bottom:4px;font-size:14px}
 </style>
 </head>
 <body>
@@ -331,12 +275,12 @@ tbody tr:hover td{background:var(--accent-light)}
 <!-- MODAL NOVO AGENDAMENTO -->
 <div class="modal-overlay" id="modal-agendamento" style="display:none">
   <div class="modal">
-    <div class="modal-header"><h2>Novo Agendamento</h2><button class="modal-close" onclick="fecharModal()">x</button></div>
-    <div class="form-group"><label>Nome do cliente</label><input type="text" id="m-nome" placeholder="Joao Silva" /></div>
+    <div class="modal-header"><h2>Novo Agendamento</h2><button class="modal-close" onclick="fecharModal()">×</button></div>
+    <div class="form-group"><label>Nome do cliente</label><input type="text" id="m-nome" placeholder="João Silva" /></div>
     <div class="form-group"><label>WhatsApp</label><input type="tel" id="m-telefone" placeholder="(11) 99999-9999" /></div>
-    <div class="form-group"><label>Servico</label><select id="m-servico"></select></div>
+    <div class="form-group"><label>Serviço</label><select id="m-servico"></select></div>
     <div class="form-group"><label>Data</label><input type="date" id="m-data" onchange="carregarHorariosModal()" /></div>
-    <div class="form-group"><label>Horario</label><select id="m-hora"></select></div>
+    <div class="form-group"><label>Horário</label><select id="m-hora"></select></div>
     <div class="erro-msg" id="m-erro"></div>
     <div class="modal-footer">
       <button class="btn-cancelar-modal" onclick="fecharModal()">Cancelar</button>
@@ -345,21 +289,21 @@ tbody tr:hover td{background:var(--accent-light)}
   </div>
 </div>
 
-<!-- MODAL NOVO NEGOCIO -->
+<!-- MODAL NOVO NEGÓCIO -->
 <div class="modal-overlay" id="modal-negocio" style="display:none">
   <div class="modal-neg">
-    <div class="modal-header"><h2>Novo Painel</h2><button class="modal-close" onclick="fecharModalNegocio()">x</button></div>
+    <div class="modal-header"><h2>Novo Painel</h2><button class="modal-close" onclick="fecharModalNegocio()">×</button></div>
     <div class="plano-badge" id="badge-plano">Plano Pro</div>
-    <div class="form-group"><label>Nome do negocio</label><input type="text" id="neg-nome" placeholder="Ex: Barbearia Centro" /></div>
+    <div class="form-group"><label>Nome do negócio</label><input type="text" id="neg-nome" placeholder="Ex: Barbearia Centro" /></div>
     <div class="form-group">
       <label>Segmento</label>
       <select id="neg-segmento">
-        <option value="Clinica">Clinica / Consultorio</option>
+        <option value="Clinica">Clínica / Consultório</option>
         <option value="Barbearia">Barbearia</option>
-        <option value="Salao">Salao de Beleza</option>
+        <option value="Salao">Salão de Beleza</option>
         <option value="Pet Shop">Pet Shop</option>
         <option value="Academia">Academia / Personal</option>
-        <option value="Estudio">Estudio de Tatuagem</option>
+        <option value="Estudio">Estúdio de Tatuagem</option>
         <option value="Outro">Outro</option>
       </select>
     </div>
@@ -374,10 +318,10 @@ tbody tr:hover td{background:var(--accent-light)}
 <!-- BLOQUEIO -->
 <div id="bloqueio" class="bloqueio" style="display:none">
   <div class="bloqueio-card">
-    <div style="font-size:48px;margin-bottom:16px">x</div>
+    <div style="font-size:48px;margin-bottom:16px">⏰</div>
     <h2>Seu trial expirou</h2>
     <p>Seus 14 dias gratuitos acabaram. Assine um plano para continuar.</p>
-    <a href="/planos.html" class="btn-ver-planos">Ver planos a partir de R$29/mes</a>
+    <a href="/planos.html" class="btn-ver-planos">Ver planos a partir de R$29/mês</a>
     <button onclick="sair()" style="background:none;border:none;color:var(--text3);font-size:13px;cursor:pointer;margin-top:8px;font-family:inherit">Sair da conta</button>
   </div>
 </div>
@@ -394,7 +338,7 @@ tbody tr:hover td{background:var(--accent-light)}
       </div>
       <div class="negocio-dropdown" id="neg-dropdown">
         <div id="neg-lista"></div>
-        <div class="negocio-add" id="neg-add-btn" onclick="abrirModalNegocio()">
+        <div class="negocio-add" onclick="abrirModalNegocio()">
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 2v10M2 7h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
           Adicionar painel
         </div>
@@ -404,12 +348,12 @@ tbody tr:hover td{background:var(--accent-light)}
   <div class="sidebar-menu">
     <div class="menu-section">Menu</div>
     <button class="menu-item ativo" onclick="irPara('agendamentos',this)">
-      <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><rect x="1.5" y="1.5" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.4"/><rect x="8.5" y="1.5" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.4"/><rect x="1.5" y="8.5" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.4"/><rect x="8.5" y="8.5" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.4"/></svg>
+      <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><rect x="1.5" y="2.5" width="12" height="11" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M5 1.5v2M10 1.5v2M1.5 5.5h12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
       Agendamentos
     </button>
     <button class="menu-item" onclick="irPara('horarios',this)">
       <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="7.5" r="5.5" stroke="currentColor" stroke-width="1.4"/><path d="M7.5 4.5V8l2 2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
-      Horarios
+      Horários
     </button>
     <button class="menu-item" onclick="irPara('lembretes',this)">
       <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M7.5 1.5a4.5 4.5 0 0 1 4.5 4.5c0 2.5.5 3.5 1 4H2c.5-.5 1-1.5 1-4a4.5 4.5 0 0 1 4.5-4.5Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M6 12.5a1.5 1.5 0 0 0 3 0" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
@@ -421,7 +365,7 @@ tbody tr:hover td{background:var(--accent-light)}
     </button>
     <button class="menu-item" onclick="irPara('configuracoes',this)">
       <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="7.5" r="2" stroke="currentColor" stroke-width="1.4"/><path d="M7.5 1v1.5M7.5 12.5V14M1 7.5h1.5M12.5 7.5H14M3 3l1 1M11 11l1 1M3 12l1-1M11 4l1-1" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
-      Configuracoes
+      Configurações
     </button>
     <div class="menu-section">Conta</div>
     <button class="menu-item" onclick="irPara('pagamentos',this)">
@@ -454,7 +398,7 @@ tbody tr:hover td{background:var(--accent-light)}
 
   <!-- AGENDAMENTOS -->
   <div class="page ativo" id="page-agendamentos">
-    <div class="page-header"><h1>Agendamentos</h1><p>Gerencie os horarios do seu negocio</p></div>
+    <div class="page-header"><h1>Agendamentos</h1><p>Gerencie os horários do seu negócio</p></div>
     <div class="link-card">
       <div><div class="link-card-label">Link de agendamento</div><div class="link-card-url" id="link-agendamento"></div></div>
       <button class="btn-copiar" onclick="copiarLink()"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M1 8.5V2a1 1 0 0 1 1-1h6.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>Copiar link</button>
@@ -463,7 +407,7 @@ tbody tr:hover td{background:var(--accent-light)}
       <div class="stat-card"><div class="stat-icon"><svg width="15" height="15" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="7.5" r="5.5" stroke="#2563eb" stroke-width="1.4"/><path d="M7.5 4.5V8l2 2" stroke="#2563eb" stroke-width="1.4" stroke-linecap="round"/></svg></div><div class="stat-valor" id="stat-hoje">0</div><div class="stat-label">Hoje</div></div>
       <div class="stat-card"><div class="stat-icon"><svg width="15" height="15" viewBox="0 0 15 15" fill="none"><rect x="1.5" y="2.5" width="12" height="11" rx="1.5" stroke="#2563eb" stroke-width="1.4"/><path d="M5 1.5v2M10 1.5v2M1.5 5.5h12" stroke="#2563eb" stroke-width="1.4" stroke-linecap="round"/></svg></div><div class="stat-valor" id="stat-semana">0</div><div class="stat-label">Esta semana</div></div>
       <div class="stat-card"><div class="stat-icon"><svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M1.5 11L5.5 7l3 3L13.5 4" stroke="#2563eb" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="stat-valor" id="stat-total">0</div><div class="stat-label">Total geral</div></div>
-      <div class="stat-card" style="--stat-color:#16a34a"><div class="stat-icon" style="background:#f0fdf4"><svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M7.5 2v11M4.5 9.5l3 3 3-3M3 5.5h9" stroke="#16a34a" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="stat-valor" id="stat-lucro" style="font-size:22px;color:#16a34a">R$ 0</div><div class="stat-label">Lucro do mes</div></div>
+      <div class="stat-card"><div class="stat-icon" style="background:#f0fdf4;border-color:#bbf7d0"><svg width="15" height="15" viewBox="0 0 15 15" fill="none"><rect x="1.5" y="3" width="12" height="9.5" rx="1.5" stroke="#16a34a" stroke-width="1.4"/><path d="M1.5 6h12M5 9h3" stroke="#16a34a" stroke-width="1.4" stroke-linecap="round"/></svg></div><div class="stat-valor" id="stat-lucro" style="font-size:20px;color:#16a34a">R$ 0</div><div class="stat-label">Lucro do mês</div></div>
     </div>
     <div class="card">
       <div class="card-header">
@@ -475,11 +419,10 @@ tbody tr:hover td{background:var(--accent-light)}
       </div>
       <div class="tabela-scroll">
         <table>
-          <thead><tr><th>Cliente</th><th>Servico</th><th>Data</th><th>Hora</th><th>Status</th><th>Acoes</th></tr></thead>
+          <thead><tr><th>Cliente</th><th>Serviço</th><th>Data</th><th>Hora</th><th>Status</th><th>Ações</th></tr></thead>
           <tbody id="tbody"></tbody>
         </table>
       </div>
-      <!-- CARDS MOBILE -->
       <div class="ag-cards" id="ag-cards"></div>
       <div class="paginacao" id="paginacao" style="display:none">
         <span class="paginacao-info" id="pg-info"></span>
@@ -488,14 +431,13 @@ tbody tr:hover td{background:var(--accent-light)}
     </div>
   </div>
 
-  <!-- HORARIOS -->
+  <!-- HORÁRIOS -->
   <div class="page" id="page-horarios">
-    <div class="page-header"><h1>Horarios de Atendimento</h1><p>Configure os dias e horarios que seu negocio atende</p></div>
-
+    <div class="page-header"><h1>Horários de Atendimento</h1><p>Configure os dias e horários que seu negócio atende</p></div>
     <div class="section-block">
       <div class="section-block-header">
         <div class="section-block-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7.5" stroke="#2563eb" stroke-width="1.6"/><path d="M10 6v5l3 3" stroke="#2563eb" stroke-width="1.6" stroke-linecap="round"/></svg></div>
-        <div><div class="section-block-title">Intervalo entre atendimentos</div><div class="section-block-sub">Tempo minimo reservado entre um agendamento e outro</div></div>
+        <div><div class="section-block-title">Intervalo entre atendimentos</div><div class="section-block-sub">Tempo mínimo reservado entre um agendamento e outro</div></div>
       </div>
       <div class="section-block-body">
         <div class="intervalo-grid">
@@ -510,32 +452,30 @@ tbody tr:hover td{background:var(--accent-light)}
         </div>
       </div>
     </div>
-
     <div class="section-block">
       <div class="section-block-header">
         <div class="section-block-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="2.5" y="3.5" width="15" height="13.5" rx="2.5" stroke="#2563eb" stroke-width="1.6"/><path d="M2.5 7.5h15M7 2v3M13 2v3" stroke="#2563eb" stroke-width="1.6" stroke-linecap="round"/></svg></div>
-        <div><div class="section-block-title">Dias e horarios de atendimento</div><div class="section-block-sub">Defina em quais dias e horarios voce recebe clientes</div></div>
+        <div><div class="section-block-title">Dias e horários de atendimento</div><div class="section-block-sub">Defina em quais dias e horários você recebe clientes</div></div>
       </div>
       <div class="section-block-body">
         <div id="dias-container"></div>
         <div style="display:flex;align-items:center;margin-top:8px">
-          <button class="btn-salvar" onclick="salvarHorarios()"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Salvar horarios</button>
-          <span class="salvo-msg" id="salvo-horarios">Salvo!</span>
+          <button class="btn-salvar" onclick="salvarHorarios()"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Salvar horários</button>
+          <span class="salvo-msg" id="salvo-horarios">✓ Salvo!</span>
         </div>
       </div>
     </div>
-
     <div class="section-block">
       <div class="section-block-header">
         <div class="section-block-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7.5" stroke="#2563eb" stroke-width="1.6"/><path d="M10 6.5v4M10 13v.5" stroke="#2563eb" stroke-width="1.8" stroke-linecap="round"/></svg></div>
-        <div><div class="section-block-title">Pausas e intervalos</div><div class="section-block-sub">Bloqueie horarios para almoco, cafe ou qualquer pausa</div></div>
+        <div><div class="section-block-title">Pausas e intervalos</div><div class="section-block-sub">Bloqueie horários para almoço, café ou qualquer pausa</div></div>
       </div>
       <div class="section-block-body">
         <div id="pausas-lista"></div>
         <div style="margin-top:14px;display:flex;flex-direction:column;gap:8px">
           <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:14px;background:var(--bg);border-radius:12px;border:1.5px dashed var(--border2)">
             <input type="text" id="pausa-inicio" placeholder="12:00" maxlength="5" inputmode="numeric" style="flex:1;min-width:80px;padding:10px 12px;border:1.5px solid var(--border2);border-radius:9px;font-size:14px;font-weight:600;outline:none;font-family:inherit;text-align:center;background:white;transition:all .2s" oninput="mascaraHora(this)" />
-            <span style="font-size:12px;color:var(--text3);font-weight:700">as</span>
+            <span style="font-size:12px;color:var(--text3);font-weight:700">às</span>
             <input type="text" id="pausa-fim" placeholder="13:00" maxlength="5" inputmode="numeric" style="flex:1;min-width:80px;padding:10px 12px;border:1.5px solid var(--border2);border-radius:9px;font-size:14px;font-weight:600;outline:none;font-family:inherit;text-align:center;background:white;transition:all .2s" oninput="mascaraHora(this)" />
             <input type="text" id="pausa-label" placeholder="Nome da pausa" style="flex:1.5;min-width:100px;padding:10px 12px;border:1.5px solid var(--border2);border-radius:9px;font-size:13.5px;outline:none;font-family:inherit;background:white;transition:all .2s" />
           </div>
@@ -543,7 +483,7 @@ tbody tr:hover td{background:var(--accent-light)}
         </div>
         <div style="display:flex;align-items:center;margin-top:4px">
           <button class="btn-salvar" onclick="salvarPausas()"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Salvar pausas</button>
-          <span class="salvo-msg" id="salvo-pausas">Salvo!</span>
+          <span class="salvo-msg" id="salvo-pausas">✓ Salvo!</span>
         </div>
       </div>
     </div>
@@ -551,61 +491,69 @@ tbody tr:hover td{background:var(--accent-light)}
 
   <!-- LEMBRETES -->
   <div class="page" id="page-lembretes">
-    <div class="page-header"><h1>Lembretes Automaticos</h1><p>Avise seus clientes 24h antes do agendamento via WhatsApp</p></div>
+    <div class="page-header"><h1>Lembretes Automáticos</h1><p>Avise seus clientes 24h antes do agendamento via WhatsApp</p></div>
     <div class="section-block">
       <div class="section-block-header">
         <div class="section-block-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 2a6 6 0 0 1 6 6c0 3.3.7 4.7 1.4 5.5H2.6C3.3 12.7 4 11.3 4 8a6 6 0 0 1 6-6Z" stroke="#2563eb" stroke-width="1.6" stroke-linejoin="round"/><path d="M8 16.5a2 2 0 0 0 4 0" stroke="#2563eb" stroke-width="1.6" stroke-linecap="round"/></svg></div>
-        <div><div class="section-block-title">Lembrete automatico 24h antes</div><div class="section-block-sub">Mensagem enviada pelo WhatsApp do AgendoRapido</div></div>
+        <div><div class="section-block-title">Lembrete automático 24h antes</div><div class="section-block-sub">Mensagem enviada pelo WhatsApp do AgendoRapido</div></div>
       </div>
       <div class="section-block-body">
         <div class="toggle-row">
           <div>
-            <div class="toggle-row-label">Ativar lembretes automaticos</div>
-            <div class="toggle-row-desc">Seus clientes recebem uma mensagem no WhatsApp 24h antes do horario</div>
+            <div class="toggle-row-label">Ativar lembretes automáticos</div>
+            <div class="toggle-row-desc">Seus clientes recebem uma mensagem no WhatsApp 24h antes do horário</div>
           </div>
           <label class="toggle-switch"><input type="checkbox" id="toggle-lembrete" onchange="salvarLembrete()"><span class="toggle-track" id="toggle-track"></span><span class="toggle-thumb" id="toggle-thumb"></span></label>
         </div>
         <div id="lembrete-info" style="display:none" class="info-box green">
-          <div class="info-box-title">Lembretes ativados</div>
-          Seus clientes receberao automaticamente uma mensagem de lembrete 24 horas antes do agendamento via WhatsApp do AgendoRapido.
+          <div class="info-box-title">✓ Lembretes ativados</div>
+          Seus clientes receberão automaticamente uma mensagem de lembrete 24 horas antes do agendamento via WhatsApp do AgendoRapido.
         </div>
         <div style="margin-top:20px">
           <div class="form-group">
             <label>Mensagem do lembrete</label>
-            <textarea id="lembrete-msg" style="resize:vertical;min-height:100px">Ola {nome}! A *{negocio}* lembra que voce tem um agendamento amanha, {data} as {hora} -- {servico}. Te esperamos!</textarea>
-            <div class="form-hint">Variaveis: <strong>{nome}</strong>, <strong>{negocio}</strong>, <strong>{data}</strong>, <strong>{hora}</strong>, <strong>{servico}</strong></div>
+            <textarea id="lembrete-msg" style="resize:vertical;min-height:100px">Olá {nome}! A *{negocio}* lembra que você tem um agendamento amanhã, {data} às {hora} — {servico}. Te esperamos!</textarea>
+            <div class="form-hint">Variáveis: <strong>{nome}</strong>, <strong>{negocio}</strong>, <strong>{data}</strong>, <strong>{hora}</strong>, <strong>{servico}</strong></div>
           </div>
         </div>
         <div style="display:flex;align-items:center">
-          <button class="btn-salvar" onclick="salvarConfLembrete()"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Salvar configuracoes</button>
-          <span class="salvo-msg" id="salvo-lembrete">Salvo!</span>
+          <button class="btn-salvar" onclick="salvarConfLembrete()"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Salvar configurações</button>
+          <span class="salvo-msg" id="salvo-lembrete">✓ Salvo!</span>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- CONFIGURACOES -->
+  <!-- CONFIGURAÇÕES -->
   <div class="page" id="page-configuracoes">
-    <div class="page-header"><h1>Configuracoes</h1><p>Personalize os servicos do seu negocio</p></div>
+    <div class="page-header"><h1>Configurações</h1><p>Personalize os serviços do seu negócio</p></div>
     <div class="section-block">
       <div class="section-block-header">
         <div class="section-block-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M2 5h16M2 10h10M2 15h12" stroke="#2563eb" stroke-width="1.6" stroke-linecap="round"/></svg></div>
-        <div><div class="section-block-title">Servicos oferecidos</div><div class="section-block-sub">Adicione os servicos com seus respectivos precos</div></div>
+        <div><div class="section-block-title">Serviços oferecidos</div><div class="section-block-sub">Adicione os serviços com seus respectivos preços (preço obrigatório para calcular o lucro)</div></div>
       </div>
       <div class="section-block-body">
-        <div id="servicos-tags" style="margin-bottom:12px;min-height:36px"></div>
-        <div class="info-box blue" style="margin-top:0;margin-bottom:16px">
-          <div class="info-box-title">Como funciona</div>
-          Adicione o nome e o preco de cada servico. O preco sera usado para calcular o lucro do mes no dashboard.
+        <div id="servicos-tags" style="margin-bottom:16px;min-height:36px"></div>
+
+        <!-- ✅ NOVO CAMPO COM LABELS E PREÇO OBRIGATÓRIO -->
+        <div class="add-servico-wrap">
+          <div class="add-servico-row">
+            <div class="add-field-group add-field-nome">
+              <label>Nome do serviço</label>
+              <input type="text" id="novo-servico" placeholder="Ex: Corte + Barba, Consulta..." />
+            </div>
+            <div class="add-field-group add-field-preco">
+              <label>Preço (R$) *</label>
+              <input type="number" id="novo-preco" placeholder="0,00" min="0.01" step="0.01" />
+            </div>
+            <button class="btn-add" onclick="adicionarServico()">+ Adicionar</button>
+          </div>
+          <div class="add-servico-erro" id="servico-erro"></div>
         </div>
-        <div class="add-servico">
-          <input type="text" id="novo-servico" placeholder="Nome do servico" style="flex:2;min-width:140px" />
-          <input type="number" id="novo-preco" placeholder="R$ 0,00" min="0" step="0.01" style="flex:1;min-width:100px;padding:10px 14px;border:1.5px solid var(--border2);border-radius:10px;font-size:14px;outline:none;font-family:inherit;background:white;transition:all .2s" />
-          <button class="btn-add" onclick="adicionarServico()">Adicionar</button>
-        </div>
+
         <div style="display:flex;align-items:center">
-          <button class="btn-salvar" onclick="salvarServicos()"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Salvar servicos</button>
-          <span class="salvo-msg" id="salvo-msg">Salvo!</span>
+          <button class="btn-salvar" onclick="salvarServicos()"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Salvar serviços</button>
+          <span class="salvo-msg" id="salvo-msg">✓ Salvo!</span>
         </div>
       </div>
     </div>
@@ -613,7 +561,7 @@ tbody tr:hover td{background:var(--accent-light)}
 
   <!-- BIO -->
   <div class="page" id="page-bio">
-    <div class="page-header"><h1>Minha Pagina Bio</h1><p>Personalize sua pagina publica para o Instagram</p></div>
+    <div class="page-header"><h1>Minha Página Bio</h1><p>Personalize sua página pública para o Instagram</p></div>
     <div class="link-card">
       <div><div class="link-card-label">Link da sua bio</div><div class="link-card-url" id="link-bio"></div></div>
       <button class="btn-copiar" onclick="copiarLinkBio()"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M1 8.5V2a1 1 0 0 1 1-1h6.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>Copiar link</button>
@@ -621,11 +569,11 @@ tbody tr:hover td{background:var(--accent-light)}
     <div class="section-block">
       <div class="section-block-header">
         <div class="section-block-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="3.5" stroke="#2563eb" stroke-width="1.6"/><path d="M3 18c0-3.9 3.1-7 7-7s7 3.1 7 7" stroke="#2563eb" stroke-width="1.6" stroke-linecap="round"/></svg></div>
-        <div><div class="section-block-title">Informacoes da pagina</div><div class="section-block-sub">Foto, descricao e dados de contato da sua bio</div></div>
+        <div><div class="section-block-title">Informações da página</div><div class="section-block-sub">Foto, descrição e dados de contato da sua bio</div></div>
       </div>
       <div class="section-block-body">
         <div class="foto-wrap">
-          <div id="foto-preview" class="foto-preview">x</div>
+          <div id="foto-preview" class="foto-preview">👤</div>
           <div class="foto-info">
             <input type="file" id="foto-input" accept="image/*" onchange="uploadFoto(this)" style="display:none" />
             <button class="btn-foto" onclick="document.getElementById('foto-input').click()">Escolher foto</button>
@@ -633,7 +581,7 @@ tbody tr:hover td{background:var(--accent-light)}
           </div>
           <input type="hidden" id="bio-foto" />
         </div>
-        <div class="form-group"><label>Descricao / Bio</label><textarea id="bio-descricao" placeholder="Ex: Barbearia premium no centro de SP. Atendemos com hora marcada." style="resize:vertical;min-height:80px"></textarea></div>
+        <div class="form-group"><label>Descrição / Bio</label><textarea id="bio-descricao" placeholder="Ex: Barbearia premium no centro de SP." style="resize:vertical;min-height:80px"></textarea></div>
         <div class="form-group"><label>Link do Google Maps</label><input type="text" id="bio-endereco" placeholder="Cole aqui o link do Google Maps" /></div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
           <div class="form-group" style="margin-bottom:0"><label>Instagram</label><input type="text" id="bio-instagram" placeholder="@seunegocio" /></div>
@@ -641,7 +589,7 @@ tbody tr:hover td{background:var(--accent-light)}
         </div>
         <div style="display:flex;align-items:center">
           <button class="btn-salvar" onclick="salvarBio()"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Salvar bio</button>
-          <span class="salvo-msg" id="salvo-bio">Salvo!</span>
+          <span class="salvo-msg" id="salvo-bio">✓ Salvo!</span>
         </div>
       </div>
     </div>
@@ -649,23 +597,19 @@ tbody tr:hover td{background:var(--accent-light)}
 
   <!-- PAGAMENTOS -->
   <div class="page" id="page-pagamentos">
-    <div class="page-header"><h1>Pagamentos</h1><p>Configure cobranca antecipada via Pix por servico</p></div>
+    <div class="page-header"><h1>Pagamentos</h1><p>Configure cobrança antecipada via Pix por serviço</p></div>
     <div class="section-block">
       <div class="section-block-header">
         <div class="section-block-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="2" y="5" width="16" height="13" rx="2.5" stroke="#2563eb" stroke-width="1.6"/><path d="M2 9h16M6 13h4" stroke="#2563eb" stroke-width="1.6" stroke-linecap="round"/></svg></div>
-        <div><div class="section-block-title">Cobranca via Pix</div><div class="section-block-sub">Receba antes do atendimento, automaticamente</div></div>
+        <div><div class="section-block-title">Cobrança via Pix</div><div class="section-block-sub">Receba antes do atendimento, automaticamente</div></div>
       </div>
       <div class="section-block-body">
         <div style="text-align:center;padding:40px 0 32px">
-          <div style="width:80px;height:80px;background:linear-gradient(135deg,var(--accent-light),#dbeafe);border-radius:20px;display:flex;align-items:center;justify-content:center;margin:0 auto 22px;border:1px solid rgba(37,99,235,0.2);box-shadow:0 8px 24px rgba(37,99,235,0.1)">
+          <div style="width:80px;height:80px;background:linear-gradient(135deg,var(--accent-light),#dbeafe);border-radius:20px;display:flex;align-items:center;justify-content:center;margin:0 auto 22px;border:1px solid rgba(37,99,235,0.2)">
             <svg width="36" height="36" viewBox="0 0 36 36" fill="none"><rect x="4" y="8" width="28" height="20" rx="3.5" stroke="#2563eb" stroke-width="1.8"/><path d="M4 14h28M10 21h7" stroke="#2563eb" stroke-width="1.8" stroke-linecap="round"/></svg>
           </div>
-          <div style="font-size:20px;font-weight:700;color:var(--text);margin-bottom:10px;letter-spacing:-0.02em">Pagamentos em breve</div>
-          <p style="font-size:14px;color:var(--text2);max-width:340px;margin:0 auto 24px;line-height:1.7">Cobranca antecipada via Pix com repasse automatico e reembolso em cancelamentos.</p>
-          <div class="info-box blue" style="max-width:380px;margin:0 auto;text-align:left">
-            <div class="info-box-title">O que esta chegando</div>
-            Cobranca no momento do agendamento, repasse direto para sua conta bancaria e devolucao automatica em cancelamentos.
-          </div>
+          <div style="font-size:20px;font-weight:700;color:var(--text);margin-bottom:10px">Pagamentos em breve</div>
+          <p style="font-size:14px;color:var(--text2);max-width:340px;margin:0 auto;line-height:1.7">Cobrança antecipada via Pix com repasse automático e reembolso em cancelamentos.</p>
         </div>
       </div>
     </div>
@@ -673,7 +617,7 @@ tbody tr:hover td{background:var(--accent-light)}
 
   <!-- SUPORTE -->
   <div class="page" id="page-suporte">
-    <div class="page-header"><h1>Suporte</h1><p>Estamos aqui para ajudar voce</p></div>
+    <div class="page-header"><h1>Suporte</h1><p>Estamos aqui para ajudar você</p></div>
     <div class="section-block">
       <div style="padding:0">
         <div class="suporte-hero">
@@ -681,18 +625,18 @@ tbody tr:hover td{background:var(--accent-light)}
             <svg width="38" height="38" viewBox="0 0 38 38" fill="none"><path d="M31 23c0 1.3-.5 2.5-1.3 3.3l-1.6 1.7c-1 .9-2.2 1.4-3.3 1.4-4.6 0-9-1.8-12.4-5.1C9.1 21 7.2 16.6 7.2 12c0-1.2.4-2.4 1.3-3.3l1.7-1.7c.9-.9 2.2-.9 3 0l3.6 3.6c.9.9.9 2.2 0 3l-1.3 1.3c-.2.3-.2.7 0 .9 1.3 1.8 2.9 3.4 4.7 4.7.3.2.6.2.9 0l1.3-1.3c.8-.9 2.1-.9 3 0l3.6 3.6c.7.8.7 2 0 2.8z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </div>
           <div class="suporte-title">Fale com o suporte</div>
-          <p class="suporte-desc">Tem alguma duvida ou problema? Nossa equipe esta pronta para te ajudar pelo WhatsApp, de forma rapida e atenciosa.</p>
-          <a href="https://wa.me/5500000000000?text=Ola%2C+preciso+de+ajuda+com+o+AgendoRapido!" target="_blank" class="btn-whatsapp-suporte">
+          <p class="suporte-desc">Tem alguma dúvida ou problema? Nossa equipe está pronta para te ajudar pelo WhatsApp, de forma rápida e atenciosa.</p>
+          <a href="https://wa.me/5500000000000?text=Olá%2C+preciso+de+ajuda+com+o+AgendoRapido!" target="_blank" class="btn-whatsapp-suporte">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.118 1.528 5.852L.057 23.885l6.204-1.628A11.945 11.945 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.808 9.808 0 0 1-5.001-1.366l-.359-.213-3.682.966.983-3.594-.234-.371A9.818 9.818 0 0 1 2.182 12C2.182 6.57 6.57 2.182 12 2.182S21.818 6.57 21.818 12 17.43 21.818 12 21.818z"/></svg>
             Chamar no WhatsApp
           </a>
         </div>
         <div class="suporte-divider"></div>
         <div class="suporte-horarios">
-          <div class="suporte-horarios-title">Horario de atendimento</div>
+          <div class="suporte-horarios-title">Horário de atendimento</div>
           <div class="horario-grid">
-            <div class="horario-item"><div class="horario-item-dia">Segunda a Sexta</div><div class="horario-item-hora">9h as 18h</div></div>
-            <div class="horario-item"><div class="horario-item-dia">Sabado</div><div class="horario-item-hora">9h as 13h</div></div>
+            <div class="horario-item"><div class="horario-item-dia">Segunda a Sexta</div><div class="horario-item-hora">9h às 18h</div></div>
+            <div class="horario-item"><div class="horario-item-dia">Sábado</div><div class="horario-item-hora">9h às 13h</div></div>
           </div>
         </div>
       </div>
@@ -705,81 +649,215 @@ tbody tr:hover td{background:var(--accent-light)}
 const API = 'https://agendafacil-wf3q.onrender.com/api'
 let todosAgendamentos = []
 let servicosAtuais = []
-const diasNomes = ['Domingo','Segunda','Terca','Quarta','Quinta','Sexta','Sabado']
+const diasNomes = ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado']
 let intervaloAtual = 30
 let horariosConfig = {}
 let negocioAtual = null
 let todosNegocios = []
+let pausasAtuais = []
+let pagamentosConfig = {}
+
 const servicosPorSegmento = {
-  'Clinica':['Consulta','Retorno','Exame','Avaliacao','Procedimento'],
-  'Barbearia':['Corte','Barba','Corte + Barba','Pigmentacao','Hidratacao'],
-  'Salao':['Corte','Coloracao','Escova','Manicure','Pedicure'],
+  'Clinica':['Consulta','Retorno','Exame','Avaliação','Procedimento'],
+  'Barbearia':['Corte','Barba','Corte + Barba','Pigmentação','Hidratação'],
+  'Salao':['Corte','Coloração','Escova','Manicure','Pedicure'],
   'Pet Shop':['Banho','Tosa','Banho + Tosa','Consulta Vet','Vacina'],
-  'Academia':['Avaliacao Fisica','Treino Personal','Pilates','Musculacao'],
-  'Estudio':['Tatuagem','Orcamento','Retoque','Piercing'],
-  'Outro':['Servico 1','Servico 2','Servico 3']
+  'Academia':['Avaliação Física','Treino Personal','Pilates','Musculação'],
+  'Estudio':['Tatuagem','Orçamento','Retoque','Piercing'],
+  'Outro':['Serviço 1','Serviço 2','Serviço 3']
 }
+
+// ── SIDEBAR ──────────────────────────────────────────────────
 function toggleSidebar(){document.getElementById('sidebar').classList.toggle('aberta');document.getElementById('sidebar-overlay').classList.toggle('visivel')}
 function fecharSidebar(){document.getElementById('sidebar').classList.remove('aberta');document.getElementById('sidebar-overlay').classList.remove('visivel')}
 function toggleDropdown(){const dd=document.getElementById('neg-dropdown');const ch=document.getElementById('neg-chevron');dd.classList.toggle('show');ch.classList.toggle('open')}
 document.addEventListener('click',e=>{if(!e.target.closest('.negocio-selector')){document.getElementById('neg-dropdown').classList.remove('show');document.getElementById('neg-chevron').classList.remove('open')}})
-function renderDropdown(){const lista=document.getElementById('neg-lista');lista.innerHTML=todosNegocios.map(n=>`<div class="negocio-opt ${n._id===negocioAtual?._id?'ativo':''}" onclick="trocarNegocio('${n._id}')"><div class="negocio-opt-avatar">${n.nome[0].toUpperCase()}</div>${n.nome}</div>`).join('')}
+function renderDropdown(){document.getElementById('neg-lista').innerHTML=todosNegocios.map(n=>`<div class="negocio-opt ${n._id===negocioAtual?._id?'ativo':''}" onclick="trocarNegocio('${n._id}')"><div class="negocio-opt-avatar">${n.nome[0].toUpperCase()}</div>${n.nome}</div>`).join('')}
 function trocarNegocio(id){negocioAtual=todosNegocios.find(n=>n._id===id);localStorage.setItem('negocioId',negocioAtual._id);localStorage.setItem('negocio',negocioAtual.nome);atualizarSidebarNegocio();renderDropdown();document.getElementById('neg-dropdown').classList.remove('show');document.getElementById('neg-chevron').classList.remove('open');carregarDadosNegocio()}
-function atualizarSidebarNegocio(){document.getElementById('neg-nome-sidebar').textContent=negocioAtual?.nome||'';document.getElementById('neg-avatar').textContent=(negocioAtual?.nome||'A')[0].toUpperCase();const link=`https://agendorapido.com.br/agendar.html?id=${negocioAtual?._id}`;const linkBio=`https://agendorapido.com.br/bio.html?id=${negocioAtual?._id}`;if(document.getElementById('link-agendamento'))document.getElementById('link-agendamento').textContent=link;if(document.getElementById('link-bio'))document.getElementById('link-bio').textContent=linkBio}
+function atualizarSidebarNegocio(){
+  document.getElementById('neg-nome-sidebar').textContent=negocioAtual?.nome||''
+  document.getElementById('neg-avatar').textContent=(negocioAtual?.nome||'A')[0].toUpperCase()
+  const link=`https://agendorapido.com.br/agendar.html?id=${negocioAtual?._id}`
+  const linkBio=`https://agendorapido.com.br/bio.html?id=${negocioAtual?._id}`
+  if(document.getElementById('link-agendamento'))document.getElementById('link-agendamento').textContent=link
+  if(document.getElementById('link-bio'))document.getElementById('link-bio').textContent=linkBio
+}
 function abrirModalNegocio(){document.getElementById('neg-dropdown').classList.remove('show');document.getElementById('neg-nome').value='';document.getElementById('neg-erro').textContent='';document.getElementById('modal-negocio').style.display='flex'}
 function fecharModalNegocio(){document.getElementById('modal-negocio').style.display='none'}
-async function criarNegocio(){const nome=document.getElementById('neg-nome').value.trim();const segmento=document.getElementById('neg-segmento').value;const erro=document.getElementById('neg-erro');if(!nome){erro.textContent='Digite o nome do negocio';return}const token=localStorage.getItem('token');const servicos=servicosPorSegmento[segmento]||servicosPorSegmento['Outro'];const res=await fetch(`${API}/auth/negocios`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({nome,segmento,servicos})});const data=await res.json();if(!res.ok){erro.textContent=data.erro||'Erro ao criar painel';return}todosNegocios.push({_id:data._id,nome:data.nome,segmento:data.segmento});fecharModalNegocio();trocarNegocio(data._id)}
-async function mostrarPainel(){const token=localStorage.getItem('token');const res=await fetch(`${API}/auth/negocios`,{headers:{'Authorization':`Bearer ${token}`}});const negocios=await res.json();todosNegocios=negocios;const savedId=localStorage.getItem('negocioId');negocioAtual=negocios.find(n=>n._id===savedId)||negocios[0];if(negocioAtual){localStorage.setItem('negocioId',negocioAtual._id);localStorage.setItem('negocio',negocioAtual.nome)}renderDropdown();atualizarSidebarNegocio();document.getElementById('filtro-data').value=new Date().toISOString().split('T')[0];carregarDadosNegocio();verificarAcesso()}
+async function criarNegocio(){
+  const nome=document.getElementById('neg-nome').value.trim()
+  const segmento=document.getElementById('neg-segmento').value
+  const erro=document.getElementById('neg-erro')
+  if(!nome){erro.textContent='Digite o nome do negócio';return}
+  const token=localStorage.getItem('token')
+  const servicos=(servicosPorSegmento[segmento]||servicosPorSegmento['Outro']).map(s=>({nome:s,preco:0}))
+  const res=await fetch(`${API}/auth/negocios`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({nome,segmento,servicos})})
+  const data=await res.json()
+  if(!res.ok){erro.textContent=data.erro||'Erro ao criar painel';return}
+  todosNegocios.push({_id:data._id,nome:data.nome,segmento:data.segmento})
+  fecharModalNegocio();trocarNegocio(data._id)
+}
+async function mostrarPainel(){
+  const token=localStorage.getItem('token')
+  const res=await fetch(`${API}/auth/negocios`,{headers:{'Authorization':`Bearer ${token}`}})
+  const negocios=await res.json()
+  todosNegocios=negocios
+  const savedId=localStorage.getItem('negocioId')
+  negocioAtual=negocios.find(n=>n._id===savedId)||negocios[0]
+  if(negocioAtual){localStorage.setItem('negocioId',negocioAtual._id);localStorage.setItem('negocio',negocioAtual.nome)}
+  renderDropdown();atualizarSidebarNegocio()
+  document.getElementById('filtro-data').value=new Date().toISOString().split('T')[0]
+  carregarDadosNegocio();verificarAcesso()
+}
 function carregarDadosNegocio(){carregarAgendamentos();carregarServicos();carregarHorariosConfig();carregarBioConfig();carregarLembretes()}
-function irPara(pagina,btn){document.querySelectorAll('.page').forEach(p=>p.classList.remove('ativo'));document.querySelectorAll('.menu-item').forEach(m=>m.classList.remove('ativo'));document.getElementById(`page-${pagina}`).classList.add('ativo');if(btn)btn.classList.add('ativo');fecharSidebar()}
-async function carregarAgendamentos(){if(!negocioAtual)return;const token=localStorage.getItem('token');const res=await fetch(`${API}/agendamentos?negocioId=${negocioAtual._id}`,{headers:{'Authorization':`Bearer ${token}`}});todosAgendamentos=await res.json()
-  // Auto-concluir agendamentos passados
+function irPara(pagina,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('ativo'))
+  document.querySelectorAll('.menu-item').forEach(m=>m.classList.remove('ativo'))
+  document.getElementById(`page-${pagina}`).classList.add('ativo')
+  if(btn)btn.classList.add('ativo')
+  fecharSidebar()
+}
+
+// ── AGENDAMENTOS ─────────────────────────────────────────────
+async function carregarAgendamentos(){
+  if(!negocioAtual)return
+  const token=localStorage.getItem('token')
+  const res=await fetch(`${API}/agendamentos?negocioId=${negocioAtual._id}`,{headers:{'Authorization':`Bearer ${token}`}})
+  todosAgendamentos=await res.json()
+
+  // ✅ AUTO-CONCLUIR: só conclui se data+hora já passaram (fuso local)
   const agora=new Date()
   const passados=todosAgendamentos.filter(a=>{
     if(a.status!=='confirmado')return false
+    if(!a.data||!a.hora)return false
     const [ano,mes,dia]=a.data.split('-').map(Number)
     const [h,m]=a.hora.split(':').map(Number)
-    const dt=new Date(ano,mes-1,dia,h,m)
-    return dt<agora
+    // Usa fuso local — igual ao que o usuário vê
+    const dtAgendamento=new Date(ano,mes-1,dia,h,m,0)
+    return dtAgendamento.getTime() < agora.getTime()
   })
+
   if(passados.length>0){
-    await Promise.all(passados.map(a=>fetch(`${API}/agendamentos/${a._id}`,{method:'PATCH',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({status:'concluido'})})))
-    todosAgendamentos=todosAgendamentos.map(a=>passados.find(p=>p._id===a._id)?{...a,status:'concluido'}:a)
+    await Promise.all(passados.map(a=>
+      fetch(`${API}/agendamentos/${a._id}`,{
+        method:'PATCH',
+        headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},
+        body:JSON.stringify({status:'concluido'})
+      })
+    ))
+    todosAgendamentos=todosAgendamentos.map(a=>
+      passados.find(p=>p._id===a._id)?{...a,status:'concluido'}:a
+    )
   }
-  const hoje=new Date().toISOString().split('T')[0];const semana=new Date(Date.now()+7*86400000).toISOString().split('T')[0];document.getElementById('stat-total').textContent=todosAgendamentos.length;document.getElementById('stat-hoje').textContent=todosAgendamentos.filter(a=>a.data===hoje).length;document.getElementById('stat-semana').textContent=todosAgendamentos.filter(a=>a.data>=hoje&&a.data<=semana).length
-  // Lucro do mes
+
+  const hoje=new Date().toISOString().split('T')[0]
+  const semana=new Date(Date.now()+7*86400000).toISOString().split('T')[0]
+  document.getElementById('stat-total').textContent=todosAgendamentos.length
+  document.getElementById('stat-hoje').textContent=todosAgendamentos.filter(a=>a.data===hoje).length
+  document.getElementById('stat-semana').textContent=todosAgendamentos.filter(a=>a.data>=hoje&&a.data<=semana).length
+
+  calcularLucro()
+  filtrarData()
+}
+
+// ✅ LUCRO: função separada, recalcula quando serviços carregam também
+function calcularLucro(){
+  const hoje=new Date().toISOString().split('T')[0]
   const mesAtual=hoje.slice(0,7)
-  const lucro=todosAgendamentos.filter(a=>a.status==='concluido'&&a.data.startsWith(mesAtual)).reduce((acc,a)=>{
-    const serv=servicosAtuais.find(s=>(typeof s==='object'?s.nome:s)===a.servico)
-    const preco=serv&&typeof serv==='object'?Number(serv.preco)||0:0
-    return acc+preco
-  },0)
+  const lucro=todosAgendamentos
+    .filter(a=>a.status==='concluido'&&a.data.startsWith(mesAtual))
+    .reduce((acc,a)=>{
+      const serv=servicosAtuais.find(s=>(typeof s==='object'?s.nome:s)===a.servico)
+      const preco=serv&&typeof serv==='object'?Number(serv.preco)||0:0
+      return acc+preco
+    },0)
   const el=document.getElementById('stat-lucro')
   if(el)el.textContent='R$ '+lucro.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})
-  filtrarData()}
-async function carregarServicos(){if(!negocioAtual)return;const res=await fetch(`${API}/auth/negocio/${negocioAtual._id}`);const data=await res.json();servicosAtuais=(data.servicos||[]).map(s=>typeof s==='object'?s:{nome:s,preco:0});pagamentosConfig=data.pagamentos||{};renderServicos()}
+}
+
+// ── SERVIÇOS ─────────────────────────────────────────────────
+async function carregarServicos(){
+  if(!negocioAtual)return
+  const res=await fetch(`${API}/auth/negocio/${negocioAtual._id}`)
+  const data=await res.json()
+  servicosAtuais=(data.servicos||[]).map(s=>typeof s==='object'?s:{nome:s,preco:0})
+  pagamentosConfig=data.pagamentos||{}
+  renderServicos()
+  calcularLucro() // recalcula após carregar serviços
+}
+
 function renderServicos(){
   document.getElementById('servicos-tags').innerHTML=servicosAtuais.map((s,i)=>{
-    const nome = typeof s === 'object' ? s.nome : s
-    const preco = typeof s === 'object' && s.preco ? `R$ ${Number(s.preco).toFixed(2).replace('.',',')}` : ''
-    return `<div class="servico-tag-wrap"><span class="servico-tag">${nome}${preco?`<span class="servico-preco">${preco}</span>`:''}<button onclick="removerServico(${i})">&times;</button></span></div>`
+    const nome=typeof s==='object'?s.nome:s
+    const preco=typeof s==='object'&&s.preco?Number(s.preco):0
+    const precoLabel=preco>0?`R$ ${preco.toFixed(2).replace('.',',')}`:''
+    return `<div class="servico-tag-wrap"><span class="servico-tag">${nome}${precoLabel?`<span class="servico-preco">${precoLabel}</span>`:''}<button onclick="removerServico(${i})" title="Remover">×</button></span></div>`
   }).join('')
 }
+
+// ✅ PREÇO OBRIGATÓRIO
 function adicionarServico(){
-  const input=document.getElementById('novo-servico')
+  const nomeInput=document.getElementById('novo-servico')
   const precoInput=document.getElementById('novo-preco')
-  const val=input.value.trim()
-  if(!val)return
-  const preco=parseFloat(precoInput.value)||0
-  const exists=servicosAtuais.some(s=>(typeof s==='object'?s.nome:s)===val)
-  if(!exists)servicosAtuais.push({nome:val,preco})
-  input.value='';precoInput.value=''
+  const erroEl=document.getElementById('servico-erro')
+  const nome=nomeInput.value.trim()
+  const precoVal=precoInput.value.trim()
+  const preco=parseFloat(precoVal)
+
+  // Limpa erros anteriores
+  erroEl.textContent=''
+  nomeInput.classList.remove('campo-erro')
+  precoInput.classList.remove('campo-erro')
+
+  if(!nome){
+    erroEl.textContent='⚠ Digite o nome do serviço.'
+    nomeInput.classList.add('campo-erro')
+    nomeInput.focus()
+    return
+  }
+  if(!precoVal||isNaN(preco)||preco<=0){
+    erroEl.textContent='⚠ O preço é obrigatório e deve ser maior que R$ 0,00.'
+    precoInput.classList.add('campo-erro')
+    precoInput.focus()
+    return
+  }
+  const jaExiste=servicosAtuais.some(s=>(typeof s==='object'?s.nome:s).toLowerCase()===nome.toLowerCase())
+  if(jaExiste){
+    erroEl.textContent='⚠ Já existe um serviço com esse nome.'
+    nomeInput.classList.add('campo-erro')
+    nomeInput.focus()
+    return
+  }
+
+  servicosAtuais.push({nome,preco})
+  nomeInput.value=''
+  precoInput.value=''
   renderServicos()
 }
+
+// Enter nos campos de serviço
+document.addEventListener('DOMContentLoaded',()=>{
+  ['novo-servico','novo-preco'].forEach(id=>{
+    const el=document.getElementById(id)
+    if(el)el.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();adicionarServico()}})
+  })
+})
+
 function removerServico(i){servicosAtuais.splice(i,1);renderServicos()}
-async function salvarServicos(){if(!negocioAtual)return;const token=localStorage.getItem('token');await fetch(`${API}/auth/servicos`,{method:'PATCH',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({negocioId:negocioAtual._id,servicos:servicosAtuais})});const msg=document.getElementById('salvo-msg');msg.style.display='inline';setTimeout(()=>msg.style.display='none',2000)}
+async function salvarServicos(){
+  if(!negocioAtual)return
+  const token=localStorage.getItem('token')
+  await fetch(`${API}/auth/servicos`,{method:'PATCH',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({negocioId:negocioAtual._id,servicos:servicosAtuais})})
+  const msg=document.getElementById('salvo-msg');msg.style.display='inline';setTimeout(()=>msg.style.display='none',2500)
+}
+
+// ── TABELA ───────────────────────────────────────────────────
 const POR_PAGINA=8;let paginaAtual=1;let listaFiltrada=[]
-function filtrarData(){const data=document.getElementById('filtro-data').value;listaFiltrada=data?todosAgendamentos.filter(a=>a.data===data):todosAgendamentos;paginaAtual=1;renderTabela()}
+function filtrarData(){
+  const data=document.getElementById('filtro-data').value
+  listaFiltrada=data?todosAgendamentos.filter(a=>a.data===data):todosAgendamentos
+  paginaAtual=1;renderTabela()
+}
 function renderTabela(){
   const tbody=document.getElementById('tbody')
   const agCards=document.getElementById('ag-cards')
@@ -793,14 +871,12 @@ function renderTabela(){
   const inicio=(paginaAtual-1)*POR_PAGINA
   const fim=inicio+POR_PAGINA
   const slice=listaFiltrada.slice(inicio,fim)
-  // Desktop table
   tbody.innerHTML=slice.map(a=>{
     const acoes=a.status==='confirmado'
       ?`<button class="btn-acao concluir" onclick="atualizar('${a._id}','concluido')">Concluir</button><button class="btn-acao cancelar" onclick="cancelarComAviso('${a._id}','${a.pacienteNome}','${a.pacienteTelefone}','${a.data}','${a.hora}')">Cancelar</button>`
       :''
     return `<tr><td><div class="paciente-nome">${a.pacienteNome}</div><div class="paciente-tel">${a.pacienteTelefone}</div></td><td style="color:var(--text2)">${a.servico}</td><td style="color:var(--text2)">${formatarData(a.data)}</td><td style="font-weight:600">${a.hora}</td><td><span class="badge ${a.status}">${a.status}</span></td><td><div class="acoes">${acoes}</div></td></tr>`
   }).join('')
-  // Mobile cards
   if(agCards){
     agCards.innerHTML=slice.map(a=>{
       const acoes=a.status==='confirmado'
@@ -821,35 +897,200 @@ function renderTabela(){
 }
 function irPagina(n){const total=Math.ceil(listaFiltrada.length/POR_PAGINA);if(n<1||n>total)return;paginaAtual=n;renderTabela();document.getElementById('page-agendamentos').scrollIntoView({behavior:'smooth',block:'start'})}
 async function atualizar(id,status){const token=localStorage.getItem('token');await fetch(`${API}/agendamentos/${id}`,{method:'PATCH',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({status})});carregarAgendamentos()}
-async function cancelarComAviso(id,nome,telefone,data,hora){if(!confirm(`Cancelar agendamento de ${nome}?`))return;const token=localStorage.getItem('token');await fetch(`${API}/agendamentos/${id}`,{method:'PATCH',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({status:'cancelado'})});const [ano,mes,dia]=data.split('-');const msg=encodeURIComponent(`Ola ${nome}! Infelizmente precisamos cancelar seu agendamento do dia ${dia}/${mes}/${ano} as ${hora}. Por favor entre em contato para reagendar.`);window.open(`https://wa.me/55${telefone.replace(/\D/g,'')}?text=${msg}`,'_blank');carregarAgendamentos()}
-function copiarLink(){navigator.clipboard.writeText(document.getElementById('link-agendamento').textContent);const btn=document.querySelectorAll('.btn-copiar')[0];btn.textContent='Copiado!';setTimeout(()=>btn.textContent='Copiar link',2000)}
-function copiarLinkBio(){navigator.clipboard.writeText(document.getElementById('link-bio').textContent);const btn=document.querySelectorAll('.btn-copiar')[1];btn.textContent='Copiado!';setTimeout(()=>btn.textContent='Copiar link',2000)}
+async function cancelarComAviso(id,nome,telefone,data,hora){
+  if(!confirm(`Cancelar agendamento de ${nome}?`))return
+  const token=localStorage.getItem('token')
+  await fetch(`${API}/agendamentos/${id}`,{method:'PATCH',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({status:'cancelado'})})
+  const [ano,mes,dia]=data.split('-')
+  const msg=encodeURIComponent(`Olá ${nome}! Infelizmente precisamos cancelar seu agendamento do dia ${dia}/${mes}/${ano} às ${hora}. Entre em contato para reagendar.`)
+  window.open(`https://wa.me/55${telefone.replace(/\D/g,'')}?text=${msg}`,'_blank')
+  carregarAgendamentos()
+}
+function copiarLink(){navigator.clipboard.writeText(document.getElementById('link-agendamento').textContent);const btn=document.querySelectorAll('.btn-copiar')[0];const orig=btn.innerHTML;btn.innerHTML='✓ Copiado!';setTimeout(()=>btn.innerHTML=orig,2000)}
+function copiarLinkBio(){navigator.clipboard.writeText(document.getElementById('link-bio').textContent);const btn=document.querySelectorAll('.btn-copiar')[1];const orig=btn.innerHTML;btn.innerHTML='✓ Copiado!';setTimeout(()=>btn.innerHTML=orig,2000)}
 function formatarData(data){const[a,m,d]=data.split('-');return`${d}/${m}/${a}`}
 function sair(){localStorage.clear();window.location.href='/auth.html'}
+
+// ── HORÁRIOS ─────────────────────────────────────────────────
 function selecionarIntervalo(btn,valor){document.querySelectorAll('.intervalo-btn').forEach(b=>b.classList.remove('selecionado'));btn.classList.add('selecionado');intervaloAtual=valor}
-function renderDias(){document.getElementById('dias-container').innerHTML=diasNomes.map((nome,i)=>{const config=horariosConfig[i]||{ativo:false,inicio:'08:00',fim:'18:00'};return`<div class="dia-row ${config.ativo?'':'dia-inativo'}" id="dia-row-${i}"><div class="dia-toggle"><input type="checkbox" id="dia-${i}" ${config.ativo?'checked':''} onchange="toggleDia(${i})"><label for="dia-${i}">${nome}</label></div><div class="dia-horarios"><span>Das</span><input type="time" id="inicio-${i}" value="${config.inicio}" /><span>as</span><input type="time" id="fim-${i}" value="${config.fim}" /></div></div>`}).join('')}
+function renderDias(){
+  document.getElementById('dias-container').innerHTML=diasNomes.map((nome,i)=>{
+    const config=horariosConfig[i]||{ativo:false,inicio:'08:00',fim:'18:00'}
+    return `<div class="dia-row ${config.ativo?'':'dia-inativo'}" id="dia-row-${i}"><div class="dia-toggle"><input type="checkbox" id="dia-${i}" ${config.ativo?'checked':''} onchange="toggleDia(${i})"><label for="dia-${i}">${nome}</label></div><div class="dia-horarios"><span>Das</span><input type="time" id="inicio-${i}" value="${config.inicio}" /><span>às</span><input type="time" id="fim-${i}" value="${config.fim}" /></div></div>`
+  }).join('')
+}
 function toggleDia(i){document.getElementById(`dia-row-${i}`).classList.toggle('dia-inativo',!document.getElementById(`dia-${i}`).checked)}
-async function carregarHorariosConfig(){if(!negocioAtual)return;const res=await fetch(`${API}/auth/negocio/${negocioAtual._id}`);const data=await res.json();horariosConfig=data.horarios||{};intervaloAtual=data.intervalo||30;pausasAtuais=data.pausas||[];renderPausas();document.querySelectorAll('.intervalo-btn').forEach(btn=>{const txt=btn.textContent.trim();if((intervaloAtual===15&&txt==='15 min')||(intervaloAtual===20&&txt==='20 min')||(intervaloAtual===30&&txt==='30 min')||(intervaloAtual===45&&txt==='45 min')||(intervaloAtual===60&&txt==='1 hora')||(intervaloAtual===90&&txt==='1h30')||(intervaloAtual===120&&txt==='2 horas'))btn.classList.add('selecionado');else btn.classList.remove('selecionado')});renderDias()}
-async function salvarHorarios(){if(!negocioAtual)return;const horarios={};diasNomes.forEach((_,i)=>{horarios[i]={ativo:document.getElementById(`dia-${i}`).checked,inicio:document.getElementById(`inicio-${i}`).value,fim:document.getElementById(`fim-${i}`).value}});const token=localStorage.getItem('token');await fetch(`${API}/auth/horarios`,{method:'PATCH',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({negocioId:negocioAtual._id,horarios,intervalo:intervaloAtual})});const msg=document.getElementById('salvo-horarios');msg.style.display='inline';setTimeout(()=>msg.style.display='none',2000)}
-async function carregarBioConfig(){if(!negocioAtual)return;const res=await fetch(`${API}/auth/negocio/${negocioAtual._id}`);const data=await res.json();const bio=data.bio||{};document.getElementById('bio-foto').value=bio.foto||'';document.getElementById('bio-descricao').value=bio.descricao||'';document.getElementById('bio-endereco').value=bio.endereco||'';document.getElementById('bio-instagram').value=bio.instagram||'';document.getElementById('bio-whatsapp').value=bio.whatsapp||'';if(bio.foto)document.getElementById('foto-preview').innerHTML=`<img src="${bio.foto}">`;else document.getElementById('foto-preview').textContent='x'}
-async function salvarBio(){if(!negocioAtual)return;const token=localStorage.getItem('token');await fetch(`${API}/auth/bio`,{method:'PATCH',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({negocioId:negocioAtual._id,foto:document.getElementById('bio-foto').value,descricao:document.getElementById('bio-descricao').value,endereco:document.getElementById('bio-endereco').value,instagram:document.getElementById('bio-instagram').value,whatsapp:document.getElementById('bio-whatsapp').value})});const msg=document.getElementById('salvo-bio');msg.style.display='inline';setTimeout(()=>msg.style.display='none',2000)}
-async function uploadFoto(input){const file=input.files[0];if(!file)return;document.getElementById('foto-status').textContent='Enviando...';const reader=new FileReader();reader.onload=async(e)=>{const token=localStorage.getItem('token');const res=await fetch(`${API}/upload`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({imagem:e.target.result})});const data=await res.json();if(res.ok){document.getElementById('bio-foto').value=data.url;document.getElementById('foto-status').textContent='Foto enviada!';document.getElementById('foto-preview').innerHTML=`<img src="${data.url}">`}else document.getElementById('foto-status').textContent='Erro ao enviar foto'};reader.readAsDataURL(file)}
-async function verificarAcesso(){const token=localStorage.getItem('token');if(!token)return;const res=await fetch(`${API}/assinatura/status`,{headers:{'Authorization':`Bearer ${token}`}});const data=await res.json();if(!data.temAcesso){document.getElementById('bloqueio').style.display='flex';return}if(data.plano==='trial'&&data.diasRestantes<=7){const banner=document.createElement('div');banner.className='trial-banner';banner.innerHTML=`<p>Seu trial expira em <strong>${data.diasRestantes} dias</strong>. Assine para nao perder o acesso.</p><button class="btn-assinar-banner" onclick="window.location.href='/planos.html'">Ver planos</button>`;document.querySelector('.main').prepend(banner)}if(window.location.search.includes('assinatura=sucesso'))alert('Assinatura ativada com sucesso!')}
-function abrirModalNovoAgendamento(){if(!negocioAtual)return;const hoje=new Date().toISOString().split('T')[0];document.getElementById('m-data').value=hoje;document.getElementById('m-data').min=hoje;document.getElementById('m-nome').value='';document.getElementById('m-telefone').value='';document.getElementById('m-erro').textContent='';document.getElementById('m-servico').innerHTML=servicosAtuais.map(s=>{const n=typeof s==='object'?s.nome:s;return`<option value="${n}">${n}</option>`}).join('');document.getElementById('modal-agendamento').style.display='flex';carregarHorariosModal()}
-function fecharModal(){document.getElementById('modal-agendamento').style.display='none'}
-async function carregarHorariosModal(){const data=document.getElementById('m-data').value;if(!data||!negocioAtual)return;const select=document.getElementById('m-hora');select.innerHTML='<option>Carregando...</option>';const res=await fetch(`${API}/agendamentos/horarios-ocupados?clinicaId=${negocioAtual._id}&data=${data}`);const resultado=await res.json();if(resultado.diaInativo||resultado.horarios.length===0){select.innerHTML='<option value="">Sem horarios disponiveis</option>';return}select.innerHTML=resultado.horarios.map(h=>{const ocu=resultado.ocupados.includes(h);return`<option value="${h}" ${ocu?'disabled':''}>${h}${ocu?' (ocupado)':''}</option>`}).join('');const livre=resultado.horarios.find(h=>!resultado.ocupados.includes(h));if(livre)select.value=livre}
-async function salvarAgendamentoManual(){const nome=document.getElementById('m-nome').value.trim();const telefone=document.getElementById('m-telefone').value.trim();const servico=document.getElementById('m-servico').value;const data=document.getElementById('m-data').value;const hora=document.getElementById('m-hora').value;const erro=document.getElementById('m-erro');if(!nome){erro.textContent='Digite o nome do cliente';return}if(!hora){erro.textContent='Selecione um horario';return}erro.textContent='';const btn=document.querySelector('.btn-salvar-modal');btn.disabled=true;btn.textContent='Salvando...';const token=localStorage.getItem('token');const res=await fetch(`${API}/agendamentos`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({clinicaId:negocioAtual._id,pacienteNome:nome,pacienteTelefone:telefone,servico,data,hora})});const resposta=await res.json();btn.disabled=false;btn.textContent='Confirmar agendamento';if(res.ok){fecharModal();carregarAgendamentos()}else erro.textContent=resposta.erro||'Erro ao criar agendamento'}
-let pausasAtuais=[]
+async function carregarHorariosConfig(){
+  if(!negocioAtual)return
+  const res=await fetch(`${API}/auth/negocio/${negocioAtual._id}`)
+  const data=await res.json()
+  horariosConfig=data.horarios||{};intervaloAtual=data.intervalo||30;pausasAtuais=data.pausas||[]
+  renderPausas()
+  document.querySelectorAll('.intervalo-btn').forEach(btn=>{
+    const txt=btn.textContent.trim()
+    const match=(intervaloAtual===15&&txt==='15 min')||(intervaloAtual===20&&txt==='20 min')||(intervaloAtual===30&&txt==='30 min')||(intervaloAtual===45&&txt==='45 min')||(intervaloAtual===60&&txt==='1 hora')||(intervaloAtual===90&&txt==='1h30')||(intervaloAtual===120&&txt==='2 horas')||(intervaloAtual===150&&txt==='2h30')
+    btn.classList.toggle('selecionado',match)
+  })
+  renderDias()
+}
+async function salvarHorarios(){
+  if(!negocioAtual)return
+  const horarios={}
+  diasNomes.forEach((_,i)=>{horarios[i]={ativo:document.getElementById(`dia-${i}`).checked,inicio:document.getElementById(`inicio-${i}`).value,fim:document.getElementById(`fim-${i}`).value}})
+  const token=localStorage.getItem('token')
+  await fetch(`${API}/auth/horarios`,{method:'PATCH',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({negocioId:negocioAtual._id,horarios,intervalo:intervaloAtual})})
+  const msg=document.getElementById('salvo-horarios');msg.style.display='inline';setTimeout(()=>msg.style.display='none',2500)
+}
+
+// ── PAUSAS ───────────────────────────────────────────────────
 function mascaraHora(inp){let v=inp.value.replace(/\D/g,'').slice(0,4);if(v.length>=3)v=v.slice(0,2)+':'+v.slice(2);inp.value=v}
-function renderPausas(){const lista=document.getElementById('pausas-lista');if(!pausasAtuais.length){lista.innerHTML='<p style="font-size:12.5px;color:var(--text3);padding:8px 0">Nenhuma pausa configurada</p>';return}lista.innerHTML=pausasAtuais.map((p,i)=>`<div style="display:flex;align-items:center;gap:10px;padding:9px 12px;background:var(--bg);border-radius:8px;border:1px solid var(--border);margin-bottom:6px"><span style="font-size:13px;font-weight:600;color:var(--text)">${p.label||'Pausa'}</span><span style="font-size:12px;color:var(--text3)">${p.inicio} - ${p.fim}</span><button onclick="removerPausa(${i})" style="margin-left:auto;background:none;border:none;color:var(--text3);cursor:pointer;font-size:16px;line-height:1" onmouseover="this.style.color='var(--red)'" onmouseout="this.style.color='var(--text3)'">x</button></div>`).join('')}
-function adicionarPausa(){const inicio=document.getElementById('pausa-inicio').value;const fim=document.getElementById('pausa-fim').value;const label=document.getElementById('pausa-label').value.trim()||'Pausa';if(!inicio||!fim){alert('Preencha o horario de inicio e fim');return}if(inicio>=fim){alert('O horario de inicio deve ser anterior ao fim');return}pausasAtuais.push({inicio,fim,label});document.getElementById('pausa-inicio').value='';document.getElementById('pausa-fim').value='';document.getElementById('pausa-label').value='';renderPausas()}
+function renderPausas(){
+  const lista=document.getElementById('pausas-lista')
+  if(!pausasAtuais.length){lista.innerHTML='<p style="font-size:12.5px;color:var(--text3);padding:8px 0">Nenhuma pausa configurada</p>';return}
+  lista.innerHTML=pausasAtuais.map((p,i)=>`<div class="pausa-item"><span class="pausa-item-label">${p.label||'Pausa'}</span><span class="pausa-item-hora">${p.inicio} – ${p.fim}</span><button onclick="removerPausa(${i})" style="margin-left:auto;background:none;border:none;color:var(--text3);cursor:pointer;font-size:18px;line-height:1;padding:2px 4px;border-radius:5px;transition:all .15s" onmouseover="this.style.color='var(--red)';this.style.background='var(--red-bg)'" onmouseout="this.style.color='var(--text3)';this.style.background='none'">×</button></div>`).join('')
+}
+function adicionarPausa(){
+  const inicio=document.getElementById('pausa-inicio').value
+  const fim=document.getElementById('pausa-fim').value
+  const label=document.getElementById('pausa-label').value.trim()||'Pausa'
+  if(!inicio||!fim){alert('Preencha o horário de início e fim');return}
+  if(inicio>=fim){alert('O horário de início deve ser anterior ao fim');return}
+  pausasAtuais.push({inicio,fim,label})
+  document.getElementById('pausa-inicio').value=''
+  document.getElementById('pausa-fim').value=''
+  document.getElementById('pausa-label').value=''
+  renderPausas()
+}
 function removerPausa(i){pausasAtuais.splice(i,1);renderPausas()}
-async function salvarPausas(){if(!negocioAtual)return;const token=localStorage.getItem('token');await fetch(`${API}/auth/horarios`,{method:'PATCH',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({negocioId:negocioAtual._id,horarios:horariosConfig,intervalo:intervaloAtual,pausas:pausasAtuais})});const msg=document.getElementById('salvo-pausas');msg.style.display='inline';setTimeout(()=>msg.style.display='none',2000)}
-let pagamentosConfig={}
-function atualizarToggleVisual(ativo){const track=document.getElementById('toggle-track');const thumb=document.getElementById('toggle-thumb');if(!track||!thumb)return;track.style.background=ativo?'var(--accent)':'#cbd5e1';thumb.style.left=ativo?'23px':'3px';document.getElementById('lembrete-info').style.display=ativo?'block':'none'}
-async function carregarLembretes(){if(!negocioAtual)return;const res=await fetch(`${API}/auth/negocio/${negocioAtual._id}`);const data=await res.json();const lembrete=data.lembrete||{};const checkbox=document.getElementById('toggle-lembrete');if(checkbox)checkbox.checked=!!lembrete.ativo;atualizarToggleVisual(!!lembrete.ativo);if(lembrete.mensagem)document.getElementById('lembrete-msg').value=lembrete.mensagem}
-async function salvarLembrete(){const ativo=document.getElementById('toggle-lembrete').checked;atualizarToggleVisual(ativo);if(!negocioAtual)return;const token=localStorage.getItem('token');await fetch(`${API}/auth/lembretes`,{method:'PATCH',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({negocioId:negocioAtual._id,ativo})})}
-async function salvarConfLembrete(){if(!negocioAtual)return;const token=localStorage.getItem('token');const ativo=document.getElementById('toggle-lembrete').checked;const mensagem=document.getElementById('lembrete-msg').value;await fetch(`${API}/auth/lembretes`,{method:'PATCH',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({negocioId:negocioAtual._id,ativo,mensagem})});const msg=document.getElementById('salvo-lembrete');msg.style.display='inline';setTimeout(()=>msg.style.display='none',2000)}
+async function salvarPausas(){
+  if(!negocioAtual)return
+  const token=localStorage.getItem('token')
+  await fetch(`${API}/auth/horarios`,{method:'PATCH',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({negocioId:negocioAtual._id,horarios:horariosConfig,intervalo:intervaloAtual,pausas:pausasAtuais})})
+  const msg=document.getElementById('salvo-pausas');msg.style.display='inline';setTimeout(()=>msg.style.display='none',2500)
+}
+
+// ── BIO ──────────────────────────────────────────────────────
+async function carregarBioConfig(){
+  if(!negocioAtual)return
+  const res=await fetch(`${API}/auth/negocio/${negocioAtual._id}`)
+  const data=await res.json()
+  const bio=data.bio||{}
+  document.getElementById('bio-foto').value=bio.foto||''
+  document.getElementById('bio-descricao').value=bio.descricao||''
+  document.getElementById('bio-endereco').value=bio.endereco||''
+  document.getElementById('bio-instagram').value=bio.instagram||''
+  document.getElementById('bio-whatsapp').value=bio.whatsapp||''
+  if(bio.foto)document.getElementById('foto-preview').innerHTML=`<img src="${bio.foto}">`
+  else document.getElementById('foto-preview').textContent='👤'
+}
+async function salvarBio(){
+  if(!negocioAtual)return
+  const token=localStorage.getItem('token')
+  await fetch(`${API}/auth/bio`,{method:'PATCH',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({negocioId:negocioAtual._id,foto:document.getElementById('bio-foto').value,descricao:document.getElementById('bio-descricao').value,endereco:document.getElementById('bio-endereco').value,instagram:document.getElementById('bio-instagram').value,whatsapp:document.getElementById('bio-whatsapp').value})})
+  const msg=document.getElementById('salvo-bio');msg.style.display='inline';setTimeout(()=>msg.style.display='none',2500)
+}
+async function uploadFoto(input){
+  const file=input.files[0];if(!file)return
+  document.getElementById('foto-status').textContent='Enviando...'
+  const reader=new FileReader()
+  reader.onload=async(e)=>{
+    const token=localStorage.getItem('token')
+    const res=await fetch(`${API}/upload`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({imagem:e.target.result})})
+    const data=await res.json()
+    if(res.ok){document.getElementById('bio-foto').value=data.url;document.getElementById('foto-status').textContent='✓ Foto enviada!';document.getElementById('foto-preview').innerHTML=`<img src="${data.url}">`}
+    else document.getElementById('foto-status').textContent='Erro ao enviar foto'
+  }
+  reader.readAsDataURL(file)
+}
+
+// ── ACESSO ───────────────────────────────────────────────────
+async function verificarAcesso(){
+  const token=localStorage.getItem('token');if(!token)return
+  const res=await fetch(`${API}/assinatura/status`,{headers:{'Authorization':`Bearer ${token}`}})
+  const data=await res.json()
+  if(!data.temAcesso){document.getElementById('bloqueio').style.display='flex';return}
+  if(data.plano==='trial'&&data.diasRestantes<=7){
+    const banner=document.createElement('div');banner.className='trial-banner'
+    banner.innerHTML=`<p>⏰ Seu trial expira em <strong>${data.diasRestantes} dias</strong>. Assine para não perder o acesso.</p><button class="btn-assinar-banner" onclick="window.location.href='/planos.html'">Ver planos</button>`
+    document.querySelector('.main').prepend(banner)
+  }
+  if(window.location.search.includes('assinatura=sucesso'))alert('Assinatura ativada com sucesso!')
+}
+
+// ── MODAL AGENDAMENTO ────────────────────────────────────────
+function abrirModalNovoAgendamento(){
+  if(!negocioAtual)return
+  const hoje=new Date().toISOString().split('T')[0]
+  document.getElementById('m-data').value=hoje
+  document.getElementById('m-data').min=hoje
+  document.getElementById('m-nome').value=''
+  document.getElementById('m-telefone').value=''
+  document.getElementById('m-erro').textContent=''
+  document.getElementById('m-servico').innerHTML=servicosAtuais.map(s=>{const n=typeof s==='object'?s.nome:s;return`<option value="${n}">${n}</option>`}).join('')
+  document.getElementById('modal-agendamento').style.display='flex'
+  carregarHorariosModal()
+}
+function fecharModal(){document.getElementById('modal-agendamento').style.display='none'}
+async function carregarHorariosModal(){
+  const data=document.getElementById('m-data').value;if(!data||!negocioAtual)return
+  const select=document.getElementById('m-hora');select.innerHTML='<option>Carregando...</option>'
+  const res=await fetch(`${API}/agendamentos/horarios-ocupados?clinicaId=${negocioAtual._id}&data=${data}`)
+  const resultado=await res.json()
+  if(resultado.diaInativo||resultado.horarios.length===0){select.innerHTML='<option value="">Sem horários disponíveis</option>';return}
+  select.innerHTML=resultado.horarios.map(h=>{const ocu=resultado.ocupados.includes(h);return`<option value="${h}" ${ocu?'disabled':''}>${h}${ocu?' (ocupado)':''}</option>`}).join('')
+  const livre=resultado.horarios.find(h=>!resultado.ocupados.includes(h));if(livre)select.value=livre
+}
+async function salvarAgendamentoManual(){
+  const nome=document.getElementById('m-nome').value.trim()
+  const telefone=document.getElementById('m-telefone').value.trim()
+  const servico=document.getElementById('m-servico').value
+  const data=document.getElementById('m-data').value
+  const hora=document.getElementById('m-hora').value
+  const erro=document.getElementById('m-erro')
+  if(!nome){erro.textContent='Digite o nome do cliente';return}
+  if(!hora){erro.textContent='Selecione um horário';return}
+  erro.textContent=''
+  const btn=document.querySelector('.btn-salvar-modal');btn.disabled=true;btn.textContent='Salvando...'
+  const token=localStorage.getItem('token')
+  const res=await fetch(`${API}/agendamentos`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({clinicaId:negocioAtual._id,pacienteNome:nome,pacienteTelefone:telefone,servico,data,hora})})
+  const resposta=await res.json();btn.disabled=false;btn.textContent='Confirmar agendamento'
+  if(res.ok){fecharModal();carregarAgendamentos()}else erro.textContent=resposta.erro||'Erro ao criar agendamento'
+}
+
+// ── LEMBRETES ────────────────────────────────────────────────
+function atualizarToggleVisual(ativo){
+  const track=document.getElementById('toggle-track');const thumb=document.getElementById('toggle-thumb')
+  if(!track||!thumb)return
+  track.style.background=ativo?'var(--accent)':'#cbd5e1'
+  thumb.style.left=ativo?'25px':'3px'
+  document.getElementById('lembrete-info').style.display=ativo?'block':'none'
+}
+async function carregarLembretes(){
+  if(!negocioAtual)return
+  const res=await fetch(`${API}/auth/negocio/${negocioAtual._id}`)
+  const data=await res.json()
+  const lembrete=data.lembrete||{}
+  const checkbox=document.getElementById('toggle-lembrete')
+  if(checkbox)checkbox.checked=!!lembrete.ativo
+  atualizarToggleVisual(!!lembrete.ativo)
+  if(lembrete.mensagem)document.getElementById('lembrete-msg').value=lembrete.mensagem
+}
+async function salvarLembrete(){
+  const ativo=document.getElementById('toggle-lembrete').checked;atualizarToggleVisual(ativo)
+  if(!negocioAtual)return
+  const token=localStorage.getItem('token')
+  await fetch(`${API}/auth/lembretes`,{method:'PATCH',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({negocioId:negocioAtual._id,ativo})})
+}
+async function salvarConfLembrete(){
+  if(!negocioAtual)return
+  const token=localStorage.getItem('token')
+  const ativo=document.getElementById('toggle-lembrete').checked
+  const mensagem=document.getElementById('lembrete-msg').value
+  await fetch(`${API}/auth/lembretes`,{method:'PATCH',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({negocioId:negocioAtual._id,ativo,mensagem})})
+  const msg=document.getElementById('salvo-lembrete');msg.style.display='inline';setTimeout(()=>msg.style.display='none',2500)
+}
+
+// ── INIT ─────────────────────────────────────────────────────
 const token=localStorage.getItem('token')
 if(token){mostrarPainel()}else{window.location.href='/auth.html'}
 if('serviceWorker'in navigator)navigator.serviceWorker.register('/sw.js').catch(()=>{})
