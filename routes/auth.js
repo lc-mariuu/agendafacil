@@ -244,4 +244,4 @@ router.patch('/lembretes', autenticar, async (req, res) => {
   }
 })
 
-module.exports = router é aqui?
+module.exports = router
