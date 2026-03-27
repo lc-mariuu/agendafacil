@@ -55,6 +55,7 @@ router.get('/horarios-ocupados', async (req, res) => {
       return res.json({ horarios: [], ocupados: [], diaInativo: true })
     }
 
+    // Gera todos os horários do dia
     const horariosDisponiveis = []
     const [hIni, mIni] = configDia.inicio.split(':').map(Number)
     const [hFim, mFim] = configDia.fim.split(':').map(Number)
@@ -67,8 +68,27 @@ router.get('/horarios-ocupados', async (req, res) => {
       atual += intervalo
     }
 
+    // ✅ Filtra horários que já passaram se for hoje (fuso de Brasília)
+    const agora = new Date()
+    const agoraBrasilia = new Date(agora.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }))
+    const dataHoje = (() => {
+      const y = agoraBrasilia.getFullYear()
+      const mo = String(agoraBrasilia.getMonth() + 1).padStart(2, '0')
+      const d2 = String(agoraBrasilia.getDate()).padStart(2, '0')
+      return `${y}-${mo}-${d2}`
+    })()
+    const minutosAgora = agoraBrasilia.getHours() * 60 + agoraBrasilia.getMinutes()
+
+    const horariosValidos = data === dataHoje
+      ? horariosDisponiveis.filter(h => {
+          const [hh, mm] = h.split(':').map(Number)
+          return (hh * 60 + mm) > minutosAgora
+        })
+      : horariosDisponiveis
+
+    // Filtra pausas
     const pausas = (neg ? neg.pausas : []) || []
-    const horariosComPausa = horariosDisponiveis.filter(h => {
+    const horariosComPausa = horariosValidos.filter(h => {
       const [hh, mm] = h.split(':').map(Number)
       const minH = hh * 60 + mm
       for (const pausa of pausas) {
@@ -84,6 +104,7 @@ router.get('/horarios-ocupados', async (req, res) => {
 
     const agendados = await Appointment.find({ clinicaId, data, status: { $ne: 'cancelado' } }).select('hora')
     const ocupados = agendados.map(a => a.hora)
+
     res.json({ horarios: horariosComPausa, ocupados, diaInativo: false })
   } catch (err) {
     console.error('ERRO horarios-ocupados:', err.message)
@@ -95,9 +116,26 @@ router.get('/horarios-ocupados', async (req, res) => {
 router.post('/', async (req, res) => {
   try {
     const { clinicaId, pacienteNome, pacienteTelefone, servico, data, hora } = req.body
+
     const jaExiste = await Appointment.findOne({ clinicaId, data, hora, status: { $ne: 'cancelado' } })
     if (jaExiste) return res.status(400).json({ erro: 'Horário já ocupado' })
-    const agendamento = await Appointment.create({ clinicaId, pacienteNome, pacienteTelefone, servico, data, hora })
+
+    // ✅ Busca e salva o preço do serviço no momento da criação
+    let preco = 0
+    const neg = await Negocio.findById(clinicaId).lean()
+    if (neg && neg.servicos) {
+      const servicoObj = neg.servicos.find(s => {
+        const nome = typeof s === 'object' ? s.nome : s
+        return nome === servico
+      })
+      if (servicoObj && typeof servicoObj === 'object') {
+        preco = Number(servicoObj.preco) || 0
+      }
+    }
+
+    const agendamento = await Appointment.create({
+      clinicaId, pacienteNome, pacienteTelefone, servico, preco, data, hora
+    })
     res.json(agendamento)
   } catch (err) {
     console.error('ERRO criar agendamento:', err.message)

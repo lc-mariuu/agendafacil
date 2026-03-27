@@ -23,27 +23,25 @@ async function enviarEmail(destinatario, assunto, html) {
     console.log(`📧 [SIMULADO] Para: ${destinatario} | ${assunto}`)
     return
   }
-  const temDominio = process.env.EMAIL_FROM && !process.env.EMAIL_FROM.includes('onboarding@resend.dev')
-  const emailDestino = temDominio ? destinatario : (process.env.GMAIL_USER || destinatario)
-  if (!temDominio) {
-    console.log(`📧 [MODO TESTE] Código para ${destinatario} → enviado para ${emailDestino}`)
-    assunto = `[PARA: ${destinatario}] ${assunto}`
-  }
+
+  console.log(`📧 Enviando email para: ${destinatario}`)
+
   const { error } = await resend.emails.send({
     from: process.env.EMAIL_FROM || 'onboarding@resend.dev',
-    to: emailDestino,
+    to: destinatario,
     subject: assunto,
     html
   })
+
   if (error) throw new Error(`Resend erro: ${JSON.stringify(error)}`)
 }
 
 // ─── Schema de verificação ────────────────────────────────────────────────────
 const codigoSchema = new mongoose.Schema({
-  email:     { type: String, required: true },
-  codigo:    { type: String, required: true },
-  tipo:      { type: String, enum: ['cadastro', 'recuperacao'], default: 'cadastro' },
-  verificado: { type: Boolean, default: false }, // ✅ novo campo
+  email:      { type: String, required: true },
+  codigo:     { type: String, required: true },
+  tipo:       { type: String, enum: ['cadastro', 'recuperacao'], default: 'cadastro' },
+  verificado: { type: Boolean, default: false },
   criadoEm:  { type: Date, default: Date.now, expires: 600 }
 })
 codigoSchema.index({ email: 1, tipo: 1 }, { unique: true })
@@ -71,6 +69,7 @@ router.post('/enviar-codigo', async (req, res) => {
   try {
     const { email } = req.body
     if (!email || !emailValido(email)) return res.status(400).json({ erro: 'Email inválido' })
+
     const codigo = gerarCodigo()
     await CodigoVerificacao.findOneAndUpdate(
       { email: email.toLowerCase(), tipo: 'cadastro' },
@@ -100,10 +99,8 @@ router.post('/verificar-codigo', async (req, res) => {
     if (!valido) return res.status(400).json({ erro: 'Código incorreto. Verifique e tente novamente.' })
 
     if (tipo === 'cadastro') {
-      // Para cadastro, exclui o código — frontend segue para criar a conta
       await CodigoVerificacao.deleteOne({ _id: registro._id })
     } else {
-      // Para recuperação, marca como verificado — libera a rota /nova-senha
       await CodigoVerificacao.updateOne({ _id: registro._id }, { $set: { verificado: true } })
     }
 
@@ -121,8 +118,7 @@ router.post('/recuperar-senha', async (req, res) => {
     if (!email || !emailValido(email)) return res.status(400).json({ erro: 'Email inválido' })
 
     const usuario = await User.findOne({ email: email.toLowerCase() })
-    // Retorna ok mesmo se não encontrar (evita enumeração de emails)
-    if (!usuario) return res.json({ ok: true })
+    if (!usuario) return res.json({ ok: true }) // evita enumeração de emails
 
     const codigo = gerarCodigo()
     await CodigoVerificacao.findOneAndUpdate(
@@ -145,7 +141,6 @@ router.post('/nova-senha', async (req, res) => {
     if (!email || !emailValido(email)) return res.status(400).json({ erro: 'Email inválido' })
     if (!senha || senha.length < 6) return res.status(400).json({ erro: 'Senha deve ter ao menos 6 caracteres' })
 
-    // 🔒 Verifica se o código de recuperação foi confirmado
     const registro = await CodigoVerificacao.findOne({
       email: email.toLowerCase(),
       tipo: 'recuperacao',
@@ -161,7 +156,6 @@ router.post('/nova-senha', async (req, res) => {
     )
     if (resultado.matchedCount === 0) return res.status(400).json({ erro: 'Usuário não encontrado' })
 
-    // Remove o registro de verificação após trocar a senha
     await CodigoVerificacao.deleteOne({ _id: registro._id })
 
     res.json({ ok: true })

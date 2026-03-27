@@ -50,6 +50,7 @@ nav{background:rgba(255,255,255,0.95);backdrop-filter:blur(16px);border-bottom:1
 .servico-btn{padding:13px 10px;border:1.5px solid var(--border2);border-radius:10px;background:var(--bg);cursor:pointer;font-size:13px;font-weight:500;color:var(--text2);text-align:center;transition:all .15s;font-family:inherit;line-height:1.3}
 .servico-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-light)}
 .servico-btn.sel{border-color:var(--accent);background:var(--accent);color:#fff}
+.servico-preco{display:block;font-size:11px;font-weight:700;margin-top:3px;opacity:.85}
 .data-input{width:100%;padding:12px 14px;border:1.5px solid var(--border2);border-radius:10px;font-size:15px;font-family:inherit;background:var(--bg);color:var(--text);outline:none;transition:border-color .15s;cursor:pointer}
 .data-input:focus{border-color:var(--accent)}
 .horarios-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
@@ -384,16 +385,27 @@ async function carregarClinica() {
     document.title = `Agendar — ${data.negocio}`
     if(data.segmento) { const chip = document.getElementById('hero-chip'); chip.textContent = data.segmento; chip.style.display = 'inline-flex' }
     if(data.bio?.foto) document.getElementById('hero-avatar').innerHTML = `<img src="${data.bio.foto}" alt="${data.negocio}">`
-    servicosDisponiveis = data.servicos || []
+    servicosDisponiveis = (data.servicos || []).map(s => typeof s === 'object' ? s : { nome: s, preco: 0 })
     pagamentosConfig = data.pagamentos || {}
     renderServicos()
   } catch(e) {}
 }
 
+// ✅ CORRIGIDO: trata serviços como objetos {nome, preco}
 function renderServicos() {
   const grid = document.getElementById('servicos-grid')
-  if(!servicosDisponiveis.length) { grid.innerHTML = '<div style="color:var(--text3);font-size:13px;grid-column:1/-1;text-align:center;padding:20px">Nenhum serviço disponível</div>'; return }
-  grid.innerHTML = servicosDisponiveis.map(s => `<button class="servico-btn" onclick="selecionarServico(this,'${s.replace(/'/g,"\\'")}')">${s}</button>`).join('')
+  if(!servicosDisponiveis.length) {
+    grid.innerHTML = '<div style="color:var(--text3);font-size:13px;grid-column:1/-1;text-align:center;padding:20px">Nenhum serviço disponível</div>'
+    return
+  }
+  grid.innerHTML = servicosDisponiveis.map(s => {
+    const nome = typeof s === 'object' ? s.nome : s
+    const preco = typeof s === 'object' && s.preco > 0 ? `R$ ${Number(s.preco).toFixed(2).replace('.', ',')}` : ''
+    const nomeEscapado = nome.replace(/'/g, "\\'")
+    return `<button class="servico-btn" onclick="selecionarServico(this,'${nomeEscapado}')">
+      ${nome}${preco ? `<span class="servico-preco">${preco}</span>` : ''}
+    </button>`
+  }).join('')
 }
 
 function selecionarServico(btn, s) {
@@ -412,7 +424,10 @@ async function carregarHorarios(dataEscolhida) {
     const res = await fetch(`${API}/agendamentos/horarios-ocupados?clinicaId=${clinicaId}&data=${dataEscolhida}`)
     const result = await res.json()
     if(result.diaInativo || !result.horarios?.length) { container.innerHTML = '<div class="empty-msg">Sem atendimento neste dia</div>'; return }
-    container.innerHTML = '<div class="horarios-grid">' + result.horarios.map(h => { const ocu = result.ocupados?.includes(h); return `<button class="horario-btn" ${ocu?'disabled':''} onclick="selecionarHorario(this,'${h}')">${h}</button>` }).join('') + '</div>'
+    container.innerHTML = '<div class="horarios-grid">' + result.horarios.map(h => {
+      const ocu = result.ocupados?.includes(h)
+      return `<button class="horario-btn" ${ocu?'disabled':''} onclick="selecionarHorario(this,'${h}')">${h}</button>`
+    }).join('') + '</div>'
   } catch(e) { container.innerHTML = '<div class="empty-msg">Erro ao carregar horários</div>' }
 }
 
@@ -455,7 +470,6 @@ async function confirmarAgendamento() {
       const msg = encodeURIComponent(`Olá! Meu agendamento foi confirmado\n\nServiço: ${servicoSel}\nData: ${d}/${m}/${a}\nHorário: ${horarioSel}\nNome: ${nome}`)
       document.getElementById('btn-whatsapp').href = `https://wa.me/55${tel}?text=${msg}`
 
-      // ── Link de cancelamento ──────────────────────────
       if (resposta && resposta._id) {
         document.getElementById('btn-cancelar-link').href = '/cancelar.html?id=' + resposta._id
       } else {

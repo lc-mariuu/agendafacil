@@ -5,6 +5,7 @@ const appointmentSchema = new mongoose.Schema({
   pacienteNome: { type: String, required: true },
   pacienteTelefone: { type: String, default: '' },
   servico: { type: String, required: true },
+  preco: { type: Number, default: 0 }, // ✅ preço salvo no momento do agendamento
   data: { type: String, required: true },
   hora: { type: String, required: true },
   status: { type: String, default: 'confirmado', enum: ['confirmado', 'cancelado', 'concluido'] },
