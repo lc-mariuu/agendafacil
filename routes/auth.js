@@ -21,19 +21,29 @@ const autenticar = (req, res, next) => {
 router.post('/cadastro', async (req, res) => {
   try {
     const { nome, email, senha, negocio, segmento, servicos } = req.body
+
     const existe = await User.findOne({ email })
     if (existe) return res.status(400).json({ erro: 'Email já cadastrado' })
+
     const senhaCriptografada = await bcrypt.hash(senha, 10)
     const user = await User.create({ nome, email, senha: senhaCriptografada })
-    // Cria o primeiro negócio automaticamente
+
     const neg = await Negocio.create({
       userId: user._id,
       nome: negocio,
       segmento: segmento || 'Outro',
       servicos: servicos || []
     })
+
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' })
-    res.json({ token, nome: user.nome, negocio: neg.nome, negocioId: neg._id, userId: user._id })
+
+    res.json({
+      token,
+      nome: user.nome,
+      negocio: neg.nome,
+      negocioId: neg._id,
+      userId: user._id
+    })
   } catch (err) {
     console.error('Erro no cadastro:', err.message)
     res.status(500).json({ erro: 'Erro ao cadastrar' })
@@ -44,21 +54,29 @@ router.post('/cadastro', async (req, res) => {
 router.post('/login', async (req, res) => {
   try {
     const { email, senha } = req.body
+
     const user = await User.findOne({ email })
     if (!user) return res.status(400).json({ erro: 'Email ou senha incorretos' })
+
     const ok = await user.compararSenha(senha)
     if (!ok) return res.status(400).json({ erro: 'Email ou senha incorretos' })
-    // Busca todos os negócios do usuário
+
     const negocios = await Negocio.find({ userId: user._id }).sort({ criadoEm: 1 })
     const negPrincipal = negocios[0]
+
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' })
+
     res.json({
       token,
       nome: user.nome,
       negocio: negPrincipal?.nome || '',
       negocioId: negPrincipal?._id || null,
       userId: user._id,
-      negocios: negocios.map(n => ({ _id: n._id, nome: n.nome, segmento: n.segmento }))
+      negocios: negocios.map(n => ({
+        _id: n._id,
+        nome: n.nome,
+        segmento: n.segmento
+      }))
     })
   } catch (err) {
     console.error('Erro no login:', err.message)
@@ -66,7 +84,7 @@ router.post('/login', async (req, res) => {
   }
 })
 
-// ── LISTAR NEGÓCIOS DO USUÁRIO ────────────────────────
+// ── LISTAR NEGÓCIOS ────────────────────────
 router.get('/negocios', autenticar, async (req, res) => {
   try {
     const negocios = await Negocio.find({ userId: req.userId }).sort({ criadoEm: 1 })
@@ -76,12 +94,13 @@ router.get('/negocios', autenticar, async (req, res) => {
   }
 })
 
-// ── CRIAR NOVO NEGÓCIO ────────────────────────────────
+// ── CRIAR NEGÓCIO ─────────────────────────
 router.post('/negocios', autenticar, async (req, res) => {
   try {
     const user = await User.findById(req.userId)
     const limite = user.limiteNegocios()
     const total = await Negocio.countDocuments({ userId: req.userId })
+
     if (total >= limite) {
       return res.status(403).json({
         erro: limite === 1
@@ -89,8 +108,16 @@ router.post('/negocios', autenticar, async (req, res) => {
           : 'Limite de 3 painéis atingido no plano Pro'
       })
     }
+
     const { nome, segmento, servicos } = req.body
-    const neg = await Negocio.create({ userId: req.userId, nome, segmento, servicos: servicos || [] })
+
+    const neg = await Negocio.create({
+      userId: req.userId,
+      nome,
+      segmento,
+      servicos: servicos || []
+    })
+
     res.json(neg)
   } catch (err) {
     console.error('Erro ao criar negócio:', err.message)
@@ -98,84 +125,39 @@ router.post('/negocios', autenticar, async (req, res) => {
   }
 })
 
-// ── EXCLUIR NEGÓCIO ───────────────────────────────────
-router.delete('/negocios/:negocioId', autenticar, async (req, res) => {
-  try {
-    const neg = await Negocio.findOne({ _id: req.params.negocioId, userId: req.userId })
-    if (!neg) return res.status(404).json({ erro: 'Negócio não encontrado' })
-    const total = await Negocio.countDocuments({ userId: req.userId })
-    if (total <= 1) return res.status(400).json({ erro: 'Você precisa ter ao menos 1 negócio' })
-    await Negocio.deleteOne({ _id: neg._id })
-    res.json({ ok: true })
-  } catch {
-    res.status(500).json({ erro: 'Erro ao excluir negócio' })
-  }
-})
-
-// ── BUSCAR NEGÓCIO PÚBLICO (para página de agendamento) ─
-router.get('/negocio/:id', async (req, res) => {
-  try {
-    // Tenta buscar como Negocio primeiro
-    let neg = await Negocio.findById(req.params.id)
-    if (neg) {
-      return res.json({
-        negocio: neg.nome,
-        segmento: neg.segmento,
-        servicos: neg.servicos,
-        horarios: neg.horarios,
-        intervalo: neg.intervalo,
-        pausas: neg.pausas || [],
-        pagamentos: neg.pagamentos || {},
-        bio: neg.bio
-      })
-    }
-    // Fallback: busca como User (compatibilidade com contas antigas)
-    const user = await User.findById(req.params.id)
-    if (!user) return res.status(404).json({ erro: 'Negócio não encontrado' })
-    // Pega o primeiro negócio do user
-    const negUser = await Negocio.findOne({ userId: user._id })
-    if (negUser) {
-      return res.json({
-        negocio: negUser.nome,
-        segmento: negUser.segmento,
-        servicos: negUser.servicos,
-        horarios: negUser.horarios,
-        intervalo: negUser.intervalo,
-        bio: negUser.bio
-      })
-    }
-    res.status(404).json({ erro: 'Negócio não encontrado' })
-  } catch {
-    res.status(500).json({ erro: 'Erro ao buscar negócio' })
-  }
-})
-
-// ── ATUALIZAR SERVIÇOS ────────────────────────────────
+// ── ATUALIZAR SERVIÇOS ─────────────────────
 router.patch('/servicos', autenticar, async (req, res) => {
   try {
     const { negocioId, servicos } = req.body
+
     const neg = await Negocio.findOneAndUpdate(
       { _id: negocioId, userId: req.userId },
       { servicos },
-      { new: true }
+      { returnDocument: 'after' }
     )
+
     if (!neg) return res.status(404).json({ erro: 'Negócio não encontrado' })
+
     res.json({ servicos: neg.servicos })
   } catch {
     res.status(500).json({ erro: 'Erro ao atualizar serviços' })
   }
 })
 
-// ── ATUALIZAR HORÁRIOS ────────────────────────────────
+// ── ATUALIZAR HORÁRIOS ─────────────────────
 router.patch('/horarios', autenticar, async (req, res) => {
   try {
     const { negocioId, horarios, intervalo, pausas } = req.body
+
     const update = { horarios, intervalo }
     if (pausas !== undefined) update.pausas = pausas
+
     await Negocio.findOneAndUpdate(
       { _id: negocioId, userId: req.userId },
-      { $set: update }
+      { $set: update },
+      { returnDocument: 'after' }
     )
+
     res.json({ ok: true })
   } catch (err) {
     console.error('Erro salvar horarios:', err.message)
@@ -183,14 +165,17 @@ router.patch('/horarios', autenticar, async (req, res) => {
   }
 })
 
-// ── ATUALIZAR PAGAMENTOS ─────────────────────────────
+// ── ATUALIZAR PAGAMENTOS ─────────────────────
 router.patch('/pagamentos', autenticar, async (req, res) => {
   try {
     const { negocioId, pagamentos } = req.body
+
     await Negocio.findOneAndUpdate(
       { _id: negocioId, userId: req.userId },
-      { $set: { pagamentos } }
+      { $set: { pagamentos } },
+      { returnDocument: 'after' }
     )
+
     res.json({ ok: true })
   } catch (err) {
     console.error('Erro salvar pagamentos:', err.message)
@@ -198,14 +183,17 @@ router.patch('/pagamentos', autenticar, async (req, res) => {
   }
 })
 
-// ── ATUALIZAR BIO ─────────────────────────────────────
+// ── ATUALIZAR BIO ─────────────────────
 router.patch('/bio', autenticar, async (req, res) => {
   try {
     const { negocioId, ...bioData } = req.body
+
     await Negocio.findOneAndUpdate(
       { _id: negocioId, userId: req.userId },
-      { $set: { bio: bioData } }
+      { $set: { bio: bioData } },
+      { returnDocument: 'after' }
     )
+
     res.json({ ok: true })
   } catch (err) {
     console.error('Erro salvar bio:', err.message)
@@ -213,30 +201,36 @@ router.patch('/bio', autenticar, async (req, res) => {
   }
 })
 
-// ── ATUALIZAR NOME DO NEGÓCIO ─────────────────────────
+// ── ATUALIZAR NEGÓCIO ─────────────────────
 router.patch('/negocios/:negocioId', autenticar, async (req, res) => {
   try {
     const { nome, segmento } = req.body
+
     const neg = await Negocio.findOneAndUpdate(
       { _id: req.params.negocioId, userId: req.userId },
       { nome, segmento },
-      { new: true }
+      { returnDocument: 'after' }
     )
+
     if (!neg) return res.status(404).json({ erro: 'Negócio não encontrado' })
+
     res.json(neg)
   } catch {
     res.status(500).json({ erro: 'Erro ao atualizar negócio' })
   }
 })
 
-// ── ATUALIZAR LEMBRETES ───────────────────────────────
+// ── ATUALIZAR LEMBRETES ─────────────────────
 router.patch('/lembretes', autenticar, async (req, res) => {
   try {
     const { negocioId, ativo, numero, mensagem } = req.body
+
     await Negocio.findOneAndUpdate(
       { _id: negocioId, userId: req.userId },
-      { $set: { lembrete: { ativo, numero, mensagem } } }
+      { $set: { lembrete: { ativo, numero, mensagem } } },
+      { returnDocument: 'after' }
     )
+
     res.json({ ok: true })
   } catch (err) {
     console.error('Erro salvar lembrete:', err.message)
