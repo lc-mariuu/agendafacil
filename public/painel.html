@@ -167,11 +167,9 @@ body {
   display: flex; flex-direction: column; z-index: 100;
   transition: transform 0.3s cubic-bezier(.4,0,.2,1);
   border-right: 1px solid var(--sidebar-border);
-  /* Subtle inner glow on right edge */
   box-shadow: inset -1px 0 0 rgba(59,130,246,0.06), 1px 0 0 rgba(0,0,0,0.3);
 }
 
-/* Ambient gradient overlay on sidebar */
 .sidebar::before {
   content: '';
   position: absolute;
@@ -205,7 +203,6 @@ body {
 }
 .sidebar-brand-text span { color: #60a5fa; }
 
-/* Negócio selector */
 .negocio-selector { position: relative; }
 .negocio-atual {
   display: flex; align-items: center; gap: 9px;
@@ -362,7 +359,7 @@ body {
   display: flex; align-items: flex-start; justify-content: space-between;
   gap: 16px; flex-wrap: wrap;
 }
-.page-header-text {}
+
 .page-header h1 {
   font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 24px; font-weight: 800;
@@ -401,14 +398,12 @@ body {
   transform: translateY(-2px);
   box-shadow: var(--shadow-md);
 }
-/* Accent top stripe */
 .stat-card::before {
   content: '';
   position: absolute; top:0; left:0; right:0; height: 2px;
   background: linear-gradient(90deg, var(--accent), var(--accent-2));
   opacity: 0.7;
 }
-/* Subtle background orb */
 .stat-card::after {
   content: '';
   position: absolute; top:-20px; right:-20px;
@@ -481,7 +476,6 @@ body {
 }
 .btn-primary:active { transform: translateY(0); }
 
-/* Alias */
 .btn-copiar { display: inline-flex; align-items: center; gap: 7px; background: var(--accent); color: white; border: none; padding: 9px 18px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; flex-shrink: 0; transition: all .18s; font-family: inherit; box-shadow: var(--shadow-accent); }
 .btn-copiar:hover { background: var(--accent-hover); transform: translateY(-1px); }
 .btn-novo { display: flex; align-items: center; gap: 7px; background: var(--accent); color: white; border: none; padding: 8px 16px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: all .18s; font-family: inherit; box-shadow: var(--shadow-accent); }
@@ -615,7 +609,7 @@ tbody tr:hover td { background: var(--bg); }
 .pg-btn:disabled { opacity: .3; cursor: not-allowed; }
 
 /* ═══════════════════════════════════════════════════
-   SECTION BLOCK — upgraded card system
+   SECTION BLOCK
 ═══════════════════════════════════════════════════ */
 .section-block {
   background: var(--bg-card);
@@ -636,7 +630,6 @@ tbody tr:hover td { background: var(--bg); }
   background: var(--bg-card);
   position: relative;
 }
-/* Left accent line */
 .section-block-header::before {
   content: '';
   position: absolute; left:0; top: 20%; bottom: 20%;
@@ -664,7 +657,6 @@ tbody tr:hover td { background: var(--bg); }
 .toggle-row-label { font-size: 14px; font-weight: 600; color: var(--text); }
 .toggle-row-desc { font-size: 12.5px; color: var(--text2); margin-top: 4px; line-height: 1.5; }
 
-/* Toggle switch */
 .toggle-switch { position: relative; display: inline-block; width: 46px; height: 25px; flex-shrink: 0; }
 .toggle-switch input { opacity: 0; width: 0; height: 0; }
 .toggle-track {
@@ -858,7 +850,6 @@ tbody tr:hover td { background: var(--bg); }
 }
 .btn-ver-planos:hover { background: var(--accent-hover); transform: translateY(-1px); }
 
-/* Trial banner */
 .trial-banner {
   background: var(--yellow-bg); border: 1px solid var(--yellow-border);
   border-radius: var(--radius); padding: 13px 20px; margin-bottom: 22px;
@@ -1179,8 +1170,7 @@ tbody tr:hover td { background: var(--bg); }
 #pausa-label { text-align: left; }
 
 /* ═══════════════════════════════════════════════════
-   DARK MODE OVERRIDES (auto — use CSS vars above)
-   Only specifics that need extra tweaks
+   DARK MODE OVERRIDES
 ═══════════════════════════════════════════════════ */
 body.dark-mode .card-header { background: var(--bg-card); }
 body.dark-mode .section-block-header { background: var(--bg-card); }
@@ -1377,6 +1367,7 @@ body.dark-mode ::placeholder { color: var(--text3); opacity: .7; }
   </div>
 
   <div class="sidebar-footer">
+    <!-- ✅ FIX 2: btn-instalar agora tem id e fallback robusto -->
     <button id="btn-instalar-app" class="btn-instalar" onclick="instalarApp()">
       <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 2v7M4 6.5L6.5 9 9 6.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M1.5 9.5v1A1 1 0 0 0 2.5 11.5h8a1 1 0 0 0 1-1v-1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
       Instalar app
@@ -1408,7 +1399,7 @@ body.dark-mode ::placeholder { color: var(--text3); opacity: .7; }
         <div class="link-card-label">Link de agendamento</div>
         <div class="link-card-url" id="link-agendamento"></div>
       </div>
-      <button class="btn-copiar" onclick="copiarLink()">
+      <button class="btn-copiar" id="btn-copiar-agendamento" onclick="copiarLink()">
         <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M1 8.5V2a1 1 0 0 1 1-1h6.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
         Copiar link
       </button>
@@ -1850,7 +1841,8 @@ body.dark-mode ::placeholder { color: var(--text3); opacity: .7; }
         <div class="link-card-label">Link da sua bio</div>
         <div class="link-card-url" id="link-bio"></div>
       </div>
-      <button class="btn-copiar" onclick="copiarLinkBio()">
+      <!-- ✅ FIX 1: id único no botão copiar bio -->
+      <button class="btn-copiar" id="btn-copiar-bio" onclick="copiarLinkBio()">
         <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M1 8.5V2a1 1 0 0 1 1-1h6.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
         Copiar link
       </button>
@@ -1955,9 +1947,6 @@ body.dark-mode ::placeholder { color: var(--text3); opacity: .7; }
 
 </div><!-- /main -->
 
-<!-- ═══════════════════════════════════════════════════
-     JAVASCRIPT — 100% igual ao original
-═══════════════════════════════════════════════════ -->
 <script>
 const API = 'https://agendafacil-wf3q.onrender.com/api'
 let todosAgendamentos = []
@@ -2210,8 +2199,18 @@ async function cancelarComAviso(id,nome,telefone,data,hora){
   filtrarData()
 }
 
-function copiarLink(){navigator.clipboard.writeText(document.getElementById('link-agendamento').textContent);const btn=document.querySelectorAll('.btn-copiar')[0];const orig=btn.innerHTML;btn.innerHTML='✓ Copiado!';setTimeout(()=>btn.innerHTML=orig,2000)}
-function copiarLinkBio(){navigator.clipboard.writeText(document.getElementById('link-bio').textContent);const btn=document.querySelectorAll('.btn-copiar')[1];const orig=btn.innerHTML;btn.innerHTML='✓ Copiado!';setTimeout(()=>btn.innerHTML=orig,2000)}
+// ✅ FIX 1: copiarLink e copiarLinkBio usando id únicos — sem dependência de índice
+function copiarLink(){
+  navigator.clipboard.writeText(document.getElementById('link-agendamento').textContent)
+  const btn = document.getElementById('btn-copiar-agendamento')
+  if(btn){ const orig=btn.innerHTML; btn.innerHTML='✓ Copiado!'; setTimeout(()=>btn.innerHTML=orig,2000) }
+}
+function copiarLinkBio(){
+  navigator.clipboard.writeText(document.getElementById('link-bio').textContent)
+  const btn = document.getElementById('btn-copiar-bio')
+  if(btn){ const orig=btn.innerHTML; btn.innerHTML='✓ Copiado!'; setTimeout(()=>btn.innerHTML=orig,2000) }
+}
+
 function formatarData(data){const[a,m,d]=data.split('-');return`${d}/${m}/${a}`}
 function sair(){localStorage.clear();window.location.href='/auth.html'}
 
@@ -2533,15 +2532,70 @@ function renderHistorico() {
 function historicoPaginar(dir) { const novo = historicoMesOffset + dir; if (novo > 0) return; historicoMesOffset = novo; renderHistorico() }
 function historicoIrPara(offset) { if (offset > 0) return; historicoMesOffset = offset; renderHistorico() }
 
+// ═══════════════════════════════════════════════════
 // INIT
+// ═══════════════════════════════════════════════════
 carregarTema()
 const token = localStorage.getItem('token')
 if (token) { mostrarPainel() } else { window.location.href = '/auth.html' }
-if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(() => {})
+
+// ✅ FIX 2: Service Worker com fallback robusto para botão instalar
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js')
+    .then(() => {
+      // SW registrado com sucesso — aguarda beforeinstallprompt normalmente
+    })
+    .catch(() => {
+      // SW falhou (arquivo não encontrado ou erro) — mostra botão com instrução manual
+      const btn = document.getElementById('btn-instalar-app')
+      if (btn) {
+        btn.style.display = 'flex'
+        btn.onclick = () => {
+          const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent)
+          if (isIOS) {
+            alert('Para instalar no iPhone/iPad: toque em Compartilhar (□↑) → "Adicionar à Tela de Início"')
+          } else {
+            alert('Para instalar: no Chrome, toque nos 3 pontos (⋮) → "Adicionar à tela inicial" ou "Instalar aplicativo"')
+          }
+        }
+      }
+    })
+}
+
 let deferredPrompt = null
-window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); deferredPrompt = e; const btn = document.getElementById('btn-instalar-app'); if (btn) btn.style.display = 'flex' })
-function instalarApp() { if (!deferredPrompt) return; deferredPrompt.prompt(); deferredPrompt.userChoice.then(() => { deferredPrompt = null; const btn = document.getElementById('btn-instalar-app'); if (btn) btn.style.display = 'none' }) }
-window.addEventListener('appinstalled', () => { const btn = document.getElementById('btn-instalar-app'); if (btn) btn.style.display = 'none' })
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault()
+  deferredPrompt = e
+  const btn = document.getElementById('btn-instalar-app')
+  if (btn) {
+    btn.style.display = 'flex'
+    // Restaura o onclick original para o fluxo nativo
+    btn.onclick = instalarApp
+  }
+})
+
+function instalarApp() {
+  if (!deferredPrompt) {
+    const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent)
+    if (isIOS) {
+      alert('Para instalar no iPhone/iPad: toque em Compartilhar (□↑) → "Adicionar à Tela de Início"')
+    } else {
+      alert('Para instalar: no Chrome, toque nos 3 pontos (⋮) → "Adicionar à tela inicial" ou "Instalar aplicativo"')
+    }
+    return
+  }
+  deferredPrompt.prompt()
+  deferredPrompt.userChoice.then(() => {
+    deferredPrompt = null
+    const btn = document.getElementById('btn-instalar-app')
+    if (btn) btn.style.display = 'none'
+  })
+}
+
+window.addEventListener('appinstalled', () => {
+  const btn = document.getElementById('btn-instalar-app')
+  if (btn) btn.style.display = 'none'
+})
 </script>
 </body>
 </html>
