@@ -13,6 +13,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
+/* ══════════════════════════════════════════
+   TEMA CLARO (padrão)
+══════════════════════════════════════════ */
 :root {
   --sidebar-w:260px;--sidebar-bg:#0f172a;--sidebar-border:rgba(255,255,255,0.06);
   --accent:#2563eb;--accent-hover:#1d4ed8;--accent-light:#eff6ff;--accent-mid:#dbeafe;
@@ -26,7 +29,78 @@
   --shadow:0 1px 3px rgba(0,0,0,0.05),0 1px 2px rgba(0,0,0,0.03);
   --shadow-md:0 4px 20px rgba(0,0,0,0.07);
   --shadow-lg:0 8px 32px rgba(0,0,0,0.1);
+
+  /* Tema toggle */
+  --theme-transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
+
+/* ══════════════════════════════════════════
+   TEMA ESCURO
+══════════════════════════════════════════ */
+body.dark-mode {
+  --bg:#0f172a;
+  --bg-card:#1e293b;
+  --border:rgba(255,255,255,0.07);
+  --border2:rgba(255,255,255,0.13);
+  --text:#f1f5f9;
+  --text2:#94a3b8;
+  --text3:#475569;
+  --accent-light:rgba(37,99,235,0.18);
+  --accent-mid:rgba(37,99,235,0.28);
+  --green-bg:rgba(22,163,74,0.15);
+  --green-border:rgba(22,163,74,0.3);
+  --red-bg:rgba(220,38,38,0.15);
+  --red-border:rgba(220,38,38,0.3);
+  --yellow-bg:rgba(202,138,4,0.15);
+  --yellow-border:rgba(202,138,4,0.3);
+  --purple-bg:rgba(124,58,237,0.15);
+  --shadow:0 1px 3px rgba(0,0,0,0.3),0 1px 2px rgba(0,0,0,0.2);
+  --shadow-md:0 4px 20px rgba(0,0,0,0.35);
+  --shadow-lg:0 8px 32px rgba(0,0,0,0.45);
+}
+
+body.dark-mode .sidebar { background:#080f1c; }
+body.dark-mode .topbar-mobile { background:#080f1c; }
+body.dark-mode .card-header { background:linear-gradient(to right, var(--bg-card), #16213e); }
+body.dark-mode .section-block-header { background:linear-gradient(135deg, var(--bg-card), #16213e); }
+body.dark-mode thead tr { background:#16213e; }
+body.dark-mode .paginacao { background:#16213e; }
+body.dark-mode .pg-btn { background:var(--bg-card); color:var(--text2); }
+body.dark-mode .btn-acao { background:var(--bg-card); border-color:var(--border2); }
+body.dark-mode .filtro-data { background:var(--bg-card); color:var(--text); border-color:var(--border2); }
+body.dark-mode .form-group input,
+body.dark-mode .form-group select,
+body.dark-mode .form-group textarea { background:var(--bg-card); color:var(--text); border-color:var(--border2); }
+body.dark-mode .add-field-group input { background:var(--bg-card); color:var(--text); }
+body.dark-mode .dia-horarios input[type=time] { background:var(--bg-card); color:var(--text); border-color:var(--border2); }
+body.dark-mode .intervalo-btn { background:var(--bg-card); color:var(--text2); border-color:var(--border2); }
+body.dark-mode .intervalo-btn.selecionado { background:linear-gradient(135deg,var(--accent),#3b82f6); color:white; }
+body.dark-mode .pausa-item { background:linear-gradient(135deg,#1e293b,#162032); }
+body.dark-mode .link-card { background:linear-gradient(135deg,rgba(37,99,235,0.15),rgba(59,130,246,0.1)); border-color:rgba(37,99,235,0.3); }
+body.dark-mode .link-card-url { color:#60a5fa; }
+body.dark-mode .ag-chip { background:var(--bg-card); border-color:var(--border2); color:var(--text2); }
+body.dark-mode .passo-steps { background:#16213e; border-color:var(--border2); }
+body.dark-mode .alerta-verde { background:rgba(22,163,74,0.12); border-color:rgba(22,163,74,0.25); color:#4ade80; }
+body.dark-mode .alerta-azul { background:rgba(37,99,235,0.12); border-color:rgba(37,99,235,0.25); color:#60a5fa; }
+body.dark-mode .horario-item { background:linear-gradient(135deg,var(--bg-card),#162032); }
+body.dark-mode .modal { background:#1e293b; }
+body.dark-mode .modal-neg { background:#1e293b; }
+body.dark-mode .modal-close { background:#16213e; color:var(--text2); }
+body.dark-mode .btn-cancelar-modal { background:#16213e; color:var(--text2); border-color:var(--border2); }
+body.dark-mode .foto-wrap { background:linear-gradient(135deg,var(--bg-card),#16213e); }
+body.dark-mode .bloqueio-card { background:#1e293b; }
+body.dark-mode .bloqueio-card p { color:var(--text2); }
+body.dark-mode .pausa-item-label { color:var(--text); }
+body.dark-mode #pausa-inicio,
+body.dark-mode #pausa-fim,
+body.dark-mode #pausa-label { background:var(--bg-card); color:var(--text); border-color:var(--border2); }
+body.dark-mode div[style*="background:#f8fafc"] { background:#16213e !important; border-color:var(--border2) !important; }
+
+/* Smooth transitions em tudo */
+*, *::before, *::after {
+  transition: var(--theme-transition);
+}
+
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased}
 .sidebar{position:fixed;left:0;top:0;bottom:0;width:var(--sidebar-w);background:var(--sidebar-bg);display:flex;flex-direction:column;z-index:100;transition:transform 0.3s cubic-bezier(.4,0,.2,1);border-right:1px solid var(--sidebar-border)}
@@ -231,12 +305,10 @@ tbody tr:hover td{background:var(--accent-light)}
 .dia-horarios{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .dia-horarios input[type=time]{padding:8px 11px;border:1.5px solid var(--border2);border-radius:9px;font-size:13px;outline:none;font-family:inherit;transition:all .2s;background:white}
 .dia-horarios input[type=time]:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(37,99,235,0.08)}
-.dia-horarios span{font-size:12px;color:var(--text3);font-weight:600}
 .dia-inativo .dia-horarios{opacity:.3;pointer-events:none}
 .dia-inativo .dia-toggle label{color:var(--text3)}
 .suporte-title{font-size:22px;font-weight:700;color:var(--text);margin-bottom:10px;letter-spacing:-0.02em}
 .suporte-desc{font-size:14px;color:var(--text2);line-height:1.7;margin-bottom:32px;max-width:340px;margin-left:auto;margin-right:auto}
-/* ── PASSO A PASSO WPP ── */
 .passo{display:flex;gap:16px;margin-bottom:24px;padding-bottom:24px;border-bottom:1px solid var(--border)}
 .passo:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
 .passo-num{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--accent),#3b82f6);color:white;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;flex-shrink:0}
@@ -248,6 +320,113 @@ tbody tr:hover td{background:var(--accent-light)}
 .passo-step-num{width:22px;height:22px;border-radius:6px;background:var(--accent-light);border:1px solid var(--accent-mid);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:11px;font-weight:700;color:var(--accent)}
 .alerta-verde{background:var(--green-bg);border:1px solid var(--green-border);border-radius:10px;padding:12px 14px;font-size:12.5px;color:#166534;line-height:1.5;margin-top:10px}
 .alerta-azul{background:var(--accent-light);border:1px solid var(--accent-mid);border-radius:10px;padding:12px 14px;font-size:12.5px;color:#1e40af;line-height:1.5;margin-top:10px}
+
+/* ══════════════════════════════════════════
+   SELETOR DE TEMA (novo componente)
+══════════════════════════════════════════ */
+.theme-selector-wrap {
+  display: flex;
+  gap: 12px;
+  margin-top: 4px;
+  flex-wrap: wrap;
+}
+.theme-option {
+  flex: 1;
+  min-width: 120px;
+  max-width: 180px;
+  border: 2px solid var(--border2);
+  border-radius: 14px;
+  padding: 14px 16px;
+  cursor: pointer;
+  background: var(--bg-card);
+  transition: all .2s;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  position: relative;
+  user-select: none;
+}
+.theme-option:hover {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+.theme-option.ativo {
+  border-color: var(--accent);
+  background: var(--accent-light);
+  box-shadow: 0 0 0 3px rgba(37,99,235,0.12);
+}
+.theme-option-check {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--accent);
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+.theme-option-check svg { display: block; }
+.theme-option.ativo .theme-option-check { display: flex; }
+.theme-preview {
+  width: 100%;
+  height: 52px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  display: flex;
+  gap: 4px;
+  padding: 6px;
+}
+.theme-preview-sidebar {
+  width: 28%;
+  border-radius: 5px;
+  height: 100%;
+}
+.theme-preview-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.theme-preview-bar {
+  height: 8px;
+  border-radius: 3px;
+  width: 90%;
+}
+.theme-preview-bar2 {
+  height: 8px;
+  border-radius: 3px;
+  width: 60%;
+}
+/* Claro */
+.theme-preview.claro { background: #f1f5f9; }
+.theme-preview.claro .theme-preview-sidebar { background: #0f172a; }
+.theme-preview.claro .theme-preview-bar { background: #e2e8f0; }
+.theme-preview.claro .theme-preview-bar2 { background: #2563eb; }
+/* Escuro */
+.theme-preview.escuro { background: #0f172a; }
+.theme-preview.escuro .theme-preview-sidebar { background: #080f1c; }
+.theme-preview.escuro .theme-preview-bar { background: #1e293b; }
+.theme-preview.escuro .theme-preview-bar2 { background: #3b82f6; }
+
+.theme-option-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+}
+.theme-option-desc {
+  font-size: 11.5px;
+  color: var(--text3);
+  margin-top: -4px;
+}
+.theme-option-emoji {
+  font-size: 20px;
+  line-height: 1;
+}
+
 @media(max-width:768px){
   .sidebar{transform:translateX(calc(-1 * var(--sidebar-w)))}
   .sidebar.aberta{transform:translateX(0)}
@@ -265,43 +444,17 @@ tbody tr:hover td{background:var(--accent-light)}
   .ag-cards{display:block}
   .horario-grid{grid-template-columns:1fr}
   .section-block-body{padding:16px}
-
-  /* ── CONFIGURAÇÕES: layout de serviços ── */
-  .add-servico-row{
-    flex-direction:column;
-    gap:10px;
-    align-items:stretch;   /* cada filho ocupa 100% */
-  }
-  .add-field-group{
-    width:100%;
-    min-width:unset;
-  }
-  .add-field-nome{
-    flex:none;
-    width:100%;
-  }
-  .add-field-preco{
-    flex:none;
-    width:100%;
-    max-width:100%;
-  }
-  .add-field-group input{
-    width:100%;
-    font-size:16px; /* impede zoom automático no iOS */
-    box-sizing:border-box;
-  }
-  .btn-add{
-    width:100%;
-    padding:13px 20px;
-    font-size:15px;
-    border-radius:12px;
-    align-self:unset;
-  }
+  .add-servico-row{flex-direction:column;gap:10px;align-items:stretch}
+  .add-field-group{width:100%;min-width:unset}
+  .add-field-nome{flex:none;width:100%}
+  .add-field-preco{flex:none;width:100%;max-width:100%}
+  .add-field-group input{width:100%;font-size:16px;box-sizing:border-box}
+  .btn-add{width:100%;padding:13px 20px;font-size:15px;border-radius:12px;align-self:unset}
   .servico-tag-wrap{margin:3px}
   .servico-tag{font-size:12.5px;padding:6px 12px;gap:6px}
   .servico-preco{font-size:10.5px}
+  .theme-option { max-width: 100%; }
 }
-@media(max-width:400px){.stats{grid-template-columns:1fr}}
 @media(max-width:400px){.stats{grid-template-columns:1fr}}
 </style>
 </head>
@@ -575,8 +728,6 @@ tbody tr:hover td{background:var(--accent-light)}
       <h1>WhatsApp Automático</h1>
       <p>Configure seu WhatsApp Business para enviar o link de agendamento sozinho</p>
     </div>
-
-    <!-- LINK GERADO -->
     <div class="section-block">
       <div class="section-block-header">
         <div class="section-block-icon">
@@ -600,8 +751,6 @@ tbody tr:hover td{background:var(--accent-light)}
         </div>
       </div>
     </div>
-
-    <!-- MENSAGEM PRONTA -->
     <div class="section-block">
       <div class="section-block-header">
         <div class="section-block-icon">
@@ -622,8 +771,6 @@ tbody tr:hover td{background:var(--accent-light)}
         </button>
       </div>
     </div>
-
-    <!-- TUTORIAL PASSO A PASSO -->
     <div class="section-block">
       <div class="section-block-header">
         <div class="section-block-icon">
@@ -635,7 +782,6 @@ tbody tr:hover td{background:var(--accent-light)}
         </div>
       </div>
       <div class="section-block-body">
-
         <div class="passo">
           <div class="passo-num">1</div>
           <div style="flex:1">
@@ -644,7 +790,6 @@ tbody tr:hover td{background:var(--accent-light)}
             <div class="alerta-verde">✓ <strong>Dica:</strong> A mensagem já está com o seu link personalizado. Não precisa editar nada.</div>
           </div>
         </div>
-
         <div class="passo">
           <div class="passo-num">2</div>
           <div style="flex:1">
@@ -658,7 +803,6 @@ tbody tr:hover td{background:var(--accent-light)}
             </div>
           </div>
         </div>
-
         <div class="passo">
           <div class="passo-num">3</div>
           <div style="flex:1">
@@ -673,7 +817,6 @@ tbody tr:hover td{background:var(--accent-light)}
             <div class="alerta-azul">ℹ️ Essa mensagem é enviada automaticamente para quem mandar mensagem pela <strong>primeira vez</strong> ou após <strong>14 dias sem contato</strong>.</div>
           </div>
         </div>
-
         <div class="passo">
           <div class="passo-num">4</div>
           <div style="flex:1">
@@ -688,7 +831,6 @@ tbody tr:hover td{background:var(--accent-light)}
             </div>
           </div>
         </div>
-
         <div class="passo">
           <div class="passo-num verde">✓</div>
           <div style="flex:1">
@@ -697,14 +839,15 @@ tbody tr:hover td{background:var(--accent-light)}
             <div class="alerta-verde">💡 <strong>Importante:</strong> Isso funciona apenas no <strong>WhatsApp Business</strong> (app gratuito da Meta). Se você usa o WhatsApp comum, baixe o WhatsApp Business e migre seu número — é gratuito.</div>
           </div>
         </div>
-
       </div>
     </div>
   </div>
 
   <!-- CONFIGURAÇÕES -->
   <div class="page" id="page-configuracoes">
-    <div class="page-header"><h1>Configurações</h1><p>Personalize os serviços do seu negócio</p></div>
+    <div class="page-header"><h1>Configurações</h1><p>Personalize os serviços e a aparência do seu painel</p></div>
+
+    <!-- SERVIÇOS -->
     <div class="section-block">
       <div class="section-block-header">
         <div class="section-block-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M2 5h16M2 10h10M2 15h12" stroke="#2563eb" stroke-width="1.6" stroke-linecap="round"/></svg></div>
@@ -732,6 +875,77 @@ tbody tr:hover td{background:var(--accent-light)}
         </div>
       </div>
     </div>
+
+    <!-- ══ APARÊNCIA (NOVO) ══ -->
+    <div class="section-block">
+      <div class="section-block-header">
+        <div class="section-block-icon">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <circle cx="10" cy="10" r="4" stroke="#2563eb" stroke-width="1.6"/>
+            <path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.22 4.22l1.42 1.42M14.36 14.36l1.42 1.42M4.22 15.78l1.42-1.42M14.36 5.64l1.42-1.42" stroke="#2563eb" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div>
+          <div class="section-block-title">Aparência</div>
+          <div class="section-block-sub">Escolha entre o modo claro e o modo escuro para o painel</div>
+        </div>
+      </div>
+      <div class="section-block-body">
+        <div class="theme-selector-wrap">
+
+          <!-- Opção: Claro -->
+          <div class="theme-option" id="theme-opt-claro" onclick="definirTema('claro')">
+            <div class="theme-option-check">
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5L8 3" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="theme-preview claro">
+              <div class="theme-preview-sidebar"></div>
+              <div class="theme-preview-content">
+                <div class="theme-preview-bar"></div>
+                <div class="theme-preview-bar2"></div>
+                <div class="theme-preview-bar" style="width:75%"></div>
+              </div>
+            </div>
+            <div>
+              <div style="display:flex;align-items:center;gap:6px">
+                <span class="theme-option-emoji">☀️</span>
+                <span class="theme-option-label">Modo Claro</span>
+              </div>
+              <div class="theme-option-desc">Interface clara e limpa</div>
+            </div>
+          </div>
+
+          <!-- Opção: Escuro -->
+          <div class="theme-option" id="theme-opt-escuro" onclick="definirTema('escuro')">
+            <div class="theme-option-check">
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5L8 3" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="theme-preview escuro">
+              <div class="theme-preview-sidebar"></div>
+              <div class="theme-preview-content">
+                <div class="theme-preview-bar"></div>
+                <div class="theme-preview-bar2"></div>
+                <div class="theme-preview-bar" style="width:75%"></div>
+              </div>
+            </div>
+            <div>
+              <div style="display:flex;align-items:center;gap:6px">
+                <span class="theme-option-emoji">🌙</span>
+                <span class="theme-option-label">Modo Escuro</span>
+              </div>
+              <div class="theme-option-desc">Confortável para uso noturno</div>
+            </div>
+          </div>
+
+        </div>
+
+        <div style="margin-top:18px;padding:12px 16px;background:var(--accent-light);border:1px solid var(--accent-mid);border-radius:10px;font-size:12.5px;color:var(--accent);font-weight:500;line-height:1.5">
+          💾 A preferência de tema é salva automaticamente no seu navegador.
+        </div>
+      </div>
+    </div>
+    <!-- ══ FIM APARÊNCIA ══ -->
+
   </div>
 
   <!-- BIO -->
@@ -842,6 +1056,29 @@ const servicosPorSegmento = {
   'Outro':['Serviço 1','Serviço 2','Serviço 3']
 }
 
+// ══════════════════════════════════════════
+// TEMA (MODO CLARO / ESCURO)
+// ══════════════════════════════════════════
+function definirTema(tema) {
+  if (tema === 'escuro') {
+    document.body.classList.add('dark-mode')
+  } else {
+    document.body.classList.remove('dark-mode')
+  }
+  localStorage.setItem('tema', tema)
+  atualizarBotoesTema(tema)
+}
+
+function atualizarBotoesTema(tema) {
+  document.getElementById('theme-opt-claro').classList.toggle('ativo', tema === 'claro')
+  document.getElementById('theme-opt-escuro').classList.toggle('ativo', tema === 'escuro')
+}
+
+function carregarTema() {
+  const tema = localStorage.getItem('tema') || 'claro'
+  definirTema(tema)
+}
+
 // ── SIDEBAR ──────────────────────────────────────────────────
 function toggleSidebar(){document.getElementById('sidebar').classList.toggle('aberta');document.getElementById('sidebar-overlay').classList.toggle('visivel')}
 function fecharSidebar(){document.getElementById('sidebar').classList.remove('aberta');document.getElementById('sidebar-overlay').classList.remove('visivel')}
@@ -945,8 +1182,6 @@ async function carregarAgendamentos(){
   calcularLucro()
   filtrarData()
 }
-
-// ✅ LUCRO: usa o preço salvo no agendamento, nunca some
 function calcularLucro(){
   const mesAtual=new Date().toISOString().slice(0,7)
   const lucro=todosAgendamentos
@@ -1237,6 +1472,9 @@ async function salvarConfLembrete(){
 }
 
 // ── INIT ─────────────────────────────────────────────────────
+// Carrega o tema ANTES de tudo para evitar flash
+carregarTema()
+
 const token=localStorage.getItem('token')
 if(token){mostrarPainel()}else{window.location.href='/auth.html'}
 if('serviceWorker'in navigator)navigator.serviceWorker.register('/sw.js').catch(()=>{})
