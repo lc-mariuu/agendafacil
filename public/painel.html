@@ -195,15 +195,11 @@ tbody tr:hover td{background:var(--accent-light)}
 .trial-banner{background:linear-gradient(135deg,var(--yellow-bg),#fef9c3);border:1px solid var(--yellow-border);border-radius:var(--radius);padding:14px 20px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
 .trial-banner p{font-size:13px;color:var(--yellow);font-weight:600}
 .btn-assinar-banner{background:var(--accent);color:white;border:none;padding:7px 16px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit}
-
-/* ── SERVIÇOS ── */
 .servico-tag-wrap{display:inline-block;margin:3px}
 .servico-tag{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--accent-light),var(--accent-mid));border:1px solid rgba(37,99,235,0.2);color:var(--accent);padding:6px 14px;border-radius:100px;font-size:12.5px;font-weight:600;transition:all .2s}
 .servico-preco{background:linear-gradient(135deg,var(--accent),#3b82f6);color:white;padding:2px 9px;border-radius:100px;font-size:11px;font-weight:700}
 .servico-tag button{background:none;border:none;color:#93c5fd;cursor:pointer;font-size:16px;line-height:1;padding:0;display:flex;transition:color .15s}
 .servico-tag button:hover{color:var(--red)}
-
-/* ── ADD SERVIÇO — layout melhorado ── */
 .add-servico-wrap{margin-top:14px}
 .add-servico-row{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end}
 .add-field-group{display:flex;flex-direction:column;gap:5px}
@@ -216,7 +212,6 @@ tbody tr:hover td{background:var(--accent-light)}
 .btn-add{background:linear-gradient(135deg,var(--accent),#3b82f6);color:white;border:none;padding:10px 20px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;font-family:inherit;transition:all .2s;box-shadow:0 2px 8px rgba(37,99,235,0.25);align-self:flex-end}
 .btn-add:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(37,99,235,0.35)}
 .add-servico-erro{font-size:12px;color:var(--red);font-weight:600;margin-top:8px;min-height:16px}
-
 .btn-salvar{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--green),#22c55e);color:white;border:none;padding:11px 24px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;margin-top:18px;font-family:inherit;transition:all .2s;box-shadow:0 2px 8px rgba(22,163,74,0.25)}
 .btn-salvar:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(22,163,74,0.3)}
 .salvo-msg{color:var(--green);font-size:12.5px;margin-left:12px;display:none;font-weight:700}
@@ -241,6 +236,18 @@ tbody tr:hover td{background:var(--accent-light)}
 .dia-inativo .dia-toggle label{color:var(--text3)}
 .suporte-title{font-size:22px;font-weight:700;color:var(--text);margin-bottom:10px;letter-spacing:-0.02em}
 .suporte-desc{font-size:14px;color:var(--text2);line-height:1.7;margin-bottom:32px;max-width:340px;margin-left:auto;margin-right:auto}
+/* ── PASSO A PASSO WPP ── */
+.passo{display:flex;gap:16px;margin-bottom:24px;padding-bottom:24px;border-bottom:1px solid var(--border)}
+.passo:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
+.passo-num{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--accent),#3b82f6);color:white;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;flex-shrink:0}
+.passo-num.verde{background:linear-gradient(135deg,var(--green),#22c55e)}
+.passo-titulo{font-size:14px;font-weight:700;color:var(--text);margin-bottom:6px}
+.passo-desc{font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:12px}
+.passo-steps{background:var(--bg);border:1.5px solid var(--border2);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:8px}
+.passo-step{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text2)}
+.passo-step-num{width:22px;height:22px;border-radius:6px;background:var(--accent-light);border:1px solid var(--accent-mid);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:11px;font-weight:700;color:var(--accent)}
+.alerta-verde{background:var(--green-bg);border:1px solid var(--green-border);border-radius:10px;padding:12px 14px;font-size:12.5px;color:#166534;line-height:1.5;margin-top:10px}
+.alerta-azul{background:var(--accent-light);border:1px solid var(--accent-mid);border-radius:10px;padding:12px 14px;font-size:12.5px;color:#1e40af;line-height:1.5;margin-top:10px}
 @media(max-width:768px){
   .sidebar{transform:translateX(calc(-1 * var(--sidebar-w)))}
   .sidebar.aberta{transform:translateX(0)}
@@ -257,10 +264,44 @@ tbody tr:hover td{background:var(--accent-light)}
   .tabela-scroll{display:none}
   .ag-cards{display:block}
   .horario-grid{grid-template-columns:1fr}
-  .section-block-body{padding:18px}
-  .add-servico-row{flex-direction:column}
-  .add-field-preco{max-width:100%}
+  .section-block-body{padding:16px}
+
+  /* ── CONFIGURAÇÕES: layout de serviços ── */
+  .add-servico-row{
+    flex-direction:column;
+    gap:10px;
+    align-items:stretch;   /* cada filho ocupa 100% */
+  }
+  .add-field-group{
+    width:100%;
+    min-width:unset;
+  }
+  .add-field-nome{
+    flex:none;
+    width:100%;
+  }
+  .add-field-preco{
+    flex:none;
+    width:100%;
+    max-width:100%;
+  }
+  .add-field-group input{
+    width:100%;
+    font-size:16px; /* impede zoom automático no iOS */
+    box-sizing:border-box;
+  }
+  .btn-add{
+    width:100%;
+    padding:13px 20px;
+    font-size:15px;
+    border-radius:12px;
+    align-self:unset;
+  }
+  .servico-tag-wrap{margin:3px}
+  .servico-tag{font-size:12.5px;padding:6px 12px;gap:6px}
+  .servico-preco{font-size:10.5px}
 }
+@media(max-width:400px){.stats{grid-template-columns:1fr}}
 @media(max-width:400px){.stats{grid-template-columns:1fr}}
 </style>
 </head>
@@ -358,6 +399,10 @@ tbody tr:hover td{background:var(--accent-light)}
     <button class="menu-item" onclick="irPara('lembretes',this)">
       <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M7.5 1.5a4.5 4.5 0 0 1 4.5 4.5c0 2.5.5 3.5 1 4H2c.5-.5 1-1.5 1-4a4.5 4.5 0 0 1 4.5-4.5Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M6 12.5a1.5 1.5 0 0 0 3 0" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
       Lembretes
+    </button>
+    <button class="menu-item" onclick="irPara('whatsapp',this)">
+      <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="7.5" r="5.5" stroke="currentColor" stroke-width="1.4"/><path d="M5 8s.5 1.5 2.5 1.5S10 8 10 8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M5.5 5.5h.01M9.5 5.5h.01" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      WhatsApp Auto
     </button>
     <button class="menu-item" onclick="irPara('bio',this)">
       <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="5" r="2.5" stroke="currentColor" stroke-width="1.4"/><path d="M2 13c0-2.8 2.5-5 5.5-5s5.5 2.2 5.5 5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
@@ -524,18 +569,149 @@ tbody tr:hover td{background:var(--accent-light)}
     </div>
   </div>
 
+  <!-- WHATSAPP AUTO -->
+  <div class="page" id="page-whatsapp">
+    <div class="page-header">
+      <h1>WhatsApp Automático</h1>
+      <p>Configure seu WhatsApp Business para enviar o link de agendamento sozinho</p>
+    </div>
+
+    <!-- LINK GERADO -->
+    <div class="section-block">
+      <div class="section-block-header">
+        <div class="section-block-icon">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M17.5 10a7.5 7.5 0 1 1-15 0 7.5 7.5 0 0 1 15 0Z" stroke="#2563eb" stroke-width="1.6"/><path d="M10 6.5v4M10 13v.5" stroke="#2563eb" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </div>
+        <div>
+          <div class="section-block-title">Seu link de agendamento</div>
+          <div class="section-block-sub">Cole este link na mensagem de saudação do WhatsApp Business</div>
+        </div>
+      </div>
+      <div class="section-block-body">
+        <div style="background:var(--accent-light);border:1.5px solid var(--accent-mid);border-radius:12px;padding:16px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+          <div style="flex:1">
+            <div style="font-size:10px;font-weight:800;color:var(--accent);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px">Link de agendamento</div>
+            <div style="font-size:13px;color:#1d4ed8;word-break:break-all;font-weight:500" id="wpp-link-agendamento">—</div>
+          </div>
+          <button class="btn-copiar" onclick="copiarLinkWpp()">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M1 8.5V2a1 1 0 0 1 1-1h6.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+            Copiar link
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MENSAGEM PRONTA -->
+    <div class="section-block">
+      <div class="section-block-header">
+        <div class="section-block-icon">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 4h14v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4Z" stroke="#2563eb" stroke-width="1.6"/><path d="M7 8h6M7 11h4" stroke="#2563eb" stroke-width="1.6" stroke-linecap="round"/></svg>
+        </div>
+        <div>
+          <div class="section-block-title">Mensagem pronta para copiar</div>
+          <div class="section-block-sub">Cole essa mensagem no WhatsApp Business como saudação automática</div>
+        </div>
+      </div>
+      <div class="section-block-body">
+        <div style="background:#f8fafc;border:1.5px solid var(--border2);border-radius:12px;padding:18px;margin-bottom:14px">
+          <div style="font-size:13.5px;color:var(--text);line-height:1.8;white-space:pre-wrap" id="wpp-mensagem-preview">Carregando...</div>
+        </div>
+        <button onclick="copiarMensagemWpp()" id="btn-copiar-msg" style="display:flex;align-items:center;gap:7px;background:var(--accent);color:white;border:none;padding:10px 20px;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;box-shadow:0 2px 8px rgba(37,99,235,0.3);transition:all .15s">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M1 8.5V2a1 1 0 0 1 1-1h6.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+          Copiar mensagem completa
+        </button>
+      </div>
+    </div>
+
+    <!-- TUTORIAL PASSO A PASSO -->
+    <div class="section-block">
+      <div class="section-block-header">
+        <div class="section-block-icon">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 10h12M4 6h12M4 14h7" stroke="#2563eb" stroke-width="1.6" stroke-linecap="round"/></svg>
+        </div>
+        <div>
+          <div class="section-block-title">Como configurar passo a passo</div>
+          <div class="section-block-sub">Siga as instruções abaixo no app WhatsApp Business do seu celular</div>
+        </div>
+      </div>
+      <div class="section-block-body">
+
+        <div class="passo">
+          <div class="passo-num">1</div>
+          <div style="flex:1">
+            <div class="passo-titulo">Copie a mensagem acima</div>
+            <div class="passo-desc">Clique no botão <strong>"Copiar mensagem completa"</strong> acima. O link de agendamento já estará incluído na mensagem.</div>
+            <div class="alerta-verde">✓ <strong>Dica:</strong> A mensagem já está com o seu link personalizado. Não precisa editar nada.</div>
+          </div>
+        </div>
+
+        <div class="passo">
+          <div class="passo-num">2</div>
+          <div style="flex:1">
+            <div class="passo-titulo">Abra o WhatsApp Business e vá em Ferramentas Comerciais</div>
+            <div class="passo-desc">No app do WhatsApp Business no seu celular, siga os passos:</div>
+            <div class="passo-steps">
+              <div class="passo-step"><div class="passo-step-num">1</div>Abra o <strong>WhatsApp Business</strong> no celular</div>
+              <div class="passo-step"><div class="passo-step-num">2</div>Toque nos <strong>3 pontos ⋮</strong> no canto superior direito</div>
+              <div class="passo-step"><div class="passo-step-num">3</div>Toque em <strong>Ferramentas comerciais</strong></div>
+              <div class="passo-step"><div class="passo-step-num">4</div>Toque em <strong>Mensagem de saudação</strong></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="passo">
+          <div class="passo-num">3</div>
+          <div style="flex:1">
+            <div class="passo-titulo">Ative e cole a mensagem</div>
+            <div class="passo-desc">Dentro de "Mensagem de saudação":</div>
+            <div class="passo-steps">
+              <div class="passo-step"><div class="passo-step-num">1</div>Ative a chave <strong>"Enviar mensagem de saudação"</strong></div>
+              <div class="passo-step"><div class="passo-step-num">2</div>Toque em <strong>Editar mensagem</strong> (ícone de lápis)</div>
+              <div class="passo-step"><div class="passo-step-num">3</div>Apague o texto padrão e <strong>cole a mensagem copiada</strong></div>
+              <div class="passo-step"><div class="passo-step-num">4</div>Toque em <strong>OK</strong> para salvar</div>
+            </div>
+            <div class="alerta-azul">ℹ️ Essa mensagem é enviada automaticamente para quem mandar mensagem pela <strong>primeira vez</strong> ou após <strong>14 dias sem contato</strong>.</div>
+          </div>
+        </div>
+
+        <div class="passo">
+          <div class="passo-num">4</div>
+          <div style="flex:1">
+            <div class="passo-titulo">Configure também a Resposta Rápida (opcional)</div>
+            <div class="passo-desc">Para enviar o link com um toque quando clientes já conhecidos perguntarem sobre agendamento:</div>
+            <div class="passo-steps">
+              <div class="passo-step"><div class="passo-step-num">1</div>Vá em <strong>Ferramentas comerciais → Respostas rápidas</strong></div>
+              <div class="passo-step"><div class="passo-step-num">2</div>Toque no <strong>+</strong> para criar nova</div>
+              <div class="passo-step"><div class="passo-step-num">3</div>No atalho, digite: <strong>/agendar</strong></div>
+              <div class="passo-step"><div class="passo-step-num">4</div>Cole a mensagem com o link no campo de texto</div>
+              <div class="passo-step"><div class="passo-step-num">5</div>Salve — agora digite <strong>/agendar</strong> numa conversa e envie!</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="passo">
+          <div class="passo-num verde">✓</div>
+          <div style="flex:1">
+            <div class="passo-titulo">Pronto! Seu WhatsApp está configurado</div>
+            <div class="passo-desc">A partir de agora, qualquer cliente que mandar mensagem pela primeira vez vai receber o link de agendamento <strong>automaticamente</strong>, sem você fazer nada.</div>
+            <div class="alerta-verde">💡 <strong>Importante:</strong> Isso funciona apenas no <strong>WhatsApp Business</strong> (app gratuito da Meta). Se você usa o WhatsApp comum, baixe o WhatsApp Business e migre seu número — é gratuito.</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
   <!-- CONFIGURAÇÕES -->
   <div class="page" id="page-configuracoes">
     <div class="page-header"><h1>Configurações</h1><p>Personalize os serviços do seu negócio</p></div>
     <div class="section-block">
       <div class="section-block-header">
         <div class="section-block-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M2 5h16M2 10h10M2 15h12" stroke="#2563eb" stroke-width="1.6" stroke-linecap="round"/></svg></div>
-        <div><div class="section-block-title">Serviços oferecidos</div><div class="section-block-sub">Adicione os serviços com seus respectivos preços (preço obrigatório para calcular o lucro)</div></div>
+        <div><div class="section-block-title">Serviços oferecidos</div><div class="section-block-sub">Adicione os serviços com seus respectivos preços</div></div>
       </div>
       <div class="section-block-body">
         <div id="servicos-tags" style="margin-bottom:16px;min-height:36px"></div>
-
-        <!-- ✅ NOVO CAMPO COM LABELS E PREÇO OBRIGATÓRIO -->
         <div class="add-servico-wrap">
           <div class="add-servico-row">
             <div class="add-field-group add-field-nome">
@@ -550,7 +726,6 @@ tbody tr:hover td{background:var(--accent-light)}
           </div>
           <div class="add-servico-erro" id="servico-erro"></div>
         </div>
-
         <div style="display:flex;align-items:center">
           <button class="btn-salvar" onclick="salvarServicos()"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Salvar serviços</button>
           <span class="salvo-msg" id="salvo-msg">✓ Salvo!</span>
@@ -625,8 +800,8 @@ tbody tr:hover td{background:var(--accent-light)}
             <svg width="38" height="38" viewBox="0 0 38 38" fill="none"><path d="M31 23c0 1.3-.5 2.5-1.3 3.3l-1.6 1.7c-1 .9-2.2 1.4-3.3 1.4-4.6 0-9-1.8-12.4-5.1C9.1 21 7.2 16.6 7.2 12c0-1.2.4-2.4 1.3-3.3l1.7-1.7c.9-.9 2.2-.9 3 0l3.6 3.6c.9.9.9 2.2 0 3l-1.3 1.3c-.2.3-.2.7 0 .9 1.3 1.8 2.9 3.4 4.7 4.7.3.2.6.2.9 0l1.3-1.3c.8-.9 2.1-.9 3 0l3.6 3.6c.7.8.7 2 0 2.8z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </div>
           <div class="suporte-title">Fale com o suporte</div>
-          <p class="suporte-desc">Tem alguma dúvida ou problema? Nossa equipe está pronta para te ajudar pelo WhatsApp, de forma rápida e atenciosa.</p>
-          <a href="https://wa.me/5535999359269?text=Olá%2C+preciso+de+ajuda+com+o+AgendoRapido!" target="_blank" class="btn-whatsapp-suporte">
+          <p class="suporte-desc">Tem alguma dúvida ou problema? Nossa equipe está pronta para te ajudar pelo WhatsApp.</p>
+          <a href="https://wa.me/5500000000000?text=Olá%2C+preciso+de+ajuda+com+o+AgendoRapido!" target="_blank" class="btn-whatsapp-suporte">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.118 1.528 5.852L.057 23.885l6.204-1.628A11.945 11.945 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.808 9.808 0 0 1-5.001-1.366l-.359-.213-3.682.966.983-3.594-.234-.371A9.818 9.818 0 0 1 2.182 12C2.182 6.57 6.57 2.182 12 2.182S21.818 6.57 21.818 12 17.43 21.818 12 21.818z"/></svg>
             Chamar no WhatsApp
           </a>
@@ -681,6 +856,7 @@ function atualizarSidebarNegocio(){
   const linkBio=`https://agendorapido.com.br/bio.html?id=${negocioAtual?._id}`
   if(document.getElementById('link-agendamento'))document.getElementById('link-agendamento').textContent=link
   if(document.getElementById('link-bio'))document.getElementById('link-bio').textContent=linkBio
+  atualizarLinkWpp()
 }
 function abrirModalNegocio(){document.getElementById('neg-dropdown').classList.remove('show');document.getElementById('neg-nome').value='';document.getElementById('neg-erro').textContent='';document.getElementById('modal-negocio').style.display='flex'}
 function fecharModalNegocio(){document.getElementById('modal-negocio').style.display='none'}
@@ -718,59 +894,64 @@ function irPara(pagina,btn){
   fecharSidebar()
 }
 
+// ── WHATSAPP AUTO ────────────────────────────────────────────
+function atualizarLinkWpp(){
+  if(!negocioAtual)return
+  const link=`https://agendorapido.com.br/agendar.html?id=${negocioAtual._id}`
+  const elLink=document.getElementById('wpp-link-agendamento')
+  if(elLink)elLink.textContent=link
+  const elMsg=document.getElementById('wpp-mensagem-preview')
+  if(elMsg)elMsg.textContent=`Olá! 👋 Obrigado por entrar em contato com a *${negocioAtual.nome}*.\n\nPara agendar seu horário de forma rápida e fácil, acesse o link abaixo:\n\n🔗 ${link}\n\nEscolha o serviço, a data e o horário que preferir. É rápido e simples! 😊`
+}
+function copiarLinkWpp(){
+  if(!negocioAtual)return
+  const link=`https://agendorapido.com.br/agendar.html?id=${negocioAtual._id}`
+  navigator.clipboard.writeText(link)
+  const btn=document.querySelector('[onclick="copiarLinkWpp()"]')
+  if(btn){const orig=btn.innerHTML;btn.innerHTML='✓ Copiado!';setTimeout(()=>btn.innerHTML=orig,2000)}
+}
+function copiarMensagemWpp(){
+  const el=document.getElementById('wpp-mensagem-preview')
+  if(!el)return
+  navigator.clipboard.writeText(el.textContent)
+  const btn=document.getElementById('btn-copiar-msg')
+  if(btn){const orig=btn.innerHTML;btn.innerHTML='✓ Mensagem copiada!';setTimeout(()=>btn.innerHTML=orig,2000)}
+}
+
 // ── AGENDAMENTOS ─────────────────────────────────────────────
 async function carregarAgendamentos(){
   if(!negocioAtual)return
   const token=localStorage.getItem('token')
   const res=await fetch(`${API}/agendamentos?negocioId=${negocioAtual._id}`,{headers:{'Authorization':`Bearer ${token}`}})
   todosAgendamentos=await res.json()
-
-  // ✅ AUTO-CONCLUIR: só conclui se data+hora já passaram (fuso local)
   const agora=new Date()
   const passados=todosAgendamentos.filter(a=>{
     if(a.status!=='confirmado')return false
     if(!a.data||!a.hora)return false
     const [ano,mes,dia]=a.data.split('-').map(Number)
     const [h,m]=a.hora.split(':').map(Number)
-    // Usa fuso local — igual ao que o usuário vê
     const dtAgendamento=new Date(ano,mes-1,dia,h,m,0)
-    return dtAgendamento.getTime() < agora.getTime()
+    return dtAgendamento.getTime()<agora.getTime()
   })
-
   if(passados.length>0){
-    await Promise.all(passados.map(a=>
-      fetch(`${API}/agendamentos/${a._id}`,{
-        method:'PATCH',
-        headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},
-        body:JSON.stringify({status:'concluido'})
-      })
-    ))
-    todosAgendamentos=todosAgendamentos.map(a=>
-      passados.find(p=>p._id===a._id)?{...a,status:'concluido'}:a
-    )
+    await Promise.all(passados.map(a=>fetch(`${API}/agendamentos/${a._id}`,{method:'PATCH',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({status:'concluido'})})))
+    todosAgendamentos=todosAgendamentos.map(a=>passados.find(p=>p._id===a._id)?{...a,status:'concluido'}:a)
   }
-
   const hoje=new Date().toISOString().split('T')[0]
   const semana=new Date(Date.now()+7*86400000).toISOString().split('T')[0]
   document.getElementById('stat-total').textContent=todosAgendamentos.length
   document.getElementById('stat-hoje').textContent=todosAgendamentos.filter(a=>a.data===hoje).length
   document.getElementById('stat-semana').textContent=todosAgendamentos.filter(a=>a.data>=hoje&&a.data<=semana).length
-
   calcularLucro()
   filtrarData()
 }
 
-// ✅ LUCRO: função separada, recalcula quando serviços carregam também
+// ✅ LUCRO: usa o preço salvo no agendamento, nunca some
 function calcularLucro(){
-  const hoje=new Date().toISOString().split('T')[0]
-  const mesAtual=hoje.slice(0,7)
+  const mesAtual=new Date().toISOString().slice(0,7)
   const lucro=todosAgendamentos
     .filter(a=>a.status==='concluido'&&a.data.startsWith(mesAtual))
-    .reduce((acc,a)=>{
-      const serv=servicosAtuais.find(s=>(typeof s==='object'?s.nome:s)===a.servico)
-      const preco=serv&&typeof serv==='object'?Number(serv.preco)||0:0
-      return acc+preco
-    },0)
+    .reduce((acc,a)=>acc+(Number(a.preco)||0),0)
   const el=document.getElementById('stat-lucro')
   if(el)el.textContent='R$ '+lucro.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})
 }
@@ -783,19 +964,15 @@ async function carregarServicos(){
   servicosAtuais=(data.servicos||[]).map(s=>typeof s==='object'?s:{nome:s,preco:0})
   pagamentosConfig=data.pagamentos||{}
   renderServicos()
-  calcularLucro() // recalcula após carregar serviços
 }
-
 function renderServicos(){
   document.getElementById('servicos-tags').innerHTML=servicosAtuais.map((s,i)=>{
     const nome=typeof s==='object'?s.nome:s
     const preco=typeof s==='object'&&s.preco?Number(s.preco):0
-    const precoLabel=preco>0?`R$ ${preco.toFixed(2).replace('.',',')}`:''
+    const precoLabel=preco>0?`R$ ${preco.toFixed(2).replace('.',',')}`  :''
     return `<div class="servico-tag-wrap"><span class="servico-tag">${nome}${precoLabel?`<span class="servico-preco">${precoLabel}</span>`:''}<button onclick="removerServico(${i})" title="Remover">×</button></span></div>`
   }).join('')
 }
-
-// ✅ PREÇO OBRIGATÓRIO
 function adicionarServico(){
   const nomeInput=document.getElementById('novo-servico')
   const precoInput=document.getElementById('novo-preco')
@@ -803,46 +980,19 @@ function adicionarServico(){
   const nome=nomeInput.value.trim()
   const precoVal=precoInput.value.trim()
   const preco=parseFloat(precoVal)
-
-  // Limpa erros anteriores
-  erroEl.textContent=''
-  nomeInput.classList.remove('campo-erro')
-  precoInput.classList.remove('campo-erro')
-
-  if(!nome){
-    erroEl.textContent='⚠ Digite o nome do serviço.'
-    nomeInput.classList.add('campo-erro')
-    nomeInput.focus()
-    return
-  }
-  if(!precoVal||isNaN(preco)||preco<=0){
-    erroEl.textContent='⚠ O preço é obrigatório e deve ser maior que R$ 0,00.'
-    precoInput.classList.add('campo-erro')
-    precoInput.focus()
-    return
-  }
+  erroEl.textContent='';nomeInput.classList.remove('campo-erro');precoInput.classList.remove('campo-erro')
+  if(!nome){erroEl.textContent='⚠ Digite o nome do serviço.';nomeInput.classList.add('campo-erro');nomeInput.focus();return}
+  if(!precoVal||isNaN(preco)||preco<=0){erroEl.textContent='⚠ O preço é obrigatório e deve ser maior que R$ 0,00.';precoInput.classList.add('campo-erro');precoInput.focus();return}
   const jaExiste=servicosAtuais.some(s=>(typeof s==='object'?s.nome:s).toLowerCase()===nome.toLowerCase())
-  if(jaExiste){
-    erroEl.textContent='⚠ Já existe um serviço com esse nome.'
-    nomeInput.classList.add('campo-erro')
-    nomeInput.focus()
-    return
-  }
-
-  servicosAtuais.push({nome,preco})
-  nomeInput.value=''
-  precoInput.value=''
-  renderServicos()
+  if(jaExiste){erroEl.textContent='⚠ Já existe um serviço com esse nome.';nomeInput.classList.add('campo-erro');nomeInput.focus();return}
+  servicosAtuais.push({nome,preco});nomeInput.value='';precoInput.value='';renderServicos()
 }
-
-// Enter nos campos de serviço
 document.addEventListener('DOMContentLoaded',()=>{
   ['novo-servico','novo-preco'].forEach(id=>{
     const el=document.getElementById(id)
     if(el)el.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();adicionarServico()}})
   })
 })
-
 function removerServico(i){servicosAtuais.splice(i,1);renderServicos()}
 async function salvarServicos(){
   if(!negocioAtual)return
@@ -872,16 +1022,12 @@ function renderTabela(){
   const fim=inicio+POR_PAGINA
   const slice=listaFiltrada.slice(inicio,fim)
   tbody.innerHTML=slice.map(a=>{
-    const acoes=a.status==='confirmado'
-      ?`<button class="btn-acao concluir" onclick="atualizar('${a._id}','concluido')">Concluir</button><button class="btn-acao cancelar" onclick="cancelarComAviso('${a._id}','${a.pacienteNome}','${a.pacienteTelefone}','${a.data}','${a.hora}')">Cancelar</button>`
-      :''
+    const acoes=a.status==='confirmado'?`<button class="btn-acao concluir" onclick="atualizar('${a._id}','concluido')">Concluir</button><button class="btn-acao cancelar" onclick="cancelarComAviso('${a._id}','${a.pacienteNome}','${a.pacienteTelefone}','${a.data}','${a.hora}')">Cancelar</button>`:''
     return `<tr><td><div class="paciente-nome">${a.pacienteNome}</div><div class="paciente-tel">${a.pacienteTelefone}</div></td><td style="color:var(--text2)">${a.servico}</td><td style="color:var(--text2)">${formatarData(a.data)}</td><td style="font-weight:600">${a.hora}</td><td><span class="badge ${a.status}">${a.status}</span></td><td><div class="acoes">${acoes}</div></td></tr>`
   }).join('')
   if(agCards){
     agCards.innerHTML=slice.map(a=>{
-      const acoes=a.status==='confirmado'
-        ?`<div class="ag-card-actions"><button class="btn-acao concluir" onclick="atualizar('${a._id}','concluido')">Concluir</button><button class="btn-acao cancelar" onclick="cancelarComAviso('${a._id}','${a.pacienteNome}','${a.pacienteTelefone}','${a.data}','${a.hora}')">Cancelar</button></div>`
-        :''
+      const acoes=a.status==='confirmado'?`<div class="ag-card-actions"><button class="btn-acao concluir" onclick="atualizar('${a._id}','concluido')">Concluir</button><button class="btn-acao cancelar" onclick="cancelarComAviso('${a._id}','${a.pacienteNome}','${a.pacienteTelefone}','${a.data}','${a.hora}')">Cancelar</button></div>`:''
       return `<div class="ag-card"><div class="ag-card-top"><div><div class="ag-card-nome">${a.pacienteNome}</div><div class="paciente-tel">${a.pacienteTelefone}</div></div><span class="badge ${a.status}">${a.status}</span></div><div class="ag-card-body"><div class="ag-chip">${formatarData(a.data)}</div><div class="ag-chip">${a.hora}</div><div class="ag-chip">${a.servico}</div></div>${acoes}</div>`
     }).join('')
   }
