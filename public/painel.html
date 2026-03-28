@@ -629,6 +629,101 @@ body.dark-mode .theme-option.ativo { background: rgba(59,130,246,0.08); }
   .intervalo-custom-wrap { flex-wrap: wrap; }
 }
 @media(max-width:400px) { .stats { grid-template-columns: 1fr; } }
+
+/* ══════════════════════════════════════════
+   HISTÓRICO MENSAL
+══════════════════════════════════════════ */
+.hist-nav { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.hist-nav-btn {
+  width: 28px; height: 28px; border-radius: 8px;
+  border: 1.5px solid var(--border2); background: var(--bg-card);
+  color: var(--text2); font-size: 16px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .15s; font-family: inherit;
+}
+.hist-nav-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
+.hist-nav-btn:disabled { opacity: .3; cursor: not-allowed; }
+.hist-mes-label {
+  font-size: 13px; font-weight: 700; color: var(--text);
+  min-width: 110px; text-align: center;
+  white-space: nowrap;
+}
+
+.hist-cards {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 14px; margin-bottom: 28px;
+}
+.hist-stat {
+  display: flex; align-items: center; gap: 12px;
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: 12px; padding: 16px;
+  transition: all .2s;
+}
+.hist-stat:hover { border-color: rgba(37,99,235,0.2); transform: translateY(-1px); }
+.hist-stat-icon {
+  width: 36px; height: 36px; border-radius: 10px;
+  background: var(--accent-light); border: 1px solid var(--accent-mid);
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.hist-stat-valor { font-size: 20px; font-weight: 800; color: var(--text); letter-spacing: -0.03em; line-height: 1.2; }
+.hist-stat-label { font-size: 11px; color: var(--text3); font-weight: 600; text-transform: uppercase; letter-spacing: .05em; margin-top: 3px; }
+
+.hist-grafico-wrap {
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: 14px; padding: 20px 20px 12px;
+}
+.hist-grafico-title {
+  font-size: 11px; font-weight: 800; color: var(--text3);
+  text-transform: uppercase; letter-spacing: .08em; margin-bottom: 20px;
+}
+.hist-grafico {
+  display: flex; align-items: flex-end; gap: 10px;
+  height: 100px; margin-bottom: 10px;
+}
+.hist-barra-wrap {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; gap: 6px; height: 100%;
+  justify-content: flex-end; position: relative;
+}
+.hist-barra-val {
+  font-size: 10px; font-weight: 700; color: var(--text2);
+  white-space: nowrap; position: absolute; top: -18px;
+  left: 50%; transform: translateX(-50%);
+  opacity: 0; transition: opacity .2s;
+}
+.hist-barra-wrap:hover .hist-barra-val { opacity: 1; }
+.hist-barra {
+  width: 100%; border-radius: 6px 6px 0 0;
+  background: linear-gradient(180deg, var(--accent), #60a5fa);
+  transition: height .5s cubic-bezier(.4,0,.2,1), opacity .3s;
+  min-height: 3px; cursor: pointer; position: relative;
+}
+.hist-barra.ativo {
+  background: linear-gradient(180deg, var(--green), #22c55e);
+  box-shadow: 0 4px 16px rgba(22,163,74,0.3);
+}
+.hist-barra.zero { background: var(--border2); opacity: .5; }
+.hist-grafico-labels {
+  display: flex; gap: 10px;
+}
+.hist-grafico-label {
+  flex: 1; text-align: center; font-size: 10.5px;
+  font-weight: 600; color: var(--text3); white-space: nowrap;
+  overflow: hidden; text-overflow: ellipsis;
+}
+.hist-grafico-label.ativo { color: var(--accent); font-weight: 800; }
+
+body.dark-mode .hist-stat { background: var(--bg-card); border-color: var(--border); }
+body.dark-mode .hist-stat:hover { border-color: rgba(59,130,246,0.2); }
+body.dark-mode .hist-grafico-wrap { background: #0c1422; border-color: rgba(59,130,246,0.1); }
+body.dark-mode .hist-nav-btn { background: var(--bg-card); border-color: rgba(59,130,246,0.15); }
+body.dark-mode .hist-barra.zero { background: rgba(59,130,246,0.1); }
+
+@media(max-width:768px) {
+  .hist-cards { grid-template-columns: 1fr; gap: 10px; }
+  .hist-mes-label { min-width: 90px; font-size: 12px; }
+  .hist-grafico { height: 80px; gap: 6px; }
+}
 </style>
 </head>
 <body>
@@ -801,6 +896,63 @@ body.dark-mode .theme-option.ativo { background: rgba(59,130,246,0.08); }
       <div class="paginacao" id="paginacao" style="display:none">
         <span class="paginacao-info" id="pg-info"></span>
         <div class="paginacao-btns" id="pg-btns"></div>
+      </div>
+    </div>
+
+    <!-- HISTÓRICO MENSAL -->
+    <div class="section-block" id="bloco-historico">
+      <div class="section-block-header">
+        <div class="section-block-icon">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="2.5" y="3.5" width="15" height="13.5" rx="2.5" stroke="#2563eb" stroke-width="1.6"/><path d="M2.5 7.5h15M7 2v3M13 2v3" stroke="#2563eb" stroke-width="1.6" stroke-linecap="round"/><path d="M6 11.5h3M11 11.5h3M6 14h2" stroke="#2563eb" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </div>
+        <div style="flex:1">
+          <div class="section-block-title">Histórico de lucro mensal</div>
+          <div class="section-block-sub">Receita acumulada dos últimos meses</div>
+        </div>
+        <div class="hist-nav">
+          <button class="hist-nav-btn" id="hist-prev" onclick="historicoPaginar(-1)">‹</button>
+          <span class="hist-mes-label" id="hist-mes-label">—</span>
+          <button class="hist-nav-btn" id="hist-next" onclick="historicoPaginar(1)">›</button>
+        </div>
+      </div>
+      <div class="section-block-body" style="padding-bottom:28px">
+        <!-- Cards do mês selecionado -->
+        <div class="hist-cards" id="hist-cards">
+          <div class="hist-stat">
+            <div class="hist-stat-icon" style="background:var(--green-bg);border-color:var(--green-border)">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1.5" y="3" width="13" height="10" rx="1.5" stroke="#16a34a" stroke-width="1.4"/><path d="M1.5 6.5h13M5 9.5h3" stroke="#16a34a" stroke-width="1.4" stroke-linecap="round"/></svg>
+            </div>
+            <div>
+              <div class="hist-stat-valor" id="hist-lucro">R$ 0,00</div>
+              <div class="hist-stat-label">Lucro total</div>
+            </div>
+          </div>
+          <div class="hist-stat">
+            <div class="hist-stat-icon">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 12.5l3.5-3.5 2.5 2.5L13 5" stroke="#2563eb" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div>
+              <div class="hist-stat-valor" id="hist-atend">0</div>
+              <div class="hist-stat-label">Atendimentos concluídos</div>
+            </div>
+          </div>
+          <div class="hist-stat">
+            <div class="hist-stat-icon" style="background:var(--purple-bg);border-color:#ddd6fe">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="6" r="2.5" stroke="#7c3aed" stroke-width="1.4"/><path d="M2.5 14c0-3 2.5-5 5.5-5s5.5 2 5.5 5" stroke="#7c3aed" stroke-width="1.4" stroke-linecap="round"/></svg>
+            </div>
+            <div>
+              <div class="hist-stat-valor" id="hist-ticket">R$ 0,00</div>
+              <div class="hist-stat-label">Ticket médio</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Gráfico de barras dos últimos 6 meses -->
+        <div class="hist-grafico-wrap">
+          <div class="hist-grafico-title">Evolução dos últimos 6 meses</div>
+          <div class="hist-grafico" id="hist-grafico"></div>
+          <div class="hist-grafico-labels" id="hist-grafico-labels"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -1406,8 +1558,9 @@ async function carregarAgendamentos(){
   // Seed inicial do mês (só na primeira carga)
   seedLucroDoMes(todosAgendamentos)
 
-  // Exibe o lucro acumulado
+  // Exibe o lucro acumulado e o histórico mensal
   exibirLucro()
+  renderHistorico()
 
   filtrarData()
 }
@@ -1476,6 +1629,7 @@ async function atualizar(id, status) {
   // Atualiza localmente sem recarregar tudo, e atualiza o display
   todosAgendamentos = todosAgendamentos.map(a => a._id === id ? { ...a, status } : a)
   exibirLucro()
+  renderHistorico()
   filtrarData()
 }
 
@@ -1922,6 +2076,127 @@ async function salvarConfLembrete(){
   const mensagem=document.getElementById('lembrete-msg').value
   await fetch(`${API}/auth/lembretes`,{method:'PATCH',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({negocioId:negocioAtual._id,ativo,mensagem})})
   const msg=document.getElementById('salvo-lembrete');msg.style.display='inline';setTimeout(()=>msg.style.display='none',2500)
+}
+
+// ══ HISTÓRICO MENSAL ══════════════════════════════════════════════════════
+// Navega entre meses e exibe lucro acumulado, atendimentos e gráfico
+
+let historicoMesOffset = 0 // 0 = mês atual, -1 = mês anterior, etc.
+
+/**
+ * Retorna a chave "YYYY-MM" para um offset relativo ao mês atual.
+ * offset 0 = este mês, -1 = mês passado, etc.
+ */
+function chaveDoOffset(offset) {
+  const d = new Date()
+  d.setDate(1)
+  d.setMonth(d.getMonth() + offset)
+  return d.toISOString().slice(0, 7)
+}
+
+/**
+ * Formata "YYYY-MM" para "Janeiro 2025"
+ */
+function formatarMesLabel(chave) {
+  const [ano, mes] = chave.split('-').map(Number)
+  const nomes = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho',
+                 'Julho','Agosto','Setembro','Outubro','Novembro','Dezembro']
+  return `${nomes[mes - 1]} ${ano}`
+}
+
+/**
+ * Formata valor monetário compactado para o gráfico (ex: 1.2k, 350)
+ */
+function formatarCompacto(val) {
+  if (val >= 1000) return `${(val/1000).toFixed(1).replace('.0','')}k`
+  return `${val.toFixed(0)}`
+}
+
+/**
+ * Retorna dados do mês a partir do localStorage para um negócio+chave.
+ */
+function dadosMes(negocioId, chave) {
+  const lucro = parseFloat(localStorage.getItem(`lucro_val_${negocioId}_${chave}`)) || 0
+  const ids = (() => { try { return JSON.parse(localStorage.getItem(`lucro_ids_${negocioId}_${chave}`) || '[]') } catch { return [] } })()
+  return { lucro, atendimentos: ids.length }
+}
+
+/**
+ * Renderiza os cards e o gráfico para o offset atual.
+ */
+function renderHistorico() {
+  if (!negocioAtual) return
+
+  const negocioId = negocioAtual._id
+  const chaveAtual = chaveDoOffset(0)
+  const chaveSelecionada = chaveDoOffset(historicoMesOffset)
+  const dados = dadosMes(negocioId, chaveSelecionada)
+
+  // Label do mês no nav
+  const isMesAtual = historicoMesOffset === 0
+  document.getElementById('hist-mes-label').textContent =
+    isMesAtual ? 'Este mês' : formatarMesLabel(chaveSelecionada)
+
+  // Botão "próximo" desabilitado no mês atual
+  document.getElementById('hist-next').disabled = historicoMesOffset >= 0
+
+  // Cards de stats
+  const lucro = dados.lucro
+  const atend = dados.atendimentos
+  const ticket = atend > 0 ? lucro / atend : 0
+
+  document.getElementById('hist-lucro').textContent =
+    'R$ ' + lucro.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+  document.getElementById('hist-atend').textContent = atend
+  document.getElementById('hist-ticket').textContent =
+    'R$ ' + ticket.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+
+  // Gráfico — últimos 6 meses sempre visíveis, destacando o selecionado
+  const meses = []
+  for (let i = -5; i <= 0; i++) {
+    const chave = chaveDoOffset(i)
+    const d = dadosMes(negocioId, chave)
+    meses.push({ chave, offset: i, lucro: d.lucro, atend: d.atendimentos })
+  }
+
+  const maxLucro = Math.max(...meses.map(m => m.lucro), 1)
+
+  const grafico = document.getElementById('hist-grafico')
+  const labels = document.getElementById('hist-grafico-labels')
+
+  grafico.innerHTML = meses.map(m => {
+    const pct = Math.max((m.lucro / maxLucro) * 100, m.lucro > 0 ? 4 : 0)
+    const ativo = m.chave === chaveSelecionada
+    const zero = m.lucro === 0
+    const valFormatado = 'R$ ' + m.lucro.toLocaleString('pt-BR', { minimumFractionDigits: 2 })
+    return `
+      <div class="hist-barra-wrap" onclick="historicoIrPara(${m.offset})" title="${formatarMesLabel(m.chave)}: ${valFormatado}">
+        <span class="hist-barra-val">${formatarCompacto(m.lucro)}</span>
+        <div class="hist-barra ${ativo ? 'ativo' : ''} ${zero ? 'zero' : ''}"
+             style="height:${pct}%"></div>
+      </div>`
+  }).join('')
+
+  labels.innerHTML = meses.map(m => {
+    const [ano, mes] = m.chave.split('-').map(Number)
+    const nomes = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez']
+    const ativo = m.chave === chaveSelecionada
+    return `<div class="hist-grafico-label ${ativo ? 'ativo' : ''}">${nomes[mes-1]}</div>`
+  }).join('')
+}
+
+function historicoPaginar(dir) {
+  // dir: -1 = mês anterior, +1 = mês seguinte
+  const novo = historicoMesOffset + dir
+  if (novo > 0) return // não vai além do mês atual
+  historicoMesOffset = novo
+  renderHistorico()
+}
+
+function historicoIrPara(offset) {
+  if (offset > 0) return
+  historicoMesOffset = offset
+  renderHistorico()
 }
 
 // ══ INIT ══════════════════════════════════
