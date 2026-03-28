@@ -4,9 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<!-- ══════════════════════════════════════════
-     SEO PROFISSIONAL — AgendoRapido
-══════════════════════════════════════════ -->
 <title>AgendoRapido — Sistema de Agendamento Online para Negócios</title>
 <meta name="description" content="AgendoRapido é o sistema de agendamento online completo para barbearias, clínicas, salões e pequenos negócios. Gerencie horários, envie lembretes automáticos por WhatsApp e aumente sua receita.">
 <meta name="keywords" content="agendamento online, sistema de agendamento, agendamento para barbearia, agendamento para clínica, agendamento para salão, software de agendamento, agenda online, lembretes WhatsApp, agendamento gratuito">
@@ -15,7 +12,6 @@
 <meta name="theme-color" content="#0f172a">
 <link rel="canonical" href="https://agendorapido.com.br/painel.html">
 
-<!-- Open Graph / Facebook -->
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://agendorapido.com.br/painel.html">
 <meta property="og:title" content="AgendoRapido — Agendamento Online para Seu Negócio">
@@ -26,67 +22,38 @@
 <meta property="og:locale" content="pt_BR">
 <meta property="og:site_name" content="AgendoRapido">
 
-<!-- Twitter Card -->
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:url" content="https://agendorapido.com.br/painel.html">
 <meta name="twitter:title" content="AgendoRapido — Agendamento Online para Seu Negócio">
 <meta name="twitter:description" content="Gerencie agendamentos, envie lembretes automáticos pelo WhatsApp e deixe seus clientes marcarem horário 24h por dia.">
 <meta name="twitter:image" content="https://agendorapido.com.br/og-image.png">
 
-<!-- Schema.org Structured Data -->
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
   "name": "AgendoRapido",
-  "description": "Sistema de agendamento online completo para barbearias, clínicas, salões e pequenos negócios. Gerencie horários e envie lembretes automáticos por WhatsApp.",
+  "description": "Sistema de agendamento online completo para barbearias, clínicas, salões e pequenos negócios.",
   "url": "https://agendorapido.com.br",
   "applicationCategory": "BusinessApplication",
   "operatingSystem": "Web, iOS, Android",
-  "offers": {
-    "@type": "Offer",
-    "price": "29.00",
-    "priceCurrency": "BRL",
-    "priceSpecification": {
-      "@type": "UnitPriceSpecification",
-      "price": "29.00",
-      "priceCurrency": "BRL",
-      "unitText": "mês"
-    }
-  },
-  "aggregateRating": {
-    "@type": "AggregateRating",
-    "ratingValue": "4.9",
-    "reviewCount": "312"
-  },
-  "inLanguage": "pt-BR",
-  "creator": {
-    "@type": "Organization",
-    "name": "AgendoRapido",
-    "url": "https://agendorapido.com.br"
-  }
+  "offers": {"@type": "Offer","price": "29.00","priceCurrency": "BRL"},
+  "aggregateRating": {"@type": "AggregateRating","ratingValue": "4.9","reviewCount": "312"},
+  "inLanguage": "pt-BR"
 }
 </script>
 
-<!-- PWA & Ícones -->
 <link rel="manifest" href="/manifest.json">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="AgendoRapido">
 <link rel="apple-touch-icon" href="/icon-192.png">
-
-<!-- Favicon SVG inline (substitui o icon-192.png para browsers modernos) -->
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230f172a'/%3E%3Crect x='13' y='18' width='38' height='32' rx='5' fill='none' stroke='%232563eb' stroke-width='3'/%3E%3Cpath d='M13 27h38' stroke='%232563eb' stroke-width='2.5' stroke-linecap='round'/%3E%3Cpath d='M23 14v6M41 14v6' stroke='%2360a5fa' stroke-width='3' stroke-linecap='round'/%3E%3Cpath d='M21 36h8M21 42h14' stroke='%2360a5fa' stroke-width='2.5' stroke-linecap='round'/%3E%3Ccircle cx='44' cy='42' r='7' fill='%232563eb'/%3E%3Cpath d='M41.5 42l2 2 4-4' stroke='white' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
-<link rel="icon" type="image/png" sizes="32x32" href="/icon-32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="/icon-16.png">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
 <style>
-/* ══════════════════════════════════════════
-   VARIÁVEIS — TEMA CLARO
-══════════════════════════════════════════ */
 :root {
   --sidebar-w: 260px;
   --sidebar-bg: #0f172a;
@@ -120,34 +87,20 @@
   --shadow-lg: 0 8px 32px rgba(0,0,0,0.1);
 }
 
-/* ══════════════════════════════════════════
-   TEMA ESCURO — REDESENHADO COMPLETAMENTE
-   Paleta baseada em slate-950 / slate-900
-   com azul elétrico como acento dominante
-══════════════════════════════════════════ */
 body.dark-mode {
-  /* Fundos em camadas — profundidade real */
-  --bg:              #080d19;   /* fundo geral — quase preto-azulado */
-  --bg-card:         #0f1829;   /* cards — uma camada acima */
-  --bg-card-2:       #162035;   /* cards elevados / hover */
-  --bg-input:        #0c1422;   /* inputs */
-
-  /* Bordas sutis mas visíveis */
+  --bg:              #080d19;
+  --bg-card:         #0f1829;
+  --bg-card-2:       #162035;
+  --bg-input:        #0c1422;
   --border:          rgba(96,165,250,0.08);
   --border2:         rgba(96,165,250,0.16);
-
-  /* Textos em contraste calibrado */
-  --text:            #e2e8f0;   /* primário — branco suave */
-  --text2:           #7c8fa8;   /* secundário — slate */
-  --text3:           #3d5068;   /* terciário — quase invisível */
-
-  /* Acento — azul elétrico mantido */
+  --text:            #e2e8f0;
+  --text2:           #7c8fa8;
+  --text3:           #3d5068;
   --accent:          #3b82f6;
   --accent-hover:    #2563eb;
   --accent-light:    rgba(59,130,246,0.10);
   --accent-mid:      rgba(59,130,246,0.20);
-
-  /* Semânticas */
   --green:           #34d399;
   --green-bg:        rgba(52,211,153,0.08);
   --green-border:    rgba(52,211,153,0.2);
@@ -159,298 +112,96 @@ body.dark-mode {
   --yellow-border:   rgba(251,191,36,0.2);
   --purple:          #a78bfa;
   --purple-bg:       rgba(167,139,250,0.08);
-
-  /* Sombras — mais intensas no escuro */
   --shadow:          0 1px 3px rgba(0,0,0,0.5), 0 1px 2px rgba(0,0,0,0.4);
   --shadow-md:       0 4px 24px rgba(0,0,0,0.5);
   --shadow-lg:       0 8px 40px rgba(0,0,0,0.6);
 }
 
-/* ─── Sidebar & Topbar no dark mode ─── */
-body.dark-mode .sidebar {
-  background: linear-gradient(180deg, #060c18 0%, #080d19 100%);
-  border-right-color: rgba(59,130,246,0.08);
-}
-body.dark-mode .topbar-mobile {
-  background: linear-gradient(180deg, #060c18 0%, #080d19 100%);
-  border-bottom-color: rgba(59,130,246,0.08);
-}
-
-/* ─── Cards e blocos ─── */
-body.dark-mode .card,
-body.dark-mode .section-block {
-  background: var(--bg-card);
-  border-color: var(--border);
-  box-shadow: 0 2px 20px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.03);
-}
-body.dark-mode .section-block:hover {
-  box-shadow: 0 6px 32px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.04);
-  border-color: rgba(59,130,246,0.15);
-}
-body.dark-mode .stat-card {
-  background: var(--bg-card);
-  border-color: var(--border);
-  box-shadow: 0 2px 12px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.025);
-}
-body.dark-mode .stat-card:hover {
-  box-shadow: 0 6px 24px rgba(0,0,0,0.5);
-  border-color: rgba(59,130,246,0.2);
-}
-
-/* ─── Headers dos cards ─── */
-body.dark-mode .card-header {
-  background: linear-gradient(135deg, var(--bg-card) 0%, #0c1422 100%);
-  border-bottom-color: rgba(59,130,246,0.1);
-}
-body.dark-mode .section-block-header {
-  background: linear-gradient(135deg, var(--bg-card) 0%, #0c1422 100%);
-  border-bottom-color: rgba(59,130,246,0.1);
-}
-
-/* ─── Ícones de seção ─── */
-body.dark-mode .section-block-icon {
-  background: linear-gradient(135deg, rgba(59,130,246,0.15), rgba(59,130,246,0.08));
-  border-color: rgba(59,130,246,0.2);
-  box-shadow: 0 2px 8px rgba(59,130,246,0.15);
-}
-
-/* ─── Tabela ─── */
+body.dark-mode .sidebar { background: linear-gradient(180deg, #060c18 0%, #080d19 100%); border-right-color: rgba(59,130,246,0.08); }
+body.dark-mode .topbar-mobile { background: linear-gradient(180deg, #060c18 0%, #080d19 100%); border-bottom-color: rgba(59,130,246,0.08); }
+body.dark-mode .card, body.dark-mode .section-block { background: var(--bg-card); border-color: var(--border); box-shadow: 0 2px 20px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.03); }
+body.dark-mode .section-block:hover { box-shadow: 0 6px 32px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.04); border-color: rgba(59,130,246,0.15); }
+body.dark-mode .stat-card { background: var(--bg-card); border-color: var(--border); box-shadow: 0 2px 12px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.025); }
+body.dark-mode .stat-card:hover { box-shadow: 0 6px 24px rgba(0,0,0,0.5); border-color: rgba(59,130,246,0.2); }
+body.dark-mode .card-header { background: linear-gradient(135deg, var(--bg-card) 0%, #0c1422 100%); border-bottom-color: rgba(59,130,246,0.1); }
+body.dark-mode .section-block-header { background: linear-gradient(135deg, var(--bg-card) 0%, #0c1422 100%); border-bottom-color: rgba(59,130,246,0.1); }
+body.dark-mode .section-block-icon { background: linear-gradient(135deg, rgba(59,130,246,0.15), rgba(59,130,246,0.08)); border-color: rgba(59,130,246,0.2); box-shadow: 0 2px 8px rgba(59,130,246,0.15); }
 body.dark-mode thead tr { background: #0c1422; }
 body.dark-mode th { color: #4a6480; border-bottom-color: rgba(59,130,246,0.1); }
 body.dark-mode td { border-bottom-color: rgba(59,130,246,0.05); }
 body.dark-mode tbody tr:hover td { background: rgba(59,130,246,0.04); }
-
-/* ─── Paginação ─── */
 body.dark-mode .paginacao { background: #0c1422; border-top-color: rgba(59,130,246,0.08); }
-body.dark-mode .pg-btn {
-  background: var(--bg-card);
-  color: var(--text2);
-  border-color: rgba(59,130,246,0.15);
-}
-body.dark-mode .pg-btn:hover:not(:disabled) {
-  background: rgba(59,130,246,0.1);
-  border-color: var(--accent);
-  color: #60a5fa;
-}
-body.dark-mode .pg-btn.ativo {
-  background: linear-gradient(135deg, #2563eb, #3b82f6);
-  box-shadow: 0 2px 12px rgba(59,130,246,0.4);
-}
-
-/* ─── Botões de ação ─── */
-body.dark-mode .btn-acao {
-  background: var(--bg-card);
-  border-color: rgba(59,130,246,0.15);
-  color: var(--text2);
-}
+body.dark-mode .pg-btn { background: var(--bg-card); color: var(--text2); border-color: rgba(59,130,246,0.15); }
+body.dark-mode .pg-btn:hover:not(:disabled) { background: rgba(59,130,246,0.1); border-color: var(--accent); color: #60a5fa; }
+body.dark-mode .pg-btn.ativo { background: linear-gradient(135deg, #2563eb, #3b82f6); box-shadow: 0 2px 12px rgba(59,130,246,0.4); }
+body.dark-mode .btn-acao { background: var(--bg-card); border-color: rgba(59,130,246,0.15); color: var(--text2); }
 body.dark-mode .btn-acao:hover { background: var(--bg-card-2); }
-
-/* ─── Inputs e selects ─── */
-body.dark-mode .filtro-data,
-body.dark-mode .form-group input,
-body.dark-mode .form-group select,
-body.dark-mode .form-group textarea,
-body.dark-mode .add-field-group input,
-body.dark-mode .dia-horarios input[type=time],
-body.dark-mode #pausa-inicio,
-body.dark-mode #pausa-fim,
-body.dark-mode #pausa-label {
-  background: var(--bg-input);
-  color: var(--text);
-  border-color: rgba(59,130,246,0.18);
-}
-body.dark-mode .filtro-data:focus,
-body.dark-mode .form-group input:focus,
-body.dark-mode .form-group select:focus,
-body.dark-mode .form-group textarea:focus {
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59,130,246,0.12);
-}
-
-/* ─── Link card ─── */
-body.dark-mode .link-card {
-  background: linear-gradient(135deg, rgba(37,99,235,0.12), rgba(59,130,246,0.06));
-  border-color: rgba(59,130,246,0.25);
-}
+body.dark-mode .filtro-data, body.dark-mode .form-group input, body.dark-mode .form-group select, body.dark-mode .form-group textarea, body.dark-mode .add-field-group input, body.dark-mode .dia-horarios input[type=time], body.dark-mode #pausa-inicio, body.dark-mode #pausa-fim, body.dark-mode #pausa-label { background: var(--bg-input); color: var(--text); border-color: rgba(59,130,246,0.18); }
+body.dark-mode .filtro-data:focus, body.dark-mode .form-group input:focus, body.dark-mode .form-group select:focus, body.dark-mode .form-group textarea:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,0.12); }
+body.dark-mode .link-card { background: linear-gradient(135deg, rgba(37,99,235,0.12), rgba(59,130,246,0.06)); border-color: rgba(59,130,246,0.25); }
 body.dark-mode .link-card-url { color: #60a5fa; }
-
-/* ─── Intervalos ─── */
-body.dark-mode .intervalo-btn {
-  background: var(--bg-card);
-  color: var(--text2);
-  border-color: rgba(59,130,246,0.18);
-}
-body.dark-mode .intervalo-btn:hover {
-  background: rgba(59,130,246,0.1);
-  border-color: #3b82f6;
-  color: #60a5fa;
-}
-body.dark-mode .intervalo-btn.selecionado {
-  background: linear-gradient(135deg, #1d4ed8, #3b82f6);
-  border-color: #3b82f6;
-  color: white;
-  box-shadow: 0 2px 12px rgba(59,130,246,0.35);
-}
-
-/* ─── Pausa items ─── */
-body.dark-mode .pausa-item {
-  background: linear-gradient(135deg, var(--bg-card), #0c1422);
-  border-color: rgba(59,130,246,0.12);
-}
+body.dark-mode .intervalo-btn { background: var(--bg-card); color: var(--text2); border-color: rgba(59,130,246,0.18); }
+body.dark-mode .intervalo-btn:hover { background: rgba(59,130,246,0.1); border-color: #3b82f6; color: #60a5fa; }
+body.dark-mode .intervalo-btn.selecionado { background: linear-gradient(135deg, #1d4ed8, #3b82f6); border-color: #3b82f6; color: white; box-shadow: 0 2px 12px rgba(59,130,246,0.35); }
+body.dark-mode .pausa-item { background: linear-gradient(135deg, var(--bg-card), #0c1422); border-color: rgba(59,130,246,0.12); }
 body.dark-mode .pausa-item:hover { border-color: rgba(59,130,246,0.25); }
 body.dark-mode .pausa-item-label { color: var(--text); }
-body.dark-mode .pausa-item-hora {
-  background: rgba(59,130,246,0.12);
-  border-color: rgba(59,130,246,0.2);
-  color: #60a5fa;
-}
-
-/* ─── Chips e badges ─── */
-body.dark-mode .ag-chip {
-  background: var(--bg-card);
-  border-color: rgba(59,130,246,0.15);
-  color: var(--text2);
-}
-
-/* ─── Blocos de info ─── */
-body.dark-mode .alerta-verde {
-  background: rgba(52,211,153,0.07);
-  border-color: rgba(52,211,153,0.18);
-  color: #34d399;
-}
-body.dark-mode .alerta-azul {
-  background: rgba(59,130,246,0.07);
-  border-color: rgba(59,130,246,0.18);
-  color: #60a5fa;
-}
-body.dark-mode .info-box.green {
-  background: linear-gradient(135deg, rgba(52,211,153,0.07), rgba(52,211,153,0.04));
-  border-color: rgba(52,211,153,0.2);
-  color: #34d399;
-}
-body.dark-mode .info-box.blue {
-  background: linear-gradient(135deg, rgba(59,130,246,0.08), rgba(59,130,246,0.04));
-  border-color: rgba(59,130,246,0.2);
-  color: #60a5fa;
-}
-
-/* ─── Área de adição de pausa ─── */
-body.dark-mode div[style*="background:#f8fafc"],
-body.dark-mode div[style*="background:var(--bg)"] {
-  background: #0c1422 !important;
-  border-color: rgba(59,130,246,0.15) !important;
-}
-
-/* ─── Modal ─── */
-body.dark-mode .modal,
-body.dark-mode .modal-neg {
-  background: #0f1829;
-  border: 1px solid rgba(59,130,246,0.15);
-  box-shadow: 0 20px 60px rgba(0,0,0,0.7);
-}
-body.dark-mode .modal-close {
-  background: #0c1422;
-  color: var(--text2);
-  border: 1px solid rgba(59,130,246,0.12);
-}
+body.dark-mode .pausa-item-hora { background: rgba(59,130,246,0.12); border-color: rgba(59,130,246,0.2); color: #60a5fa; }
+body.dark-mode .ag-chip { background: var(--bg-card); border-color: rgba(59,130,246,0.15); color: var(--text2); }
+body.dark-mode .alerta-verde { background: rgba(52,211,153,0.07); border-color: rgba(52,211,153,0.18); color: #34d399; }
+body.dark-mode .alerta-azul { background: rgba(59,130,246,0.07); border-color: rgba(59,130,246,0.18); color: #60a5fa; }
+body.dark-mode .info-box.green { background: linear-gradient(135deg, rgba(52,211,153,0.07), rgba(52,211,153,0.04)); border-color: rgba(52,211,153,0.2); color: #34d399; }
+body.dark-mode .info-box.blue { background: linear-gradient(135deg, rgba(59,130,246,0.08), rgba(59,130,246,0.04)); border-color: rgba(59,130,246,0.2); color: #60a5fa; }
+body.dark-mode div[style*="background:#f8fafc"], body.dark-mode div[style*="background:var(--bg)"] { background: #0c1422 !important; border-color: rgba(59,130,246,0.15) !important; }
+body.dark-mode .modal, body.dark-mode .modal-neg { background: #0f1829; border: 1px solid rgba(59,130,246,0.15); box-shadow: 0 20px 60px rgba(0,0,0,0.7); }
+body.dark-mode .modal-close { background: #0c1422; color: var(--text2); border: 1px solid rgba(59,130,246,0.12); }
 body.dark-mode .modal-close:hover { background: var(--red-bg); color: var(--red); }
-body.dark-mode .btn-cancelar-modal {
-  background: #0c1422;
-  color: var(--text2);
-  border-color: rgba(59,130,246,0.15);
-}
+body.dark-mode .btn-cancelar-modal { background: #0c1422; color: var(--text2); border-color: rgba(59,130,246,0.15); }
 body.dark-mode .btn-cancelar-modal:hover { background: #162035; }
-
-/* ─── Bloqueio ─── */
-body.dark-mode .bloqueio-card {
-  background: #0f1829;
-  border: 1px solid rgba(59,130,246,0.15);
-}
-
-/* ─── Foto e avatar ─── */
-body.dark-mode .foto-wrap {
-  background: linear-gradient(135deg, var(--bg-card), #0c1422);
-  border-color: rgba(59,130,246,0.12);
-}
-
-/* ─── Passo-steps ─── */
-body.dark-mode .passo-steps {
-  background: #0c1422;
-  border-color: rgba(59,130,246,0.15);
-}
-body.dark-mode .passo-step-num {
-  background: rgba(59,130,246,0.12);
-  border-color: rgba(59,130,246,0.22);
-  color: #60a5fa;
-}
-
-/* ─── Serviços tags ─── */
-body.dark-mode .servico-tag {
-  background: linear-gradient(135deg, rgba(59,130,246,0.1), rgba(59,130,246,0.06));
-  border-color: rgba(59,130,246,0.2);
-  color: #93c5fd;
-}
-
-/* ─── Horários de atendimento (suporte) ─── */
-body.dark-mode .horario-item {
-  background: linear-gradient(135deg, var(--bg-card), #0c1422);
-  border-color: rgba(59,130,246,0.1);
-}
+body.dark-mode .bloqueio-card { background: #0f1829; border: 1px solid rgba(59,130,246,0.15); }
+body.dark-mode .foto-wrap { background: linear-gradient(135deg, var(--bg-card), #0c1422); border-color: rgba(59,130,246,0.12); }
+body.dark-mode .passo-steps { background: #0c1422; border-color: rgba(59,130,246,0.15); }
+body.dark-mode .passo-step-num { background: rgba(59,130,246,0.12); border-color: rgba(59,130,246,0.22); color: #60a5fa; }
+body.dark-mode .servico-tag { background: linear-gradient(135deg, rgba(59,130,246,0.1), rgba(59,130,246,0.06)); border-color: rgba(59,130,246,0.2); color: #93c5fd; }
+body.dark-mode .horario-item { background: linear-gradient(135deg, var(--bg-card), #0c1422); border-color: rgba(59,130,246,0.1); }
 body.dark-mode .horario-item:hover { border-color: rgba(59,130,246,0.22); }
-
-/* ─── Theme selector ─── */
-body.dark-mode .theme-option {
-  background: var(--bg-card);
-  border-color: rgba(59,130,246,0.15);
-}
-body.dark-mode .theme-option:hover {
-  border-color: rgba(59,130,246,0.3);
-  box-shadow: 0 4px 20px rgba(0,0,0,0.4);
-}
-body.dark-mode .theme-option.ativo {
-  border-color: #3b82f6;
-  background: rgba(59,130,246,0.08);
-  box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
-}
-
-/* ─── Negócio dropdown ─── */
-body.dark-mode .negocio-dropdown {
-  background: #0c1422;
-  border-color: rgba(59,130,246,0.15);
-  box-shadow: 0 12px 40px rgba(0,0,0,0.6);
-}
+body.dark-mode .theme-option { background: var(--bg-card); border-color: rgba(59,130,246,0.15); }
+body.dark-mode .theme-option:hover { border-color: rgba(59,130,246,0.3); box-shadow: 0 4px 20px rgba(0,0,0,0.4); }
+body.dark-mode .theme-option.ativo { border-color: #3b82f6; background: rgba(59,130,246,0.08); box-shadow: 0 0 0 3px rgba(59,130,246,0.15); }
+body.dark-mode .negocio-dropdown { background: #0c1422; border-color: rgba(59,130,246,0.15); box-shadow: 0 12px 40px rgba(0,0,0,0.6); }
 body.dark-mode .negocio-add { border-top-color: rgba(59,130,246,0.08); }
 body.dark-mode .negocio-atual { background: rgba(59,130,246,0.08); border-color: rgba(59,130,246,0.15); }
 body.dark-mode .negocio-atual:hover { background: rgba(59,130,246,0.14); }
-
-/* ─── Scrollbar customizada no dark ─── */
 body.dark-mode ::-webkit-scrollbar { width: 6px; height: 6px; }
 body.dark-mode ::-webkit-scrollbar-track { background: #080d19; }
 body.dark-mode ::-webkit-scrollbar-thumb { background: rgba(59,130,246,0.25); border-radius: 3px; }
 body.dark-mode ::-webkit-scrollbar-thumb:hover { background: rgba(59,130,246,0.4); }
-
-/* ─── Placeholder no dark ─── */
 body.dark-mode ::placeholder { color: #3d5068; }
-
-/* ─── Page divider ─── */
 body.dark-mode .page-header { border-bottom-color: rgba(59,130,246,0.1); }
+body.dark-mode .stat-icon { background: rgba(59,130,246,0.1); border-color: rgba(59,130,246,0.2); }
 
-/* ─── Stat icon dark ─── */
-body.dark-mode .stat-icon {
-  background: rgba(59,130,246,0.1);
-  border-color: rgba(59,130,246,0.2);
-}
+/* ── INTERVALO PERSONALIZADO ── */
+body.dark-mode .intervalo-custom-wrap { background: var(--bg-input); border-color: rgba(59,130,246,0.18); }
+body.dark-mode .intervalo-custom-wrap:focus-within { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,0.12); }
+body.dark-mode #intervalo-custom { background: transparent; color: var(--text); }
+body.dark-mode .intervalo-custom-suffix { color: var(--text3); }
 
-/* ─── Transition global (suave) ─── */
+/* ── INTERVALO POR SERVIÇO ── */
+body.dark-mode .servico-intervalo-card { background: var(--bg-card); border-color: var(--border); }
+body.dark-mode .servico-intervalo-card:hover { border-color: rgba(59,130,246,0.2); }
+body.dark-mode .servico-intervalo-nome { color: var(--text); }
+body.dark-mode .servico-intervalo-preco { color: var(--text3); }
+body.dark-mode .servico-intervalo-select { background: var(--bg-input); color: var(--text); border-color: rgba(59,130,246,0.18); }
+body.dark-mode .servico-intervalo-select:focus { border-color: #3b82f6; }
+body.dark-mode .servico-intervalo-badge { background: rgba(59,130,246,0.12); color: #60a5fa; border-color: rgba(59,130,246,0.2); }
+body.dark-mode .intervalo-info-box { background: rgba(59,130,246,0.07); border-color: rgba(59,130,246,0.18); color: #60a5fa; }
+
 *, *::before, *::after {
   transition: background-color 0.25s ease, color 0.2s ease,
               border-color 0.2s ease, box-shadow 0.2s ease,
               opacity 0.2s ease;
 }
 
-/* ══════════════════════════════════════════
-   BASE STYLES
-══════════════════════════════════════════ */
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 body {
   font-family: 'Inter', -apple-system, sans-serif;
@@ -460,7 +211,6 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* ── SIDEBAR ── */
 .sidebar {
   position: fixed; left: 0; top: 0; bottom: 0; width: var(--sidebar-w);
   background: var(--sidebar-bg);
@@ -479,87 +229,38 @@ body {
   transition: all .15s; user-select: none;
 }
 .negocio-atual:hover { background: rgba(255,255,255,0.1); }
-.negocio-avatar {
-  width: 28px; height: 28px; border-radius: 7px; background: var(--accent);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 12px; font-weight: 700; color: #fff; flex-shrink: 0;
-}
+.negocio-avatar { width: 28px; height: 28px; border-radius: 7px; background: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #fff; flex-shrink: 0; }
 .negocio-nome { flex: 1; font-size: 13px; font-weight: 600; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .negocio-chevron { color: rgba(255,255,255,0.3); flex-shrink: 0; transition: transform .2s; }
 .negocio-chevron.open { transform: rotate(180deg); }
-.negocio-dropdown {
-  position: absolute; top: calc(100% + 6px); left: 0; right: 0;
-  background: #1e293b; border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 10px; overflow: hidden;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.3); z-index: 10; display: none;
-}
+.negocio-dropdown { position: absolute; top: calc(100% + 6px); left: 0; right: 0; background: #1e293b; border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden; box-shadow: 0 8px 24px rgba(0,0,0,0.3); z-index: 10; display: none; }
 .negocio-dropdown.show { display: block; }
-.negocio-opt {
-  display: flex; align-items: center; gap: 8px; padding: 10px 12px;
-  cursor: pointer; transition: background .15s; font-size: 13px; color: rgba(255,255,255,0.7);
-}
+.negocio-opt { display: flex; align-items: center; gap: 8px; padding: 10px 12px; cursor: pointer; transition: background .15s; font-size: 13px; color: rgba(255,255,255,0.7); }
 .negocio-opt:hover { background: rgba(255,255,255,0.06); }
 .negocio-opt.ativo { color: #93c5fd; font-weight: 600; }
-.negocio-opt-avatar {
-  width: 24px; height: 24px; border-radius: 6px; background: var(--accent);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 10px; font-weight: 700; color: #fff; flex-shrink: 0;
-}
-.negocio-add {
-  display: flex; align-items: center; gap: 8px; padding: 10px 12px;
-  cursor: pointer; transition: background .15s; font-size: 12px;
-  color: rgba(255,255,255,0.35); border-top: 1px solid rgba(255,255,255,0.06);
-}
+.negocio-opt-avatar { width: 24px; height: 24px; border-radius: 6px; background: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; color: #fff; flex-shrink: 0; }
+.negocio-add { display: flex; align-items: center; gap: 8px; padding: 10px 12px; cursor: pointer; transition: background .15s; font-size: 12px; color: rgba(255,255,255,0.35); border-top: 1px solid rgba(255,255,255,0.06); }
 .negocio-add:hover { background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.6); }
 .sidebar-menu { padding: 10px; flex: 1; overflow-y: auto; }
-.menu-section {
-  font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.2);
-  text-transform: uppercase; letter-spacing: .1em; padding: 14px 10px 5px;
-}
-.menu-item {
-  display: flex; align-items: center; gap: 9px; padding: 8px 10px;
-  border-radius: 8px; color: rgba(255,255,255,0.45); font-size: 13px;
-  font-weight: 500; cursor: pointer; margin-bottom: 1px;
-  transition: all .15s; border: none; background: none; width: 100%;
-  text-align: left; font-family: inherit;
-}
+.menu-section { font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.2); text-transform: uppercase; letter-spacing: .1em; padding: 14px 10px 5px; }
+.menu-item { display: flex; align-items: center; gap: 9px; padding: 8px 10px; border-radius: 8px; color: rgba(255,255,255,0.45); font-size: 13px; font-weight: 500; cursor: pointer; margin-bottom: 1px; transition: all .15s; border: none; background: none; width: 100%; text-align: left; font-family: inherit; }
 .menu-item svg { flex-shrink: 0; opacity: .6; transition: opacity .15s; }
 .menu-item:hover { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.8); }
 .menu-item.ativo { background: rgba(37,99,235,0.2); color: #93c5fd; font-weight: 600; }
 .menu-item.ativo svg { opacity: 1; color: #60a5fa; }
 .sidebar-footer { padding: 12px 10px; border-top: 1px solid var(--sidebar-border); }
-.btn-sair {
-  display: flex; align-items: center; gap: 8px; width: 100%; padding: 8px 10px;
-  border-radius: 8px; background: none; border: none;
-  color: rgba(255,255,255,0.3); font-size: 13px; font-weight: 500;
-  cursor: pointer; transition: all .15s; font-family: inherit;
-}
+.btn-sair { display: flex; align-items: center; gap: 8px; width: 100%; padding: 8px 10px; border-radius: 8px; background: none; border: none; color: rgba(255,255,255,0.3); font-size: 13px; font-weight: 500; cursor: pointer; transition: all .15s; font-family: inherit; }
 .btn-sair:hover { background: rgba(220,38,38,0.15); color: #f87171; }
-.btn-instalar {
-  display: none; align-items: center; gap: 8px; width: 100%; padding: 8px 10px;
-  border-radius: 8px; background: rgba(37,99,235,0.2); border: none;
-  color: #93c5fd; font-size: 13px; font-weight: 600; cursor: pointer;
-  transition: all .15s; margin-bottom: 4px; font-family: inherit;
-}
+.btn-instalar { display: none; align-items: center; gap: 8px; width: 100%; padding: 8px 10px; border-radius: 8px; background: rgba(37,99,235,0.2); border: none; color: #93c5fd; font-size: 13px; font-weight: 600; cursor: pointer; transition: all .15s; margin-bottom: 4px; font-family: inherit; }
 .btn-instalar:hover { background: rgba(37,99,235,0.3); }
 
-/* ── TOPBAR MOBILE ── */
-.topbar-mobile {
-  display: none; position: fixed; top: 0; left: 0; right: 0; height: 56px;
-  background: var(--sidebar-bg); z-index: 99;
-  align-items: center; justify-content: space-between;
-  padding: 0 16px; border-bottom: 1px solid var(--sidebar-border);
-}
+.topbar-mobile { display: none; position: fixed; top: 0; left: 0; right: 0; height: 56px; background: var(--sidebar-bg); z-index: 99; align-items: center; justify-content: space-between; padding: 0 16px; border-bottom: 1px solid var(--sidebar-border); }
 .topbar-brand { font-size: 15px; font-weight: 700; color: #fff; }
 .topbar-brand span { color: #60a5fa; }
 .btn-hamburger { background: none; border: none; color: rgba(255,255,255,0.6); cursor: pointer; padding: 6px; display: flex; align-items: center; }
-.sidebar-overlay {
-  display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5);
-  z-index: 99; backdrop-filter: blur(2px);
-}
+.sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 99; backdrop-filter: blur(2px); }
 .sidebar-overlay.visivel { display: block; }
 
-/* ── MAIN & PAGES ── */
 .main { margin-left: var(--sidebar-w); padding: 32px 32px 60px; min-height: 100vh; }
 .page { display: none; }
 .page.ativo { display: block; animation: pageIn .25s ease; }
@@ -569,75 +270,33 @@ body {
 .page-header h1 { font-size: 24px; font-weight: 700; color: var(--text); letter-spacing: -0.03em; }
 .page-header p { color: var(--text2); font-size: 13.5px; margin-top: 5px; }
 
-/* ── STATS ── */
 .stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; margin-bottom: 24px; }
-.stat-card {
-  background: var(--bg-card); border-radius: var(--radius); padding: 22px;
-  border: 1px solid var(--border); box-shadow: var(--shadow);
-  position: relative; overflow: hidden; transition: transform .2s, box-shadow .2s;
-}
+.stat-card { background: var(--bg-card); border-radius: var(--radius); padding: 22px; border: 1px solid var(--border); box-shadow: var(--shadow); position: relative; overflow: hidden; transition: transform .2s, box-shadow .2s; }
 .stat-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
-.stat-card::before {
-  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
-  background: linear-gradient(90deg, var(--accent), #60a5fa); border-radius: 2px 2px 0 0;
-}
-.stat-icon {
-  width: 40px; height: 40px; border-radius: 10px;
-  background: var(--accent-light); display: flex; align-items: center; justify-content: center;
-  margin-bottom: 14px; border: 1px solid var(--accent-mid);
-}
+.stat-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--accent), #60a5fa); border-radius: 2px 2px 0 0; }
+.stat-icon { width: 40px; height: 40px; border-radius: 10px; background: var(--accent-light); display: flex; align-items: center; justify-content: center; margin-bottom: 14px; border: 1px solid var(--accent-mid); }
 .stat-valor { font-size: 34px; font-weight: 800; color: var(--text); letter-spacing: -0.04em; line-height: 1; }
 .stat-label { font-size: 12px; color: var(--text3); margin-top: 5px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; }
 
-/* ── LINK CARD ── */
-.link-card {
-  background: linear-gradient(135deg, var(--accent-light), #dbeafe);
-  border: 1px solid var(--accent-mid); border-radius: var(--radius);
-  padding: 16px 20px; margin-bottom: 24px;
-  display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
-}
+.link-card { background: linear-gradient(135deg, var(--accent-light), #dbeafe); border: 1px solid var(--accent-mid); border-radius: var(--radius); padding: 16px 20px; margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
 .link-card-label { font-size: 10px; font-weight: 800; color: var(--accent); text-transform: uppercase; letter-spacing: .1em; margin-bottom: 4px; }
 .link-card-url { font-size: 12px; color: #1d4ed8; word-break: break-all; font-weight: 500; }
-.btn-copiar {
-  display: flex; align-items: center; gap: 7px; background: var(--accent); color: white;
-  border: none; padding: 9px 18px; border-radius: 9px; font-size: 13px; font-weight: 600;
-  cursor: pointer; white-space: nowrap; flex-shrink: 0; transition: all .15s;
-  font-family: inherit; box-shadow: 0 2px 8px rgba(37,99,235,0.3);
-}
+.btn-copiar { display: flex; align-items: center; gap: 7px; background: var(--accent); color: white; border: none; padding: 9px 18px; border-radius: 9px; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; flex-shrink: 0; transition: all .15s; font-family: inherit; box-shadow: 0 2px 8px rgba(37,99,235,0.3); }
 .btn-copiar:hover { background: var(--accent-hover); transform: translateY(-1px); }
 
-/* ── CARD ── */
 .card { background: var(--bg-card); border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--shadow); overflow: hidden; margin-bottom: 20px; }
-.card-header {
-  padding: 16px 20px; border-bottom: 1px solid var(--border);
-  display: flex; justify-content: space-between; align-items: center;
-  gap: 10px; flex-wrap: wrap; background: linear-gradient(to right, var(--bg-card), var(--bg));
-}
+.card-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; background: linear-gradient(to right, var(--bg-card), var(--bg)); }
 .card-title { font-size: 14px; font-weight: 700; color: var(--text); }
 .card-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-.filtro-data {
-  padding: 8px 12px; border: 1.5px solid var(--border2); border-radius: var(--radius-sm);
-  font-size: 13px; outline: none; font-family: inherit; color: var(--text);
-  background: var(--bg-card); transition: all .15s;
-}
+.filtro-data { padding: 8px 12px; border: 1.5px solid var(--border2); border-radius: var(--radius-sm); font-size: 13px; outline: none; font-family: inherit; color: var(--text); background: var(--bg-card); transition: all .15s; }
 .filtro-data:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
-.btn-novo {
-  display: flex; align-items: center; gap: 7px; background: var(--accent); color: white;
-  border: none; padding: 8px 16px; border-radius: var(--radius-sm); font-size: 13px;
-  font-weight: 600; cursor: pointer; white-space: nowrap; transition: all .15s;
-  font-family: inherit; box-shadow: 0 2px 6px rgba(37,99,235,0.25);
-}
+.btn-novo { display: flex; align-items: center; gap: 7px; background: var(--accent); color: white; border: none; padding: 8px 16px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: all .15s; font-family: inherit; box-shadow: 0 2px 6px rgba(37,99,235,0.25); }
 .btn-novo:hover { background: var(--accent-hover); transform: translateY(-1px); }
 
-/* ── TABELA ── */
 .tabela-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
 table { width: 100%; border-collapse: collapse; min-width: 540px; }
 thead tr { background: var(--bg); }
-th {
-  text-align: left; font-size: 10.5px; font-weight: 800; color: var(--text3);
-  padding: 11px 20px; text-transform: uppercase; letter-spacing: .08em;
-  white-space: nowrap; border-bottom: 1px solid var(--border);
-}
+th { text-align: left; font-size: 10.5px; font-weight: 800; color: var(--text3); padding: 11px 20px; text-transform: uppercase; letter-spacing: .08em; white-space: nowrap; border-bottom: 1px solid var(--border); }
 td { padding: 13px 20px; font-size: 13.5px; border-bottom: 1px solid rgba(0,0,0,0.04); vertical-align: middle; }
 tr:last-child td { border-bottom: none; }
 tbody tr { transition: background .12s; }
@@ -645,7 +304,6 @@ tbody tr:hover td { background: var(--accent-light); }
 .paciente-nome { font-weight: 700; color: var(--text); font-size: 13.5px; }
 .paciente-tel { font-size: 11.5px; color: var(--text3); margin-top: 2px; }
 
-/* ── AG CARDS (mobile) ── */
 .ag-cards { display: none; padding: 4px 0; }
 .ag-card { padding: 16px 20px; border-bottom: 1px solid var(--border); transition: background .15s; }
 .ag-card:hover { background: var(--accent-light); }
@@ -656,7 +314,6 @@ tbody tr:hover td { background: var(--accent-light); }
 .ag-chip { display: inline-flex; align-items: center; gap: 4px; background: var(--bg); border: 1px solid var(--border); border-radius: 100px; padding: 4px 11px; font-size: 12px; font-weight: 500; color: var(--text2); }
 .ag-card-actions { display: flex; gap: 6px; }
 
-/* ── BADGES ── */
 .badge { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 100px; font-size: 11px; font-weight: 700; white-space: nowrap; letter-spacing: .02em; }
 .badge::before { content: ''; width: 5px; height: 5px; border-radius: 50%; }
 .confirmado { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); }
@@ -667,103 +324,52 @@ tbody tr:hover td { background: var(--accent-light); }
 .concluido::before { background: var(--purple); }
 body.dark-mode .concluido { border-color: rgba(167,139,250,0.25); }
 
-/* ── AÇÕES ── */
 .acoes { display: flex; gap: 5px; }
-.btn-acao {
-  padding: 5px 11px; border-radius: 7px; font-size: 12px; font-weight: 600;
-  cursor: pointer; border: 1.5px solid var(--border2); background: var(--bg-card);
-  color: var(--text2); transition: all .15s; white-space: nowrap; font-family: inherit;
-}
+.btn-acao { padding: 5px 11px; border-radius: 7px; font-size: 12px; font-weight: 600; cursor: pointer; border: 1.5px solid var(--border2); background: var(--bg-card); color: var(--text2); transition: all .15s; white-space: nowrap; font-family: inherit; }
 .btn-acao.concluir:hover { background: var(--green-bg); color: var(--green); border-color: var(--green-border); }
 .btn-acao.cancelar:hover { background: var(--red-bg); color: var(--red); border-color: var(--red-border); }
 
-/* ── VAZIO / PAGINAÇÃO ── */
 .vazio { text-align: center; color: var(--text3); padding: 52px 20px; font-size: 14px; }
-.paginacao {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 13px 20px; border-top: 1px solid var(--border);
-  gap: 10px; flex-wrap: wrap; background: var(--bg);
-}
+.paginacao { display: flex; align-items: center; justify-content: space-between; padding: 13px 20px; border-top: 1px solid var(--border); gap: 10px; flex-wrap: wrap; background: var(--bg); }
 .paginacao-info { font-size: 12px; color: var(--text3); font-weight: 600; }
 .paginacao-btns { display: flex; gap: 3px; }
-.pg-btn {
-  width: 30px; height: 30px; border-radius: 8px; border: 1.5px solid var(--border2);
-  background: var(--bg-card); color: var(--text2); font-size: 13px; font-weight: 500;
-  cursor: pointer; display: flex; align-items: center; justify-content: center;
-  transition: all .15s; font-family: inherit;
-}
+.pg-btn { width: 30px; height: 30px; border-radius: 8px; border: 1.5px solid var(--border2); background: var(--bg-card); color: var(--text2); font-size: 13px; font-weight: 500; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all .15s; font-family: inherit; }
 .pg-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
 .pg-btn.ativo { background: var(--accent); border-color: var(--accent); color: white; box-shadow: 0 2px 6px rgba(37,99,235,0.3); }
 .pg-btn:disabled { opacity: .3; cursor: not-allowed; }
 
-/* ── SECTION BLOCKS ── */
-.section-block {
-  background: var(--bg-card); border-radius: 18px; border: 1px solid var(--border);
-  box-shadow: 0 2px 12px rgba(0,0,0,0.05); overflow: hidden; margin-bottom: 24px;
-  transition: all .25s;
-}
+.section-block { background: var(--bg-card); border-radius: 18px; border: 1px solid var(--border); box-shadow: 0 2px 12px rgba(0,0,0,0.05); overflow: hidden; margin-bottom: 24px; transition: all .25s; }
 .section-block:hover { box-shadow: 0 6px 28px rgba(0,0,0,0.09); transform: translateY(-1px); }
-.section-block-header {
-  padding: 20px 24px; border-bottom: 1px solid var(--border);
-  display: flex; align-items: center; gap: 14px;
-  background: linear-gradient(135deg, var(--bg-card), var(--bg));
-  position: relative;
-}
-.section-block-header::before {
-  content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
-  background: linear-gradient(180deg, var(--accent), #60a5fa); border-radius: 0 2px 2px 0;
-}
-.section-block-icon {
-  width: 44px; height: 44px; border-radius: 12px;
-  background: linear-gradient(135deg, var(--accent-light), #dbeafe);
-  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-  border: 1px solid rgba(37,99,235,0.15); box-shadow: 0 2px 8px rgba(37,99,235,0.1);
-}
+.section-block-header { padding: 20px 24px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 14px; background: linear-gradient(135deg, var(--bg-card), var(--bg)); position: relative; }
+.section-block-header::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: linear-gradient(180deg, var(--accent), #60a5fa); border-radius: 0 2px 2px 0; }
+.section-block-icon { width: 44px; height: 44px; border-radius: 12px; background: linear-gradient(135deg, var(--accent-light), #dbeafe); display: flex; align-items: center; justify-content: center; flex-shrink: 0; border: 1px solid rgba(37,99,235,0.15); box-shadow: 0 2px 8px rgba(37,99,235,0.1); }
 .section-block-title { font-size: 15px; font-weight: 700; color: var(--text); }
 .section-block-sub { font-size: 12px; color: var(--text3); margin-top: 2px; }
 .section-block-body { padding: 24px; }
 
-/* ── TOGGLE ROW ── */
 .toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 18px 0; border-bottom: 1px solid var(--border); gap: 16px; }
 .toggle-row-label { font-size: 14px; font-weight: 600; color: var(--text); }
 .toggle-row-desc { font-size: 12.5px; color: var(--text2); margin-top: 4px; line-height: 1.5; }
 
-/* ── INFO BOXES ── */
 .info-box { border-radius: 12px; padding: 16px 18px; font-size: 13.5px; line-height: 1.6; margin-top: 16px; }
 .info-box.green { background: linear-gradient(135deg, #f0fdf4, #dcfce7); border: 1px solid #86efac; color: #166534; }
 .info-box.blue { background: linear-gradient(135deg, #eff6ff, #dbeafe); border: 1px solid #93c5fd; color: #1e40af; }
 .info-box-title { font-weight: 700; margin-bottom: 4px; font-size: 14px; }
 .form-hint { font-size: 11.5px; color: var(--text3); margin-top: 6px; line-height: 1.5; }
 
-/* ── FOTO ── */
-.foto-wrap {
-  display: flex; align-items: center; gap: 18px; margin-bottom: 22px; padding: 18px;
-  background: linear-gradient(135deg, var(--bg), #f1f5f9); border-radius: 14px; border: 1px solid var(--border);
-}
-.foto-preview {
-  width: 72px; height: 72px; border-radius: 50%;
-  background: linear-gradient(135deg, var(--accent-light), #dbeafe);
-  border: 3px solid white; overflow: hidden;
-  display: flex; align-items: center; justify-content: center; font-size: 26px; flex-shrink: 0;
-  box-shadow: 0 4px 16px rgba(37,99,235,0.15);
-}
+.foto-wrap { display: flex; align-items: center; gap: 18px; margin-bottom: 22px; padding: 18px; background: linear-gradient(135deg, var(--bg), #f1f5f9); border-radius: 14px; border: 1px solid var(--border); }
+.foto-preview { width: 72px; height: 72px; border-radius: 50%; background: linear-gradient(135deg, var(--accent-light), #dbeafe); border: 3px solid white; overflow: hidden; display: flex; align-items: center; justify-content: center; font-size: 26px; flex-shrink: 0; box-shadow: 0 4px 16px rgba(37,99,235,0.15); }
 .foto-preview img { width: 100%; height: 100%; object-fit: cover; }
 .foto-info { flex: 1; }
 .btn-foto { background: var(--bg-card); color: var(--accent); border: 1.5px solid rgba(37,99,235,0.25); padding: 8px 18px; border-radius: 9px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; transition: all .2s; }
 .btn-foto:hover { background: var(--accent-light); }
 .foto-status { font-size: 11.5px; color: var(--text3); margin-top: 6px; }
 
-/* ── PAUSAS ── */
-.pausa-item {
-  display: flex; align-items: center; gap: 12px; padding: 12px 16px;
-  background: linear-gradient(135deg, var(--bg), #f1f5f9);
-  border-radius: 12px; border: 1px solid var(--border); margin-bottom: 8px; transition: all .2s;
-}
+.pausa-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: linear-gradient(135deg, var(--bg), #f1f5f9); border-radius: 12px; border: 1px solid var(--border); margin-bottom: 8px; transition: all .2s; }
 .pausa-item:hover { border-color: rgba(37,99,235,0.2); }
 .pausa-item-label { font-size: 13.5px; font-weight: 600; color: var(--text); flex: 1; }
 .pausa-item-hora { font-size: 12px; color: var(--accent); background: var(--accent-light); padding: 4px 12px; border-radius: 100px; font-weight: 600; border: 1px solid rgba(37,99,235,0.15); }
 
-/* ── SUPORTE ── */
 .suporte-hero { text-align: center; padding: 48px 24px 32px; }
 .suporte-avatar { width: 88px; height: 88px; border-radius: 50%; background: linear-gradient(135deg, #16a34a, #22c55e); display: flex; align-items: center; justify-content: center; margin: 0 auto 24px; box-shadow: 0 8px 32px rgba(22,163,74,0.3); }
 .btn-whatsapp-suporte { display: inline-flex; align-items: center; gap: 10px; background: linear-gradient(135deg, #16a34a, #22c55e); color: white; padding: 14px 36px; border-radius: 14px; font-size: 15px; font-weight: 700; text-decoration: none; transition: all .2s; box-shadow: 0 4px 16px rgba(22,163,74,0.35); font-family: inherit; border: none; cursor: pointer; }
@@ -777,19 +383,11 @@ body.dark-mode .concluido { border-color: rgba(167,139,250,0.25); }
 .horario-item-dia { font-size: 11px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: .07em; margin-bottom: 8px; }
 .horario-item-hora { font-size: 17px; font-weight: 700; color: var(--text); }
 
-/* ── FORMS ── */
 .form-group { margin-bottom: 16px; }
 .form-group label { font-size: 11px; font-weight: 700; color: var(--text2); display: block; margin-bottom: 6px; text-transform: uppercase; letter-spacing: .06em; }
-.form-group input, .form-group select, .form-group textarea {
-  width: 100%; padding: 11px 14px; border: 1.5px solid var(--border2); border-radius: 10px;
-  font-size: 14px; outline: none; font-family: inherit; color: var(--text);
-  background: var(--bg-card); transition: all .2s;
-}
-.form-group input:focus, .form-group select:focus, .form-group textarea:focus {
-  border-color: var(--accent); box-shadow: 0 0 0 4px rgba(37,99,235,0.08);
-}
+.form-group input, .form-group select, .form-group textarea { width: 100%; padding: 11px 14px; border: 1.5px solid var(--border2); border-radius: 10px; font-size: 14px; outline: none; font-family: inherit; color: var(--text); background: var(--bg-card); transition: all .2s; }
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 4px rgba(37,99,235,0.08); }
 
-/* ── MODAIS ── */
 .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 200; display: flex; align-items: center; justify-content: center; padding: 16px; backdrop-filter: blur(4px); }
 .modal { background: var(--bg-card); border-radius: 18px; padding: 24px; width: 100%; max-width: 460px; box-shadow: 0 8px 40px rgba(0,0,0,0.15); max-height: 90vh; overflow-y: auto; }
 .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
@@ -805,19 +403,16 @@ body.dark-mode .concluido { border-color: rgba(167,139,250,0.25); }
 .modal-neg { background: var(--bg-card); border-radius: 18px; padding: 24px; width: 100%; max-width: 400px; box-shadow: 0 8px 40px rgba(0,0,0,0.15); }
 .plano-badge { display: inline-flex; align-items: center; gap: 5px; background: var(--accent-light); color: var(--accent); padding: 5px 12px; border-radius: 100px; font-size: 11px; font-weight: 700; margin-bottom: 14px; border: 1px solid var(--accent-mid); }
 
-/* ── BLOQUEIO ── */
 .bloqueio { position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 24px; backdrop-filter: blur(6px); }
 .bloqueio-card { background: var(--bg-card); border-radius: 24px; padding: 44px; max-width: 420px; width: 100%; text-align: center; box-shadow: 0 24px 80px rgba(0,0,0,0.25); }
 .bloqueio-card h2 { font-size: 22px; font-weight: 800; margin-bottom: 8px; }
 .bloqueio-card p { color: var(--text2); font-size: 14px; margin-bottom: 28px; line-height: 1.7; }
 .btn-ver-planos { display: block; background: linear-gradient(135deg, var(--accent), #3b82f6); color: white; padding: 14px; border-radius: 12px; font-size: 15px; font-weight: 700; text-decoration: none; margin-bottom: 12px; }
 
-/* ── TRIAL BANNER ── */
 .trial-banner { background: linear-gradient(135deg, var(--yellow-bg), #fef9c3); border: 1px solid var(--yellow-border); border-radius: var(--radius); padding: 14px 20px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
 .trial-banner p { font-size: 13px; color: var(--yellow); font-weight: 600; }
 .btn-assinar-banner { background: var(--accent); color: white; border: none; padding: 7px 16px; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit; }
 
-/* ── SERVIÇOS ── */
 .servico-tag-wrap { display: inline-block; margin: 3px; }
 .servico-tag { display: inline-flex; align-items: center; gap: 8px; background: linear-gradient(135deg, var(--accent-light), var(--accent-mid)); border: 1px solid rgba(37,99,235,0.2); color: var(--accent); padding: 6px 14px; border-radius: 100px; font-size: 12.5px; font-weight: 600; transition: all .2s; }
 .servico-preco { background: linear-gradient(135deg, var(--accent), #3b82f6); color: white; padding: 2px 9px; border-radius: 100px; font-size: 11px; font-weight: 700; }
@@ -839,19 +434,116 @@ body.dark-mode .concluido { border-color: rgba(167,139,250,0.25); }
 .btn-salvar:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(22,163,74,0.3); }
 .salvo-msg { color: var(--green); font-size: 12.5px; margin-left: 12px; display: none; font-weight: 700; }
 
-/* ── TOGGLE SWITCH ── */
 .toggle-switch { position: relative; display: inline-block; width: 48px; height: 26px; flex-shrink: 0; }
 .toggle-switch input { opacity: 0; width: 0; height: 0; }
 .toggle-track { position: absolute; cursor: pointer; inset: 0; background: #cbd5e1; border-radius: 100px; transition: .3s; }
 .toggle-thumb { position: absolute; left: 3px; top: 3px; width: 20px; height: 20px; background: white; border-radius: 50%; transition: .3s; box-shadow: 0 1px 4px rgba(0,0,0,0.2); }
 
-/* ── INTERVALOS ── */
+/* ══════════════════════════════════════════
+   INTERVALO — NOVO DESIGN COM PERSONALIZADO
+══════════════════════════════════════════ */
 .intervalo-grid { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 6px; }
 .intervalo-btn { padding: 8px 16px; border: 1.5px solid var(--border2); border-radius: 10px; background: var(--bg-card); cursor: pointer; font-size: 13px; font-weight: 600; color: var(--text2); transition: all .2s; font-family: inherit; }
 .intervalo-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
 .intervalo-btn.selecionado { border-color: var(--accent); background: linear-gradient(135deg, var(--accent), #3b82f6); color: white; box-shadow: 0 2px 8px rgba(37,99,235,0.3); }
+.intervalo-btn.custom-btn { display: flex; align-items: center; gap: 6px; border-style: dashed; }
+.intervalo-btn.custom-btn.selecionado { border-style: solid; }
 
-/* ── DIAS ── */
+/* ── WRAP ENTRADA CUSTOMIZADA ── */
+.intervalo-custom-wrap {
+  display: none;
+  align-items: center; gap: 10px;
+  margin-top: 12px;
+  padding: 12px 16px;
+  background: var(--accent-light);
+  border: 1.5px solid var(--accent-mid);
+  border-radius: 12px;
+  animation: slideDown .2s ease;
+}
+.intervalo-custom-wrap.visivel { display: flex; }
+@keyframes slideDown { from { opacity:0; transform:translateY(-6px); } to { opacity:1; transform:translateY(0); } }
+.intervalo-custom-label { font-size: 12px; font-weight: 700; color: var(--accent); white-space: nowrap; text-transform: uppercase; letter-spacing: .06em; }
+#intervalo-custom {
+  width: 80px; padding: 8px 12px;
+  border: 1.5px solid var(--accent-mid);
+  border-radius: 9px; font-size: 15px; font-weight: 700;
+  outline: none; font-family: inherit;
+  background: var(--bg-card); color: var(--text);
+  text-align: center; transition: all .2s;
+}
+#intervalo-custom:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(37,99,235,0.12); }
+.intervalo-custom-suffix { font-size: 13px; font-weight: 600; color: var(--text2); }
+
+/* ══════════════════════════════════════════
+   INTERVALO POR SERVIÇO — NOVO BLOCO
+══════════════════════════════════════════ */
+.servicos-intervalos-grid {
+  display: flex; flex-direction: column; gap: 10px;
+}
+.servico-intervalo-card {
+  display: flex; align-items: center; gap: 14px;
+  padding: 14px 18px;
+  background: var(--bg-card);
+  border: 1.5px solid var(--border);
+  border-radius: 14px;
+  transition: all .2s;
+}
+.servico-intervalo-card:hover {
+  border-color: rgba(37,99,235,0.2);
+  box-shadow: 0 2px 12px rgba(37,99,235,0.06);
+  transform: translateX(2px);
+}
+.servico-intervalo-info { flex: 1; min-width: 0; }
+.servico-intervalo-nome {
+  font-size: 13.5px; font-weight: 700;
+  color: var(--text); white-space: nowrap;
+  overflow: hidden; text-overflow: ellipsis;
+}
+.servico-intervalo-preco {
+  font-size: 11.5px; color: var(--text3);
+  margin-top: 2px; font-weight: 500;
+}
+.servico-intervalo-select {
+  padding: 8px 12px;
+  border: 1.5px solid var(--border2);
+  border-radius: 9px; font-size: 13px;
+  font-weight: 600; outline: none;
+  font-family: inherit;
+  background: var(--bg-card); color: var(--text);
+  cursor: pointer; transition: all .2s;
+  min-width: 130px;
+}
+.servico-intervalo-select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(37,99,235,0.08); }
+.servico-intervalo-badge {
+  font-size: 10.5px; font-weight: 800;
+  background: var(--accent-light);
+  color: var(--accent);
+  border: 1px solid var(--accent-mid);
+  padding: 3px 10px; border-radius: 100px;
+  text-transform: uppercase; letter-spacing: .06em;
+  white-space: nowrap; flex-shrink: 0;
+}
+.servico-intervalo-badge.custom { background: var(--green-bg); color: var(--green); border-color: var(--green-border); }
+
+.intervalo-info-box {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 14px 16px;
+  background: linear-gradient(135deg, var(--accent-light), #dbeafe);
+  border: 1px solid var(--accent-mid);
+  border-radius: 12px;
+  font-size: 12.5px; color: #1e40af;
+  line-height: 1.6; margin-bottom: 20px;
+}
+.intervalo-info-box svg { flex-shrink: 0; margin-top: 1px; }
+
+.servicos-vazio {
+  text-align: center; padding: 32px 20px;
+  color: var(--text3); font-size: 13.5px;
+}
+.servicos-vazio-icon {
+  font-size: 32px; margin-bottom: 10px;
+}
+
 .dia-row { display: flex; align-items: center; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
 .dia-row:last-child { border-bottom: none; }
 .dia-toggle { display: flex; align-items: center; gap: 10px; min-width: 120px; }
@@ -863,11 +555,9 @@ body.dark-mode .concluido { border-color: rgba(167,139,250,0.25); }
 .dia-inativo .dia-horarios { opacity: .3; pointer-events: none; }
 .dia-inativo .dia-toggle label { color: var(--text3); }
 
-/* ── SUPORTE TEXTOS ── */
 .suporte-title { font-size: 22px; font-weight: 700; color: var(--text); margin-bottom: 10px; letter-spacing: -0.02em; }
 .suporte-desc { font-size: 14px; color: var(--text2); line-height: 1.7; margin-bottom: 32px; max-width: 340px; margin-left: auto; margin-right: auto; }
 
-/* ── PASSOS ── */
 .passo { display: flex; gap: 16px; margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid var(--border); }
 .passo:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
 .passo-num { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), #3b82f6); color: white; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 800; flex-shrink: 0; }
@@ -882,16 +572,8 @@ body.dark-mode .concluido { border-color: rgba(167,139,250,0.25); }
 body.dark-mode .alerta-verde { color: #34d399; }
 body.dark-mode .alerta-azul { color: #60a5fa; }
 
-/* ══════════════════════════════════════════
-   SELETOR DE TEMA
-══════════════════════════════════════════ */
 .theme-selector-wrap { display: flex; gap: 12px; margin-top: 4px; flex-wrap: wrap; }
-.theme-option {
-  flex: 1; min-width: 120px; max-width: 180px; border: 2px solid var(--border2);
-  border-radius: 14px; padding: 14px 16px; cursor: pointer; background: var(--bg-card);
-  transition: all .2s; display: flex; flex-direction: column; gap: 10px;
-  position: relative; user-select: none;
-}
+.theme-option { flex: 1; min-width: 120px; max-width: 180px; border: 2px solid var(--border2); border-radius: 14px; padding: 14px 16px; cursor: pointer; background: var(--bg-card); transition: all .2s; display: flex; flex-direction: column; gap: 10px; position: relative; user-select: none; }
 .theme-option:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: var(--shadow-md); }
 .theme-option.ativo { border-color: var(--accent); background: var(--accent-light); box-shadow: 0 0 0 3px rgba(37,99,235,0.12); }
 body.dark-mode .theme-option.ativo { background: rgba(59,130,246,0.08); }
@@ -915,9 +597,6 @@ body.dark-mode .theme-option.ativo { background: rgba(59,130,246,0.08); }
 .theme-option-desc { font-size: 11.5px; color: var(--text3); margin-top: -4px; }
 .theme-option-emoji { font-size: 20px; line-height: 1; }
 
-/* ══════════════════════════════════════════
-   RESPONSIVE
-══════════════════════════════════════════ */
 @media(max-width:768px) {
   .sidebar { transform: translateX(calc(-1 * var(--sidebar-w))); }
   .sidebar.aberta { transform: translateX(0); }
@@ -945,6 +624,9 @@ body.dark-mode .theme-option.ativo { background: rgba(59,130,246,0.08); }
   .servico-tag { font-size: 12.5px; padding: 6px 12px; gap: 6px; }
   .servico-preco { font-size: 10.5px; }
   .theme-option { max-width: 100%; }
+  .servico-intervalo-card { flex-wrap: wrap; }
+  .servico-intervalo-select { min-width: 100%; }
+  .intervalo-custom-wrap { flex-wrap: wrap; }
 }
 @media(max-width:400px) { .stats { grid-template-columns: 1fr; } }
 </style>
@@ -1126,10 +808,15 @@ body.dark-mode .theme-option.ativo { background: rgba(59,130,246,0.08); }
   <!-- HORÁRIOS -->
   <div class="page" id="page-horarios">
     <div class="page-header"><h1>Horários de Atendimento</h1><p>Configure os dias e horários que seu negócio atende</p></div>
+
+    <!-- BLOCO 1: INTERVALO PADRÃO -->
     <div class="section-block">
       <div class="section-block-header">
         <div class="section-block-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7.5" stroke="#2563eb" stroke-width="1.6"/><path d="M10 6v5l3 3" stroke="#2563eb" stroke-width="1.6" stroke-linecap="round"/></svg></div>
-        <div><div class="section-block-title">Intervalo entre atendimentos</div><div class="section-block-sub">Tempo mínimo reservado entre um agendamento e outro</div></div>
+        <div>
+          <div class="section-block-title">Intervalo padrão entre atendimentos</div>
+          <div class="section-block-sub">Tempo reservado entre agendamentos quando o serviço não tem intervalo próprio</div>
+        </div>
       </div>
       <div class="section-block-body">
         <div class="intervalo-grid">
@@ -1141,9 +828,66 @@ body.dark-mode .theme-option.ativo { background: rgba(59,130,246,0.08); }
           <button class="intervalo-btn" onclick="selecionarIntervalo(this,90)">1h30</button>
           <button class="intervalo-btn" onclick="selecionarIntervalo(this,120)">2 horas</button>
           <button class="intervalo-btn" onclick="selecionarIntervalo(this,150)">2h30</button>
+          <button class="intervalo-btn custom-btn" id="btn-custom-intervalo" onclick="selecionarIntervaloCustom(this)">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+            Personalizado
+          </button>
+        </div>
+
+        <!-- Entrada de valor personalizado -->
+        <div class="intervalo-custom-wrap" id="intervalo-custom-wrap">
+          <span class="intervalo-custom-label">Duração:</span>
+          <input
+            type="number"
+            id="intervalo-custom"
+            min="5" max="480" step="5"
+            placeholder="60"
+            oninput="atualizarIntervaloCustom(this.value)"
+          />
+          <span class="intervalo-custom-suffix">minutos</span>
         </div>
       </div>
     </div>
+
+    <!-- BLOCO 2: INTERVALO POR SERVIÇO -->
+    <div class="section-block">
+      <div class="section-block-header">
+        <div class="section-block-icon">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path d="M3 5h14M3 10h8M3 15h10" stroke="#2563eb" stroke-width="1.6" stroke-linecap="round"/>
+            <circle cx="16" cy="13" r="3" stroke="#2563eb" stroke-width="1.4"/>
+            <path d="M16 11.5V13l1 1" stroke="#2563eb" stroke-width="1.3" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div>
+          <div class="section-block-title">Intervalo por serviço</div>
+          <div class="section-block-sub">Configure durações específicas para cada serviço — substitui o intervalo padrão</div>
+        </div>
+      </div>
+      <div class="section-block-body">
+        <div class="intervalo-info-box">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.4"/><path d="M8 7v4M8 5.5v.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          <span>Quando um serviço tem duração própria configurada, ela é usada no lugar do intervalo padrão. Serviços sem configuração usam o <strong>intervalo padrão</strong> acima.</span>
+        </div>
+
+        <div class="servicos-intervalos-grid" id="servicos-intervalos-grid">
+          <div class="servicos-vazio">
+            <div class="servicos-vazio-icon">🛠️</div>
+            Adicione serviços em <strong>Configurações → Serviços</strong> para configurar durações individuais.
+          </div>
+        </div>
+
+        <div style="display:flex;align-items:center;margin-top:4px">
+          <button class="btn-salvar" onclick="salvarIntervalosServicos()">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Salvar durações
+          </button>
+          <span class="salvo-msg" id="salvo-intervalos-servicos">✓ Salvo!</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- BLOCO 3: DIAS E HORÁRIOS -->
     <div class="section-block">
       <div class="section-block-header">
         <div class="section-block-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="2.5" y="3.5" width="15" height="13.5" rx="2.5" stroke="#2563eb" stroke-width="1.6"/><path d="M2.5 7.5h15M7 2v3M13 2v3" stroke="#2563eb" stroke-width="1.6" stroke-linecap="round"/></svg></div>
@@ -1157,6 +901,8 @@ body.dark-mode .theme-option.ativo { background: rgba(59,130,246,0.08); }
         </div>
       </div>
     </div>
+
+    <!-- BLOCO 4: PAUSAS -->
     <div class="section-block">
       <div class="section-block-header">
         <div class="section-block-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7.5" stroke="#2563eb" stroke-width="1.6"/><path d="M10 6.5v4M10 13v.5" stroke="#2563eb" stroke-width="1.8" stroke-linecap="round"/></svg></div>
@@ -1410,11 +1156,24 @@ let todosAgendamentos = []
 let servicosAtuais = []
 const diasNomes = ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado']
 let intervaloAtual = 30
+let intervaloCustomAtivo = false
+let intervalosServicos = {} // { nomeServico: minutos }
 let horariosConfig = {}
 let negocioAtual = null
 let todosNegocios = []
 let pausasAtuais = []
 let pagamentosConfig = {}
+
+const OPCOES_INTERVALO = [
+  { label: '15 min', valor: 15 },
+  { label: '20 min', valor: 20 },
+  { label: '30 min', valor: 30 },
+  { label: '45 min', valor: 45 },
+  { label: '1 hora', valor: 60 },
+  { label: '1h30',   valor: 90 },
+  { label: '2 horas',valor: 120 },
+  { label: '2h30',   valor: 150 },
+]
 
 const servicosPorSegmento = {
   'Clinica':['Consulta','Retorno','Exame','Avaliação','Procedimento'],
@@ -1557,6 +1316,7 @@ async function carregarServicos(){
   servicosAtuais=(data.servicos||[]).map(s=>typeof s==='object'?s:{nome:s,preco:0})
   pagamentosConfig=data.pagamentos||{}
   renderServicos()
+  renderIntervalosServicos()
 }
 function renderServicos(){
   document.getElementById('servicos-tags').innerHTML=servicosAtuais.map((s,i)=>{
@@ -1579,6 +1339,7 @@ function adicionarServico(){
   const jaExiste=servicosAtuais.some(s=>(typeof s==='object'?s.nome:s).toLowerCase()===nome.toLowerCase())
   if(jaExiste){erroEl.textContent='⚠ Já existe um serviço com esse nome.';nomeInput.classList.add('campo-erro');nomeInput.focus();return}
   servicosAtuais.push({nome,preco});nomeInput.value='';precoInput.value='';renderServicos()
+  renderIntervalosServicos()
 }
 document.addEventListener('DOMContentLoaded',()=>{
   ['novo-servico','novo-preco'].forEach(id=>{
@@ -1586,12 +1347,226 @@ document.addEventListener('DOMContentLoaded',()=>{
     if(el)el.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();adicionarServico()}})
   })
 })
-function removerServico(i){servicosAtuais.splice(i,1);renderServicos()}
+function removerServico(i){
+  const nome = typeof servicosAtuais[i]==='object' ? servicosAtuais[i].nome : servicosAtuais[i]
+  delete intervalosServicos[nome]
+  servicosAtuais.splice(i,1)
+  renderServicos()
+  renderIntervalosServicos()
+}
 async function salvarServicos(){
   if(!negocioAtual)return
   const token=localStorage.getItem('token')
   await fetch(`${API}/auth/servicos`,{method:'PATCH',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({negocioId:negocioAtual._id,servicos:servicosAtuais})})
   const msg=document.getElementById('salvo-msg');msg.style.display='inline';setTimeout(()=>msg.style.display='none',2500)
+}
+
+// ══ INTERVALO PADRÃO — SELEÇÃO ════════════
+function selecionarIntervalo(btn, valor) {
+  document.querySelectorAll('.intervalo-btn').forEach(b => b.classList.remove('selecionado'))
+  btn.classList.add('selecionado')
+  intervaloAtual = valor
+  intervaloCustomAtivo = false
+  document.getElementById('intervalo-custom-wrap').classList.remove('visivel')
+}
+
+function selecionarIntervaloCustom(btn) {
+  document.querySelectorAll('.intervalo-btn').forEach(b => b.classList.remove('selecionado'))
+  btn.classList.add('selecionado')
+  intervaloCustomAtivo = true
+  const wrap = document.getElementById('intervalo-custom-wrap')
+  wrap.classList.add('visivel')
+  const input = document.getElementById('intervalo-custom')
+  // Pré-preenche com valor atual se não for um dos predefinidos
+  const predefinidos = OPCOES_INTERVALO.map(o => o.valor)
+  if (!predefinidos.includes(intervaloAtual)) {
+    input.value = intervaloAtual
+  } else {
+    input.value = ''
+  }
+  input.focus()
+}
+
+function atualizarIntervaloCustom(val) {
+  const n = parseInt(val)
+  if (!isNaN(n) && n >= 5 && n <= 480) {
+    intervaloAtual = n
+  }
+}
+
+function aplicarSelecaoIntervalo(valor) {
+  const predefinidos = OPCOES_INTERVALO.map(o => o.valor)
+  const btns = document.querySelectorAll('.intervalo-btn:not(.custom-btn)')
+  btns.forEach((btn, i) => {
+    btn.classList.toggle('selecionado', OPCOES_INTERVALO[i].valor === valor)
+  })
+  const customBtn = document.getElementById('btn-custom-intervalo')
+  const customWrap = document.getElementById('intervalo-custom-wrap')
+  if (!predefinidos.includes(valor)) {
+    customBtn.classList.add('selecionado')
+    customWrap.classList.add('visivel')
+    document.getElementById('intervalo-custom').value = valor
+    intervaloCustomAtivo = true
+  } else {
+    customBtn.classList.remove('selecionado')
+    customWrap.classList.remove('visivel')
+    intervaloCustomAtivo = false
+  }
+}
+
+// ══ INTERVALO POR SERVIÇO ═════════════════
+function formatarMinutos(min) {
+  if (!min || min <= 0) return '—'
+  const h = Math.floor(min / 60)
+  const m = min % 60
+  if (h === 0) return `${m} min`
+  if (m === 0) return `${h}h`
+  return `${h}h${String(m).padStart(2,'0')}`
+}
+
+function renderIntervalosServicos() {
+  const grid = document.getElementById('servicos-intervalos-grid')
+  if (!grid) return
+
+  if (!servicosAtuais.length) {
+    grid.innerHTML = `<div class="servicos-vazio"><div class="servicos-vazio-icon">🛠️</div>Adicione serviços em <strong>Configurações → Serviços</strong> para configurar durações individuais.</div>`
+    return
+  }
+
+  const opcoesHtml = `
+    <option value="0">Usar padrão</option>
+    <option value="5">5 min</option>
+    <option value="10">10 min</option>
+    <option value="15">15 min</option>
+    <option value="20">20 min</option>
+    <option value="25">25 min</option>
+    <option value="30">30 min</option>
+    <option value="45">45 min</option>
+    <option value="60">1 hora</option>
+    <option value="75">1h15</option>
+    <option value="90">1h30</option>
+    <option value="105">1h45</option>
+    <option value="120">2 horas</option>
+    <option value="150">2h30</option>
+    <option value="180">3 horas</option>
+    <option value="240">4 horas</option>
+    <option value="300">5 horas</option>
+    <option value="360">6 horas</option>
+    <option value="custom">Personalizado...</option>
+  `
+
+  grid.innerHTML = servicosAtuais.map(s => {
+    const nome = typeof s === 'object' ? s.nome : s
+    const preco = typeof s === 'object' && s.preco ? Number(s.preco) : 0
+    const duracao = intervalosServicos[nome] || 0
+    const precoLabel = preco > 0 ? `R$ ${preco.toFixed(2).replace('.',',')}` : ''
+    const temCustom = duracao > 0
+    const badgeClass = temCustom ? 'custom' : ''
+    const badgeLabel = temCustom ? formatarMinutos(duracao) : `Padrão (${formatarMinutos(intervaloAtual)})`
+
+    return `
+      <div class="servico-intervalo-card" id="card-servico-${nome.replace(/\s+/g,'-')}">
+        <div class="servico-intervalo-info">
+          <div class="servico-intervalo-nome">${nome}</div>
+          ${precoLabel ? `<div class="servico-intervalo-preco">${precoLabel}</div>` : ''}
+        </div>
+        <span class="servico-intervalo-badge ${badgeClass}" id="badge-${nome.replace(/\s+/g,'-')}">${badgeLabel}</span>
+        <select
+          class="servico-intervalo-select"
+          data-servico="${nome}"
+          onchange="alterarIntervaloServico(this)"
+        >
+          ${opcoesHtml}
+        </select>
+      </div>
+    `
+  }).join('')
+
+  // Aplicar valores salvos nos selects
+  servicosAtuais.forEach(s => {
+    const nome = typeof s === 'object' ? s.nome : s
+    const duracao = intervalosServicos[nome] || 0
+    const select = grid.querySelector(`[data-servico="${nome}"]`)
+    if (!select) return
+
+    const predefinidos = [0,5,10,15,20,25,30,45,60,75,90,105,120,150,180,240,300,360]
+    if (duracao === 0 || predefinidos.includes(duracao)) {
+      select.value = String(duracao)
+    } else {
+      // Adiciona opção personalizada
+      const opt = document.createElement('option')
+      opt.value = String(duracao)
+      opt.textContent = formatarMinutos(duracao)
+      select.insertBefore(opt, select.querySelector('[value="custom"]'))
+      select.value = String(duracao)
+    }
+  })
+}
+
+function alterarIntervaloServico(select) {
+  const nome = select.dataset.servico
+  const val = select.value
+
+  if (val === 'custom') {
+    const customVal = prompt(`Digite a duração em minutos para "${nome}":`, intervalosServicos[nome] || 60)
+    if (customVal === null) {
+      // Cancelou — volta ao valor anterior
+      const duracao = intervalosServicos[nome] || 0
+      select.value = String(duracao)
+      return
+    }
+    const min = parseInt(customVal)
+    if (isNaN(min) || min < 1 || min > 720) {
+      alert('Por favor, informe um valor entre 1 e 720 minutos.')
+      select.value = String(intervalosServicos[nome] || 0)
+      return
+    }
+    intervalosServicos[nome] = min
+    // Adiciona a opção no select e seleciona
+    const existing = select.querySelector(`[value="${min}"]`)
+    if (!existing) {
+      const opt = document.createElement('option')
+      opt.value = String(min)
+      opt.textContent = formatarMinutos(min)
+      select.insertBefore(opt, select.querySelector('[value="custom"]'))
+    }
+    select.value = String(min)
+  } else {
+    const min = parseInt(val)
+    if (min === 0) {
+      delete intervalosServicos[nome]
+    } else {
+      intervalosServicos[nome] = min
+    }
+  }
+
+  // Atualiza badge
+  const nomeSlug = nome.replace(/\s+/g,'-')
+  const badge = document.getElementById(`badge-${nomeSlug}`)
+  if (badge) {
+    const duracao = intervalosServicos[nome] || 0
+    badge.textContent = duracao > 0 ? formatarMinutos(duracao) : `Padrão (${formatarMinutos(intervaloAtual)})`
+    badge.className = `servico-intervalo-badge ${duracao > 0 ? 'custom' : ''}`
+  }
+}
+
+async function salvarIntervalosServicos() {
+  if (!negocioAtual) return
+  const token = localStorage.getItem('token')
+  await fetch(`${API}/auth/horarios`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+    body: JSON.stringify({
+      negocioId: negocioAtual._id,
+      horarios: horariosConfig,
+      intervalo: intervaloAtual,
+      pausas: pausasAtuais,
+      intervalosServicos
+    })
+  })
+  const msg = document.getElementById('salvo-intervalos-servicos')
+  msg.style.display = 'inline'
+  setTimeout(() => msg.style.display = 'none', 2500)
 }
 
 // ══ TABELA ════════════════════════════════
@@ -1651,7 +1626,6 @@ function formatarData(data){const[a,m,d]=data.split('-');return`${d}/${m}/${a}`}
 function sair(){localStorage.clear();window.location.href='/auth.html'}
 
 // ══ HORÁRIOS ══════════════════════════════
-function selecionarIntervalo(btn,valor){document.querySelectorAll('.intervalo-btn').forEach(b=>b.classList.remove('selecionado'));btn.classList.add('selecionado');intervaloAtual=valor}
 function renderDias(){
   document.getElementById('dias-container').innerHTML=diasNomes.map((nome,i)=>{
     const config=horariosConfig[i]||{ativo:false,inicio:'08:00',fim:'18:00'}
@@ -1663,21 +1637,21 @@ async function carregarHorariosConfig(){
   if(!negocioAtual)return
   const res=await fetch(`${API}/auth/negocio/${negocioAtual._id}`)
   const data=await res.json()
-  horariosConfig=data.horarios||{};intervaloAtual=data.intervalo||30;pausasAtuais=data.pausas||[]
+  horariosConfig=data.horarios||{}
+  intervaloAtual=data.intervalo||30
+  pausasAtuais=data.pausas||[]
+  intervalosServicos=data.intervalosServicos||{}
   renderPausas()
-  document.querySelectorAll('.intervalo-btn').forEach(btn=>{
-    const txt=btn.textContent.trim()
-    const match=(intervaloAtual===15&&txt==='15 min')||(intervaloAtual===20&&txt==='20 min')||(intervaloAtual===30&&txt==='30 min')||(intervaloAtual===45&&txt==='45 min')||(intervaloAtual===60&&txt==='1 hora')||(intervaloAtual===90&&txt==='1h30')||(intervaloAtual===120&&txt==='2 horas')||(intervaloAtual===150&&txt==='2h30')
-    btn.classList.toggle('selecionado',match)
-  })
+  aplicarSelecaoIntervalo(intervaloAtual)
   renderDias()
+  renderIntervalosServicos()
 }
 async function salvarHorarios(){
   if(!negocioAtual)return
   const horarios={}
   diasNomes.forEach((_,i)=>{horarios[i]={ativo:document.getElementById(`dia-${i}`).checked,inicio:document.getElementById(`inicio-${i}`).value,fim:document.getElementById(`fim-${i}`).value}})
   const token=localStorage.getItem('token')
-  await fetch(`${API}/auth/horarios`,{method:'PATCH',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({negocioId:negocioAtual._id,horarios,intervalo:intervaloAtual})})
+  await fetch(`${API}/auth/horarios`,{method:'PATCH',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({negocioId:negocioAtual._id,horarios,intervalo:intervaloAtual,pausas:pausasAtuais,intervalosServicos})})
   const msg=document.getElementById('salvo-horarios');msg.style.display='inline';setTimeout(()=>msg.style.display='none',2500)
 }
 
@@ -1704,7 +1678,7 @@ function removerPausa(i){pausasAtuais.splice(i,1);renderPausas()}
 async function salvarPausas(){
   if(!negocioAtual)return
   const token=localStorage.getItem('token')
-  await fetch(`${API}/auth/horarios`,{method:'PATCH',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({negocioId:negocioAtual._id,horarios:horariosConfig,intervalo:intervaloAtual,pausas:pausasAtuais})})
+  await fetch(`${API}/auth/horarios`,{method:'PATCH',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({negocioId:negocioAtual._id,horarios:horariosConfig,intervalo:intervaloAtual,pausas:pausasAtuais,intervalosServicos})})
   const msg=document.getElementById('salvo-pausas');msg.style.display='inline';setTimeout(()=>msg.style.display='none',2500)
 }
 
@@ -1830,9 +1804,7 @@ async function salvarConfLembrete(){
 }
 
 // ══ INIT ══════════════════════════════════
-// Carrega tema ANTES de renderizar para evitar flash
 carregarTema()
-
 const token=localStorage.getItem('token')
 if(token){mostrarPainel()}else{window.location.href='/auth.html'}
 if('serviceWorker'in navigator)navigator.serviceWorker.register('/sw.js').catch(()=>{})
