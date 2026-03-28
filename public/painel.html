@@ -4,319 +4,866 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AgendoRapido — Painel</title>
-<link rel="manifest" href="/manifest.json">
-<meta name="theme-color" content="#0f172a">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="AgendoRapido">
-<link rel="apple-touch-icon" href="/icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet">
 <style>
 :root {
-  --sidebar-w:260px;--sidebar-bg:#0f172a;--sidebar-border:rgba(255,255,255,0.06);
-  --accent:#2563eb;--accent-hover:#1d4ed8;--accent-light:#eff6ff;--accent-mid:#dbeafe;
-  --bg:#f1f5f9;--bg-card:#ffffff;--border:rgba(0,0,0,0.07);--border2:rgba(0,0,0,0.12);
-  --text:#0f172a;--text2:#475569;--text3:#94a3b8;
-  --green:#16a34a;--green-bg:#f0fdf4;--green-border:#bbf7d0;
-  --red:#dc2626;--red-bg:#fef2f2;--red-border:#fecaca;
-  --yellow:#ca8a04;--yellow-bg:#fefce8;--yellow-border:#fde68a;
-  --purple:#7c3aed;--purple-bg:#f5f3ff;
-  --radius:14px;--radius-sm:9px;
-  --shadow:0 1px 3px rgba(0,0,0,0.05),0 1px 2px rgba(0,0,0,0.03);
-  --shadow-md:0 4px 20px rgba(0,0,0,0.07);
-  --shadow-lg:0 8px 32px rgba(0,0,0,0.1);
+  --sidebar-w: 256px;
+  --bg: #f5f2ee;
+  --bg-card: #fdfcfa;
+  --sidebar-bg: #1a1208;
+  --sidebar-border: rgba(255,255,255,0.06);
+  --accent: #d4622a;
+  --accent-hover: #b8501e;
+  --accent-light: #fdf0ea;
+  --accent-mid: #f5d5c4;
+  --text: #1a1208;
+  --text2: #6b6358;
+  --text3: #a8a09a;
+  --border: rgba(26,18,8,0.08);
+  --border2: rgba(26,18,8,0.14);
+  --green: #2d6a4f;
+  --green-bg: #f0f7f4;
+  --green-border: #b7d9ca;
+  --red: #c0392b;
+  --red-bg: #fdf2f1;
+  --red-border: #f5c6c2;
+  --yellow: #b5770d;
+  --yellow-bg: #fdf8ee;
+  --yellow-border: #f5dfa0;
+  --purple: #6b3fa0;
+  --purple-bg: #f4f0fa;
+  --radius: 16px;
+  --radius-sm: 10px;
+  --shadow: 0 1px 3px rgba(26,18,8,0.06), 0 1px 2px rgba(26,18,8,0.04);
+  --shadow-md: 0 4px 20px rgba(26,18,8,0.09);
 }
-*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased}
-.sidebar{position:fixed;left:0;top:0;bottom:0;width:var(--sidebar-w);background:var(--sidebar-bg);display:flex;flex-direction:column;z-index:100;transition:transform 0.3s cubic-bezier(.4,0,.2,1);border-right:1px solid var(--sidebar-border)}
-.sidebar-top{padding:20px 16px 16px;border-bottom:1px solid var(--sidebar-border)}
-.sidebar-brand{font-size:15px;font-weight:700;color:#fff;letter-spacing:-0.02em;margin-bottom:12px}
-.sidebar-brand span{color:#60a5fa}
-.negocio-selector{position:relative}
-.negocio-atual{display:flex;align-items:center;gap:8px;padding:9px 11px;border-radius:9px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);cursor:pointer;transition:all .15s;user-select:none}
-.negocio-atual:hover{background:rgba(255,255,255,0.1)}
-.negocio-avatar{width:28px;height:28px;border-radius:7px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0}
-.negocio-nome{flex:1;font-size:13px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.negocio-chevron{color:rgba(255,255,255,0.3);flex-shrink:0;transition:transform .2s}
-.negocio-chevron.open{transform:rotate(180deg)}
-.negocio-dropdown{position:absolute;top:calc(100% + 6px);left:0;right:0;background:#1e293b;border:1px solid rgba(255,255,255,0.1);border-radius:10px;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,0.3);z-index:10;display:none}
-.negocio-dropdown.show{display:block}
-.negocio-opt{display:flex;align-items:center;gap:8px;padding:10px 12px;cursor:pointer;transition:background .15s;font-size:13px;color:rgba(255,255,255,0.7)}
-.negocio-opt:hover{background:rgba(255,255,255,0.06)}
-.negocio-opt.ativo{color:#93c5fd;font-weight:600}
-.negocio-opt-avatar{width:24px;height:24px;border-radius:6px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;flex-shrink:0}
-.negocio-add{display:flex;align-items:center;gap:8px;padding:10px 12px;cursor:pointer;transition:background .15s;font-size:12px;color:rgba(255,255,255,0.35);border-top:1px solid rgba(255,255,255,0.06)}
-.negocio-add:hover{background:rgba(255,255,255,0.04);color:rgba(255,255,255,0.6)}
-.sidebar-menu{padding:10px;flex:1;overflow-y:auto}
-.menu-section{font-size:10px;font-weight:700;color:rgba(255,255,255,0.2);text-transform:uppercase;letter-spacing:.1em;padding:14px 10px 5px}
-.menu-item{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:8px;color:rgba(255,255,255,0.45);font-size:13px;font-weight:500;cursor:pointer;margin-bottom:1px;transition:all .15s;border:none;background:none;width:100%;text-align:left;font-family:inherit}
-.menu-item svg{flex-shrink:0;opacity:.6;transition:opacity .15s}
-.menu-item:hover{background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.8)}
-.menu-item.ativo{background:rgba(37,99,235,0.2);color:#93c5fd;font-weight:600}
-.menu-item.ativo svg{opacity:1;color:#60a5fa}
-.sidebar-footer{padding:12px 10px;border-top:1px solid var(--sidebar-border)}
-.btn-sair{display:flex;align-items:center;gap:8px;width:100%;padding:8px 10px;border-radius:8px;background:none;border:none;color:rgba(255,255,255,0.3);font-size:13px;font-weight:500;cursor:pointer;transition:all .15s;font-family:inherit}
-.btn-sair:hover{background:rgba(220,38,38,0.15);color:#f87171}
-.btn-instalar{display:none;align-items:center;gap:8px;width:100%;padding:8px 10px;border-radius:8px;background:rgba(37,99,235,0.2);border:none;color:#93c5fd;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;margin-bottom:4px;font-family:inherit}
-.btn-instalar:hover{background:rgba(37,99,235,0.3)}
-.topbar-mobile{display:none;position:fixed;top:0;left:0;right:0;height:56px;background:var(--sidebar-bg);z-index:99;align-items:center;justify-content:space-between;padding:0 16px;border-bottom:1px solid var(--sidebar-border)}
-.topbar-brand{font-size:15px;font-weight:700;color:#fff}
-.topbar-brand span{color:#60a5fa}
-.btn-hamburger{background:none;border:none;color:rgba(255,255,255,0.6);cursor:pointer;padding:6px;display:flex;align-items:center}
-.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:99;backdrop-filter:blur(2px)}
-.sidebar-overlay.visivel{display:block}
-.main{margin-left:var(--sidebar-w);padding:32px 32px 60px;min-height:100vh}
-.page{display:none}
-.page.ativo{display:block;animation:pageIn .25s ease}
-@keyframes pageIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
-.page-header{margin-bottom:32px;padding-bottom:20px;border-bottom:1px solid var(--border);position:relative}
-.page-header::after{content:'';position:absolute;bottom:-1px;left:0;width:48px;height:2.5px;background:linear-gradient(90deg,var(--accent),#60a5fa);border-radius:2px}
-.page-header h1{font-size:24px;font-weight:700;color:var(--text);letter-spacing:-0.03em}
-.page-header p{color:var(--text2);font-size:13.5px;margin-top:5px}
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}
-.stat-card{background:var(--bg-card);border-radius:var(--radius);padding:22px;border:1px solid var(--border);box-shadow:var(--shadow);position:relative;overflow:hidden;transition:transform .2s,box-shadow .2s}
-.stat-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-md)}
-.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent),#60a5fa);border-radius:2px 2px 0 0}
-.stat-icon{width:40px;height:40px;border-radius:10px;background:var(--accent-light);display:flex;align-items:center;justify-content:center;margin-bottom:14px;border:1px solid var(--accent-mid)}
-.stat-valor{font-size:34px;font-weight:800;color:var(--text);letter-spacing:-0.04em;line-height:1}
-.stat-label{font-size:12px;color:var(--text3);margin-top:5px;font-weight:600;text-transform:uppercase;letter-spacing:.04em}
-.link-card{background:linear-gradient(135deg,var(--accent-light),#dbeafe);border:1px solid var(--accent-mid);border-radius:var(--radius);padding:16px 20px;margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
-.link-card-label{font-size:10px;font-weight:800;color:var(--accent);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px}
-.link-card-url{font-size:12px;color:#1d4ed8;word-break:break-all;font-weight:500}
-.btn-copiar{display:flex;align-items:center;gap:7px;background:var(--accent);color:white;border:none;padding:9px 18px;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:all .15s;font-family:inherit;box-shadow:0 2px 8px rgba(37,99,235,0.3)}
-.btn-copiar:hover{background:var(--accent-hover);transform:translateY(-1px)}
-.card{background:var(--bg-card);border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);overflow:hidden;margin-bottom:20px}
-.card-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;background:linear-gradient(to right,#fff,var(--bg))}
-.card-title{font-size:14px;font-weight:700;color:var(--text)}
-.card-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.filtro-data{padding:8px 12px;border:1.5px solid var(--border2);border-radius:var(--radius-sm);font-size:13px;outline:none;font-family:inherit;color:var(--text);background:#fff;transition:all .15s}
-.filtro-data:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(37,99,235,0.1)}
-.btn-novo{display:flex;align-items:center;gap:7px;background:var(--accent);color:white;border:none;padding:8px 16px;border-radius:var(--radius-sm);font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;transition:all .15s;font-family:inherit;box-shadow:0 2px 6px rgba(37,99,235,0.25)}
-.btn-novo:hover{background:var(--accent-hover);transform:translateY(-1px)}
-.tabela-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
-table{width:100%;border-collapse:collapse;min-width:540px}
-thead tr{background:var(--bg)}
-th{text-align:left;font-size:10.5px;font-weight:800;color:var(--text3);padding:11px 20px;text-transform:uppercase;letter-spacing:.08em;white-space:nowrap;border-bottom:1px solid var(--border)}
-td{padding:13px 20px;font-size:13.5px;border-bottom:1px solid rgba(0,0,0,0.04);vertical-align:middle}
-tr:last-child td{border-bottom:none}
-tbody tr{transition:background .12s}
-tbody tr:hover td{background:var(--accent-light)}
-.paciente-nome{font-weight:700;color:var(--text);font-size:13.5px}
-.paciente-tel{font-size:11.5px;color:var(--text3);margin-top:2px}
-.ag-cards{display:none;padding:4px 0}
-.ag-card{padding:16px 20px;border-bottom:1px solid var(--border);transition:background .15s}
-.ag-card:hover{background:var(--accent-light)}
-.ag-card:last-child{border-bottom:none}
-.ag-card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:10px}
-.ag-card-nome{font-size:14px;font-weight:700;color:var(--text)}
-.ag-card-body{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:10px}
-.ag-chip{display:inline-flex;align-items:center;gap:4px;background:var(--bg);border:1px solid var(--border);border-radius:100px;padding:4px 11px;font-size:12px;font-weight:500;color:var(--text2)}
-.ag-card-actions{display:flex;gap:6px}
-.badge{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:100px;font-size:11px;font-weight:700;white-space:nowrap;letter-spacing:.02em}
-.badge::before{content:'';width:5px;height:5px;border-radius:50%}
-.confirmado{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border)}.confirmado::before{background:var(--green)}
-.cancelado{background:var(--red-bg);color:var(--red);border:1px solid var(--red-border)}.cancelado::before{background:var(--red)}
-.concluido{background:var(--purple-bg);color:var(--purple);border:1px solid #ddd6fe}.concluido::before{background:var(--purple)}
-.acoes{display:flex;gap:5px}
-.btn-acao{padding:5px 11px;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid var(--border2);background:#fff;color:var(--text2);transition:all .15s;white-space:nowrap;font-family:inherit}
-.btn-acao.concluir:hover{background:var(--green-bg);color:var(--green);border-color:var(--green-border)}
-.btn-acao.cancelar:hover{background:var(--red-bg);color:var(--red);border-color:var(--red-border)}
-.vazio{text-align:center;color:var(--text3);padding:52px 20px;font-size:14px}
-.paginacao{display:flex;align-items:center;justify-content:space-between;padding:13px 20px;border-top:1px solid var(--border);gap:10px;flex-wrap:wrap;background:var(--bg)}
-.paginacao-info{font-size:12px;color:var(--text3);font-weight:600}
-.paginacao-btns{display:flex;gap:3px}
-.pg-btn{width:30px;height:30px;border-radius:8px;border:1.5px solid var(--border2);background:#fff;color:var(--text2);font-size:13px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;font-family:inherit}
-.pg-btn:hover:not(:disabled){border-color:var(--accent);color:var(--accent);background:var(--accent-light)}
-.pg-btn.ativo{background:var(--accent);border-color:var(--accent);color:white;box-shadow:0 2px 6px rgba(37,99,235,0.3)}
-.pg-btn:disabled{opacity:.3;cursor:not-allowed}
-.section-block{background:var(--bg-card);border-radius:18px;border:1px solid var(--border);box-shadow:0 2px 12px rgba(0,0,0,0.05);overflow:hidden;margin-bottom:24px;transition:all .25s}
-.section-block:hover{box-shadow:0 6px 28px rgba(0,0,0,0.09);transform:translateY(-1px)}
-.section-block-header{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:14px;background:linear-gradient(135deg,#ffffff,#f8fafc);position:relative}
-.section-block-header::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(180deg,var(--accent),#60a5fa);border-radius:0 2px 2px 0}
-.section-block-icon{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,var(--accent-light),#dbeafe);display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid rgba(37,99,235,0.15);box-shadow:0 2px 8px rgba(37,99,235,0.1)}
-.section-block-title{font-size:15px;font-weight:700;color:var(--text)}
-.section-block-sub{font-size:12px;color:var(--text3);margin-top:2px}
-.section-block-body{padding:24px}
-.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:18px 0;border-bottom:1px solid var(--border);gap:16px}
-.toggle-row-label{font-size:14px;font-weight:600;color:var(--text)}
-.toggle-row-desc{font-size:12.5px;color:var(--text2);margin-top:4px;line-height:1.5}
-.info-box{border-radius:12px;padding:16px 18px;font-size:13.5px;line-height:1.6;margin-top:16px}
-.info-box.green{background:linear-gradient(135deg,#f0fdf4,#dcfce7);border:1px solid #86efac;color:#166534}
-.info-box.blue{background:linear-gradient(135deg,#eff6ff,#dbeafe);border:1px solid #93c5fd;color:#1e40af}
-.info-box-title{font-weight:700;margin-bottom:4px;font-size:14px}
-.form-hint{font-size:11.5px;color:var(--text3);margin-top:6px;line-height:1.5}
-.foto-wrap{display:flex;align-items:center;gap:18px;margin-bottom:22px;padding:18px;background:linear-gradient(135deg,var(--bg),#f1f5f9);border-radius:14px;border:1px solid var(--border)}
-.foto-preview{width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,var(--accent-light),#dbeafe);border:3px solid white;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;box-shadow:0 4px 16px rgba(37,99,235,0.15)}
-.foto-preview img{width:100%;height:100%;object-fit:cover}
-.foto-info{flex:1}
-.btn-foto{background:white;color:var(--accent);border:1.5px solid rgba(37,99,235,0.25);padding:8px 18px;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s}
-.btn-foto:hover{background:var(--accent-light)}
-.foto-status{font-size:11.5px;color:var(--text3);margin-top:6px}
-.pausa-item{display:flex;align-items:center;gap:12px;padding:12px 16px;background:linear-gradient(135deg,var(--bg),#f1f5f9);border-radius:12px;border:1px solid var(--border);margin-bottom:8px;transition:all .2s}
-.pausa-item:hover{border-color:rgba(37,99,235,0.2)}
-.pausa-item-label{font-size:13.5px;font-weight:600;color:var(--text);flex:1}
-.pausa-item-hora{font-size:12px;color:var(--accent);background:var(--accent-light);padding:4px 12px;border-radius:100px;font-weight:600;border:1px solid rgba(37,99,235,0.15)}
-.suporte-hero{text-align:center;padding:48px 24px 32px}
-.suporte-avatar{width:88px;height:88px;border-radius:50%;background:linear-gradient(135deg,#16a34a,#22c55e);display:flex;align-items:center;justify-content:center;margin:0 auto 24px;box-shadow:0 8px 32px rgba(22,163,74,0.3)}
-.btn-whatsapp-suporte{display:inline-flex;align-items:center;gap:10px;background:linear-gradient(135deg,#16a34a,#22c55e);color:white;padding:14px 36px;border-radius:14px;font-size:15px;font-weight:700;text-decoration:none;transition:all .2s;box-shadow:0 4px 16px rgba(22,163,74,0.35);font-family:inherit;border:none;cursor:pointer}
-.btn-whatsapp-suporte:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(22,163,74,0.4)}
-.suporte-divider{height:1px;background:var(--border);margin:0 24px}
-.suporte-horarios{padding:24px}
-.suporte-horarios-title{font-size:11.5px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:16px}
-.horario-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.horario-item{background:linear-gradient(135deg,var(--bg),#f1f5f9);border-radius:12px;padding:16px;border:1px solid var(--border);text-align:center;transition:all .2s}
-.horario-item:hover{border-color:rgba(37,99,235,0.2);transform:translateY(-1px)}
-.horario-item-dia{font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px}
-.horario-item-hora{font-size:17px;font-weight:700;color:var(--text)}
-.form-group{margin-bottom:16px}
-.form-group label{font-size:11px;font-weight:700;color:var(--text2);display:block;margin-bottom:6px;text-transform:uppercase;letter-spacing:.06em}
-.form-group input,.form-group select,.form-group textarea{width:100%;padding:11px 14px;border:1.5px solid var(--border2);border-radius:10px;font-size:14px;outline:none;font-family:inherit;color:var(--text);background:var(--bg-card);transition:all .2s}
-.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--accent);box-shadow:0 0 0 4px rgba(37,99,235,0.08)}
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:200;display:flex;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(4px)}
-.modal{background:var(--bg-card);border-radius:18px;padding:24px;width:100%;max-width:460px;box-shadow:0 8px 40px rgba(0,0,0,0.15);max-height:90vh;overflow-y:auto}
-.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
-.modal-header h2{font-size:17px;font-weight:700;color:var(--text)}
-.modal-close{background:var(--bg);border:none;width:30px;height:30px;border-radius:8px;cursor:pointer;color:var(--text3);font-size:18px;display:flex;align-items:center;justify-content:center;transition:all .15s}
-.modal-close:hover{background:var(--red-bg);color:var(--red)}
-.modal-footer{display:flex;gap:10px;margin-top:20px}
-.btn-cancelar-modal{flex:1;background:var(--bg);color:var(--text2);border:1.5px solid var(--border2);padding:11px;border-radius:10px;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;transition:all .15s}
-.btn-cancelar-modal:hover{background:#f1f5f9}
-.btn-salvar-modal{flex:2;background:linear-gradient(135deg,var(--accent),#3b82f6);color:white;border:none;padding:11px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s;box-shadow:0 2px 8px rgba(37,99,235,0.3)}
-.btn-salvar-modal:hover{transform:translateY(-1px)}
-.erro-msg{color:var(--red);font-size:12.5px;text-align:center;margin-bottom:10px;min-height:18px}
-.modal-neg{background:var(--bg-card);border-radius:18px;padding:24px;width:100%;max-width:400px;box-shadow:0 8px 40px rgba(0,0,0,0.15)}
-.plano-badge{display:inline-flex;align-items:center;gap:5px;background:var(--accent-light);color:var(--accent);padding:5px 12px;border-radius:100px;font-size:11px;font-weight:700;margin-bottom:14px;border:1px solid var(--accent-mid)}
-.bloqueio{position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:1000;display:flex;align-items:center;justify-content:center;padding:24px;backdrop-filter:blur(6px)}
-.bloqueio-card{background:white;border-radius:24px;padding:44px;max-width:420px;width:100%;text-align:center;box-shadow:0 24px 80px rgba(0,0,0,0.25)}
-.bloqueio-card h2{font-size:22px;font-weight:800;margin-bottom:8px}
-.bloqueio-card p{color:var(--text2);font-size:14px;margin-bottom:28px;line-height:1.7}
-.btn-ver-planos{display:block;background:linear-gradient(135deg,var(--accent),#3b82f6);color:white;padding:14px;border-radius:12px;font-size:15px;font-weight:700;text-decoration:none;margin-bottom:12px}
-.trial-banner{background:linear-gradient(135deg,var(--yellow-bg),#fef9c3);border:1px solid var(--yellow-border);border-radius:var(--radius);padding:14px 20px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
-.trial-banner p{font-size:13px;color:var(--yellow);font-weight:600}
-.btn-assinar-banner{background:var(--accent);color:white;border:none;padding:7px 16px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit}
-.servico-tag-wrap{display:inline-block;margin:3px}
-.servico-tag{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--accent-light),var(--accent-mid));border:1px solid rgba(37,99,235,0.2);color:var(--accent);padding:6px 14px;border-radius:100px;font-size:12.5px;font-weight:600;transition:all .2s}
-.servico-preco{background:linear-gradient(135deg,var(--accent),#3b82f6);color:white;padding:2px 9px;border-radius:100px;font-size:11px;font-weight:700}
-.servico-tag button{background:none;border:none;color:#93c5fd;cursor:pointer;font-size:16px;line-height:1;padding:0;display:flex;transition:color .15s}
-.servico-tag button:hover{color:var(--red)}
-.add-servico-wrap{margin-top:14px}
-.add-servico-row{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end}
-.add-field-group{display:flex;flex-direction:column;gap:5px}
-.add-field-group label{font-size:10.5px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.06em}
-.add-field-group input{padding:10px 14px;border:1.5px solid var(--border2);border-radius:10px;font-size:14px;outline:none;font-family:inherit;background:white;transition:all .2s}
-.add-field-group input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(37,99,235,0.08)}
-.add-field-group input.campo-erro{border-color:var(--red);box-shadow:0 0 0 3px rgba(220,38,38,0.08)}
-.add-field-nome{flex:2;min-width:160px}
-.add-field-preco{flex:1;min-width:110px;max-width:140px}
-.btn-add{background:linear-gradient(135deg,var(--accent),#3b82f6);color:white;border:none;padding:10px 20px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;font-family:inherit;transition:all .2s;box-shadow:0 2px 8px rgba(37,99,235,0.25);align-self:flex-end}
-.btn-add:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(37,99,235,0.35)}
-.add-servico-erro{font-size:12px;color:var(--red);font-weight:600;margin-top:8px;min-height:16px}
-.btn-salvar{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--green),#22c55e);color:white;border:none;padding:11px 24px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;margin-top:18px;font-family:inherit;transition:all .2s;box-shadow:0 2px 8px rgba(22,163,74,0.25)}
-.btn-salvar:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(22,163,74,0.3)}
-.salvo-msg{color:var(--green);font-size:12.5px;margin-left:12px;display:none;font-weight:700}
-.toggle-switch{position:relative;display:inline-block;width:48px;height:26px;flex-shrink:0}
-.toggle-switch input{opacity:0;width:0;height:0}
-.toggle-track{position:absolute;cursor:pointer;inset:0;background:#cbd5e1;border-radius:100px;transition:.3s}
-.toggle-thumb{position:absolute;left:3px;top:3px;width:20px;height:20px;background:white;border-radius:50%;transition:.3s;box-shadow:0 1px 4px rgba(0,0,0,0.2)}
-.intervalo-grid{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px}
-.intervalo-btn{padding:8px 16px;border:1.5px solid var(--border2);border-radius:10px;background:white;cursor:pointer;font-size:13px;font-weight:600;color:var(--text2);transition:all .2s;font-family:inherit}
-.intervalo-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-light)}
-.intervalo-btn.selecionado{border-color:var(--accent);background:linear-gradient(135deg,var(--accent),#3b82f6);color:white;box-shadow:0 2px 8px rgba(37,99,235,0.3)}
-.dia-row{display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid var(--border);flex-wrap:wrap}
-.dia-row:last-child{border-bottom:none}
-.dia-toggle{display:flex;align-items:center;gap:10px;min-width:120px}
-.dia-toggle input[type=checkbox]{width:17px;height:17px;cursor:pointer;accent-color:var(--accent);flex-shrink:0}
-.dia-toggle label{font-size:13.5px;font-weight:600;color:var(--text);cursor:pointer}
-.dia-horarios{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.dia-horarios input[type=time]{padding:8px 11px;border:1.5px solid var(--border2);border-radius:9px;font-size:13px;outline:none;font-family:inherit;transition:all .2s;background:white}
-.dia-horarios input[type=time]:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(37,99,235,0.08)}
-.dia-horarios span{font-size:12px;color:var(--text3);font-weight:600}
-.dia-inativo .dia-horarios{opacity:.3;pointer-events:none}
-.dia-inativo .dia-toggle label{color:var(--text3)}
-.suporte-title{font-size:22px;font-weight:700;color:var(--text);margin-bottom:10px;letter-spacing:-0.02em}
-.suporte-desc{font-size:14px;color:var(--text2);line-height:1.7;margin-bottom:32px;max-width:340px;margin-left:auto;margin-right:auto}
-/* ── PASSO A PASSO WPP ── */
-.passo{display:flex;gap:16px;margin-bottom:24px;padding-bottom:24px;border-bottom:1px solid var(--border)}
-.passo:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
-.passo-num{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--accent),#3b82f6);color:white;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;flex-shrink:0}
-.passo-num.verde{background:linear-gradient(135deg,var(--green),#22c55e)}
-.passo-titulo{font-size:14px;font-weight:700;color:var(--text);margin-bottom:6px}
-.passo-desc{font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:12px}
-.passo-steps{background:var(--bg);border:1.5px solid var(--border2);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:8px}
-.passo-step{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text2)}
-.passo-step-num{width:22px;height:22px;border-radius:6px;background:var(--accent-light);border:1px solid var(--accent-mid);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:11px;font-weight:700;color:var(--accent)}
-.alerta-verde{background:var(--green-bg);border:1px solid var(--green-border);border-radius:10px;padding:12px 14px;font-size:12.5px;color:#166534;line-height:1.5;margin-top:10px}
-.alerta-azul{background:var(--accent-light);border:1px solid var(--accent-mid);border-radius:10px;padding:12px 14px;font-size:12.5px;color:#1e40af;line-height:1.5;margin-top:10px}
-@media(max-width:768px){
-  .sidebar{transform:translateX(calc(-1 * var(--sidebar-w)))}
-  .sidebar.aberta{transform:translateX(0)}
-  .topbar-mobile{display:flex}
-  .main{margin-left:0;padding:70px 16px 40px}
-  .stats{grid-template-columns:1fr 1fr;gap:12px}
-  .stat-valor{font-size:28px}
-  .link-card{flex-direction:column;align-items:flex-start}
-  .link-card .btn-copiar{width:100%;justify-content:center}
-  .card-header{flex-direction:column;align-items:flex-start}
-  .card-actions{width:100%}
-  .filtro-data{flex:1}
-  .page-header h1{font-size:20px}
-  .tabela-scroll{display:none}
-  .ag-cards{display:block}
-  .horario-grid{grid-template-columns:1fr}
-  .section-block-body{padding:16px}
 
-  /* ── CONFIGURAÇÕES: layout de serviços ── */
-  .add-servico-row{
-    flex-direction:column;
-    gap:10px;
-    align-items:stretch;   /* cada filho ocupa 100% */
-  }
-  .add-field-group{
-    width:100%;
-    min-width:unset;
-  }
-  .add-field-nome{
-    flex:none;
-    width:100%;
-  }
-  .add-field-preco{
-    flex:none;
-    width:100%;
-    max-width:100%;
-  }
-  .add-field-group input{
-    width:100%;
-    font-size:16px; /* impede zoom automático no iOS */
-    box-sizing:border-box;
-  }
-  .btn-add{
-    width:100%;
-    padding:13px 20px;
-    font-size:15px;
-    border-radius:12px;
-    align-self:unset;
-  }
-  .servico-tag-wrap{margin:3px}
-  .servico-tag{font-size:12.5px;padding:6px 12px;gap:6px}
-  .servico-preco{font-size:10.5px}
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
 }
-@media(max-width:400px){.stats{grid-template-columns:1fr}}
-@media(max-width:400px){.stats{grid-template-columns:1fr}}
+
+/* ── SIDEBAR ── */
+.sidebar {
+  position: fixed; left: 0; top: 0; bottom: 0; width: var(--sidebar-w);
+  background: var(--sidebar-bg);
+  display: flex; flex-direction: column; z-index: 100;
+  transition: transform 0.3s cubic-bezier(.4,0,.2,1);
+  border-right: 1px solid rgba(255,255,255,0.04);
+}
+
+.sidebar-top {
+  padding: 24px 18px 18px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.sidebar-brand {
+  margin-bottom: 18px;
+  display: flex; align-items: baseline; gap: 2px;
+}
+
+.brand-main {
+  font-family: 'Instrument Serif', serif;
+  font-size: 20px;
+  color: #fff;
+  letter-spacing: -0.01em;
+}
+
+.brand-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  margin-left: 1px; margin-bottom: 2px;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.negocio-selector { position: relative; }
+
+.negocio-atual {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.09);
+  cursor: pointer; transition: all .15s; user-select: none;
+}
+.negocio-atual:hover { background: rgba(255,255,255,0.09); }
+
+.negocio-avatar {
+  width: 30px; height: 30px; border-radius: 8px;
+  background: var(--accent);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 600; color: #fff; flex-shrink: 0;
+  font-family: 'Instrument Serif', serif;
+}
+
+.negocio-nome {
+  flex: 1; font-size: 13px; font-weight: 500;
+  color: rgba(255,255,255,0.85);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+.negocio-chevron {
+  color: rgba(255,255,255,0.25); flex-shrink: 0; transition: transform .2s;
+}
+.negocio-chevron.open { transform: rotate(180deg); }
+
+.negocio-dropdown {
+  position: absolute; top: calc(100% + 6px); left: 0; right: 0;
+  background: #231a0d; border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px; overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4); z-index: 10; display: none;
+}
+.negocio-dropdown.show { display: block; }
+
+.negocio-opt {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 13px; cursor: pointer; transition: background .15s;
+  font-size: 13px; color: rgba(255,255,255,0.65);
+}
+.negocio-opt:hover { background: rgba(255,255,255,0.06); }
+.negocio-opt.ativo { color: #f5a87a; font-weight: 500; }
+.negocio-opt-avatar {
+  width: 22px; height: 22px; border-radius: 6px;
+  background: var(--accent); display: flex; align-items: center;
+  justify-content: center; font-size: 10px; font-weight: 600;
+  color: #fff; flex-shrink: 0; font-family: 'Instrument Serif', serif;
+}
+
+.negocio-add {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 13px; cursor: pointer; transition: background .15s;
+  font-size: 12px; color: rgba(255,255,255,0.3);
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+.negocio-add:hover { background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.55); }
+
+/* menu */
+.sidebar-menu { padding: 12px 10px; flex: 1; overflow-y: auto; }
+
+.menu-section {
+  font-size: 9.5px; font-weight: 600;
+  color: rgba(255,255,255,0.18);
+  text-transform: uppercase; letter-spacing: .12em;
+  padding: 16px 10px 6px;
+}
+
+.menu-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 10px; border-radius: 9px;
+  color: rgba(255,255,255,0.42); font-size: 13.5px; font-weight: 400;
+  cursor: pointer; margin-bottom: 1px; transition: all .15s;
+  border: none; background: none; width: 100%; text-align: left;
+  font-family: 'DM Sans', sans-serif; letter-spacing: -0.01em;
+}
+.menu-item svg { flex-shrink: 0; opacity: .5; transition: opacity .15s; }
+.menu-item:hover { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.75); }
+.menu-item:hover svg { opacity: .7; }
+.menu-item.ativo {
+  background: rgba(212,98,42,0.18);
+  color: #f5a87a; font-weight: 500;
+}
+.menu-item.ativo svg { opacity: 1; color: #f5a87a; }
+
+.sidebar-footer {
+  padding: 12px 10px;
+  border-top: 1px solid rgba(255,255,255,0.05);
+}
+
+.btn-sair {
+  display: flex; align-items: center; gap: 8px;
+  width: 100%; padding: 9px 10px; border-radius: 9px;
+  background: none; border: none;
+  color: rgba(255,255,255,0.25); font-size: 13px; font-weight: 400;
+  cursor: pointer; transition: all .15s; font-family: 'DM Sans', sans-serif;
+}
+.btn-sair:hover { background: rgba(192,57,43,0.12); color: #f08080; }
+
+.btn-instalar {
+  display: none; align-items: center; gap: 8px;
+  width: 100%; padding: 9px 10px; border-radius: 9px;
+  background: rgba(212,98,42,0.15); border: none;
+  color: #f5a87a; font-size: 13px; font-weight: 500;
+  cursor: pointer; transition: all .15s; margin-bottom: 4px;
+  font-family: 'DM Sans', sans-serif;
+}
+.btn-instalar:hover { background: rgba(212,98,42,0.25); }
+
+/* ── TOPBAR MOBILE ── */
+.topbar-mobile {
+  display: none; position: fixed; top: 0; left: 0; right: 0; height: 54px;
+  background: var(--sidebar-bg); z-index: 99;
+  align-items: center; justify-content: space-between; padding: 0 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.topbar-brand {
+  font-family: 'Instrument Serif', serif; font-size: 18px; color: #fff;
+}
+.topbar-brand .dot {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: var(--accent); display: inline-block; margin-left: 1px; margin-bottom: 1px;
+}
+.btn-hamburger {
+  background: none; border: none; color: rgba(255,255,255,0.5);
+  cursor: pointer; padding: 6px; display: flex; align-items: center;
+}
+
+.sidebar-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.45); z-index: 99; backdrop-filter: blur(2px);
+}
+.sidebar-overlay.visivel { display: block; }
+
+/* ── MAIN ── */
+.main {
+  margin-left: var(--sidebar-w);
+  padding: 40px 36px 80px;
+  min-height: 100vh;
+}
+
+.page { display: none; }
+.page.ativo { display: block; animation: pageIn .3s ease; }
+@keyframes pageIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ── PAGE HEADER ── */
+.page-header { margin-bottom: 36px; }
+
+.page-header h1 {
+  font-family: 'Instrument Serif', serif;
+  font-size: 32px; font-weight: 400;
+  color: var(--text); letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+.page-header h1 em {
+  font-style: italic; color: var(--accent);
+}
+.page-header p {
+  color: var(--text3); font-size: 14px; margin-top: 6px;
+  font-weight: 300;
+}
+
+/* ── STATS ── */
+.stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 28px; }
+
+.stat-card {
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  padding: 22px 20px 20px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  position: relative; overflow: hidden;
+  transition: transform .2s, box-shadow .2s;
+}
+.stat-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+
+.stat-label {
+  font-size: 11px; font-weight: 500;
+  color: var(--text3); text-transform: uppercase;
+  letter-spacing: .08em; margin-bottom: 10px;
+}
+
+.stat-valor {
+  font-family: 'Instrument Serif', serif;
+  font-size: 40px; font-weight: 400;
+  color: var(--text); letter-spacing: -0.03em; line-height: 1;
+}
+
+.stat-card.verde .stat-valor { color: var(--green); font-size: 28px; }
+.stat-card .stat-icon {
+  position: absolute; bottom: 14px; right: 14px;
+  opacity: .08;
+}
+
+/* ── LINK CARD ── */
+.link-card {
+  background: var(--sidebar-bg);
+  border-radius: var(--radius);
+  padding: 18px 22px;
+  margin-bottom: 24px;
+  display: flex; align-items: center;
+  justify-content: space-between; gap: 14px; flex-wrap: wrap;
+}
+
+.link-card-label {
+  font-size: 10px; font-weight: 500;
+  color: rgba(255,255,255,0.3);
+  text-transform: uppercase; letter-spacing: .1em; margin-bottom: 5px;
+}
+
+.link-card-url {
+  font-size: 12.5px; color: rgba(255,255,255,0.6);
+  word-break: break-all; font-weight: 400;
+  font-family: 'DM Mono', monospace;
+}
+
+/* ── BUTTONS ── */
+.btn-copiar {
+  display: flex; align-items: center; gap: 7px;
+  background: var(--accent); color: white; border: none;
+  padding: 9px 18px; border-radius: 9px;
+  font-size: 12.5px; font-weight: 500;
+  cursor: pointer; white-space: nowrap; flex-shrink: 0;
+  transition: all .15s; font-family: 'DM Sans', sans-serif;
+}
+.btn-copiar:hover { background: var(--accent-hover); transform: translateY(-1px); }
+
+.btn-novo {
+  display: flex; align-items: center; gap: 7px;
+  background: var(--text); color: #fdfcfa; border: none;
+  padding: 9px 16px; border-radius: var(--radius-sm);
+  font-size: 13px; font-weight: 500;
+  cursor: pointer; white-space: nowrap; transition: all .15s;
+  font-family: 'DM Sans', sans-serif;
+}
+.btn-novo:hover { background: #2d2010; transform: translateY(-1px); }
+
+.btn-salvar {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--green); color: white; border: none;
+  padding: 11px 22px; border-radius: 10px;
+  font-size: 13.5px; font-weight: 500;
+  cursor: pointer; font-family: 'DM Sans', sans-serif;
+  transition: all .2s;
+}
+.btn-salvar:hover { transform: translateY(-1px); filter: brightness(1.05); }
+
+.btn-add {
+  background: var(--accent); color: white; border: none;
+  padding: 10px 20px; border-radius: 10px;
+  font-size: 13px; font-weight: 500;
+  cursor: pointer; white-space: nowrap; font-family: 'DM Sans', sans-serif;
+  transition: all .2s; align-self: flex-end;
+}
+.btn-add:hover { background: var(--accent-hover); transform: translateY(-1px); }
+
+.salvo-msg {
+  color: var(--green); font-size: 13px; margin-left: 14px;
+  display: none; font-weight: 400;
+}
+
+/* ── CARD ── */
+.card {
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  overflow: hidden; margin-bottom: 24px;
+}
+
+.card-header {
+  padding: 18px 22px;
+  border-bottom: 1px solid var(--border);
+  display: flex; justify-content: space-between;
+  align-items: center; gap: 10px; flex-wrap: wrap;
+}
+
+.card-title {
+  font-family: 'Instrument Serif', serif;
+  font-size: 17px; font-weight: 400;
+  color: var(--text); letter-spacing: -0.01em;
+}
+
+.card-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+
+.filtro-data {
+  padding: 8px 12px; border: 1.5px solid var(--border2);
+  border-radius: var(--radius-sm); font-size: 13px;
+  outline: none; font-family: 'DM Sans', sans-serif;
+  color: var(--text); background: #fff; transition: all .15s;
+}
+.filtro-data:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(212,98,42,0.1); }
+
+/* ── TABLE ── */
+.tabela-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+table { width: 100%; border-collapse: collapse; min-width: 540px; }
+
+thead tr { background: var(--bg); }
+th {
+  text-align: left; font-size: 10px; font-weight: 600;
+  color: var(--text3); padding: 11px 22px;
+  text-transform: uppercase; letter-spacing: .09em;
+  white-space: nowrap; border-bottom: 1px solid var(--border);
+}
+td {
+  padding: 14px 22px; font-size: 13.5px;
+  border-bottom: 1px solid rgba(26,18,8,0.04);
+  vertical-align: middle;
+}
+tr:last-child td { border-bottom: none; }
+tbody tr { transition: background .12s; }
+tbody tr:hover td { background: var(--accent-light); }
+
+.paciente-nome { font-weight: 500; color: var(--text); font-size: 14px; }
+.paciente-tel { font-size: 12px; color: var(--text3); margin-top: 2px; }
+
+/* ── BADGES ── */
+.badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 4px 10px; border-radius: 100px;
+  font-size: 11.5px; font-weight: 500;
+  white-space: nowrap; letter-spacing: .01em;
+}
+.badge::before { content: ''; width: 5px; height: 5px; border-radius: 50%; }
+
+.confirmado { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); }
+.confirmado::before { background: var(--green); }
+.cancelado { background: var(--red-bg); color: var(--red); border: 1px solid var(--red-border); }
+.cancelado::before { background: var(--red); }
+.concluido { background: var(--purple-bg); color: var(--purple); border: 1px solid #d4c5f0; }
+.concluido::before { background: var(--purple); }
+
+/* ── AÇÕES ── */
+.acoes { display: flex; gap: 5px; }
+.btn-acao {
+  padding: 5px 11px; border-radius: 7px;
+  font-size: 12px; font-weight: 500;
+  cursor: pointer; border: 1px solid var(--border2);
+  background: #fff; color: var(--text2);
+  transition: all .15s; white-space: nowrap;
+  font-family: 'DM Sans', sans-serif;
+}
+.btn-acao.concluir:hover { background: var(--green-bg); color: var(--green); border-color: var(--green-border); }
+.btn-acao.cancelar:hover { background: var(--red-bg); color: var(--red); border-color: var(--red-border); }
+
+.vazio { text-align: center; color: var(--text3); padding: 60px 20px; font-size: 14px; }
+
+/* ── MOBILE CARDS ── */
+.ag-cards { display: none; }
+.ag-card {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  transition: background .15s;
+}
+.ag-card:hover { background: var(--accent-light); }
+.ag-card:last-child { border-bottom: none; }
+.ag-card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; margin-bottom: 10px; }
+.ag-card-nome { font-size: 14px; font-weight: 500; color: var(--text); }
+.ag-card-body { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+.ag-chip {
+  display: inline-flex; align-items: center; gap: 4px;
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: 100px; padding: 4px 10px;
+  font-size: 12px; font-weight: 400; color: var(--text2);
+}
+.ag-card-actions { display: flex; gap: 6px; }
+
+/* ── PAGINAÇÃO ── */
+.paginacao {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 22px; border-top: 1px solid var(--border);
+  gap: 10px; flex-wrap: wrap; background: var(--bg);
+}
+.paginacao-info { font-size: 12px; color: var(--text3); font-weight: 400; }
+.paginacao-btns { display: flex; gap: 3px; }
+.pg-btn {
+  width: 30px; height: 30px; border-radius: 8px;
+  border: 1px solid var(--border2); background: #fff;
+  color: var(--text2); font-size: 13px; font-weight: 400;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: all .15s; font-family: 'DM Sans', sans-serif;
+}
+.pg-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
+.pg-btn.ativo { background: var(--text); border-color: var(--text); color: white; }
+.pg-btn:disabled { opacity: .3; cursor: not-allowed; }
+
+/* ── SECTION BLOCK ── */
+.section-block {
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  overflow: hidden; margin-bottom: 20px;
+  transition: box-shadow .25s;
+}
+.section-block:hover { box-shadow: var(--shadow-md); }
+
+.section-block-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 14px;
+}
+
+.section-block-icon {
+  width: 42px; height: 42px; border-radius: 11px;
+  background: var(--accent-light);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; border: 1px solid var(--accent-mid);
+}
+
+.section-block-title {
+  font-family: 'Instrument Serif', serif;
+  font-size: 16px; font-weight: 400; color: var(--text);
+}
+.section-block-sub { font-size: 12.5px; color: var(--text3); margin-top: 3px; font-weight: 300; }
+.section-block-body { padding: 24px; }
+
+/* ── TOGGLE ── */
+.toggle-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 18px 0; border-bottom: 1px solid var(--border); gap: 16px;
+}
+.toggle-row-label { font-size: 14px; font-weight: 500; color: var(--text); }
+.toggle-row-desc { font-size: 12.5px; color: var(--text2); margin-top: 4px; line-height: 1.5; font-weight: 300; }
+
+.toggle-switch { position: relative; display: inline-block; width: 46px; height: 25px; flex-shrink: 0; }
+.toggle-switch input { opacity: 0; width: 0; height: 0; }
+.toggle-track {
+  position: absolute; cursor: pointer; inset: 0;
+  background: #d5ccbf; border-radius: 100px; transition: .3s;
+}
+.toggle-thumb {
+  position: absolute; left: 3px; top: 3px;
+  width: 19px; height: 19px;
+  background: white; border-radius: 50%; transition: .3s;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+/* ── FORM ── */
+.form-group { margin-bottom: 16px; }
+.form-group label {
+  font-size: 11px; font-weight: 500; color: var(--text2);
+  display: block; margin-bottom: 7px;
+  text-transform: uppercase; letter-spacing: .07em;
+}
+.form-group input, .form-group select, .form-group textarea {
+  width: 100%; padding: 11px 14px;
+  border: 1.5px solid var(--border2); border-radius: 10px;
+  font-size: 14px; outline: none;
+  font-family: 'DM Sans', sans-serif; color: var(--text);
+  background: var(--bg-card); transition: all .2s;
+}
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(212,98,42,0.08);
+}
+.form-hint { font-size: 11.5px; color: var(--text3); margin-top: 6px; line-height: 1.5; font-weight: 300; }
+
+/* ── INFO BOX ── */
+.info-box { border-radius: 12px; padding: 15px 17px; font-size: 13.5px; line-height: 1.6; margin-top: 16px; }
+.info-box.green { background: var(--green-bg); border: 1px solid var(--green-border); color: var(--green); }
+.info-box.blue { background: var(--accent-light); border: 1px solid var(--accent-mid); color: var(--accent-hover); }
+.info-box-title { font-weight: 500; margin-bottom: 4px; font-size: 14px; }
+
+/* ── SERVIÇOS ── */
+.servico-tag-wrap { display: inline-block; margin: 3px; }
+.servico-tag {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--bg); border: 1px solid var(--border2);
+  color: var(--text); padding: 7px 14px;
+  border-radius: 100px; font-size: 13px; font-weight: 400;
+  transition: all .2s;
+}
+.servico-preco {
+  background: var(--text); color: #fdfcfa;
+  padding: 2px 8px; border-radius: 100px;
+  font-size: 11px; font-weight: 500;
+}
+.servico-tag button {
+  background: none; border: none; color: var(--text3);
+  cursor: pointer; font-size: 16px; line-height: 1;
+  padding: 0; display: flex; transition: color .15s;
+}
+.servico-tag button:hover { color: var(--red); }
+
+.add-servico-wrap { margin-top: 14px; }
+.add-servico-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: flex-end; }
+.add-field-group { display: flex; flex-direction: column; gap: 5px; }
+.add-field-group label { font-size: 10.5px; font-weight: 500; color: var(--text2); text-transform: uppercase; letter-spacing: .07em; }
+.add-field-group input {
+  padding: 10px 14px; border: 1.5px solid var(--border2);
+  border-radius: 10px; font-size: 14px; outline: none;
+  font-family: 'DM Sans', sans-serif; background: white; transition: all .2s;
+}
+.add-field-group input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(212,98,42,0.08); }
+.add-field-group input.campo-erro { border-color: var(--red); }
+.add-field-nome { flex: 2; min-width: 160px; }
+.add-field-preco { flex: 1; min-width: 110px; max-width: 140px; }
+.add-servico-erro { font-size: 12px; color: var(--red); font-weight: 400; margin-top: 8px; min-height: 16px; }
+
+/* ── HORÁRIOS ── */
+.intervalo-grid { display: flex; gap: 7px; flex-wrap: wrap; margin-bottom: 6px; }
+.intervalo-btn {
+  padding: 8px 15px; border: 1.5px solid var(--border2);
+  border-radius: 10px; background: white;
+  cursor: pointer; font-size: 13px; font-weight: 400;
+  color: var(--text2); transition: all .2s; font-family: 'DM Sans', sans-serif;
+}
+.intervalo-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
+.intervalo-btn.selecionado {
+  border-color: var(--accent); background: var(--accent);
+  color: white;
+}
+
+.dia-row {
+  display: flex; align-items: center; gap: 14px;
+  padding: 14px 0; border-bottom: 1px solid var(--border); flex-wrap: wrap;
+}
+.dia-row:last-child { border-bottom: none; }
+.dia-toggle { display: flex; align-items: center; gap: 10px; min-width: 120px; }
+.dia-toggle input[type=checkbox] { width: 17px; height: 17px; cursor: pointer; accent-color: var(--accent); flex-shrink: 0; }
+.dia-toggle label { font-size: 13.5px; font-weight: 400; color: var(--text); cursor: pointer; }
+.dia-horarios { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.dia-horarios input[type=time] {
+  padding: 8px 11px; border: 1.5px solid var(--border2);
+  border-radius: 9px; font-size: 13px; outline: none;
+  font-family: 'DM Sans', sans-serif; transition: all .2s; background: white;
+}
+.dia-horarios input[type=time]:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(212,98,42,0.08); }
+.dia-horarios span { font-size: 12px; color: var(--text3); font-weight: 400; }
+.dia-inativo .dia-horarios { opacity: .3; pointer-events: none; }
+.dia-inativo .dia-toggle label { color: var(--text3); }
+
+/* ── PAUSAS ── */
+.pausa-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 16px; background: var(--bg);
+  border-radius: 11px; border: 1px solid var(--border);
+  margin-bottom: 8px; transition: all .2s;
+}
+.pausa-item:hover { border-color: var(--accent-mid); }
+.pausa-item-label { font-size: 13.5px; font-weight: 400; color: var(--text); flex: 1; }
+.pausa-item-hora {
+  font-size: 12px; color: var(--accent);
+  background: var(--accent-light); padding: 4px 11px;
+  border-radius: 100px; font-weight: 500; border: 1px solid var(--accent-mid);
+}
+
+/* ── FOTO WRAP ── */
+.foto-wrap {
+  display: flex; align-items: center; gap: 18px;
+  margin-bottom: 22px; padding: 18px;
+  background: var(--bg); border-radius: 14px; border: 1px solid var(--border);
+}
+.foto-preview {
+  width: 70px; height: 70px; border-radius: 50%;
+  background: var(--accent-light); border: 3px solid white;
+  overflow: hidden; display: flex; align-items: center; justify-content: center;
+  font-size: 24px; flex-shrink: 0; box-shadow: 0 3px 12px rgba(212,98,42,0.12);
+}
+.foto-preview img { width: 100%; height: 100%; object-fit: cover; }
+.btn-foto {
+  background: white; color: var(--text); border: 1.5px solid var(--border2);
+  padding: 8px 16px; border-radius: 9px; font-size: 13px; font-weight: 400;
+  cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all .2s;
+}
+.btn-foto:hover { background: var(--bg); border-color: var(--accent); color: var(--accent); }
+.foto-status { font-size: 11.5px; color: var(--text3); margin-top: 6px; font-weight: 300; }
+
+/* ── SUPORTE ── */
+.suporte-hero { text-align: center; padding: 48px 24px 32px; }
+.suporte-avatar {
+  width: 80px; height: 80px; border-radius: 50%;
+  background: var(--green);
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 22px;
+  box-shadow: 0 6px 24px rgba(45,106,79,0.25);
+}
+.suporte-title {
+  font-family: 'Instrument Serif', serif;
+  font-size: 24px; font-weight: 400; color: var(--text);
+  margin-bottom: 10px; letter-spacing: -0.02em;
+}
+.suporte-desc { font-size: 14px; color: var(--text2); line-height: 1.7; margin-bottom: 28px; max-width: 320px; margin-left: auto; margin-right: auto; font-weight: 300; }
+.btn-whatsapp-suporte {
+  display: inline-flex; align-items: center; gap: 10px;
+  background: var(--green); color: white;
+  padding: 13px 32px; border-radius: 12px;
+  font-size: 15px; font-weight: 500; text-decoration: none;
+  transition: all .2s; font-family: 'DM Sans', sans-serif; border: none; cursor: pointer;
+}
+.btn-whatsapp-suporte:hover { transform: translateY(-2px); filter: brightness(1.08); }
+.suporte-divider { height: 1px; background: var(--border); margin: 0 24px; }
+.suporte-horarios { padding: 24px; }
+.suporte-horarios-title { font-size: 11px; font-weight: 500; color: var(--text3); text-transform: uppercase; letter-spacing: .09em; margin-bottom: 16px; }
+.horario-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.horario-item {
+  background: var(--bg); border-radius: 12px; padding: 16px;
+  border: 1px solid var(--border); text-align: center; transition: all .2s;
+}
+.horario-item:hover { border-color: var(--accent-mid); transform: translateY(-1px); }
+.horario-item-dia { font-size: 10.5px; font-weight: 500; color: var(--text3); text-transform: uppercase; letter-spacing: .07em; margin-bottom: 8px; }
+.horario-item-hora {
+  font-family: 'Instrument Serif', serif;
+  font-size: 20px; font-weight: 400; color: var(--text);
+}
+
+/* ── PASSO A PASSO ── */
+.passo { display: flex; gap: 16px; margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid var(--border); }
+.passo:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+.passo-num {
+  width: 34px; height: 34px; border-radius: 50%;
+  background: var(--accent); color: white;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 500; flex-shrink: 0;
+  font-family: 'Instrument Serif', serif;
+}
+.passo-num.verde { background: var(--green); }
+.passo-titulo { font-size: 14px; font-weight: 500; color: var(--text); margin-bottom: 6px; }
+.passo-desc { font-size: 13px; color: var(--text2); line-height: 1.6; margin-bottom: 12px; font-weight: 300; }
+.passo-steps {
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: 11px; padding: 14px; display: flex; flex-direction: column; gap: 8px;
+}
+.passo-step { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--text2); font-weight: 300; }
+.passo-step-num {
+  width: 22px; height: 22px; border-radius: 6px;
+  background: var(--accent-light); border: 1px solid var(--accent-mid);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; font-size: 10.5px; font-weight: 500; color: var(--accent);
+}
+.alerta-verde {
+  background: var(--green-bg); border: 1px solid var(--green-border);
+  border-radius: 10px; padding: 11px 14px;
+  font-size: 12.5px; color: var(--green); line-height: 1.5; margin-top: 10px; font-weight: 300;
+}
+.alerta-azul {
+  background: var(--accent-light); border: 1px solid var(--accent-mid);
+  border-radius: 10px; padding: 11px 14px;
+  font-size: 12.5px; color: var(--accent-hover); line-height: 1.5; margin-top: 10px; font-weight: 300;
+}
+
+/* ── MODALS ── */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(26,18,8,0.5);
+  z-index: 200; display: flex; align-items: center; justify-content: center;
+  padding: 16px; backdrop-filter: blur(4px);
+}
+.modal {
+  background: var(--bg-card); border-radius: 18px; padding: 26px;
+  width: 100%; max-width: 460px;
+  box-shadow: 0 8px 40px rgba(26,18,8,0.12);
+  max-height: 90vh; overflow-y: auto;
+}
+.modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 22px; }
+.modal-header h2 {
+  font-family: 'Instrument Serif', serif;
+  font-size: 20px; font-weight: 400; color: var(--text);
+}
+.modal-close {
+  background: var(--bg); border: none; width: 30px; height: 30px;
+  border-radius: 8px; cursor: pointer; color: var(--text3);
+  font-size: 18px; display: flex; align-items: center; justify-content: center;
+  transition: all .15s;
+}
+.modal-close:hover { background: var(--red-bg); color: var(--red); }
+.modal-footer { display: flex; gap: 10px; margin-top: 20px; }
+.btn-cancelar-modal {
+  flex: 1; background: var(--bg); color: var(--text2);
+  border: 1.5px solid var(--border2); padding: 11px;
+  border-radius: 10px; font-size: 14px; font-weight: 400;
+  cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all .15s;
+}
+.btn-cancelar-modal:hover { background: #f1ede8; }
+.btn-salvar-modal {
+  flex: 2; background: var(--accent); color: white; border: none;
+  padding: 11px; border-radius: 10px; font-size: 14px; font-weight: 500;
+  cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all .15s;
+}
+.btn-salvar-modal:hover { background: var(--accent-hover); transform: translateY(-1px); }
+.erro-msg { color: var(--red); font-size: 12.5px; text-align: center; margin-bottom: 10px; min-height: 18px; }
+
+.modal-neg {
+  background: var(--bg-card); border-radius: 18px; padding: 26px;
+  width: 100%; max-width: 400px;
+  box-shadow: 0 8px 40px rgba(26,18,8,0.12);
+}
+.plano-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: var(--accent-light); color: var(--accent);
+  padding: 5px 12px; border-radius: 100px;
+  font-size: 11px; font-weight: 500; margin-bottom: 14px;
+  border: 1px solid var(--accent-mid);
+}
+
+/* ── BLOQUEIO ── */
+.bloqueio {
+  position: fixed; inset: 0; background: rgba(26,18,8,0.8);
+  z-index: 1000; display: flex; align-items: center;
+  justify-content: center; padding: 24px; backdrop-filter: blur(6px);
+}
+.bloqueio-card {
+  background: var(--bg-card); border-radius: 22px; padding: 44px;
+  max-width: 400px; width: 100%; text-align: center;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.2);
+}
+.bloqueio-card h2 {
+  font-family: 'Instrument Serif', serif;
+  font-size: 26px; font-weight: 400; margin-bottom: 10px;
+}
+.bloqueio-card p { color: var(--text2); font-size: 14px; margin-bottom: 28px; line-height: 1.7; font-weight: 300; }
+.btn-ver-planos {
+  display: block; background: var(--accent); color: white;
+  padding: 13px; border-radius: 12px;
+  font-size: 15px; font-weight: 500; text-decoration: none; margin-bottom: 12px;
+}
+
+/* ── TRIAL BANNER ── */
+.trial-banner {
+  background: var(--yellow-bg); border: 1px solid var(--yellow-border);
+  border-radius: var(--radius); padding: 14px 20px; margin-bottom: 24px;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; flex-wrap: wrap;
+}
+.trial-banner p { font-size: 13px; color: var(--yellow); font-weight: 400; }
+.btn-assinar-banner {
+  background: var(--accent); color: white; border: none;
+  padding: 7px 16px; border-radius: 8px; font-size: 13px; font-weight: 500;
+  cursor: pointer; font-family: 'DM Sans', sans-serif;
+}
+
+/* ── RESPONSIVE ── */
+@media(max-width: 768px) {
+  .sidebar { transform: translateX(calc(-1 * var(--sidebar-w))); }
+  .sidebar.aberta { transform: translateX(0); }
+  .topbar-mobile { display: flex; }
+  .main { margin-left: 0; padding: 66px 18px 50px; }
+  .stats { grid-template-columns: 1fr 1fr; gap: 12px; }
+  .stat-valor { font-size: 32px; }
+  .link-card { flex-direction: column; align-items: flex-start; }
+  .link-card .btn-copiar { width: 100%; justify-content: center; }
+  .card-header { flex-direction: column; align-items: flex-start; }
+  .card-actions { width: 100%; }
+  .filtro-data { flex: 1; }
+  .page-header h1 { font-size: 26px; }
+  .tabela-scroll { display: none; }
+  .ag-cards { display: block; }
+  .horario-grid { grid-template-columns: 1fr; }
+  .section-block-body { padding: 18px; }
+  .add-servico-row { flex-direction: column; gap: 10px; align-items: stretch; }
+  .add-field-group { width: 100%; min-width: unset; }
+  .add-field-nome, .add-field-preco { flex: none; width: 100%; max-width: 100%; }
+  .add-field-group input { width: 100%; font-size: 16px; box-sizing: border-box; }
+  .btn-add { width: 100%; padding: 13px 20px; font-size: 15px; border-radius: 12px; align-self: unset; }
+}
+@media(max-width: 400px) { .stats { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
+
 <div class="topbar-mobile">
-  <button class="btn-hamburger" onclick="toggleSidebar()"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 5h14M3 10h14M3 15h14" stroke="white" stroke-width="1.6" stroke-linecap="round"/></svg></button>
-  <div class="topbar-brand">Agendo<span>Rapido</span></div>
+  <button class="btn-hamburger" onclick="toggleSidebar()">
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 5h14M3 10h14M3 15h14" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
+  </button>
+  <div class="topbar-brand">AgendoRapido<span class="dot"></span></div>
   <div style="width:32px"></div>
 </div>
+
 <div class="sidebar-overlay" id="sidebar-overlay" onclick="fecharSidebar()"></div>
 
 <!-- MODAL NOVO AGENDAMENTO -->
 <div class="modal-overlay" id="modal-agendamento" style="display:none">
   <div class="modal">
-    <div class="modal-header"><h2>Novo Agendamento</h2><button class="modal-close" onclick="fecharModal()">×</button></div>
+    <div class="modal-header">
+      <h2>Novo agendamento</h2>
+      <button class="modal-close" onclick="fecharModal()">×</button>
+    </div>
     <div class="form-group"><label>Nome do cliente</label><input type="text" id="m-nome" placeholder="João Silva" /></div>
     <div class="form-group"><label>WhatsApp</label><input type="tel" id="m-telefone" placeholder="(11) 99999-9999" /></div>
     <div class="form-group"><label>Serviço</label><select id="m-servico"></select></div>
@@ -333,7 +880,10 @@ tbody tr:hover td{background:var(--accent-light)}
 <!-- MODAL NOVO NEGÓCIO -->
 <div class="modal-overlay" id="modal-negocio" style="display:none">
   <div class="modal-neg">
-    <div class="modal-header"><h2>Novo Painel</h2><button class="modal-close" onclick="fecharModalNegocio()">×</button></div>
+    <div class="modal-header">
+      <h2>Novo painel</h2>
+      <button class="modal-close" onclick="fecharModalNegocio()">×</button>
+    </div>
     <div class="plano-badge" id="badge-plano">Plano Pro</div>
     <div class="form-group"><label>Nome do negócio</label><input type="text" id="neg-nome" placeholder="Ex: Barbearia Centro" /></div>
     <div class="form-group">
@@ -359,9 +909,9 @@ tbody tr:hover td{background:var(--accent-light)}
 <!-- BLOQUEIO -->
 <div id="bloqueio" class="bloqueio" style="display:none">
   <div class="bloqueio-card">
-    <div style="font-size:48px;margin-bottom:16px">⏰</div>
+    <div style="font-size:44px;margin-bottom:16px">⏰</div>
     <h2>Seu trial expirou</h2>
-    <p>Seus 14 dias gratuitos acabaram. Assine um plano para continuar.</p>
+    <p>Seus 14 dias gratuitos acabaram. Assine um plano para continuar recebendo agendamentos.</p>
     <a href="/planos.html" class="btn-ver-planos">Ver planos a partir de R$29/mês</a>
     <button onclick="sair()" style="background:none;border:none;color:var(--text3);font-size:13px;cursor:pointer;margin-top:8px;font-family:inherit">Sair da conta</button>
   </div>
@@ -370,7 +920,10 @@ tbody tr:hover td{background:var(--accent-light)}
 <!-- SIDEBAR -->
 <div class="sidebar" id="sidebar">
   <div class="sidebar-top">
-    <div class="sidebar-brand">Agendo<span>Rapido</span></div>
+    <div class="sidebar-brand">
+      <span class="brand-main">AgendoRapido</span>
+      <span class="brand-dot"></span>
+    </div>
     <div class="negocio-selector">
       <div class="negocio-atual" onclick="toggleDropdown()">
         <div class="negocio-avatar" id="neg-avatar">A</div>
@@ -380,12 +933,13 @@ tbody tr:hover td{background:var(--accent-light)}
       <div class="negocio-dropdown" id="neg-dropdown">
         <div id="neg-lista"></div>
         <div class="negocio-add" onclick="abrirModalNegocio()">
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 2v10M2 7h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 2v9M2 6.5h9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
           Adicionar painel
         </div>
       </div>
     </div>
   </div>
+
   <div class="sidebar-menu">
     <div class="menu-section">Menu</div>
     <button class="menu-item ativo" onclick="irPara('agendamentos',this)">
@@ -412,6 +966,7 @@ tbody tr:hover td{background:var(--accent-light)}
       <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="7.5" r="2" stroke="currentColor" stroke-width="1.4"/><path d="M7.5 1v1.5M7.5 12.5V14M1 7.5h1.5M12.5 7.5H14M3 3l1 1M11 11l1 1M3 12l1-1M11 4l1-1" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
       Configurações
     </button>
+
     <div class="menu-section">Conta</div>
     <button class="menu-item" onclick="irPara('pagamentos',this)">
       <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M2 4h11v8a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V4Z" stroke="currentColor" stroke-width="1.4"/><path d="M2 4V3a1 1 0 0 1 1-1h9a1 1 0 0 1 1 1v1" stroke="currentColor" stroke-width="1.4"/><path d="M5 8h5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
@@ -426,6 +981,7 @@ tbody tr:hover td{background:var(--accent-light)}
       Suporte
     </button>
   </div>
+
   <div class="sidebar-footer">
     <button id="btn-instalar-app" class="btn-instalar" onclick="instalarApp()">
       <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 2v7M4 6.5L6.5 9 9 6.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M1.5 9.5v1A1 1 0 0 0 2.5 11.5h8a1 1 0 0 0 1-1v-1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
@@ -443,23 +999,54 @@ tbody tr:hover td{background:var(--accent-light)}
 
   <!-- AGENDAMENTOS -->
   <div class="page ativo" id="page-agendamentos">
-    <div class="page-header"><h1>Agendamentos</h1><p>Gerencie os horários do seu negócio</p></div>
+    <div class="page-header">
+      <h1>Agendamentos</h1>
+      <p>Gerencie os horários do seu negócio</p>
+    </div>
+
     <div class="link-card">
-      <div><div class="link-card-label">Link de agendamento</div><div class="link-card-url" id="link-agendamento"></div></div>
-      <button class="btn-copiar" onclick="copiarLink()"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M1 8.5V2a1 1 0 0 1 1-1h6.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>Copiar link</button>
+      <div>
+        <div class="link-card-label">Seu link de agendamento</div>
+        <div class="link-card-url" id="link-agendamento">—</div>
+      </div>
+      <button class="btn-copiar" onclick="copiarLink()">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M1 8.5V2a1 1 0 0 1 1-1h6.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+        Copiar link
+      </button>
     </div>
+
     <div class="stats">
-      <div class="stat-card"><div class="stat-icon"><svg width="15" height="15" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="7.5" r="5.5" stroke="#2563eb" stroke-width="1.4"/><path d="M7.5 4.5V8l2 2" stroke="#2563eb" stroke-width="1.4" stroke-linecap="round"/></svg></div><div class="stat-valor" id="stat-hoje">0</div><div class="stat-label">Hoje</div></div>
-      <div class="stat-card"><div class="stat-icon"><svg width="15" height="15" viewBox="0 0 15 15" fill="none"><rect x="1.5" y="2.5" width="12" height="11" rx="1.5" stroke="#2563eb" stroke-width="1.4"/><path d="M5 1.5v2M10 1.5v2M1.5 5.5h12" stroke="#2563eb" stroke-width="1.4" stroke-linecap="round"/></svg></div><div class="stat-valor" id="stat-semana">0</div><div class="stat-label">Esta semana</div></div>
-      <div class="stat-card"><div class="stat-icon"><svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M1.5 11L5.5 7l3 3L13.5 4" stroke="#2563eb" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="stat-valor" id="stat-total">0</div><div class="stat-label">Total geral</div></div>
-      <div class="stat-card"><div class="stat-icon" style="background:#f0fdf4;border-color:#bbf7d0"><svg width="15" height="15" viewBox="0 0 15 15" fill="none"><rect x="1.5" y="3" width="12" height="9.5" rx="1.5" stroke="#16a34a" stroke-width="1.4"/><path d="M1.5 6h12M5 9h3" stroke="#16a34a" stroke-width="1.4" stroke-linecap="round"/></svg></div><div class="stat-valor" id="stat-lucro" style="font-size:20px;color:#16a34a">R$ 0</div><div class="stat-label">Lucro do mês</div></div>
+      <div class="stat-card">
+        <div class="stat-label">Hoje</div>
+        <div class="stat-valor" id="stat-hoje">0</div>
+        <div class="stat-icon"><svg width="52" height="52" viewBox="0 0 52 52" fill="none"><circle cx="26" cy="26" r="18" stroke="currentColor" stroke-width="2"/><path d="M26 16v11l6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Esta semana</div>
+        <div class="stat-valor" id="stat-semana">0</div>
+        <div class="stat-icon"><svg width="52" height="52" viewBox="0 0 52 52" fill="none"><rect x="8" y="10" width="36" height="32" rx="4" stroke="currentColor" stroke-width="2"/><path d="M8 18h36M18 8v6M34 8v6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Total geral</div>
+        <div class="stat-valor" id="stat-total">0</div>
+        <div class="stat-icon"><svg width="52" height="52" viewBox="0 0 52 52" fill="none"><path d="M8 36L20 22l10 10L44 14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      </div>
+      <div class="stat-card verde">
+        <div class="stat-label">Lucro do mês</div>
+        <div class="stat-valor" id="stat-lucro">R$ 0</div>
+        <div class="stat-icon"><svg width="52" height="52" viewBox="0 0 52 52" fill="none"><rect x="6" y="12" width="40" height="28" rx="4" stroke="currentColor" stroke-width="2"/><path d="M6 20h40M16 30h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>
+      </div>
     </div>
+
     <div class="card">
       <div class="card-header">
         <div class="card-title">Lista de agendamentos</div>
         <div class="card-actions">
           <input type="date" class="filtro-data" id="filtro-data" onchange="filtrarData()" />
-          <button class="btn-novo" onclick="abrirModalNovoAgendamento()"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>Novo</button>
+          <button class="btn-novo" onclick="abrirModalNovoAgendamento()">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+            Novo
+          </button>
         </div>
       </div>
       <div class="tabela-scroll">
@@ -478,10 +1065,10 @@ tbody tr:hover td{background:var(--accent-light)}
 
   <!-- HORÁRIOS -->
   <div class="page" id="page-horarios">
-    <div class="page-header"><h1>Horários de Atendimento</h1><p>Configure os dias e horários que seu negócio atende</p></div>
+    <div class="page-header"><h1>Horários de <em>Atendimento</em></h1><p>Configure os dias e horários que seu negócio atende</p></div>
     <div class="section-block">
       <div class="section-block-header">
-        <div class="section-block-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7.5" stroke="#2563eb" stroke-width="1.6"/><path d="M10 6v5l3 3" stroke="#2563eb" stroke-width="1.6" stroke-linecap="round"/></svg></div>
+        <div class="section-block-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="6.5" stroke="var(--accent)" stroke-width="1.5"/><path d="M9 5.5V9.5l2.5 2.5" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round"/></svg></div>
         <div><div class="section-block-title">Intervalo entre atendimentos</div><div class="section-block-sub">Tempo mínimo reservado entre um agendamento e outro</div></div>
       </div>
       <div class="section-block-body">
@@ -499,35 +1086,41 @@ tbody tr:hover td{background:var(--accent-light)}
     </div>
     <div class="section-block">
       <div class="section-block-header">
-        <div class="section-block-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="2.5" y="3.5" width="15" height="13.5" rx="2.5" stroke="#2563eb" stroke-width="1.6"/><path d="M2.5 7.5h15M7 2v3M13 2v3" stroke="#2563eb" stroke-width="1.6" stroke-linecap="round"/></svg></div>
+        <div class="section-block-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="2" y="3" width="14" height="13" rx="2" stroke="var(--accent)" stroke-width="1.5"/><path d="M2 7h14M6 1.5v3M12 1.5v3" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round"/></svg></div>
         <div><div class="section-block-title">Dias e horários de atendimento</div><div class="section-block-sub">Defina em quais dias e horários você recebe clientes</div></div>
       </div>
       <div class="section-block-body">
         <div id="dias-container"></div>
-        <div style="display:flex;align-items:center;margin-top:8px">
-          <button class="btn-salvar" onclick="salvarHorarios()"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Salvar horários</button>
+        <div style="display:flex;align-items:center;margin-top:16px">
+          <button class="btn-salvar" onclick="salvarHorarios()">
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M1.5 6.5l3.5 3.5L11.5 3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Salvar horários
+          </button>
           <span class="salvo-msg" id="salvo-horarios">✓ Salvo!</span>
         </div>
       </div>
     </div>
     <div class="section-block">
       <div class="section-block-header">
-        <div class="section-block-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7.5" stroke="#2563eb" stroke-width="1.6"/><path d="M10 6.5v4M10 13v.5" stroke="#2563eb" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+        <div class="section-block-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="6.5" stroke="var(--accent)" stroke-width="1.5"/><path d="M9 6v4M9 12v.5" stroke="var(--accent)" stroke-width="1.7" stroke-linecap="round"/></svg></div>
         <div><div class="section-block-title">Pausas e intervalos</div><div class="section-block-sub">Bloqueie horários para almoço, café ou qualquer pausa</div></div>
       </div>
       <div class="section-block-body">
         <div id="pausas-lista"></div>
         <div style="margin-top:14px;display:flex;flex-direction:column;gap:8px">
-          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:14px;background:var(--bg);border-radius:12px;border:1.5px dashed var(--border2)">
-            <input type="text" id="pausa-inicio" placeholder="12:00" maxlength="5" inputmode="numeric" style="flex:1;min-width:80px;padding:10px 12px;border:1.5px solid var(--border2);border-radius:9px;font-size:14px;font-weight:600;outline:none;font-family:inherit;text-align:center;background:white;transition:all .2s" oninput="mascaraHora(this)" />
-            <span style="font-size:12px;color:var(--text3);font-weight:700">às</span>
-            <input type="text" id="pausa-fim" placeholder="13:00" maxlength="5" inputmode="numeric" style="flex:1;min-width:80px;padding:10px 12px;border:1.5px solid var(--border2);border-radius:9px;font-size:14px;font-weight:600;outline:none;font-family:inherit;text-align:center;background:white;transition:all .2s" oninput="mascaraHora(this)" />
-            <input type="text" id="pausa-label" placeholder="Nome da pausa" style="flex:1.5;min-width:100px;padding:10px 12px;border:1.5px solid var(--border2);border-radius:9px;font-size:13.5px;outline:none;font-family:inherit;background:white;transition:all .2s" />
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:14px;background:var(--bg);border-radius:12px;border:1px dashed var(--border2)">
+            <input type="text" id="pausa-inicio" placeholder="12:00" maxlength="5" inputmode="numeric" style="flex:1;min-width:80px;padding:10px 12px;border:1.5px solid var(--border2);border-radius:9px;font-size:14px;font-weight:400;outline:none;font-family:'DM Sans',sans-serif;text-align:center;background:white;transition:all .2s" oninput="mascaraHora(this)" />
+            <span style="font-size:12px;color:var(--text3)">às</span>
+            <input type="text" id="pausa-fim" placeholder="13:00" maxlength="5" inputmode="numeric" style="flex:1;min-width:80px;padding:10px 12px;border:1.5px solid var(--border2);border-radius:9px;font-size:14px;font-weight:400;outline:none;font-family:'DM Sans',sans-serif;text-align:center;background:white;transition:all .2s" oninput="mascaraHora(this)" />
+            <input type="text" id="pausa-label" placeholder="Nome da pausa" style="flex:1.5;min-width:100px;padding:10px 12px;border:1.5px solid var(--border2);border-radius:9px;font-size:13.5px;outline:none;font-family:'DM Sans',sans-serif;background:white;transition:all .2s" />
           </div>
           <button class="btn-add" style="width:100%" onclick="adicionarPausa()">+ Adicionar pausa</button>
         </div>
-        <div style="display:flex;align-items:center;margin-top:4px">
-          <button class="btn-salvar" onclick="salvarPausas()"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Salvar pausas</button>
+        <div style="display:flex;align-items:center;margin-top:8px">
+          <button class="btn-salvar" onclick="salvarPausas()">
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M1.5 6.5l3.5 3.5L11.5 3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Salvar pausas
+          </button>
           <span class="salvo-msg" id="salvo-pausas">✓ Salvo!</span>
         </div>
       </div>
@@ -536,10 +1129,10 @@ tbody tr:hover td{background:var(--accent-light)}
 
   <!-- LEMBRETES -->
   <div class="page" id="page-lembretes">
-    <div class="page-header"><h1>Lembretes Automáticos</h1><p>Avise seus clientes 24h antes do agendamento via WhatsApp</p></div>
+    <div class="page-header"><h1>Lembretes <em>Automáticos</em></h1><p>Avise seus clientes 24h antes do agendamento via WhatsApp</p></div>
     <div class="section-block">
       <div class="section-block-header">
-        <div class="section-block-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 2a6 6 0 0 1 6 6c0 3.3.7 4.7 1.4 5.5H2.6C3.3 12.7 4 11.3 4 8a6 6 0 0 1 6-6Z" stroke="#2563eb" stroke-width="1.6" stroke-linejoin="round"/><path d="M8 16.5a2 2 0 0 0 4 0" stroke="#2563eb" stroke-width="1.6" stroke-linecap="round"/></svg></div>
+        <div class="section-block-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2a5 5 0 0 1 5 5c0 3.2.9 4.5 1.5 5H2.5C3.1 11.5 4 10.2 4 7a5 5 0 0 1 5-5Z" stroke="var(--accent)" stroke-width="1.5" stroke-linejoin="round"/><path d="M7 15.5a2 2 0 0 0 4 0" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round"/></svg></div>
         <div><div class="section-block-title">Lembrete automático 24h antes</div><div class="section-block-sub">Mensagem enviada pelo WhatsApp do AgendoRapido</div></div>
       </div>
       <div class="section-block-body">
@@ -548,11 +1141,15 @@ tbody tr:hover td{background:var(--accent-light)}
             <div class="toggle-row-label">Ativar lembretes automáticos</div>
             <div class="toggle-row-desc">Seus clientes recebem uma mensagem no WhatsApp 24h antes do horário</div>
           </div>
-          <label class="toggle-switch"><input type="checkbox" id="toggle-lembrete" onchange="salvarLembrete()"><span class="toggle-track" id="toggle-track"></span><span class="toggle-thumb" id="toggle-thumb"></span></label>
+          <label class="toggle-switch">
+            <input type="checkbox" id="toggle-lembrete" onchange="salvarLembrete()">
+            <span class="toggle-track" id="toggle-track"></span>
+            <span class="toggle-thumb" id="toggle-thumb"></span>
+          </label>
         </div>
         <div id="lembrete-info" style="display:none" class="info-box green">
           <div class="info-box-title">✓ Lembretes ativados</div>
-          Seus clientes receberão automaticamente uma mensagem de lembrete 24 horas antes do agendamento via WhatsApp do AgendoRapido.
+          Seus clientes receberão automaticamente uma mensagem 24 horas antes do agendamento via WhatsApp do AgendoRapido.
         </div>
         <div style="margin-top:20px">
           <div class="form-group">
@@ -562,7 +1159,10 @@ tbody tr:hover td{background:var(--accent-light)}
           </div>
         </div>
         <div style="display:flex;align-items:center">
-          <button class="btn-salvar" onclick="salvarConfLembrete()"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Salvar configurações</button>
+          <button class="btn-salvar" onclick="salvarConfLembrete()">
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M1.5 6.5l3.5 3.5L11.5 3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Salvar configurações
+          </button>
           <span class="salvo-msg" id="salvo-lembrete">✓ Salvo!</span>
         </div>
       </div>
@@ -571,27 +1171,17 @@ tbody tr:hover td{background:var(--accent-light)}
 
   <!-- WHATSAPP AUTO -->
   <div class="page" id="page-whatsapp">
-    <div class="page-header">
-      <h1>WhatsApp Automático</h1>
-      <p>Configure seu WhatsApp Business para enviar o link de agendamento sozinho</p>
-    </div>
-
-    <!-- LINK GERADO -->
+    <div class="page-header"><h1>WhatsApp <em>Automático</em></h1><p>Configure seu WhatsApp Business para enviar o link de agendamento sozinho</p></div>
     <div class="section-block">
       <div class="section-block-header">
-        <div class="section-block-icon">
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M17.5 10a7.5 7.5 0 1 1-15 0 7.5 7.5 0 0 1 15 0Z" stroke="#2563eb" stroke-width="1.6"/><path d="M10 6.5v4M10 13v.5" stroke="#2563eb" stroke-width="1.8" stroke-linecap="round"/></svg>
-        </div>
-        <div>
-          <div class="section-block-title">Seu link de agendamento</div>
-          <div class="section-block-sub">Cole este link na mensagem de saudação do WhatsApp Business</div>
-        </div>
+        <div class="section-block-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="6.5" stroke="var(--accent)" stroke-width="1.5"/><path d="M9 5.5v5M9 13v.5" stroke="var(--accent)" stroke-width="1.7" stroke-linecap="round"/></svg></div>
+        <div><div class="section-block-title">Seu link de agendamento</div><div class="section-block-sub">Cole este link na mensagem de saudação do WhatsApp Business</div></div>
       </div>
       <div class="section-block-body">
-        <div style="background:var(--accent-light);border:1.5px solid var(--accent-mid);border-radius:12px;padding:16px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+        <div style="background:var(--bg);border:1.5px solid var(--border2);border-radius:12px;padding:16px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
           <div style="flex:1">
-            <div style="font-size:10px;font-weight:800;color:var(--accent);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px">Link de agendamento</div>
-            <div style="font-size:13px;color:#1d4ed8;word-break:break-all;font-weight:500" id="wpp-link-agendamento">—</div>
+            <div style="font-size:10px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px">Link de agendamento</div>
+            <div style="font-size:13px;color:var(--accent);word-break:break-all;font-weight:400" id="wpp-link-agendamento">—</div>
           </div>
           <button class="btn-copiar" onclick="copiarLinkWpp()">
             <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M1 8.5V2a1 1 0 0 1 1-1h6.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
@@ -600,42 +1190,27 @@ tbody tr:hover td{background:var(--accent-light)}
         </div>
       </div>
     </div>
-
-    <!-- MENSAGEM PRONTA -->
     <div class="section-block">
       <div class="section-block-header">
-        <div class="section-block-icon">
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 4h14v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4Z" stroke="#2563eb" stroke-width="1.6"/><path d="M7 8h6M7 11h4" stroke="#2563eb" stroke-width="1.6" stroke-linecap="round"/></svg>
-        </div>
-        <div>
-          <div class="section-block-title">Mensagem pronta para copiar</div>
-          <div class="section-block-sub">Cole essa mensagem no WhatsApp Business como saudação automática</div>
-        </div>
+        <div class="section-block-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M3 4h12v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4Z" stroke="var(--accent)" stroke-width="1.5"/><path d="M6 8h6M6 11h4" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+        <div><div class="section-block-title">Mensagem pronta para copiar</div><div class="section-block-sub">Cole essa mensagem no WhatsApp Business como saudação automática</div></div>
       </div>
       <div class="section-block-body">
-        <div style="background:#f8fafc;border:1.5px solid var(--border2);border-radius:12px;padding:18px;margin-bottom:14px">
-          <div style="font-size:13.5px;color:var(--text);line-height:1.8;white-space:pre-wrap" id="wpp-mensagem-preview">Carregando...</div>
+        <div style="background:var(--bg);border:1.5px solid var(--border2);border-radius:12px;padding:18px;margin-bottom:14px">
+          <div style="font-size:13.5px;color:var(--text);line-height:1.8;white-space:pre-wrap;font-weight:300" id="wpp-mensagem-preview">Carregando...</div>
         </div>
-        <button onclick="copiarMensagemWpp()" id="btn-copiar-msg" style="display:flex;align-items:center;gap:7px;background:var(--accent);color:white;border:none;padding:10px 20px;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;box-shadow:0 2px 8px rgba(37,99,235,0.3);transition:all .15s">
+        <button onclick="copiarMensagemWpp()" id="btn-copiar-msg" class="btn-copiar">
           <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M1 8.5V2a1 1 0 0 1 1-1h6.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
           Copiar mensagem completa
         </button>
       </div>
     </div>
-
-    <!-- TUTORIAL PASSO A PASSO -->
     <div class="section-block">
       <div class="section-block-header">
-        <div class="section-block-icon">
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 10h12M4 6h12M4 14h7" stroke="#2563eb" stroke-width="1.6" stroke-linecap="round"/></svg>
-        </div>
-        <div>
-          <div class="section-block-title">Como configurar passo a passo</div>
-          <div class="section-block-sub">Siga as instruções abaixo no app WhatsApp Business do seu celular</div>
-        </div>
+        <div class="section-block-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M3 9h12M3 5h12M3 13h8" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+        <div><div class="section-block-title">Como configurar passo a passo</div><div class="section-block-sub">Siga as instruções no app WhatsApp Business do seu celular</div></div>
       </div>
       <div class="section-block-body">
-
         <div class="passo">
           <div class="passo-num">1</div>
           <div style="flex:1">
@@ -644,7 +1219,6 @@ tbody tr:hover td{background:var(--accent-light)}
             <div class="alerta-verde">✓ <strong>Dica:</strong> A mensagem já está com o seu link personalizado. Não precisa editar nada.</div>
           </div>
         </div>
-
         <div class="passo">
           <div class="passo-num">2</div>
           <div style="flex:1">
@@ -658,7 +1232,6 @@ tbody tr:hover td{background:var(--accent-light)}
             </div>
           </div>
         </div>
-
         <div class="passo">
           <div class="passo-num">3</div>
           <div style="flex:1">
@@ -673,7 +1246,6 @@ tbody tr:hover td{background:var(--accent-light)}
             <div class="alerta-azul">ℹ️ Essa mensagem é enviada automaticamente para quem mandar mensagem pela <strong>primeira vez</strong> ou após <strong>14 dias sem contato</strong>.</div>
           </div>
         </div>
-
         <div class="passo">
           <div class="passo-num">4</div>
           <div style="flex:1">
@@ -688,16 +1260,14 @@ tbody tr:hover td{background:var(--accent-light)}
             </div>
           </div>
         </div>
-
         <div class="passo">
           <div class="passo-num verde">✓</div>
           <div style="flex:1">
             <div class="passo-titulo">Pronto! Seu WhatsApp está configurado</div>
-            <div class="passo-desc">A partir de agora, qualquer cliente que mandar mensagem pela primeira vez vai receber o link de agendamento <strong>automaticamente</strong>, sem você fazer nada.</div>
-            <div class="alerta-verde">💡 <strong>Importante:</strong> Isso funciona apenas no <strong>WhatsApp Business</strong> (app gratuito da Meta). Se você usa o WhatsApp comum, baixe o WhatsApp Business e migre seu número — é gratuito.</div>
+            <div class="passo-desc">A partir de agora, qualquer cliente que mandar mensagem pela primeira vez vai receber o link de agendamento <strong>automaticamente</strong>.</div>
+            <div class="alerta-verde">💡 <strong>Importante:</strong> Isso funciona apenas no <strong>WhatsApp Business</strong> (app gratuito da Meta). Se você usa o WhatsApp comum, baixe o WhatsApp Business — é gratuito.</div>
           </div>
         </div>
-
       </div>
     </div>
   </div>
@@ -707,7 +1277,7 @@ tbody tr:hover td{background:var(--accent-light)}
     <div class="page-header"><h1>Configurações</h1><p>Personalize os serviços do seu negócio</p></div>
     <div class="section-block">
       <div class="section-block-header">
-        <div class="section-block-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M2 5h16M2 10h10M2 15h12" stroke="#2563eb" stroke-width="1.6" stroke-linecap="round"/></svg></div>
+        <div class="section-block-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M2 5h14M2 10h10M2 15h12" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round"/></svg></div>
         <div><div class="section-block-title">Serviços oferecidos</div><div class="section-block-sub">Adicione os serviços com seus respectivos preços</div></div>
       </div>
       <div class="section-block-body">
@@ -727,7 +1297,10 @@ tbody tr:hover td{background:var(--accent-light)}
           <div class="add-servico-erro" id="servico-erro"></div>
         </div>
         <div style="display:flex;align-items:center">
-          <button class="btn-salvar" onclick="salvarServicos()"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Salvar serviços</button>
+          <button class="btn-salvar" onclick="salvarServicos()">
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M1.5 6.5l3.5 3.5L11.5 3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Salvar serviços
+          </button>
           <span class="salvo-msg" id="salvo-msg">✓ Salvo!</span>
         </div>
       </div>
@@ -736,14 +1309,20 @@ tbody tr:hover td{background:var(--accent-light)}
 
   <!-- BIO -->
   <div class="page" id="page-bio">
-    <div class="page-header"><h1>Minha Página Bio</h1><p>Personalize sua página pública para o Instagram</p></div>
+    <div class="page-header"><h1>Minha <em>Página Bio</em></h1><p>Personalize sua página pública para o Instagram</p></div>
     <div class="link-card">
-      <div><div class="link-card-label">Link da sua bio</div><div class="link-card-url" id="link-bio"></div></div>
-      <button class="btn-copiar" onclick="copiarLinkBio()"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M1 8.5V2a1 1 0 0 1 1-1h6.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>Copiar link</button>
+      <div>
+        <div class="link-card-label">Link da sua bio</div>
+        <div class="link-card-url" id="link-bio">—</div>
+      </div>
+      <button class="btn-copiar" onclick="copiarLinkBio()">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M1 8.5V2a1 1 0 0 1 1-1h6.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+        Copiar link
+      </button>
     </div>
     <div class="section-block">
       <div class="section-block-header">
-        <div class="section-block-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="3.5" stroke="#2563eb" stroke-width="1.6"/><path d="M3 18c0-3.9 3.1-7 7-7s7 3.1 7 7" stroke="#2563eb" stroke-width="1.6" stroke-linecap="round"/></svg></div>
+        <div class="section-block-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="6.5" r="3" stroke="var(--accent)" stroke-width="1.5"/><path d="M3 17c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round"/></svg></div>
         <div><div class="section-block-title">Informações da página</div><div class="section-block-sub">Foto, descrição e dados de contato da sua bio</div></div>
       </div>
       <div class="section-block-body">
@@ -762,8 +1341,11 @@ tbody tr:hover td{background:var(--accent-light)}
           <div class="form-group" style="margin-bottom:0"><label>Instagram</label><input type="text" id="bio-instagram" placeholder="@seunegocio" /></div>
           <div class="form-group" style="margin-bottom:0"><label>WhatsApp</label><input type="text" id="bio-whatsapp" placeholder="(11) 99999-9999" /></div>
         </div>
-        <div style="display:flex;align-items:center">
-          <button class="btn-salvar" onclick="salvarBio()"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Salvar bio</button>
+        <div style="display:flex;align-items:center;margin-top:20px">
+          <button class="btn-salvar" onclick="salvarBio()">
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M1.5 6.5l3.5 3.5L11.5 3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Salvar bio
+          </button>
           <span class="salvo-msg" id="salvo-bio">✓ Salvo!</span>
         </div>
       </div>
@@ -775,16 +1357,14 @@ tbody tr:hover td{background:var(--accent-light)}
     <div class="page-header"><h1>Pagamentos</h1><p>Configure cobrança antecipada via Pix por serviço</p></div>
     <div class="section-block">
       <div class="section-block-header">
-        <div class="section-block-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="2" y="5" width="16" height="13" rx="2.5" stroke="#2563eb" stroke-width="1.6"/><path d="M2 9h16M6 13h4" stroke="#2563eb" stroke-width="1.6" stroke-linecap="round"/></svg></div>
+        <div class="section-block-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="2" y="5" width="14" height="10" rx="2" stroke="var(--accent)" stroke-width="1.5"/><path d="M2 8.5h14M5.5 12h4" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round"/></svg></div>
         <div><div class="section-block-title">Cobrança via Pix</div><div class="section-block-sub">Receba antes do atendimento, automaticamente</div></div>
       </div>
       <div class="section-block-body">
-        <div style="text-align:center;padding:40px 0 32px">
-          <div style="width:80px;height:80px;background:linear-gradient(135deg,var(--accent-light),#dbeafe);border-radius:20px;display:flex;align-items:center;justify-content:center;margin:0 auto 22px;border:1px solid rgba(37,99,235,0.2)">
-            <svg width="36" height="36" viewBox="0 0 36 36" fill="none"><rect x="4" y="8" width="28" height="20" rx="3.5" stroke="#2563eb" stroke-width="1.8"/><path d="M4 14h28M10 21h7" stroke="#2563eb" stroke-width="1.8" stroke-linecap="round"/></svg>
-          </div>
-          <div style="font-size:20px;font-weight:700;color:var(--text);margin-bottom:10px">Pagamentos em breve</div>
-          <p style="font-size:14px;color:var(--text2);max-width:340px;margin:0 auto;line-height:1.7">Cobrança antecipada via Pix com repasse automático e reembolso em cancelamentos.</p>
+        <div style="text-align:center;padding:44px 0 36px">
+          <div style="font-family:'Instrument Serif',serif;font-size:48px;margin-bottom:16px;opacity:.3">💳</div>
+          <div style="font-family:'Instrument Serif',serif;font-size:22px;font-weight:400;color:var(--text);margin-bottom:10px">Pagamentos em breve</div>
+          <p style="font-size:14px;color:var(--text2);max-width:320px;margin:0 auto;line-height:1.7;font-weight:300">Cobrança antecipada via Pix com repasse automático e reembolso em cancelamentos.</p>
         </div>
       </div>
     </div>
@@ -797,12 +1377,12 @@ tbody tr:hover td{background:var(--accent-light)}
       <div style="padding:0">
         <div class="suporte-hero">
           <div class="suporte-avatar">
-            <svg width="38" height="38" viewBox="0 0 38 38" fill="none"><path d="M31 23c0 1.3-.5 2.5-1.3 3.3l-1.6 1.7c-1 .9-2.2 1.4-3.3 1.4-4.6 0-9-1.8-12.4-5.1C9.1 21 7.2 16.6 7.2 12c0-1.2.4-2.4 1.3-3.3l1.7-1.7c.9-.9 2.2-.9 3 0l3.6 3.6c.9.9.9 2.2 0 3l-1.3 1.3c-.2.3-.2.7 0 .9 1.3 1.8 2.9 3.4 4.7 4.7.3.2.6.2.9 0l1.3-1.3c.8-.9 2.1-.9 3 0l3.6 3.6c.7.8.7 2 0 2.8z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <svg width="36" height="36" viewBox="0 0 36 36" fill="none"><path d="M29 22c0 1.2-.5 2.3-1.3 3.1l-1.6 1.7c-.9.9-2 1.3-3.1 1.3-4.4 0-8.6-1.7-11.8-4.9-3.2-3.2-4.9-7.4-4.9-11.8 0-1.1.4-2.2 1.3-3.1l1.7-1.7c.8-.8 2.1-.8 2.9 0l3.5 3.5c.8.8.8 2.1 0 2.9l-1.3 1.3c-.2.3-.2.6 0 .9 1.2 1.7 2.8 3.2 4.5 4.5.3.2.6.2.9 0l1.3-1.3c.8-.8 2-.8 2.9 0l3.5 3.5c.6.7.6 1.9 0 2.7Z" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </div>
           <div class="suporte-title">Fale com o suporte</div>
           <p class="suporte-desc">Tem alguma dúvida ou problema? Nossa equipe está pronta para te ajudar pelo WhatsApp.</p>
           <a href="https://wa.me/5500000000000?text=Olá%2C+preciso+de+ajuda+com+o+AgendoRapido!" target="_blank" class="btn-whatsapp-suporte">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.118 1.528 5.852L.057 23.885l6.204-1.628A11.945 11.945 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.808 9.808 0 0 1-5.001-1.366l-.359-.213-3.682.966.983-3.594-.234-.371A9.818 9.818 0 0 1 2.182 12C2.182 6.57 6.57 2.182 12 2.182S21.818 6.57 21.818 12 17.43 21.818 12 21.818z"/></svg>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.118 1.528 5.852L.057 23.885l6.204-1.628A11.945 11.945 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.808 9.808 0 0 1-5.001-1.366l-.359-.213-3.682.966.983-3.594-.234-.371A9.818 9.818 0 0 1 2.182 12C2.182 6.57 6.57 2.182 12 2.182S21.818 6.57 21.818 12 17.43 21.818 12 21.818z"/></svg>
             Chamar no WhatsApp
           </a>
         </div>
@@ -842,7 +1422,6 @@ const servicosPorSegmento = {
   'Outro':['Serviço 1','Serviço 2','Serviço 3']
 }
 
-// ── SIDEBAR ──────────────────────────────────────────────────
 function toggleSidebar(){document.getElementById('sidebar').classList.toggle('aberta');document.getElementById('sidebar-overlay').classList.toggle('visivel')}
 function fecharSidebar(){document.getElementById('sidebar').classList.remove('aberta');document.getElementById('sidebar-overlay').classList.remove('visivel')}
 function toggleDropdown(){const dd=document.getElementById('neg-dropdown');const ch=document.getElementById('neg-chevron');dd.classList.toggle('show');ch.classList.toggle('open')}
@@ -894,7 +1473,6 @@ function irPara(pagina,btn){
   fecharSidebar()
 }
 
-// ── WHATSAPP AUTO ────────────────────────────────────────────
 function atualizarLinkWpp(){
   if(!negocioAtual)return
   const link=`https://agendorapido.com.br/agendar.html?id=${negocioAtual._id}`
@@ -915,10 +1493,9 @@ function copiarMensagemWpp(){
   if(!el)return
   navigator.clipboard.writeText(el.textContent)
   const btn=document.getElementById('btn-copiar-msg')
-  if(btn){const orig=btn.innerHTML;btn.innerHTML='✓ Mensagem copiada!';setTimeout(()=>btn.innerHTML=orig,2000)}
+  if(btn){const orig=btn.innerHTML;btn.innerHTML='✓ Copiado!';setTimeout(()=>btn.innerHTML=orig,2000)}
 }
 
-// ── AGENDAMENTOS ─────────────────────────────────────────────
 async function carregarAgendamentos(){
   if(!negocioAtual)return
   const token=localStorage.getItem('token')
@@ -942,21 +1519,16 @@ async function carregarAgendamentos(){
   document.getElementById('stat-total').textContent=todosAgendamentos.length
   document.getElementById('stat-hoje').textContent=todosAgendamentos.filter(a=>a.data===hoje).length
   document.getElementById('stat-semana').textContent=todosAgendamentos.filter(a=>a.data>=hoje&&a.data<=semana).length
-  calcularLucro()
-  filtrarData()
+  calcularLucro();filtrarData()
 }
 
-// ✅ LUCRO: usa o preço salvo no agendamento, nunca some
 function calcularLucro(){
   const mesAtual=new Date().toISOString().slice(0,7)
-  const lucro=todosAgendamentos
-    .filter(a=>a.status==='concluido'&&a.data.startsWith(mesAtual))
-    .reduce((acc,a)=>acc+(Number(a.preco)||0),0)
+  const lucro=todosAgendamentos.filter(a=>a.status==='concluido'&&a.data.startsWith(mesAtual)).reduce((acc,a)=>acc+(Number(a.preco)||0),0)
   const el=document.getElementById('stat-lucro')
   if(el)el.textContent='R$ '+lucro.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})
 }
 
-// ── SERVIÇOS ─────────────────────────────────────────────────
 async function carregarServicos(){
   if(!negocioAtual)return
   const res=await fetch(`${API}/auth/negocio/${negocioAtual._id}`)
@@ -1001,7 +1573,6 @@ async function salvarServicos(){
   const msg=document.getElementById('salvo-msg');msg.style.display='inline';setTimeout(()=>msg.style.display='none',2500)
 }
 
-// ── TABELA ───────────────────────────────────────────────────
 const POR_PAGINA=8;let paginaAtual=1;let listaFiltrada=[]
 function filtrarData(){
   const data=document.getElementById('filtro-data').value
@@ -1023,7 +1594,7 @@ function renderTabela(){
   const slice=listaFiltrada.slice(inicio,fim)
   tbody.innerHTML=slice.map(a=>{
     const acoes=a.status==='confirmado'?`<button class="btn-acao concluir" onclick="atualizar('${a._id}','concluido')">Concluir</button><button class="btn-acao cancelar" onclick="cancelarComAviso('${a._id}','${a.pacienteNome}','${a.pacienteTelefone}','${a.data}','${a.hora}')">Cancelar</button>`:''
-    return `<tr><td><div class="paciente-nome">${a.pacienteNome}</div><div class="paciente-tel">${a.pacienteTelefone}</div></td><td style="color:var(--text2)">${a.servico}</td><td style="color:var(--text2)">${formatarData(a.data)}</td><td style="font-weight:600">${a.hora}</td><td><span class="badge ${a.status}">${a.status}</span></td><td><div class="acoes">${acoes}</div></td></tr>`
+    return `<tr><td><div class="paciente-nome">${a.pacienteNome}</div><div class="paciente-tel">${a.pacienteTelefone}</div></td><td style="color:var(--text2);font-weight:300">${a.servico}</td><td style="color:var(--text2);font-weight:300">${formatarData(a.data)}</td><td style="font-weight:500">${a.hora}</td><td><span class="badge ${a.status}">${a.status}</span></td><td><div class="acoes">${acoes}</div></td></tr>`
   }).join('')
   if(agCards){
     agCards.innerHTML=slice.map(a=>{
@@ -1057,7 +1628,6 @@ function copiarLinkBio(){navigator.clipboard.writeText(document.getElementById('
 function formatarData(data){const[a,m,d]=data.split('-');return`${d}/${m}/${a}`}
 function sair(){localStorage.clear();window.location.href='/auth.html'}
 
-// ── HORÁRIOS ─────────────────────────────────────────────────
 function selecionarIntervalo(btn,valor){document.querySelectorAll('.intervalo-btn').forEach(b=>b.classList.remove('selecionado'));btn.classList.add('selecionado');intervaloAtual=valor}
 function renderDias(){
   document.getElementById('dias-container').innerHTML=diasNomes.map((nome,i)=>{
@@ -1088,12 +1658,11 @@ async function salvarHorarios(){
   const msg=document.getElementById('salvo-horarios');msg.style.display='inline';setTimeout(()=>msg.style.display='none',2500)
 }
 
-// ── PAUSAS ───────────────────────────────────────────────────
 function mascaraHora(inp){let v=inp.value.replace(/\D/g,'').slice(0,4);if(v.length>=3)v=v.slice(0,2)+':'+v.slice(2);inp.value=v}
 function renderPausas(){
   const lista=document.getElementById('pausas-lista')
-  if(!pausasAtuais.length){lista.innerHTML='<p style="font-size:12.5px;color:var(--text3);padding:8px 0">Nenhuma pausa configurada</p>';return}
-  lista.innerHTML=pausasAtuais.map((p,i)=>`<div class="pausa-item"><span class="pausa-item-label">${p.label||'Pausa'}</span><span class="pausa-item-hora">${p.inicio} – ${p.fim}</span><button onclick="removerPausa(${i})" style="margin-left:auto;background:none;border:none;color:var(--text3);cursor:pointer;font-size:18px;line-height:1;padding:2px 4px;border-radius:5px;transition:all .15s" onmouseover="this.style.color='var(--red)';this.style.background='var(--red-bg)'" onmouseout="this.style.color='var(--text3)';this.style.background='none'">×</button></div>`).join('')
+  if(!pausasAtuais.length){lista.innerHTML='<p style="font-size:12.5px;color:var(--text3);padding:8px 0;font-weight:300">Nenhuma pausa configurada</p>';return}
+  lista.innerHTML=pausasAtuais.map((p,i)=>`<div class="pausa-item"><span class="pausa-item-label">${p.label||'Pausa'}</span><span class="pausa-item-hora">${p.inicio} – ${p.fim}</span><button onclick="removerPausa(${i})" style="margin-left:auto;background:none;border:none;color:var(--text3);cursor:pointer;font-size:18px;line-height:1;padding:2px 4px;border-radius:5px;transition:all .15s" onmouseover="this.style.color='var(--red)'" onmouseout="this.style.color='var(--text3)'">×</button></div>`).join('')
 }
 function adicionarPausa(){
   const inicio=document.getElementById('pausa-inicio').value
@@ -1115,7 +1684,6 @@ async function salvarPausas(){
   const msg=document.getElementById('salvo-pausas');msg.style.display='inline';setTimeout(()=>msg.style.display='none',2500)
 }
 
-// ── BIO ──────────────────────────────────────────────────────
 async function carregarBioConfig(){
   if(!negocioAtual)return
   const res=await fetch(`${API}/auth/negocio/${negocioAtual._id}`)
@@ -1149,7 +1717,6 @@ async function uploadFoto(input){
   reader.readAsDataURL(file)
 }
 
-// ── ACESSO ───────────────────────────────────────────────────
 async function verificarAcesso(){
   const token=localStorage.getItem('token');if(!token)return
   const res=await fetch(`${API}/assinatura/status`,{headers:{'Authorization':`Bearer ${token}`}})
@@ -1163,7 +1730,6 @@ async function verificarAcesso(){
   if(window.location.search.includes('assinatura=sucesso'))alert('Assinatura ativada com sucesso!')
 }
 
-// ── MODAL AGENDAMENTO ────────────────────────────────────────
 function abrirModalNovoAgendamento(){
   if(!negocioAtual)return
   const hoje=new Date().toISOString().split('T')[0]
@@ -1203,12 +1769,11 @@ async function salvarAgendamentoManual(){
   if(res.ok){fecharModal();carregarAgendamentos()}else erro.textContent=resposta.erro||'Erro ao criar agendamento'
 }
 
-// ── LEMBRETES ────────────────────────────────────────────────
 function atualizarToggleVisual(ativo){
   const track=document.getElementById('toggle-track');const thumb=document.getElementById('toggle-thumb')
   if(!track||!thumb)return
-  track.style.background=ativo?'var(--accent)':'#cbd5e1'
-  thumb.style.left=ativo?'25px':'3px'
+  track.style.background=ativo?'var(--green)':'#d5ccbf'
+  thumb.style.left=ativo?'24px':'3px'
   document.getElementById('lembrete-info').style.display=ativo?'block':'none'
 }
 async function carregarLembretes(){
@@ -1236,7 +1801,6 @@ async function salvarConfLembrete(){
   const msg=document.getElementById('salvo-lembrete');msg.style.display='inline';setTimeout(()=>msg.style.display='none',2500)
 }
 
-// ── INIT ─────────────────────────────────────────────────────
 const token=localStorage.getItem('token')
 if(token){mostrarPainel()}else{window.location.href='/auth.html'}
 if('serviceWorker'in navigator)navigator.serviceWorker.register('/sw.js').catch(()=>{})
