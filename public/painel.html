@@ -781,7 +781,7 @@ body.dark-mode .theme-option.ativo { background: rgba(59,130,246,0.08); }
       <div class="stat-card"><div class="stat-icon"><svg width="15" height="15" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="7.5" r="5.5" stroke="#2563eb" stroke-width="1.4"/><path d="M7.5 4.5V8l2 2" stroke="#2563eb" stroke-width="1.4" stroke-linecap="round"/></svg></div><div class="stat-valor" id="stat-hoje">0</div><div class="stat-label">Hoje</div></div>
       <div class="stat-card"><div class="stat-icon"><svg width="15" height="15" viewBox="0 0 15 15" fill="none"><rect x="1.5" y="2.5" width="12" height="11" rx="1.5" stroke="#2563eb" stroke-width="1.4"/><path d="M5 1.5v2M10 1.5v2M1.5 5.5h12" stroke="#2563eb" stroke-width="1.4" stroke-linecap="round"/></svg></div><div class="stat-valor" id="stat-semana">0</div><div class="stat-label">Esta semana</div></div>
       <div class="stat-card"><div class="stat-icon"><svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M1.5 11L5.5 7l3 3L13.5 4" stroke="#2563eb" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="stat-valor" id="stat-total">0</div><div class="stat-label">Total geral</div></div>
-      <div class="stat-card"><div class="stat-icon" style="background:var(--green-bg);border-color:var(--green-border)"><svg width="15" height="15" viewBox="0 0 15 15" fill="none"><rect x="1.5" y="3" width="12" height="9.5" rx="1.5" stroke="#16a34a" stroke-width="1.4"/><path d="M1.5 6h12M5 9h3" stroke="#16a34a" stroke-width="1.4" stroke-linecap="round"/></svg></div><div class="stat-valor" id="stat-lucro" style="font-size:20px;color:var(--green)">R$ 0</div><div class="stat-label">Lucro do mês</div></div>
+      <div class="stat-card"><div class="stat-icon" style="background:var(--green-bg);border-color:var(--green-border)"><svg width="15" height="15" viewBox="0 0 15 15" fill="none"><rect x="1.5" y="3" width="12" height="9.5" rx="1.5" stroke="#16a34a" stroke-width="1.4"/><path d="M1.5 6h12M5 9h3" stroke="#16a34a" stroke-width="1.4" stroke-linecap="round"/></svg></div><div class="stat-valor" id="stat-lucro" style="font-size:20px;color:var(--green)">R$ 0,00</div><div class="stat-label">Lucro do mês</div></div>
     </div>
     <div class="card">
       <div class="card-header">
@@ -809,7 +809,6 @@ body.dark-mode .theme-option.ativo { background: rgba(59,130,246,0.08); }
   <div class="page" id="page-horarios">
     <div class="page-header"><h1>Horários de Atendimento</h1><p>Configure os dias e horários que seu negócio atende</p></div>
 
-    <!-- BLOCO 1: INTERVALO PADRÃO -->
     <div class="section-block">
       <div class="section-block-header">
         <div class="section-block-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7.5" stroke="#2563eb" stroke-width="1.6"/><path d="M10 6v5l3 3" stroke="#2563eb" stroke-width="1.6" stroke-linecap="round"/></svg></div>
@@ -827,29 +826,19 @@ body.dark-mode .theme-option.ativo { background: rgba(59,130,246,0.08); }
           <button class="intervalo-btn" onclick="selecionarIntervalo(this,60)">1 hora</button>
           <button class="intervalo-btn" onclick="selecionarIntervalo(this,90)">1h30</button>
           <button class="intervalo-btn" onclick="selecionarIntervalo(this,120)">2 horas</button>
-          <button class="intervalo-btn" onclick="selecionarIntervalo(this,150)">2h30</button>
           <button class="intervalo-btn custom-btn" id="btn-custom-intervalo" onclick="selecionarIntervaloCustom(this)">
             <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
             Personalizado
           </button>
         </div>
-
-        <!-- Entrada de valor personalizado -->
         <div class="intervalo-custom-wrap" id="intervalo-custom-wrap">
           <span class="intervalo-custom-label">Duração:</span>
-          <input
-            type="number"
-            id="intervalo-custom"
-            min="5" max="480" step="5"
-            placeholder="60"
-            oninput="atualizarIntervaloCustom(this.value)"
-          />
+          <input type="number" id="intervalo-custom" min="5" max="480" step="5" placeholder="60" oninput="atualizarIntervaloCustom(this.value)" />
           <span class="intervalo-custom-suffix">minutos</span>
         </div>
       </div>
     </div>
 
-    <!-- BLOCO 2: INTERVALO POR SERVIÇO -->
     <div class="section-block">
       <div class="section-block-header">
         <div class="section-block-icon">
@@ -869,14 +858,12 @@ body.dark-mode .theme-option.ativo { background: rgba(59,130,246,0.08); }
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.4"/><path d="M8 7v4M8 5.5v.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
           <span>Quando um serviço tem duração própria configurada, ela é usada no lugar do intervalo padrão. Serviços sem configuração usam o <strong>intervalo padrão</strong> acima.</span>
         </div>
-
         <div class="servicos-intervalos-grid" id="servicos-intervalos-grid">
           <div class="servicos-vazio">
             <div class="servicos-vazio-icon">🛠️</div>
             Adicione serviços em <strong>Configurações → Serviços</strong> para configurar durações individuais.
           </div>
         </div>
-
         <div style="display:flex;align-items:center;margin-top:4px">
           <button class="btn-salvar" onclick="salvarIntervalosServicos()">
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -887,7 +874,6 @@ body.dark-mode .theme-option.ativo { background: rgba(59,130,246,0.08); }
       </div>
     </div>
 
-    <!-- BLOCO 3: DIAS E HORÁRIOS -->
     <div class="section-block">
       <div class="section-block-header">
         <div class="section-block-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="2.5" y="3.5" width="15" height="13.5" rx="2.5" stroke="#2563eb" stroke-width="1.6"/><path d="M2.5 7.5h15M7 2v3M13 2v3" stroke="#2563eb" stroke-width="1.6" stroke-linecap="round"/></svg></div>
@@ -902,7 +888,6 @@ body.dark-mode .theme-option.ativo { background: rgba(59,130,246,0.08); }
       </div>
     </div>
 
-    <!-- BLOCO 4: PAUSAS -->
     <div class="section-block">
       <div class="section-block-header">
         <div class="section-block-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7.5" stroke="#2563eb" stroke-width="1.6"/><path d="M10 6.5v4M10 13v.5" stroke="#2563eb" stroke-width="1.8" stroke-linecap="round"/></svg></div>
@@ -1035,7 +1020,6 @@ body.dark-mode .theme-option.ativo { background: rgba(59,130,246,0.08); }
       </div>
     </div>
 
-    <!-- APARÊNCIA -->
     <div class="section-block">
       <div class="section-block-header">
         <div class="section-block-icon">
@@ -1157,12 +1141,16 @@ let servicosAtuais = []
 const diasNomes = ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado']
 let intervaloAtual = 30
 let intervaloCustomAtivo = false
-let intervalosServicos = {} // { nomeServico: minutos }
+let intervalosServicos = {}
 let horariosConfig = {}
 let negocioAtual = null
 let todosNegocios = []
 let pausasAtuais = []
 let pagamentosConfig = {}
+
+// IDs de agendamentos já registrados no lucro (evita duplicatas)
+// Chave no localStorage: `lucro_ids_${negocioId}_${YYYY-MM}` → JSON array de IDs
+// Valor acumulado: `lucro_val_${negocioId}_${YYYY-MM}` → número
 
 const OPCOES_INTERVALO = [
   { label: '15 min', valor: 15 },
@@ -1183,6 +1171,104 @@ const servicosPorSegmento = {
   'Academia':['Avaliação Física','Treino Personal','Pilates','Musculação'],
   'Estudio':['Tatuagem','Orçamento','Retoque','Piercing'],
   'Outro':['Serviço 1','Serviço 2','Serviço 3']
+}
+
+// ══ LUCRO PERSISTENTE ══════════════════════════════════════════════════════
+// O lucro é acumulado no localStorage e NUNCA some, mesmo que agendamentos
+// sejam deletados ou serviços removidos. O registro é por negócio + mês.
+
+function mesAtualChave() {
+  return new Date().toISOString().slice(0, 7) // "YYYY-MM"
+}
+
+function lucroKey(negocioId) {
+  return `lucro_val_${negocioId}_${mesAtualChave()}`
+}
+
+function lucroIdsKey(negocioId) {
+  return `lucro_ids_${negocioId}_${mesAtualChave()}`
+}
+
+function getLucroMes(negocioId) {
+  const val = localStorage.getItem(lucroKey(negocioId))
+  return val !== null ? parseFloat(val) : null // null = ainda não inicializado
+}
+
+function getLucroIds(negocioId) {
+  try {
+    return JSON.parse(localStorage.getItem(lucroIdsKey(negocioId)) || '[]')
+  } catch { return [] }
+}
+
+function setLucroMes(negocioId, valor) {
+  localStorage.setItem(lucroKey(negocioId), String(valor))
+}
+
+function setLucroIds(negocioId, ids) {
+  localStorage.setItem(lucroIdsKey(negocioId), JSON.stringify(ids))
+}
+
+/**
+ * Registra o valor de um agendamento concluído no acumulado do mês.
+ * Garante idempotência: o mesmo ID nunca é contado duas vezes.
+ * @param {object} agendamento - objeto com _id e preco
+ */
+function registrarLucro(agendamento) {
+  if (!negocioAtual || !agendamento || !agendamento._id) return
+
+  const negocioId = negocioAtual._id
+  const ids = getLucroIds(negocioId)
+
+  // Já registrado — ignora
+  if (ids.includes(agendamento._id)) return
+
+  const preco = Number(agendamento.preco) || 0
+  if (preco <= 0) return
+
+  const atual = getLucroMes(negocioId) || 0
+  setLucroMes(negocioId, atual + preco)
+  setLucroIds(negocioId, [...ids, agendamento._id])
+}
+
+/**
+ * Semente inicial: quando carregamos os agendamentos pela primeira vez num mês,
+ * registra todos os concluídos existentes no backend para esse mês.
+ * Só executa se o lucro ainda não foi inicializado para este mês+negócio.
+ */
+function seedLucroDoMes(agendamentos) {
+  if (!negocioAtual) return
+
+  const negocioId = negocioAtual._id
+  const mesAtual = mesAtualChave()
+
+  // Se já existe algum registro para este mês, não sobrescreve
+  if (getLucroMes(negocioId) !== null) return
+
+  // Primeira vez neste mês: inicializa com 0 e registra todos os concluídos
+  setLucroMes(negocioId, 0)
+
+  const concluidos = agendamentos.filter(a =>
+    a.status === 'concluido' &&
+    a.data &&
+    a.data.startsWith(mesAtual)
+  )
+
+  concluidos.forEach(a => registrarLucro(a))
+}
+
+/**
+ * Exibe o lucro acumulado no card do dashboard.
+ */
+function exibirLucro() {
+  if (!negocioAtual) return
+  const valor = getLucroMes(negocioAtual._id) || 0
+  const el = document.getElementById('stat-lucro')
+  if (el) {
+    el.textContent = 'R$ ' + valor.toLocaleString('pt-BR', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    })
+  }
 }
 
 // ══ TEMA ══════════════════════════════════
@@ -1282,6 +1368,8 @@ async function carregarAgendamentos(){
   const token=localStorage.getItem('token')
   const res=await fetch(`${API}/agendamentos?negocioId=${negocioAtual._id}`,{headers:{'Authorization':`Bearer ${token}`}})
   todosAgendamentos=await res.json()
+
+  // Auto-concluir agendamentos confirmados que já passaram
   const agora=new Date()
   const passados=todosAgendamentos.filter(a=>{
     if(a.status!=='confirmado')return false
@@ -1290,23 +1378,122 @@ async function carregarAgendamentos(){
     const [h,m]=a.hora.split(':').map(Number)
     return new Date(ano,mes-1,dia,h,m,0).getTime()<agora.getTime()
   })
+
   if(passados.length>0){
-    await Promise.all(passados.map(a=>fetch(`${API}/agendamentos/${a._id}`,{method:'PATCH',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({status:'concluido'})})))
-    todosAgendamentos=todosAgendamentos.map(a=>passados.find(p=>p._id===a._id)?{...a,status:'concluido'}:a)
+    await Promise.all(passados.map(a=>fetch(`${API}/agendamentos/${a._id}`,{
+      method:'PATCH',
+      headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},
+      body:JSON.stringify({status:'concluido'})
+    })))
+    // Atualiza localmente e registra lucro para cada um
+    todosAgendamentos=todosAgendamentos.map(a=>{
+      const foi=passados.find(p=>p._id===a._id)
+      if(foi){
+        const concluido={...a,status:'concluido'}
+        registrarLucro(concluido) // ← registra o lucro do auto-conclusão
+        return concluido
+      }
+      return a
+    })
   }
+
   const hoje=new Date().toISOString().split('T')[0]
   const semana=new Date(Date.now()+7*86400000).toISOString().split('T')[0]
   document.getElementById('stat-total').textContent=todosAgendamentos.length
   document.getElementById('stat-hoje').textContent=todosAgendamentos.filter(a=>a.data===hoje).length
   document.getElementById('stat-semana').textContent=todosAgendamentos.filter(a=>a.data>=hoje&&a.data<=semana).length
-  calcularLucro();filtrarData()
+
+  // Seed inicial do mês (só na primeira carga)
+  seedLucroDoMes(todosAgendamentos)
+
+  // Exibe o lucro acumulado
+  exibirLucro()
+
+  filtrarData()
 }
-function calcularLucro(){
-  const mesAtual=new Date().toISOString().slice(0,7)
-  const lucro=todosAgendamentos.filter(a=>a.status==='concluido'&&a.data.startsWith(mesAtual)).reduce((acc,a)=>acc+(Number(a.preco)||0),0)
-  const el=document.getElementById('stat-lucro')
-  if(el)el.textContent='R$ '+lucro.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})
+
+// ══ TABELA ════════════════════════════════
+const POR_PAGINA=8;let paginaAtual=1;let listaFiltrada=[]
+function filtrarData(){
+  const data=document.getElementById('filtro-data').value
+  listaFiltrada=data?todosAgendamentos.filter(a=>a.data===data):todosAgendamentos
+  paginaAtual=1;renderTabela()
 }
+function renderTabela(){
+  const tbody=document.getElementById('tbody')
+  const agCards=document.getElementById('ag-cards')
+  const paginacao=document.getElementById('paginacao')
+  if(listaFiltrada.length===0){
+    tbody.innerHTML='<tr><td colspan="6" class="vazio">Nenhum agendamento encontrado</td></tr>'
+    if(agCards)agCards.innerHTML='<div class="vazio">Nenhum agendamento encontrado</div>'
+    paginacao.style.display='none';return
+  }
+  const totalPaginas=Math.ceil(listaFiltrada.length/POR_PAGINA)
+  const inicio=(paginaAtual-1)*POR_PAGINA
+  const fim=inicio+POR_PAGINA
+  const slice=listaFiltrada.slice(inicio,fim)
+  tbody.innerHTML=slice.map(a=>{
+    const acoes=a.status==='confirmado'?`<button class="btn-acao concluir" onclick="atualizar('${a._id}','concluido')">Concluir</button><button class="btn-acao cancelar" onclick="cancelarComAviso('${a._id}','${a.pacienteNome}','${a.pacienteTelefone}','${a.data}','${a.hora}')">Cancelar</button>`:''
+    return `<tr><td><div class="paciente-nome">${a.pacienteNome}</div><div class="paciente-tel">${a.pacienteTelefone}</div></td><td style="color:var(--text2)">${a.servico}</td><td style="color:var(--text2)">${formatarData(a.data)}</td><td style="font-weight:600">${a.hora}</td><td><span class="badge ${a.status}">${a.status}</span></td><td><div class="acoes">${acoes}</div></td></tr>`
+  }).join('')
+  if(agCards){
+    agCards.innerHTML=slice.map(a=>{
+      const acoes=a.status==='confirmado'?`<div class="ag-card-actions"><button class="btn-acao concluir" onclick="atualizar('${a._id}','concluido')">Concluir</button><button class="btn-acao cancelar" onclick="cancelarComAviso('${a._id}','${a.pacienteNome}','${a.pacienteTelefone}','${a.data}','${a.hora}')">Cancelar</button></div>`:''
+      return `<div class="ag-card"><div class="ag-card-top"><div><div class="ag-card-nome">${a.pacienteNome}</div><div class="paciente-tel">${a.pacienteTelefone}</div></div><span class="badge ${a.status}">${a.status}</span></div><div class="ag-card-body"><div class="ag-chip">${formatarData(a.data)}</div><div class="ag-chip">${a.hora}</div><div class="ag-chip">${a.servico}</div></div>${acoes}</div>`
+    }).join('')
+  }
+  document.getElementById('pg-info').textContent=`${inicio+1}–${Math.min(fim,listaFiltrada.length)} de ${listaFiltrada.length}`
+  let btns=`<button class="pg-btn" onclick="irPagina(${paginaAtual-1})" ${paginaAtual===1?'disabled':''}>‹</button>`
+  for(let i=1;i<=totalPaginas;i++){
+    if(totalPaginas<=7||i===1||i===totalPaginas||Math.abs(i-paginaAtual)<=1)btns+=`<button class="pg-btn ${i===paginaAtual?'ativo':''}" onclick="irPagina(${i})">${i}</button>`
+    else if(Math.abs(i-paginaAtual)===2)btns+=`<span style="color:var(--text3);font-size:13px;padding:0 2px">…</span>`
+  }
+  btns+=`<button class="pg-btn" onclick="irPagina(${paginaAtual+1})" ${paginaAtual===totalPaginas?'disabled':''}>›</button>`
+  document.getElementById('pg-btns').innerHTML=btns
+  paginacao.style.display=totalPaginas>1?'flex':'none'
+}
+function irPagina(n){const total=Math.ceil(listaFiltrada.length/POR_PAGINA);if(n<1||n>total)return;paginaAtual=n;renderTabela();document.getElementById('page-agendamentos').scrollIntoView({behavior:'smooth',block:'start'})}
+
+/**
+ * Atualiza o status de um agendamento.
+ * Quando concluído, registra o lucro ANTES de recarregar.
+ */
+async function atualizar(id, status) {
+  const token = localStorage.getItem('token')
+
+  // Se estiver concluindo, registra o lucro imediatamente
+  if (status === 'concluido') {
+    const ag = todosAgendamentos.find(a => a._id === id)
+    if (ag) registrarLucro(ag)
+  }
+
+  await fetch(`${API}/agendamentos/${id}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+    body: JSON.stringify({ status })
+  })
+
+  // Atualiza localmente sem recarregar tudo, e atualiza o display
+  todosAgendamentos = todosAgendamentos.map(a => a._id === id ? { ...a, status } : a)
+  exibirLucro()
+  filtrarData()
+}
+
+async function cancelarComAviso(id,nome,telefone,data,hora){
+  if(!confirm(`Cancelar agendamento de ${nome}?`))return
+  const token=localStorage.getItem('token')
+  await fetch(`${API}/agendamentos/${id}`,{method:'PATCH',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({status:'cancelado'})})
+  todosAgendamentos=todosAgendamentos.map(a=>a._id===id?{...a,status:'cancelado'}:a)
+  const [ano,mes,dia]=data.split('-')
+  const msg=encodeURIComponent(`Olá ${nome}! Infelizmente precisamos cancelar seu agendamento do dia ${dia}/${mes}/${ano} às ${hora}. Entre em contato para reagendar.`)
+  window.open(`https://wa.me/55${telefone.replace(/\D/g,'')}?text=${msg}`,'_blank')
+  filtrarData()
+}
+
+function copiarLink(){navigator.clipboard.writeText(document.getElementById('link-agendamento').textContent);const btn=document.querySelectorAll('.btn-copiar')[0];const orig=btn.innerHTML;btn.innerHTML='✓ Copiado!';setTimeout(()=>btn.innerHTML=orig,2000)}
+function copiarLinkBio(){navigator.clipboard.writeText(document.getElementById('link-bio').textContent);const btn=document.querySelectorAll('.btn-copiar')[1];const orig=btn.innerHTML;btn.innerHTML='✓ Copiado!';setTimeout(()=>btn.innerHTML=orig,2000)}
+function formatarData(data){const[a,m,d]=data.split('-');return`${d}/${m}/${a}`}
+function sair(){localStorage.clear();window.location.href='/auth.html'}
 
 // ══ SERVIÇOS ══════════════════════════════
 async function carregarServicos(){
@@ -1361,7 +1548,7 @@ async function salvarServicos(){
   const msg=document.getElementById('salvo-msg');msg.style.display='inline';setTimeout(()=>msg.style.display='none',2500)
 }
 
-// ══ INTERVALO PADRÃO — SELEÇÃO ════════════
+// ══ INTERVALO PADRÃO ════════════════════════
 function selecionarIntervalo(btn, valor) {
   document.querySelectorAll('.intervalo-btn').forEach(b => b.classList.remove('selecionado'))
   btn.classList.add('selecionado')
@@ -1377,7 +1564,6 @@ function selecionarIntervaloCustom(btn) {
   const wrap = document.getElementById('intervalo-custom-wrap')
   wrap.classList.add('visivel')
   const input = document.getElementById('intervalo-custom')
-  // Pré-preenche com valor atual se não for um dos predefinidos
   const predefinidos = OPCOES_INTERVALO.map(o => o.valor)
   if (!predefinidos.includes(intervaloAtual)) {
     input.value = intervaloAtual
@@ -1414,7 +1600,7 @@ function aplicarSelecaoIntervalo(valor) {
   }
 }
 
-// ══ INTERVALO POR SERVIÇO ═════════════════
+// ══ INTERVALO POR SERVIÇO ════════════════
 function formatarMinutos(min) {
   if (!min || min <= 0) return '—'
   const h = Math.floor(min / 60)
@@ -1471,18 +1657,13 @@ function renderIntervalosServicos() {
           ${precoLabel ? `<div class="servico-intervalo-preco">${precoLabel}</div>` : ''}
         </div>
         <span class="servico-intervalo-badge ${badgeClass}" id="badge-${nome.replace(/\s+/g,'-')}">${badgeLabel}</span>
-        <select
-          class="servico-intervalo-select"
-          data-servico="${nome}"
-          onchange="alterarIntervaloServico(this)"
-        >
+        <select class="servico-intervalo-select" data-servico="${nome}" onchange="alterarIntervaloServico(this)">
           ${opcoesHtml}
         </select>
       </div>
     `
   }).join('')
 
-  // Aplicar valores salvos nos selects
   servicosAtuais.forEach(s => {
     const nome = typeof s === 'object' ? s.nome : s
     const duracao = intervalosServicos[nome] || 0
@@ -1493,7 +1674,6 @@ function renderIntervalosServicos() {
     if (duracao === 0 || predefinidos.includes(duracao)) {
       select.value = String(duracao)
     } else {
-      // Adiciona opção personalizada
       const opt = document.createElement('option')
       opt.value = String(duracao)
       opt.textContent = formatarMinutos(duracao)
@@ -1510,7 +1690,6 @@ function alterarIntervaloServico(select) {
   if (val === 'custom') {
     const customVal = prompt(`Digite a duração em minutos para "${nome}":`, intervalosServicos[nome] || 60)
     if (customVal === null) {
-      // Cancelou — volta ao valor anterior
       const duracao = intervalosServicos[nome] || 0
       select.value = String(duracao)
       return
@@ -1522,7 +1701,6 @@ function alterarIntervaloServico(select) {
       return
     }
     intervalosServicos[nome] = min
-    // Adiciona a opção no select e seleciona
     const existing = select.querySelector(`[value="${min}"]`)
     if (!existing) {
       const opt = document.createElement('option')
@@ -1540,7 +1718,6 @@ function alterarIntervaloServico(select) {
     }
   }
 
-  // Atualiza badge
   const nomeSlug = nome.replace(/\s+/g,'-')
   const badge = document.getElementById(`badge-${nomeSlug}`)
   if (badge) {
@@ -1568,62 +1745,6 @@ async function salvarIntervalosServicos() {
   msg.style.display = 'inline'
   setTimeout(() => msg.style.display = 'none', 2500)
 }
-
-// ══ TABELA ════════════════════════════════
-const POR_PAGINA=8;let paginaAtual=1;let listaFiltrada=[]
-function filtrarData(){
-  const data=document.getElementById('filtro-data').value
-  listaFiltrada=data?todosAgendamentos.filter(a=>a.data===data):todosAgendamentos
-  paginaAtual=1;renderTabela()
-}
-function renderTabela(){
-  const tbody=document.getElementById('tbody')
-  const agCards=document.getElementById('ag-cards')
-  const paginacao=document.getElementById('paginacao')
-  if(listaFiltrada.length===0){
-    tbody.innerHTML='<tr><td colspan="6" class="vazio">Nenhum agendamento encontrado</td></tr>'
-    if(agCards)agCards.innerHTML='<div class="vazio">Nenhum agendamento encontrado</div>'
-    paginacao.style.display='none';return
-  }
-  const totalPaginas=Math.ceil(listaFiltrada.length/POR_PAGINA)
-  const inicio=(paginaAtual-1)*POR_PAGINA
-  const fim=inicio+POR_PAGINA
-  const slice=listaFiltrada.slice(inicio,fim)
-  tbody.innerHTML=slice.map(a=>{
-    const acoes=a.status==='confirmado'?`<button class="btn-acao concluir" onclick="atualizar('${a._id}','concluido')">Concluir</button><button class="btn-acao cancelar" onclick="cancelarComAviso('${a._id}','${a.pacienteNome}','${a.pacienteTelefone}','${a.data}','${a.hora}')">Cancelar</button>`:''
-    return `<tr><td><div class="paciente-nome">${a.pacienteNome}</div><div class="paciente-tel">${a.pacienteTelefone}</div></td><td style="color:var(--text2)">${a.servico}</td><td style="color:var(--text2)">${formatarData(a.data)}</td><td style="font-weight:600">${a.hora}</td><td><span class="badge ${a.status}">${a.status}</span></td><td><div class="acoes">${acoes}</div></td></tr>`
-  }).join('')
-  if(agCards){
-    agCards.innerHTML=slice.map(a=>{
-      const acoes=a.status==='confirmado'?`<div class="ag-card-actions"><button class="btn-acao concluir" onclick="atualizar('${a._id}','concluido')">Concluir</button><button class="btn-acao cancelar" onclick="cancelarComAviso('${a._id}','${a.pacienteNome}','${a.pacienteTelefone}','${a.data}','${a.hora}')">Cancelar</button></div>`:''
-      return `<div class="ag-card"><div class="ag-card-top"><div><div class="ag-card-nome">${a.pacienteNome}</div><div class="paciente-tel">${a.pacienteTelefone}</div></div><span class="badge ${a.status}">${a.status}</span></div><div class="ag-card-body"><div class="ag-chip">${formatarData(a.data)}</div><div class="ag-chip">${a.hora}</div><div class="ag-chip">${a.servico}</div></div>${acoes}</div>`
-    }).join('')
-  }
-  document.getElementById('pg-info').textContent=`${inicio+1}–${Math.min(fim,listaFiltrada.length)} de ${listaFiltrada.length}`
-  let btns=`<button class="pg-btn" onclick="irPagina(${paginaAtual-1})" ${paginaAtual===1?'disabled':''}>‹</button>`
-  for(let i=1;i<=totalPaginas;i++){
-    if(totalPaginas<=7||i===1||i===totalPaginas||Math.abs(i-paginaAtual)<=1)btns+=`<button class="pg-btn ${i===paginaAtual?'ativo':''}" onclick="irPagina(${i})">${i}</button>`
-    else if(Math.abs(i-paginaAtual)===2)btns+=`<span style="color:var(--text3);font-size:13px;padding:0 2px">…</span>`
-  }
-  btns+=`<button class="pg-btn" onclick="irPagina(${paginaAtual+1})" ${paginaAtual===totalPaginas?'disabled':''}>›</button>`
-  document.getElementById('pg-btns').innerHTML=btns
-  paginacao.style.display=totalPaginas>1?'flex':'none'
-}
-function irPagina(n){const total=Math.ceil(listaFiltrada.length/POR_PAGINA);if(n<1||n>total)return;paginaAtual=n;renderTabela();document.getElementById('page-agendamentos').scrollIntoView({behavior:'smooth',block:'start'})}
-async function atualizar(id,status){const token=localStorage.getItem('token');await fetch(`${API}/agendamentos/${id}`,{method:'PATCH',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({status})});carregarAgendamentos()}
-async function cancelarComAviso(id,nome,telefone,data,hora){
-  if(!confirm(`Cancelar agendamento de ${nome}?`))return
-  const token=localStorage.getItem('token')
-  await fetch(`${API}/agendamentos/${id}`,{method:'PATCH',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({status:'cancelado'})})
-  const [ano,mes,dia]=data.split('-')
-  const msg=encodeURIComponent(`Olá ${nome}! Infelizmente precisamos cancelar seu agendamento do dia ${dia}/${mes}/${ano} às ${hora}. Entre em contato para reagendar.`)
-  window.open(`https://wa.me/55${telefone.replace(/\D/g,'')}?text=${msg}`,'_blank')
-  carregarAgendamentos()
-}
-function copiarLink(){navigator.clipboard.writeText(document.getElementById('link-agendamento').textContent);const btn=document.querySelectorAll('.btn-copiar')[0];const orig=btn.innerHTML;btn.innerHTML='✓ Copiado!';setTimeout(()=>btn.innerHTML=orig,2000)}
-function copiarLinkBio(){navigator.clipboard.writeText(document.getElementById('link-bio').textContent);const btn=document.querySelectorAll('.btn-copiar')[1];const orig=btn.innerHTML;btn.innerHTML='✓ Copiado!';setTimeout(()=>btn.innerHTML=orig,2000)}
-function formatarData(data){const[a,m,d]=data.split('-');return`${d}/${m}/${a}`}
-function sair(){localStorage.clear();window.location.href='/auth.html'}
 
 // ══ HORÁRIOS ══════════════════════════════
 function renderDias(){
