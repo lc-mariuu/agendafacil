@@ -7,49 +7,35 @@
 <meta name="description" content="AgendoRapido é o sistema de agendamento online completo para barbearias, clínicas, salões e pequenos negócios.">
 <meta name="theme-color" content="#0a0f1e">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230f172a'/%3E%3Crect x='13' y='18' width='38' height='32' rx='5' fill='none' stroke='%232563eb' stroke-width='3'/%3E%3Cpath d='M13 27h38' stroke='%232563eb' stroke-width='2.5' stroke-linecap='round'/%3E%3Cpath d='M23 14v6M41 14v6' stroke='%2360a5fa' stroke-width='3' stroke-linecap='round'/%3E%3Cpath d='M21 36h8M21 42h14' stroke='%2360a5fa' stroke-width='2.5' stroke-linecap='round'/%3E%3Ccircle cx='44' cy='42' r='7' fill='%232563eb'/%3E%3Cpath d='M41.5 42l2 2 4-4' stroke='white' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
-
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
 <style>
 /* ═══════════════════════════════════════════════════
    DESIGN TOKENS — LIGHT MODE
 ═══════════════════════════════════════════════════ */
 :root {
   --sidebar-w: 252px;
-
-  /* Surfaces */
   --bg:           #f0f4f8;
   --bg-card:      #ffffff;
   --bg-hover:     #f8fafc;
   --bg-input:     #ffffff;
-
-  /* Sidebar */
   --sidebar-bg:   #0a0f1e;
   --sidebar-bg2:  #0d1428;
   --sidebar-border: rgba(255,255,255,0.06);
-
-  /* Brand */
   --accent:       #2563eb;
   --accent-2:     #3b82f6;
   --accent-hover: #1d4ed8;
   --accent-light: rgba(37,99,235,0.07);
   --accent-mid:   rgba(37,99,235,0.15);
   --accent-glow:  rgba(37,99,235,0.2);
-
-  /* Text */
   --text:         #0f172a;
   --text2:        #475569;
   --text3:        #94a3b8;
   --text4:        #cbd5e1;
-
-  /* Borders */
   --border:       rgba(15,23,42,0.06);
   --border2:      rgba(15,23,42,0.1);
   --border3:      rgba(15,23,42,0.14);
-
-  /* Status */
   --green:        #16a34a;
   --green-2:      #22c55e;
   --green-bg:     rgba(22,163,74,0.07);
@@ -63,13 +49,9 @@
   --purple:       #7c3aed;
   --purple-bg:    rgba(124,58,237,0.07);
   --purple-border:rgba(124,58,237,0.18);
-
-  /* Geometry */
   --radius:    16px;
   --radius-sm: 10px;
   --radius-xs: 7px;
-
-  /* Shadows */
   --shadow-xs: 0 1px 2px rgba(0,0,0,0.04);
   --shadow-sm: 0 2px 8px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.04);
   --shadow-md: 0 4px 24px rgba(0,0,0,0.07), 0 1px 4px rgba(0,0,0,0.04);
@@ -77,35 +59,27 @@
   --shadow-accent: 0 4px 20px rgba(37,99,235,0.25);
 }
 
-/* ═══════════════════════════════════════════════════
-   DARK MODE TOKENS
-═══════════════════════════════════════════════════ */
 body.dark-mode {
   --bg:           #070c18;
   --bg-card:      #0d1424;
   --bg-hover:     #101828;
   --bg-input:     #0a1020;
-
   --sidebar-bg:   #050a14;
   --sidebar-bg2:  #070c18;
   --sidebar-border: rgba(255,255,255,0.05);
-
   --accent:       #3b82f6;
   --accent-2:     #60a5fa;
   --accent-hover: #2563eb;
   --accent-light: rgba(59,130,246,0.08);
   --accent-mid:   rgba(59,130,246,0.16);
   --accent-glow:  rgba(59,130,246,0.25);
-
   --text:         #e2e8f0;
   --text2:        #64748b;
   --text3:        #334155;
   --text4:        #1e293b;
-
   --border:       rgba(255,255,255,0.05);
   --border2:      rgba(255,255,255,0.08);
   --border3:      rgba(255,255,255,0.12);
-
   --green:        #34d399;
   --green-2:      #6ee7b7;
   --green-bg:     rgba(52,211,153,0.08);
@@ -119,7 +93,6 @@ body.dark-mode {
   --purple:       #a78bfa;
   --purple-bg:    rgba(167,139,250,0.08);
   --purple-border:rgba(167,139,250,0.2);
-
   --shadow-xs: 0 1px 2px rgba(0,0,0,0.4);
   --shadow-sm: 0 2px 8px rgba(0,0,0,0.4);
   --shadow-md: 0 4px 24px rgba(0,0,0,0.5);
@@ -127,40 +100,26 @@ body.dark-mode {
   --shadow-accent: 0 4px 20px rgba(59,130,246,0.3);
 }
 
-/* ═══════════════════════════════════════════════════
-   TRANSITIONS — applied globally
-═══════════════════════════════════════════════════ */
 *, *::before, *::after {
   transition: background-color 0.2s ease, color 0.18s ease,
-              border-color 0.18s ease, box-shadow 0.2s ease,
-              opacity 0.18s ease;
+              border-color 0.18s ease, box-shadow 0.2s ease, opacity 0.18s ease;
 }
-
-/* ═══════════════════════════════════════════════════
-   BASE
-═══════════════════════════════════════════════════ */
 *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
 html { scroll-behavior: smooth; }
 body {
   font-family: 'Inter', -apple-system, sans-serif;
-  background: var(--bg);
-  color: var(--text);
+  background: var(--bg); color: var(--text);
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* ═══════════════════════════════════════════════════
-   SCROLLBAR
-═══════════════════════════════════════════════════ */
 ::-webkit-scrollbar { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--border3); border-radius: 10px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
 
-/* ═══════════════════════════════════════════════════
-   SIDEBAR
-═══════════════════════════════════════════════════ */
+/* ── SIDEBAR ── */
 .sidebar {
   position: fixed; left:0; top:0; bottom:0; width: var(--sidebar-w);
   background: var(--sidebar-bg);
@@ -169,51 +128,30 @@ body {
   border-right: 1px solid var(--sidebar-border);
   box-shadow: inset -1px 0 0 rgba(59,130,246,0.06), 1px 0 0 rgba(0,0,0,0.3);
 }
-
 .sidebar::before {
   content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 200px;
+  position: absolute; top: 0; left: 0; right: 0; height: 200px;
   background: radial-gradient(ellipse at 30% 0%, rgba(37,99,235,0.12) 0%, transparent 70%);
   pointer-events: none;
 }
-
-.sidebar-top {
-  padding: 22px 16px 18px;
-  border-bottom: 1px solid var(--sidebar-border);
-  position: relative;
-}
-
-.sidebar-brand {
-  display: flex; align-items: center; gap: 9px;
-  margin-bottom: 18px;
-}
+.sidebar-top { padding: 22px 16px 18px; border-bottom: 1px solid var(--sidebar-border); position: relative; }
+.sidebar-brand { display: flex; align-items: center; gap: 9px; margin-bottom: 18px; }
 .sidebar-brand-icon {
   width: 30px; height: 30px; border-radius: 9px;
   background: linear-gradient(135deg, #1d4ed8, #3b82f6);
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
   box-shadow: 0 4px 12px rgba(37,99,235,0.4);
 }
-.sidebar-brand-text {
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 15px; font-weight: 800;
-  color: #fff; letter-spacing: -0.02em;
-}
+.sidebar-brand-text { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 15px; font-weight: 800; color: #fff; letter-spacing: -0.02em; }
 .sidebar-brand-text span { color: #60a5fa; }
 
 .negocio-selector { position: relative; }
 .negocio-atual {
-  display: flex; align-items: center; gap: 9px;
-  padding: 9px 12px; border-radius: 10px;
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.08);
-  cursor: pointer; user-select: none;
-  transition: all .2s;
+  display: flex; align-items: center; gap: 9px; padding: 9px 12px; border-radius: 10px;
+  background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);
+  cursor: pointer; user-select: none; transition: all .2s;
 }
 .negocio-atual:hover { background: rgba(255,255,255,0.09); border-color: rgba(255,255,255,0.14); }
-
 .negocio-avatar {
   width: 30px; height: 30px; border-radius: 8px;
   background: linear-gradient(135deg, #1d4ed8, #2563eb);
@@ -221,33 +159,21 @@ body {
   font-size: 12px; font-weight: 700; color: #fff; flex-shrink: 0;
   box-shadow: 0 2px 8px rgba(37,99,235,0.35);
 }
-.negocio-nome {
-  flex: 1; font-size: 12.5px; font-weight: 600;
-  color: rgba(255,255,255,0.9);
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
-.negocio-chevron {
-  color: rgba(255,255,255,0.25); flex-shrink: 0;
-  transition: transform .2s;
-}
+.negocio-nome { flex: 1; font-size: 12.5px; font-weight: 600; color: rgba(255,255,255,0.9); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.negocio-chevron { color: rgba(255,255,255,0.25); flex-shrink: 0; transition: transform .2s; }
 .negocio-chevron.open { transform: rotate(180deg); }
-
 .negocio-dropdown {
   position: absolute; top: calc(100% + 6px); left: 0; right: 0;
   background: #0d1730; border: 1px solid rgba(255,255,255,0.1);
   border-radius: 12px; overflow: hidden;
   box-shadow: 0 16px 40px rgba(0,0,0,0.5);
-  z-index: 10; display: none;
-  backdrop-filter: blur(16px);
+  z-index: 10; display: none; backdrop-filter: blur(16px);
 }
 .negocio-dropdown.show { display: block; animation: dropIn .18s ease; }
 @keyframes dropIn { from { opacity:0; transform:translateY(-6px); } to { opacity:1; transform:translateY(0); } }
-
 .negocio-opt {
-  display: flex; align-items: center; gap: 8px;
-  padding: 10px 14px; cursor: pointer;
-  font-size: 12.5px; color: rgba(255,255,255,0.6);
-  transition: background .12s;
+  display: flex; align-items: center; gap: 8px; padding: 10px 14px; cursor: pointer;
+  font-size: 12.5px; color: rgba(255,255,255,0.6); transition: background .12s;
 }
 .negocio-opt:hover { background: rgba(255,255,255,0.06); }
 .negocio-opt.ativo { color: #93c5fd; font-weight: 600; background: rgba(37,99,235,0.1); }
@@ -255,61 +181,31 @@ body {
 .negocio-add { display: flex; align-items: center; gap: 8px; padding: 10px 14px; cursor: pointer; font-size: 12px; color: rgba(255,255,255,0.3); border-top: 1px solid rgba(255,255,255,0.06); transition: all .15s; }
 .negocio-add:hover { background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.6); }
 
-/* ── MENU ── */
 .sidebar-menu { padding: 12px 10px; flex: 1; overflow-y: auto; }
-
-.menu-section {
-  font-size: 9.5px; font-weight: 700;
-  color: rgba(255,255,255,0.15);
-  text-transform: uppercase; letter-spacing: .12em;
-  padding: 16px 8px 6px;
-}
-
+.menu-section { font-size: 9.5px; font-weight: 700; color: rgba(255,255,255,0.15); text-transform: uppercase; letter-spacing: .12em; padding: 16px 8px 6px; }
 .menu-item {
-  display: flex; align-items: center; gap: 9px;
-  padding: 8px 10px; border-radius: 9px;
-  color: rgba(255,255,255,0.38);
-  font-size: 12.5px; font-weight: 500;
-  cursor: pointer; margin-bottom: 1px;
-  transition: all .15s;
-  border: none; background: none; width: 100%;
-  text-align: left; font-family: inherit;
-  position: relative;
+  display: flex; align-items: center; gap: 9px; padding: 8px 10px; border-radius: 9px;
+  color: rgba(255,255,255,0.38); font-size: 12.5px; font-weight: 500;
+  cursor: pointer; margin-bottom: 1px; transition: all .15s;
+  border: none; background: none; width: 100%; text-align: left; font-family: inherit; position: relative;
 }
 .menu-item svg { flex-shrink: 0; transition: opacity .15s; }
-.menu-item:hover {
-  background: rgba(255,255,255,0.05);
-  color: rgba(255,255,255,0.75);
-}
-.menu-item.ativo {
-  background: rgba(37,99,235,0.18);
-  color: #93c5fd; font-weight: 600;
-  box-shadow: inset 0 0 0 1px rgba(59,130,246,0.2);
-}
-.menu-item.ativo::before {
-  content: '';
-  position: absolute; left: 0; top: 20%; bottom: 20%;
-  width: 2.5px; border-radius: 0 2px 2px 0;
-  background: #3b82f6;
-}
+.menu-item:hover { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.75); }
+.menu-item.ativo { background: rgba(37,99,235,0.18); color: #93c5fd; font-weight: 600; box-shadow: inset 0 0 0 1px rgba(59,130,246,0.2); }
+.menu-item.ativo::before { content: ''; position: absolute; left: 0; top: 20%; bottom: 20%; width: 2.5px; border-radius: 0 2px 2px 0; background: #3b82f6; }
 .menu-item.ativo svg { color: #60a5fa; }
 
-.sidebar-footer {
-  padding: 12px 10px;
-  border-top: 1px solid var(--sidebar-border);
-}
+.sidebar-footer { padding: 12px 10px; border-top: 1px solid var(--sidebar-border); }
 .btn-sair {
-  display: flex; align-items: center; gap: 8px; width: 100%;
-  padding: 8px 10px; border-radius: 9px;
-  background: none; border: none;
-  color: rgba(255,255,255,0.25);
-  font-size: 12.5px; font-weight: 500;
-  cursor: pointer; transition: all .15s; font-family: inherit;
+  display: flex; align-items: center; gap: 8px; width: 100%; padding: 8px 10px; border-radius: 9px;
+  background: none; border: none; color: rgba(255,255,255,0.25);
+  font-size: 12.5px; font-weight: 500; cursor: pointer; transition: all .15s; font-family: inherit;
 }
 .btn-sair:hover { background: rgba(220,38,38,0.12); color: #f87171; }
 
+/* BOTÃO INSTALAR — visível por padrão */
 .btn-instalar {
-  display: none; align-items: center; gap: 8px; width: 100%;
+  display: flex; align-items: center; gap: 8px; width: 100%;
   padding: 8px 10px; border-radius: 9px;
   background: rgba(37,99,235,0.15); border: none;
   color: #93c5fd; font-size: 12.5px; font-weight: 600;
@@ -318,16 +214,12 @@ body {
 }
 .btn-instalar:hover { background: rgba(37,99,235,0.25); }
 
-/* ═══════════════════════════════════════════════════
-   TOPBAR MOBILE
-═══════════════════════════════════════════════════ */
+/* ── TOPBAR MOBILE ── */
 .topbar-mobile {
   display: none; position: fixed; top:0; left:0; right:0; height: 56px;
-  background: var(--sidebar-bg);
-  z-index: 99; align-items: center; justify-content: space-between;
-  padding: 0 16px;
-  border-bottom: 1px solid var(--sidebar-border);
-  box-shadow: 0 4px 24px rgba(0,0,0,0.3);
+  background: var(--sidebar-bg); z-index: 99;
+  align-items: center; justify-content: space-between; padding: 0 16px;
+  border-bottom: 1px solid var(--sidebar-border); box-shadow: 0 4px 24px rgba(0,0,0,0.3);
 }
 .topbar-brand { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 15px; font-weight: 800; color: #fff; }
 .topbar-brand span { color: #60a5fa; }
@@ -336,713 +228,275 @@ body {
 .sidebar-overlay { display: none; position: fixed; inset:0; background: rgba(0,0,0,0.6); z-index: 99; backdrop-filter: blur(3px); }
 .sidebar-overlay.visivel { display: block; }
 
-/* ═══════════════════════════════════════════════════
-   MAIN CONTENT
-═══════════════════════════════════════════════════ */
-.main {
-  margin-left: var(--sidebar-w);
-  padding: 36px 36px 72px;
-  min-height: 100vh;
-}
-
-/* ── PAGE ANIMATIONS ── */
+/* ── MAIN ── */
+.main { margin-left: var(--sidebar-w); padding: 36px 36px 72px; min-height: 100vh; }
 .page { display: none; }
 .page.ativo { display: block; animation: pageIn .28s cubic-bezier(.4,0,.2,1); }
-@keyframes pageIn {
-  from { opacity:0; transform: translateY(14px); }
-  to   { opacity:1; transform: translateY(0); }
-}
+@keyframes pageIn { from { opacity:0; transform: translateY(14px); } to { opacity:1; transform: translateY(0); } }
 
-/* ── PAGE HEADER ── */
-.page-header {
-  margin-bottom: 32px;
-  display: flex; align-items: flex-start; justify-content: space-between;
-  gap: 16px; flex-wrap: wrap;
-}
+.page-header { margin-bottom: 32px; display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.page-header h1 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 24px; font-weight: 800; color: var(--text); letter-spacing: -0.035em; line-height: 1.2; }
+.page-header p { color: var(--text2); font-size: 13px; margin-top: 5px; font-weight: 400; letter-spacing: 0; }
+.page-header-accent { height: 3px; width: 36px; margin-top: 10px; background: linear-gradient(90deg, var(--accent), var(--accent-2)); border-radius: 2px; }
 
-.page-header h1 {
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 24px; font-weight: 800;
-  color: var(--text); letter-spacing: -0.035em;
-  line-height: 1.2;
-}
-.page-header p {
-  color: var(--text2); font-size: 13px; margin-top: 5px;
-  font-weight: 400; letter-spacing: 0;
-}
-.page-header-accent {
-  height: 3px; width: 36px; margin-top: 10px;
-  background: linear-gradient(90deg, var(--accent), var(--accent-2));
-  border-radius: 2px;
-}
-
-/* ═══════════════════════════════════════════════════
-   STATS GRID
-═══════════════════════════════════════════════════ */
-.stats {
-  display: grid; grid-template-columns: repeat(4,1fr);
-  gap: 14px; margin-bottom: 24px;
-}
-
+/* ── STATS ── */
+.stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; margin-bottom: 24px; }
 .stat-card {
-  background: var(--bg-card);
-  border-radius: var(--radius);
-  padding: 22px 22px 20px;
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow-sm);
-  position: relative; overflow: hidden;
-  transition: transform .2s, box-shadow .2s;
-  cursor: default;
+  background: var(--bg-card); border-radius: var(--radius); padding: 22px 22px 20px;
+  border: 1px solid var(--border); box-shadow: var(--shadow-sm);
+  position: relative; overflow: hidden; transition: transform .2s, box-shadow .2s; cursor: default;
 }
-.stat-card:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
-}
-.stat-card::before {
-  content: '';
-  position: absolute; top:0; left:0; right:0; height: 2px;
-  background: linear-gradient(90deg, var(--accent), var(--accent-2));
-  opacity: 0.7;
-}
-.stat-card::after {
-  content: '';
-  position: absolute; top:-20px; right:-20px;
-  width: 80px; height: 80px;
-  background: radial-gradient(circle, var(--accent-light) 0%, transparent 70%);
-  pointer-events: none;
-}
+.stat-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.stat-card::before { content: ''; position: absolute; top:0; left:0; right:0; height: 2px; background: linear-gradient(90deg, var(--accent), var(--accent-2)); opacity: 0.7; }
+.stat-card::after { content: ''; position: absolute; top:-20px; right:-20px; width: 80px; height: 80px; background: radial-gradient(circle, var(--accent-light) 0%, transparent 70%); pointer-events: none; }
+.stat-icon { width: 38px; height: 38px; border-radius: 10px; background: var(--accent-light); display: flex; align-items: center; justify-content: center; margin-bottom: 16px; border: 1px solid var(--accent-mid); }
+.stat-valor { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 30px; font-weight: 800; color: var(--text); letter-spacing: -0.04em; line-height: 1; }
+.stat-label { font-size: 11px; color: var(--text2); margin-top: 6px; font-weight: 600; text-transform: uppercase; letter-spacing: .07em; }
+.stat-delta { font-size: 10.5px; font-weight: 600; color: var(--green); margin-top: 3px; }
 
-.stat-icon {
-  width: 38px; height: 38px; border-radius: 10px;
-  background: var(--accent-light);
-  display: flex; align-items: center; justify-content: center;
-  margin-bottom: 16px;
-  border: 1px solid var(--accent-mid);
-}
-.stat-valor {
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 30px; font-weight: 800;
-  color: var(--text); letter-spacing: -0.04em; line-height: 1;
-}
-.stat-label {
-  font-size: 11px; color: var(--text2);
-  margin-top: 6px; font-weight: 600;
-  text-transform: uppercase; letter-spacing: .07em;
-}
-.stat-delta {
-  font-size: 10.5px; font-weight: 600;
-  color: var(--green); margin-top: 3px;
-}
-
-/* ═══════════════════════════════════════════════════
-   LINK CARD
-═══════════════════════════════════════════════════ */
+/* ── LINK CARD ── */
 .link-card {
-  background: var(--bg-card);
-  border: 1px solid var(--accent-mid);
-  border-radius: var(--radius);
+  background: var(--bg-card); border: 1px solid var(--accent-mid); border-radius: var(--radius);
   padding: 16px 20px; margin-bottom: 22px;
-  display: flex; align-items: center;
-  justify-content: space-between; gap: 14px; flex-wrap: wrap;
+  display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap;
   box-shadow: var(--shadow-sm), 0 0 0 1px var(--accent-light) inset;
 }
-.link-card-label {
-  font-size: 9.5px; font-weight: 800;
-  color: var(--accent); text-transform: uppercase;
-  letter-spacing: .12em; margin-bottom: 5px;
-}
-.link-card-url {
-  font-size: 12.5px; color: var(--accent);
-  word-break: break-all; font-weight: 500;
-  opacity: 0.8;
-}
+.link-card-label { font-size: 9.5px; font-weight: 800; color: var(--accent); text-transform: uppercase; letter-spacing: .12em; margin-bottom: 5px; }
+.link-card-url { font-size: 12.5px; color: var(--accent); word-break: break-all; font-weight: 500; opacity: 0.8; }
 
-/* ═══════════════════════════════════════════════════
-   PRIMARY BUTTON
-═══════════════════════════════════════════════════ */
-.btn-primary {
-  display: inline-flex; align-items: center; gap: 7px;
-  background: var(--accent); color: white;
-  border: none; padding: 9px 18px; border-radius: var(--radius-sm);
-  font-size: 13px; font-weight: 600; cursor: pointer;
-  white-space: nowrap; transition: all .18s; font-family: inherit;
-  box-shadow: var(--shadow-accent);
-  letter-spacing: -0.01em;
-}
-.btn-primary:hover {
-  background: var(--accent-hover);
-  transform: translateY(-1px);
-  box-shadow: 0 6px 24px rgba(37,99,235,0.35);
-}
+/* ── BUTTONS ── */
+.btn-primary { display: inline-flex; align-items: center; gap: 7px; background: var(--accent); color: white; border: none; padding: 9px 18px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: all .18s; font-family: inherit; box-shadow: var(--shadow-accent); letter-spacing: -0.01em; }
+.btn-primary:hover { background: var(--accent-hover); transform: translateY(-1px); box-shadow: 0 6px 24px rgba(37,99,235,0.35); }
 .btn-primary:active { transform: translateY(0); }
-
 .btn-copiar { display: inline-flex; align-items: center; gap: 7px; background: var(--accent); color: white; border: none; padding: 9px 18px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; flex-shrink: 0; transition: all .18s; font-family: inherit; box-shadow: var(--shadow-accent); }
 .btn-copiar:hover { background: var(--accent-hover); transform: translateY(-1px); }
 .btn-novo { display: flex; align-items: center; gap: 7px; background: var(--accent); color: white; border: none; padding: 8px 16px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: all .18s; font-family: inherit; box-shadow: var(--shadow-accent); }
 .btn-novo:hover { background: var(--accent-hover); transform: translateY(-1px); }
 
-/* ═══════════════════════════════════════════════════
-   CARD (generic)
-═══════════════════════════════════════════════════ */
-.card {
-  background: var(--bg-card);
-  border-radius: var(--radius);
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow-sm);
-  overflow: hidden; margin-bottom: 20px;
-}
-.card-header {
-  padding: 16px 22px;
-  border-bottom: 1px solid var(--border);
-  display: flex; justify-content: space-between;
-  align-items: center; gap: 12px; flex-wrap: wrap;
-  background: var(--bg-card);
-}
+/* ── CARD ── */
+.card { background: var(--bg-card); border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--shadow-sm); overflow: hidden; margin-bottom: 20px; }
+.card-header { padding: 16px 22px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; background: var(--bg-card); }
 .card-title { font-size: 13.5px; font-weight: 700; color: var(--text); letter-spacing: -0.01em; }
 .card-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-
-.filtro-data {
-  padding: 8px 12px; border: 1.5px solid var(--border2);
-  border-radius: var(--radius-sm); font-size: 13px; outline: none;
-  font-family: inherit; color: var(--text); background: var(--bg-input);
-  transition: all .18s;
-}
+.filtro-data { padding: 8px 12px; border: 1.5px solid var(--border2); border-radius: var(--radius-sm); font-size: 13px; outline: none; font-family: inherit; color: var(--text); background: var(--bg-input); transition: all .18s; }
 .filtro-data:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-light); }
 
-/* ═══════════════════════════════════════════════════
-   TABLE
-═══════════════════════════════════════════════════ */
+/* ── TABLE ── */
 .tabela-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
 table { width: 100%; border-collapse: collapse; min-width: 540px; }
-
 thead tr { background: var(--bg); }
-th {
-  text-align: left; font-size: 10px; font-weight: 800;
-  color: var(--text3); padding: 11px 22px;
-  text-transform: uppercase; letter-spacing: .1em;
-  white-space: nowrap; border-bottom: 1px solid var(--border);
-}
-td {
-  padding: 14px 22px; font-size: 13.5px;
-  border-bottom: 1px solid var(--border);
-  vertical-align: middle;
-}
+th { text-align: left; font-size: 10px; font-weight: 800; color: var(--text3); padding: 11px 22px; text-transform: uppercase; letter-spacing: .1em; white-space: nowrap; border-bottom: 1px solid var(--border); }
+td { padding: 14px 22px; font-size: 13.5px; border-bottom: 1px solid var(--border); vertical-align: middle; }
 tr:last-child td { border-bottom: none; }
 tbody tr { transition: background .1s; }
 tbody tr:hover td { background: var(--bg); }
-
 .paciente-nome { font-weight: 700; color: var(--text); font-size: 13.5px; }
-.paciente-tel  { font-size: 11.5px; color: var(--text3); margin-top: 2px; }
+.paciente-tel { font-size: 11.5px; color: var(--text3); margin-top: 2px; }
 
-/* ═══════════════════════════════════════════════════
-   MOBILE CARDS
-═══════════════════════════════════════════════════ */
+/* ── MOBILE CARDS ── */
 .ag-cards { display: none; padding: 4px 0; }
-.ag-card {
-  padding: 16px 22px; border-bottom: 1px solid var(--border);
-  transition: background .12s;
-}
+.ag-card { padding: 16px 22px; border-bottom: 1px solid var(--border); transition: background .12s; }
 .ag-card:hover { background: var(--bg); }
 .ag-card:last-child { border-bottom: none; }
 .ag-card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; margin-bottom: 10px; }
 .ag-card-nome { font-size: 14px; font-weight: 700; color: var(--text); }
 .ag-card-body { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
-.ag-chip {
-  display: inline-flex; align-items: center; gap: 4px;
-  background: var(--bg); border: 1px solid var(--border2);
-  border-radius: 100px; padding: 3px 10px;
-  font-size: 11.5px; font-weight: 500; color: var(--text2);
-}
+.ag-chip { display: inline-flex; align-items: center; gap: 4px; background: var(--bg); border: 1px solid var(--border2); border-radius: 100px; padding: 3px 10px; font-size: 11.5px; font-weight: 500; color: var(--text2); }
 .ag-card-actions { display: flex; gap: 6px; }
 
-/* ═══════════════════════════════════════════════════
-   BADGES
-═══════════════════════════════════════════════════ */
-.badge {
-  display: inline-flex; align-items: center; gap: 5px;
-  padding: 3px 10px; border-radius: 100px;
-  font-size: 11px; font-weight: 700;
-  white-space: nowrap; letter-spacing: .02em;
-}
+/* ── BADGES ── */
+.badge { display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 100px; font-size: 11px; font-weight: 700; white-space: nowrap; letter-spacing: .02em; }
 .badge::before { content: ''; width: 4.5px; height: 4.5px; border-radius: 50%; }
-.confirmado { background: var(--green-bg);  color: var(--green); border: 1px solid var(--green-border); }
+.confirmado { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); }
 .confirmado::before { background: var(--green); }
-.cancelado  { background: var(--red-bg);   color: var(--red);   border: 1px solid var(--red-border); }
-.cancelado::before  { background: var(--red); }
-.concluido  { background: var(--purple-bg); color: var(--purple); border: 1px solid var(--purple-border); }
-.concluido::before  { background: var(--purple); }
+.cancelado { background: var(--red-bg); color: var(--red); border: 1px solid var(--red-border); }
+.cancelado::before { background: var(--red); }
+.concluido { background: var(--purple-bg); color: var(--purple); border: 1px solid var(--purple-border); }
+.concluido::before { background: var(--purple); }
 
-/* ═══════════════════════════════════════════════════
-   ACTION BUTTONS (tabela)
-═══════════════════════════════════════════════════ */
+/* ── ACTION BUTTONS ── */
 .acoes { display: flex; gap: 5px; }
-.btn-acao {
-  padding: 4px 11px; border-radius: var(--radius-xs);
-  font-size: 11.5px; font-weight: 600; cursor: pointer;
-  border: 1.5px solid var(--border2); background: var(--bg-card);
-  color: var(--text2); transition: all .15s;
-  white-space: nowrap; font-family: inherit;
-}
+.btn-acao { padding: 4px 11px; border-radius: var(--radius-xs); font-size: 11.5px; font-weight: 600; cursor: pointer; border: 1.5px solid var(--border2); background: var(--bg-card); color: var(--text2); transition: all .15s; white-space: nowrap; font-family: inherit; }
 .btn-acao.concluir:hover { background: var(--green-bg); color: var(--green); border-color: var(--green-border); }
 .btn-acao.cancelar:hover { background: var(--red-bg); color: var(--red); border-color: var(--red-border); }
 
-/* ═══════════════════════════════════════════════════
-   PAGINATION
-═══════════════════════════════════════════════════ */
+/* ── PAGINATION ── */
 .vazio { text-align: center; color: var(--text3); padding: 52px 20px; font-size: 14px; }
-.paginacao {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 13px 22px; border-top: 1px solid var(--border); gap: 10px; flex-wrap: wrap;
-  background: var(--bg);
-}
+.paginacao { display: flex; align-items: center; justify-content: space-between; padding: 13px 22px; border-top: 1px solid var(--border); gap: 10px; flex-wrap: wrap; background: var(--bg); }
 .paginacao-info { font-size: 11.5px; color: var(--text3); font-weight: 600; }
 .paginacao-btns { display: flex; gap: 3px; }
-.pg-btn {
-  width: 30px; height: 30px; border-radius: 8px;
-  border: 1.5px solid var(--border2); background: var(--bg-card);
-  color: var(--text2); font-size: 13px; font-weight: 500;
-  cursor: pointer; display: flex; align-items: center; justify-content: center;
-  transition: all .15s; font-family: inherit;
-}
+.pg-btn { width: 30px; height: 30px; border-radius: 8px; border: 1.5px solid var(--border2); background: var(--bg-card); color: var(--text2); font-size: 13px; font-weight: 500; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all .15s; font-family: inherit; }
 .pg-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
 .pg-btn.ativo { background: var(--accent); border-color: var(--accent); color: white; box-shadow: var(--shadow-accent); }
 .pg-btn:disabled { opacity: .3; cursor: not-allowed; }
 
-/* ═══════════════════════════════════════════════════
-   SECTION BLOCK
-═══════════════════════════════════════════════════ */
-.section-block {
-  background: var(--bg-card);
-  border-radius: var(--radius);
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow-sm);
-  overflow: hidden; margin-bottom: 20px;
-  transition: box-shadow .2s, border-color .2s;
-}
-.section-block:hover {
-  box-shadow: var(--shadow-md);
-  border-color: var(--border2);
-}
-
-.section-block-header {
-  padding: 20px 24px; border-bottom: 1px solid var(--border);
-  display: flex; align-items: center; gap: 14px;
-  background: var(--bg-card);
-  position: relative;
-}
-.section-block-header::before {
-  content: '';
-  position: absolute; left:0; top: 20%; bottom: 20%;
-  width: 3px; border-radius: 0 2px 2px 0;
-  background: linear-gradient(180deg, var(--accent), var(--accent-2));
-}
-
-.section-block-icon {
-  width: 42px; height: 42px; border-radius: 11px;
-  background: var(--accent-light);
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0; border: 1px solid var(--accent-mid);
-}
+/* ── SECTION BLOCK ── */
+.section-block { background: var(--bg-card); border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--shadow-sm); overflow: hidden; margin-bottom: 20px; transition: box-shadow .2s, border-color .2s; }
+.section-block:hover { box-shadow: var(--shadow-md); border-color: var(--border2); }
+.section-block-header { padding: 20px 24px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 14px; background: var(--bg-card); position: relative; }
+.section-block-header::before { content: ''; position: absolute; left:0; top: 20%; bottom: 20%; width: 3px; border-radius: 0 2px 2px 0; background: linear-gradient(180deg, var(--accent), var(--accent-2)); }
+.section-block-icon { width: 42px; height: 42px; border-radius: 11px; background: var(--accent-light); display: flex; align-items: center; justify-content: center; flex-shrink: 0; border: 1px solid var(--accent-mid); }
 .section-block-title { font-size: 14px; font-weight: 700; color: var(--text); letter-spacing: -0.01em; }
-.section-block-sub   { font-size: 12px; color: var(--text2); margin-top: 2px; font-weight: 400; line-height: 1.4; }
-.section-block-body  { padding: 24px; }
+.section-block-sub { font-size: 12px; color: var(--text2); margin-top: 2px; font-weight: 400; line-height: 1.4; }
+.section-block-body { padding: 24px; }
 
-/* ═══════════════════════════════════════════════════
-   TOGGLE ROW
-═══════════════════════════════════════════════════ */
-.toggle-row {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 18px 0; border-bottom: 1px solid var(--border); gap: 16px;
-}
+/* ── TOGGLE ROW ── */
+.toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 18px 0; border-bottom: 1px solid var(--border); gap: 16px; }
 .toggle-row-label { font-size: 14px; font-weight: 600; color: var(--text); }
 .toggle-row-desc { font-size: 12.5px; color: var(--text2); margin-top: 4px; line-height: 1.5; }
-
 .toggle-switch { position: relative; display: inline-block; width: 46px; height: 25px; flex-shrink: 0; }
 .toggle-switch input { opacity: 0; width: 0; height: 0; }
-.toggle-track {
-  position: absolute; cursor: pointer; inset: 0;
-  background: var(--border3); border-radius: 100px; transition: .25s;
-}
+.toggle-track { position: absolute; cursor: pointer; inset: 0; background: var(--border3); border-radius: 100px; transition: .25s; }
 .toggle-track:hover { background: var(--border2); }
-.toggle-thumb {
-  position: absolute; left: 3px; top: 3px;
-  width: 19px; height: 19px; background: white;
-  border-radius: 50%; transition: .25s; box-shadow: 0 1px 4px rgba(0,0,0,0.2);
-}
+.toggle-thumb { position: absolute; left: 3px; top: 3px; width: 19px; height: 19px; background: white; border-radius: 50%; transition: .25s; box-shadow: 0 1px 4px rgba(0,0,0,0.2); }
 .toggle-switch input:checked + .toggle-track { background: var(--accent); }
 .toggle-switch input:checked + .toggle-track + .toggle-thumb { left: 24px; }
 
-/* ═══════════════════════════════════════════════════
-   INFO BOX
-═══════════════════════════════════════════════════ */
-.info-box {
-  border-radius: 12px; padding: 14px 18px;
-  font-size: 13.5px; line-height: 1.6; margin-top: 16px;
-}
+/* ── INFO BOX ── */
+.info-box { border-radius: 12px; padding: 14px 18px; font-size: 13.5px; line-height: 1.6; margin-top: 16px; }
 .info-box.green { background: var(--green-bg); border: 1px solid var(--green-border); color: var(--green); }
-.info-box.blue  { background: var(--accent-light); border: 1px solid var(--accent-mid); color: var(--accent); }
+.info-box.blue { background: var(--accent-light); border: 1px solid var(--accent-mid); color: var(--accent); }
 .info-box-title { font-weight: 700; margin-bottom: 4px; font-size: 14px; }
 .form-hint { font-size: 11.5px; color: var(--text3); margin-top: 6px; line-height: 1.5; }
 
-/* ═══════════════════════════════════════════════════
-   FOTO / PROFILE
-═══════════════════════════════════════════════════ */
-.foto-wrap {
-  display: flex; align-items: center; gap: 18px;
-  margin-bottom: 22px; padding: 18px;
-  background: var(--bg); border-radius: 13px;
-  border: 1px solid var(--border2);
-}
-.foto-preview {
-  width: 68px; height: 68px; border-radius: 50%;
-  background: var(--accent-light); border: 2.5px solid var(--accent-mid);
-  overflow: hidden; display: flex; align-items: center; justify-content: center;
-  font-size: 24px; flex-shrink: 0;
-  box-shadow: 0 4px 16px rgba(37,99,235,0.12);
-}
+/* ── FOTO / PROFILE ── */
+.foto-wrap { display: flex; align-items: center; gap: 18px; margin-bottom: 22px; padding: 18px; background: var(--bg); border-radius: 13px; border: 1px solid var(--border2); }
+.foto-preview { width: 68px; height: 68px; border-radius: 50%; background: var(--accent-light); border: 2.5px solid var(--accent-mid); overflow: hidden; display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; box-shadow: 0 4px 16px rgba(37,99,235,0.12); }
 .foto-preview img { width: 100%; height: 100%; object-fit: cover; }
 .foto-info { flex: 1; }
-.btn-foto {
-  background: var(--bg-card); color: var(--accent);
-  border: 1.5px solid var(--accent-mid);
-  padding: 7px 16px; border-radius: 9px;
-  font-size: 13px; font-weight: 600; cursor: pointer;
-  font-family: inherit; transition: all .18s;
-}
+.btn-foto { background: var(--bg-card); color: var(--accent); border: 1.5px solid var(--accent-mid); padding: 7px 16px; border-radius: 9px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; transition: all .18s; }
 .btn-foto:hover { background: var(--accent-light); }
 .foto-status { font-size: 11.5px; color: var(--text3); margin-top: 6px; }
 
-/* ═══════════════════════════════════════════════════
-   PAUSA ITEM
-═══════════════════════════════════════════════════ */
-.pausa-item {
-  display: flex; align-items: center; gap: 12px;
-  padding: 12px 16px; background: var(--bg);
-  border-radius: 11px; border: 1px solid var(--border2);
-  margin-bottom: 8px; transition: border-color .15s;
-}
+/* ── PAUSA ITEM ── */
+.pausa-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: var(--bg); border-radius: 11px; border: 1px solid var(--border2); margin-bottom: 8px; transition: border-color .15s; }
 .pausa-item:hover { border-color: var(--accent-mid); }
 .pausa-item-label { font-size: 13.5px; font-weight: 600; color: var(--text); flex: 1; }
-.pausa-item-hora {
-  font-size: 11.5px; color: var(--accent); background: var(--accent-light);
-  padding: 3px 11px; border-radius: 100px; font-weight: 700;
-  border: 1px solid var(--accent-mid);
-}
+.pausa-item-hora { font-size: 11.5px; color: var(--accent); background: var(--accent-light); padding: 3px 11px; border-radius: 100px; font-weight: 700; border: 1px solid var(--accent-mid); }
 
-/* ═══════════════════════════════════════════════════
-   FORM ELEMENTS
-═══════════════════════════════════════════════════ */
+/* ── FORM ELEMENTS ── */
 .form-group { margin-bottom: 16px; }
-.form-group label {
-  font-size: 10.5px; font-weight: 700; color: var(--text2);
-  display: block; margin-bottom: 6px;
-  text-transform: uppercase; letter-spacing: .07em;
-}
+.form-group label { font-size: 10.5px; font-weight: 700; color: var(--text2); display: block; margin-bottom: 6px; text-transform: uppercase; letter-spacing: .07em; }
 .form-group input,
 .form-group select,
-.form-group textarea {
-  width: 100%; padding: 10px 13px;
-  border: 1.5px solid var(--border2); border-radius: 10px;
-  font-size: 14px; outline: none; font-family: inherit;
-  color: var(--text); background: var(--bg-input); transition: all .18s;
-}
+.form-group textarea { width: 100%; padding: 10px 13px; border: 1.5px solid var(--border2); border-radius: 10px; font-size: 14px; outline: none; font-family: inherit; color: var(--text); background: var(--bg-input); transition: all .18s; }
 .form-group input:focus,
 .form-group select:focus,
-.form-group textarea:focus {
-  border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-light);
-}
+.form-group textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-light); }
 
-/* ═══════════════════════════════════════════════════
-   SAVE BUTTON
-═══════════════════════════════════════════════════ */
-.btn-salvar {
-  display: inline-flex; align-items: center; gap: 7px;
-  background: var(--green); color: white;
-  border: none; padding: 10px 22px; border-radius: 10px;
-  font-size: 13.5px; font-weight: 600; cursor: pointer;
-  margin-top: 18px; font-family: inherit; transition: all .2s;
-  box-shadow: 0 2px 10px rgba(22,163,74,0.25);
-}
+/* ── SAVE BUTTON ── */
+.btn-salvar { display: inline-flex; align-items: center; gap: 7px; background: var(--green); color: white; border: none; padding: 10px 22px; border-radius: 10px; font-size: 13.5px; font-weight: 600; cursor: pointer; margin-top: 18px; font-family: inherit; transition: all .2s; box-shadow: 0 2px 10px rgba(22,163,74,0.25); }
 .btn-salvar:hover { background: #15803d; transform: translateY(-1px); box-shadow: 0 4px 18px rgba(22,163,74,0.3); }
 .salvo-msg { color: var(--green); font-size: 12.5px; margin-left: 12px; display: none; font-weight: 700; animation: fadeIn .2s ease; }
 @keyframes fadeIn { from { opacity:0; transform:translateX(-4px); } to { opacity:1; transform:translateX(0); } }
 
-/* ═══════════════════════════════════════════════════
-   MODALS
-═══════════════════════════════════════════════════ */
-.modal-overlay {
-  position: fixed; inset:0; background: rgba(0,0,0,0.55);
-  z-index: 200; display: flex; align-items: center; justify-content: center;
-  padding: 16px; backdrop-filter: blur(6px);
-}
-.modal {
-  background: var(--bg-card); border-radius: 20px;
-  padding: 26px; width: 100%; max-width: 460px;
-  box-shadow: var(--shadow-lg); max-height: 90vh; overflow-y: auto;
-  border: 1px solid var(--border2);
-  animation: modalIn .22s cubic-bezier(.4,0,.2,1);
-}
+/* ── MODALS ── */
+.modal-overlay { position: fixed; inset:0; background: rgba(0,0,0,0.55); z-index: 200; display: flex; align-items: center; justify-content: center; padding: 16px; backdrop-filter: blur(6px); }
+.modal { background: var(--bg-card); border-radius: 20px; padding: 26px; width: 100%; max-width: 460px; box-shadow: var(--shadow-lg); max-height: 90vh; overflow-y: auto; border: 1px solid var(--border2); animation: modalIn .22s cubic-bezier(.4,0,.2,1); }
 @keyframes modalIn { from { opacity:0; transform:scale(.96) translateY(8px); } to { opacity:1; transform:scale(1) translateY(0); } }
-
-.modal-neg {
-  background: var(--bg-card); border-radius: 20px;
-  padding: 26px; width: 100%; max-width: 400px;
-  box-shadow: var(--shadow-lg); border: 1px solid var(--border2);
-  animation: modalIn .22s cubic-bezier(.4,0,.2,1);
-}
+.modal-neg { background: var(--bg-card); border-radius: 20px; padding: 26px; width: 100%; max-width: 400px; box-shadow: var(--shadow-lg); border: 1px solid var(--border2); animation: modalIn .22s cubic-bezier(.4,0,.2,1); }
 .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 22px; }
 .modal-header h2 { font-size: 17px; font-weight: 700; color: var(--text); letter-spacing: -0.02em; }
-.modal-close {
-  background: var(--bg); border: 1px solid var(--border2);
-  width: 30px; height: 30px; border-radius: 8px;
-  cursor: pointer; color: var(--text3); font-size: 18px;
-  display: flex; align-items: center; justify-content: center;
-  transition: all .15s;
-}
+.modal-close { background: var(--bg); border: 1px solid var(--border2); width: 30px; height: 30px; border-radius: 8px; cursor: pointer; color: var(--text3); font-size: 18px; display: flex; align-items: center; justify-content: center; transition: all .15s; }
 .modal-close:hover { background: var(--red-bg); color: var(--red); border-color: var(--red-border); }
 .modal-footer { display: flex; gap: 10px; margin-top: 22px; }
-.btn-cancelar-modal {
-  flex: 1; background: var(--bg); color: var(--text2);
-  border: 1.5px solid var(--border2); padding: 11px; border-radius: 10px;
-  font-size: 13.5px; font-weight: 500; cursor: pointer; font-family: inherit;
-  transition: all .15s;
-}
+.btn-cancelar-modal { flex: 1; background: var(--bg); color: var(--text2); border: 1.5px solid var(--border2); padding: 11px; border-radius: 10px; font-size: 13.5px; font-weight: 500; cursor: pointer; font-family: inherit; transition: all .15s; }
 .btn-cancelar-modal:hover { background: var(--bg-hover); }
-.btn-salvar-modal {
-  flex: 2; background: var(--accent); color: white;
-  border: none; padding: 11px; border-radius: 10px;
-  font-size: 13.5px; font-weight: 600; cursor: pointer; font-family: inherit;
-  transition: all .18s; box-shadow: var(--shadow-accent);
-}
+.btn-salvar-modal { flex: 2; background: var(--accent); color: white; border: none; padding: 11px; border-radius: 10px; font-size: 13.5px; font-weight: 600; cursor: pointer; font-family: inherit; transition: all .18s; box-shadow: var(--shadow-accent); }
 .btn-salvar-modal:hover { background: var(--accent-hover); transform: translateY(-1px); }
 .erro-msg { color: var(--red); font-size: 12.5px; text-align: center; margin-bottom: 10px; min-height: 18px; }
-.plano-badge {
-  display: inline-flex; align-items: center; gap: 5px;
-  background: var(--accent-light); color: var(--accent);
-  padding: 5px 12px; border-radius: 100px;
-  font-size: 11px; font-weight: 700; margin-bottom: 16px;
-  border: 1px solid var(--accent-mid);
-}
+.plano-badge { display: inline-flex; align-items: center; gap: 5px; background: var(--accent-light); color: var(--accent); padding: 5px 12px; border-radius: 100px; font-size: 11px; font-weight: 700; margin-bottom: 16px; border: 1px solid var(--accent-mid); }
 
-/* ═══════════════════════════════════════════════════
-   BLOQUEIO
-═══════════════════════════════════════════════════ */
-.bloqueio {
-  position: fixed; inset:0;
-  background: rgba(0,0,0,0.8); z-index: 1000;
-  display: flex; align-items: center; justify-content: center;
-  padding: 24px; backdrop-filter: blur(8px);
-}
-.bloqueio-card {
-  background: var(--bg-card); border-radius: 24px;
-  padding: 44px; max-width: 420px; width: 100%;
-  text-align: center; box-shadow: var(--shadow-lg);
-  border: 1px solid var(--border2);
-}
+/* ── BLOQUEIO ── */
+.bloqueio { position: fixed; inset:0; background: rgba(0,0,0,0.8); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 24px; backdrop-filter: blur(8px); }
+.bloqueio-card { background: var(--bg-card); border-radius: 24px; padding: 44px; max-width: 420px; width: 100%; text-align: center; box-shadow: var(--shadow-lg); border: 1px solid var(--border2); }
 .bloqueio-card h2 { font-size: 22px; font-weight: 800; margin-bottom: 8px; letter-spacing: -0.03em; }
 .bloqueio-card p { color: var(--text2); font-size: 14px; margin-bottom: 28px; line-height: 1.7; }
-.btn-ver-planos {
-  display: block; background: var(--accent); color: white;
-  padding: 13px; border-radius: 12px;
-  font-size: 15px; font-weight: 700; text-decoration: none;
-  margin-bottom: 12px; transition: all .18s;
-  box-shadow: var(--shadow-accent);
-}
+.btn-ver-planos { display: block; background: var(--accent); color: white; padding: 13px; border-radius: 12px; font-size: 15px; font-weight: 700; text-decoration: none; margin-bottom: 12px; transition: all .18s; box-shadow: var(--shadow-accent); }
 .btn-ver-planos:hover { background: var(--accent-hover); transform: translateY(-1px); }
 
-.trial-banner {
-  background: var(--yellow-bg); border: 1px solid var(--yellow-border);
-  border-radius: var(--radius); padding: 13px 20px; margin-bottom: 22px;
-  display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
-}
+.trial-banner { background: var(--yellow-bg); border: 1px solid var(--yellow-border); border-radius: var(--radius); padding: 13px 20px; margin-bottom: 22px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
 .trial-banner p { font-size: 13px; color: var(--yellow); font-weight: 600; }
 .btn-assinar-banner { background: var(--accent); color: white; border: none; padding: 7px 16px; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit; }
 
-/* ═══════════════════════════════════════════════════
-   SERVIÇO TAGS
-═══════════════════════════════════════════════════ */
+/* ── SERVIÇO TAGS ── */
 .servico-tag-wrap { display: inline-block; margin: 3px; }
-.servico-tag {
-  display: inline-flex; align-items: center; gap: 8px;
-  background: var(--accent-light); border: 1px solid var(--accent-mid);
-  color: var(--accent); padding: 6px 13px;
-  border-radius: 100px; font-size: 12.5px; font-weight: 600;
-  transition: all .18s;
-}
-.servico-preco {
-  background: var(--accent); color: white;
-  padding: 2px 9px; border-radius: 100px; font-size: 11px; font-weight: 700;
-}
-.servico-tag button {
-  background: none; border: none; color: var(--accent-2);
-  cursor: pointer; font-size: 16px; line-height: 1; padding: 0;
-  display: flex; transition: color .15s;
-}
+.servico-tag { display: inline-flex; align-items: center; gap: 8px; background: var(--accent-light); border: 1px solid var(--accent-mid); color: var(--accent); padding: 6px 13px; border-radius: 100px; font-size: 12.5px; font-weight: 600; transition: all .18s; }
+.servico-preco { background: var(--accent); color: white; padding: 2px 9px; border-radius: 100px; font-size: 11px; font-weight: 700; }
+.servico-tag button { background: none; border: none; color: var(--accent-2); cursor: pointer; font-size: 16px; line-height: 1; padding: 0; display: flex; transition: color .15s; }
 .servico-tag button:hover { color: var(--red); }
 
 .add-servico-wrap { margin-top: 14px; }
 .add-servico-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: flex-end; }
 .add-field-group { display: flex; flex-direction: column; gap: 5px; }
 .add-field-group label { font-size: 10.5px; font-weight: 700; color: var(--text2); text-transform: uppercase; letter-spacing: .07em; }
-.add-field-group input {
-  padding: 10px 13px; border: 1.5px solid var(--border2); border-radius: 10px;
-  font-size: 14px; outline: none; font-family: inherit;
-  background: var(--bg-input); color: var(--text); transition: all .18s;
-}
+.add-field-group input { padding: 10px 13px; border: 1.5px solid var(--border2); border-radius: 10px; font-size: 14px; outline: none; font-family: inherit; background: var(--bg-input); color: var(--text); transition: all .18s; }
 .add-field-group input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-light); }
 .add-field-group input.campo-erro { border-color: var(--red); box-shadow: 0 0 0 3px var(--red-bg); }
 .add-field-nome { flex: 2; min-width: 160px; }
 .add-field-preco { flex: 1; min-width: 110px; max-width: 140px; }
-.btn-add {
-  background: var(--accent); color: white; border: none;
-  padding: 10px 20px; border-radius: 10px;
-  font-size: 13px; font-weight: 600; cursor: pointer;
-  white-space: nowrap; font-family: inherit; transition: all .2s;
-  box-shadow: var(--shadow-accent); align-self: flex-end;
-}
+.btn-add { background: var(--accent); color: white; border: none; padding: 10px 20px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; font-family: inherit; transition: all .2s; box-shadow: var(--shadow-accent); align-self: flex-end; }
 .btn-add:hover { background: var(--accent-hover); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(37,99,235,0.35); }
 .add-servico-erro { font-size: 12px; color: var(--red); font-weight: 600; margin-top: 8px; min-height: 16px; }
 
-/* ═══════════════════════════════════════════════════
-   INTERVALO GRID
-═══════════════════════════════════════════════════ */
+/* ── INTERVALO GRID ── */
 .intervalo-grid { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 6px; }
-.intervalo-btn {
-  padding: 8px 15px; border: 1.5px solid var(--border2);
-  border-radius: 10px; background: var(--bg-card);
-  cursor: pointer; font-size: 12.5px; font-weight: 600;
-  color: var(--text2); transition: all .18s; font-family: inherit;
-}
+.intervalo-btn { padding: 8px 15px; border: 1.5px solid var(--border2); border-radius: 10px; background: var(--bg-card); cursor: pointer; font-size: 12.5px; font-weight: 600; color: var(--text2); transition: all .18s; font-family: inherit; }
 .intervalo-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
-.intervalo-btn.selecionado {
-  border-color: var(--accent); background: var(--accent); color: white;
-  box-shadow: var(--shadow-accent);
-}
+.intervalo-btn.selecionado { border-color: var(--accent); background: var(--accent); color: white; box-shadow: var(--shadow-accent); }
 .intervalo-btn.custom-btn { display: flex; align-items: center; gap: 6px; border-style: dashed; }
 .intervalo-btn.custom-btn.selecionado { border-style: solid; }
-
-.intervalo-custom-wrap {
-  display: none; align-items: center; gap: 10px;
-  margin-top: 12px; padding: 12px 16px;
-  background: var(--accent-light); border: 1.5px solid var(--accent-mid);
-  border-radius: 12px; animation: slideDown .2s ease;
-}
+.intervalo-custom-wrap { display: none; align-items: center; gap: 10px; margin-top: 12px; padding: 12px 16px; background: var(--accent-light); border: 1.5px solid var(--accent-mid); border-radius: 12px; animation: slideDown .2s ease; }
 .intervalo-custom-wrap.visivel { display: flex; }
 @keyframes slideDown { from { opacity:0; transform:translateY(-6px); } to { opacity:1; transform:translateY(0); } }
-
 .intervalo-custom-label { font-size: 11.5px; font-weight: 700; color: var(--accent); white-space: nowrap; text-transform: uppercase; letter-spacing: .06em; }
-#intervalo-custom {
-  width: 80px; padding: 8px 12px;
-  border: 1.5px solid var(--accent-mid); border-radius: 9px;
-  font-size: 15px; font-weight: 700; outline: none; font-family: inherit;
-  background: var(--bg-card); color: var(--text); text-align: center; transition: all .18s;
-}
+#intervalo-custom { width: 80px; padding: 8px 12px; border: 1.5px solid var(--accent-mid); border-radius: 9px; font-size: 15px; font-weight: 700; outline: none; font-family: inherit; background: var(--bg-card); color: var(--text); text-align: center; transition: all .18s; }
 #intervalo-custom:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-light); }
 .intervalo-custom-suffix { font-size: 13px; font-weight: 600; color: var(--text2); }
 
-/* ═══════════════════════════════════════════════════
-   INTERVALO POR SERVIÇO
-═══════════════════════════════════════════════════ */
+/* ── INTERVALO POR SERVIÇO ── */
 .servicos-intervalos-grid { display: flex; flex-direction: column; gap: 10px; }
-.servico-intervalo-card {
-  display: flex; align-items: center; gap: 14px;
-  padding: 14px 18px; background: var(--bg-card);
-  border: 1.5px solid var(--border); border-radius: 13px;
-  transition: all .18s;
-}
-.servico-intervalo-card:hover {
-  border-color: var(--accent-mid);
-  box-shadow: 0 2px 12px rgba(37,99,235,0.06);
-  transform: translateX(2px);
-}
+.servico-intervalo-card { display: flex; align-items: center; gap: 14px; padding: 14px 18px; background: var(--bg-card); border: 1.5px solid var(--border); border-radius: 13px; transition: all .18s; }
+.servico-intervalo-card:hover { border-color: var(--accent-mid); box-shadow: 0 2px 12px rgba(37,99,235,0.06); transform: translateX(2px); }
 .servico-intervalo-info { flex: 1; min-width: 0; }
 .servico-intervalo-nome { font-size: 13.5px; font-weight: 700; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .servico-intervalo-preco { font-size: 11.5px; color: var(--text3); margin-top: 2px; font-weight: 500; }
-.servico-intervalo-select {
-  padding: 8px 12px; border: 1.5px solid var(--border2);
-  border-radius: 9px; font-size: 13px; font-weight: 600;
-  outline: none; font-family: inherit;
-  background: var(--bg-input); color: var(--text);
-  cursor: pointer; transition: all .18s; min-width: 130px;
-}
+.servico-intervalo-select { padding: 8px 12px; border: 1.5px solid var(--border2); border-radius: 9px; font-size: 13px; font-weight: 600; outline: none; font-family: inherit; background: var(--bg-input); color: var(--text); cursor: pointer; transition: all .18s; min-width: 130px; }
 .servico-intervalo-select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-light); }
-.servico-intervalo-badge {
-  font-size: 10.5px; font-weight: 800; background: var(--accent-light);
-  color: var(--accent); border: 1px solid var(--accent-mid);
-  padding: 3px 10px; border-radius: 100px;
-  text-transform: uppercase; letter-spacing: .06em;
-  white-space: nowrap; flex-shrink: 0;
-}
+.servico-intervalo-badge { font-size: 10.5px; font-weight: 800; background: var(--accent-light); color: var(--accent); border: 1px solid var(--accent-mid); padding: 3px 10px; border-radius: 100px; text-transform: uppercase; letter-spacing: .06em; white-space: nowrap; flex-shrink: 0; }
 .servico-intervalo-badge.custom { background: var(--green-bg); color: var(--green); border-color: var(--green-border); }
-
-.intervalo-info-box {
-  display: flex; align-items: flex-start; gap: 10px;
-  padding: 13px 16px; background: var(--accent-light);
-  border: 1px solid var(--accent-mid); border-radius: 12px;
-  font-size: 12.5px; color: var(--accent); line-height: 1.6; margin-bottom: 20px;
-}
+.intervalo-info-box { display: flex; align-items: flex-start; gap: 10px; padding: 13px 16px; background: var(--accent-light); border: 1px solid var(--accent-mid); border-radius: 12px; font-size: 12.5px; color: var(--accent); line-height: 1.6; margin-bottom: 20px; }
 .intervalo-info-box svg { flex-shrink: 0; margin-top: 1px; }
-
 .servicos-vazio { text-align: center; padding: 32px 20px; color: var(--text3); font-size: 13.5px; }
 .servicos-vazio-icon { font-size: 32px; margin-bottom: 10px; }
 
-/* ═══════════════════════════════════════════════════
-   DIA ROWS
-═══════════════════════════════════════════════════ */
-.dia-row {
-  display: flex; align-items: center; gap: 14px;
-  padding: 14px 0; border-bottom: 1px solid var(--border);
-  flex-wrap: wrap;
-}
+/* ── DIA ROWS ── */
+.dia-row { display: flex; align-items: center; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
 .dia-row:last-child { border-bottom: none; }
 .dia-toggle { display: flex; align-items: center; gap: 10px; min-width: 120px; }
 .dia-toggle input[type=checkbox] { width: 16px; height: 16px; cursor: pointer; accent-color: var(--accent); flex-shrink: 0; }
 .dia-toggle label { font-size: 13.5px; font-weight: 600; color: var(--text); cursor: pointer; }
 .dia-horarios { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-.dia-horarios input[type=time] {
-  padding: 7px 11px; border: 1.5px solid var(--border2);
-  border-radius: 9px; font-size: 13px; outline: none;
-  font-family: inherit; transition: all .18s;
-  background: var(--bg-input); color: var(--text);
-}
+.dia-horarios input[type=time] { padding: 7px 11px; border: 1.5px solid var(--border2); border-radius: 9px; font-size: 13px; outline: none; font-family: inherit; transition: all .18s; background: var(--bg-input); color: var(--text); }
 .dia-horarios input[type=time]:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-light); }
 .dia-inativo .dia-horarios { opacity: .3; pointer-events: none; }
 .dia-inativo .dia-toggle label { color: var(--text3); }
 
-/* ═══════════════════════════════════════════════════
-   SUPORTE
-═══════════════════════════════════════════════════ */
+/* ── SUPORTE ── */
 .suporte-hero { text-align: center; padding: 44px 24px 28px; }
-.suporte-avatar {
-  width: 82px; height: 82px; border-radius: 50%;
-  background: linear-gradient(135deg, var(--green), var(--green-2));
-  display: flex; align-items: center; justify-content: center;
-  margin: 0 auto 22px; box-shadow: 0 8px 28px rgba(22,163,74,0.3);
-}
-.btn-whatsapp-suporte {
-  display: inline-flex; align-items: center; gap: 10px;
-  background: linear-gradient(135deg, var(--green), var(--green-2));
-  color: white; padding: 13px 34px; border-radius: 13px;
-  font-size: 14.5px; font-weight: 700; text-decoration: none;
-  transition: all .2s; box-shadow: 0 4px 16px rgba(22,163,74,0.3);
-  font-family: inherit; border: none; cursor: pointer;
-}
+.suporte-avatar { width: 82px; height: 82px; border-radius: 50%; background: linear-gradient(135deg, var(--green), var(--green-2)); display: flex; align-items: center; justify-content: center; margin: 0 auto 22px; box-shadow: 0 8px 28px rgba(22,163,74,0.3); }
+.btn-whatsapp-suporte { display: inline-flex; align-items: center; gap: 10px; background: linear-gradient(135deg, var(--green), var(--green-2)); color: white; padding: 13px 34px; border-radius: 13px; font-size: 14.5px; font-weight: 700; text-decoration: none; transition: all .2s; box-shadow: 0 4px 16px rgba(22,163,74,0.3); font-family: inherit; border: none; cursor: pointer; }
 .btn-whatsapp-suporte:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(22,163,74,0.4); }
 .suporte-divider { height: 1px; background: var(--border); margin: 0 24px; }
 .suporte-horarios { padding: 22px 24px; }
 .suporte-horarios-title { font-size: 10.5px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: .1em; margin-bottom: 16px; }
 .horario-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.horario-item {
-  background: var(--bg); border-radius: 12px; padding: 16px;
-  border: 1px solid var(--border2); text-align: center; transition: all .18s;
-}
+.horario-item { background: var(--bg); border-radius: 12px; padding: 16px; border: 1px solid var(--border2); text-align: center; transition: all .18s; }
 .horario-item:hover { border-color: var(--accent-mid); transform: translateY(-1px); }
 .horario-item-dia { font-size: 10.5px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: .07em; margin-bottom: 8px; }
 .horario-item-hora { font-size: 17px; font-weight: 700; color: var(--text); }
 
-/* ═══════════════════════════════════════════════════
-   PASSOS
-═══════════════════════════════════════════════════ */
+/* ── PASSOS ── */
 .passo { display: flex; gap: 16px; margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid var(--border); }
 .passo:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
 .passo-num { width: 34px; height: 34px; border-radius: 50%; background: var(--accent); color: white; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 800; flex-shrink: 0; box-shadow: var(--shadow-accent); }
@@ -1055,17 +509,9 @@ tbody tr:hover td { background: var(--bg); }
 .alerta-verde { background: var(--green-bg); border: 1px solid var(--green-border); border-radius: 10px; padding: 11px 14px; font-size: 12.5px; color: var(--green); line-height: 1.5; margin-top: 10px; }
 .alerta-azul { background: var(--accent-light); border: 1px solid var(--accent-mid); border-radius: 10px; padding: 11px 14px; font-size: 12.5px; color: var(--accent); line-height: 1.5; margin-top: 10px; }
 
-/* ═══════════════════════════════════════════════════
-   THEME SELECTOR
-═══════════════════════════════════════════════════ */
+/* ── THEME SELECTOR ── */
 .theme-selector-wrap { display: flex; gap: 12px; margin-top: 4px; flex-wrap: wrap; }
-.theme-option {
-  flex: 1; min-width: 120px; max-width: 180px;
-  border: 2px solid var(--border2); border-radius: 14px;
-  padding: 14px 16px; cursor: pointer; background: var(--bg-card);
-  transition: all .2s; display: flex; flex-direction: column; gap: 10px;
-  position: relative; user-select: none;
-}
+.theme-option { flex: 1; min-width: 120px; max-width: 180px; border: 2px solid var(--border2); border-radius: 14px; padding: 14px 16px; cursor: pointer; background: var(--bg-card); transition: all .2s; display: flex; flex-direction: column; gap: 10px; position: relative; user-select: none; }
 .theme-option:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: var(--shadow-md); }
 .theme-option.ativo { border-color: var(--accent); background: var(--accent-light); box-shadow: 0 0 0 3px var(--accent-glow); }
 .theme-option-check { position: absolute; top: 10px; right: 10px; width: 18px; height: 18px; border-radius: 50%; background: var(--accent); display: none; align-items: center; justify-content: center; box-shadow: var(--shadow-accent); }
@@ -1087,99 +533,43 @@ tbody tr:hover td { background: var(--bg); }
 .theme-option-desc { font-size: 11.5px; color: var(--text3); margin-top: -4px; }
 .theme-option-emoji { font-size: 20px; line-height: 1; }
 
-/* ═══════════════════════════════════════════════════
-   HISTÓRICO MENSAL
-═══════════════════════════════════════════════════ */
+/* ── HISTÓRICO MENSAL ── */
 .hist-nav { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
-.hist-nav-btn {
-  width: 28px; height: 28px; border-radius: 8px;
-  border: 1.5px solid var(--border2); background: var(--bg-card);
-  color: var(--text2); font-size: 16px; cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  transition: all .15s; font-family: inherit;
-}
+.hist-nav-btn { width: 28px; height: 28px; border-radius: 8px; border: 1.5px solid var(--border2); background: var(--bg-card); color: var(--text2); font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all .15s; font-family: inherit; }
 .hist-nav-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
 .hist-nav-btn:disabled { opacity: .3; cursor: not-allowed; }
 .hist-mes-label { font-size: 13px; font-weight: 700; color: var(--text); min-width: 110px; text-align: center; white-space: nowrap; }
-
 .hist-cards { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; margin-bottom: 24px; }
-.hist-stat {
-  display: flex; align-items: center; gap: 12px;
-  background: var(--bg); border: 1px solid var(--border);
-  border-radius: 12px; padding: 16px; transition: all .2s;
-}
+.hist-stat { display: flex; align-items: center; gap: 12px; background: var(--bg); border: 1px solid var(--border); border-radius: 12px; padding: 16px; transition: all .2s; }
 .hist-stat:hover { border-color: var(--accent-mid); transform: translateY(-1px); }
-.hist-stat-icon {
-  width: 36px; height: 36px; border-radius: 10px;
-  background: var(--accent-light); border: 1px solid var(--accent-mid);
-  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-}
+.hist-stat-icon { width: 36px; height: 36px; border-radius: 10px; background: var(--accent-light); border: 1px solid var(--accent-mid); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .hist-stat-valor { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 20px; font-weight: 800; color: var(--text); letter-spacing: -0.03em; line-height: 1.2; }
 .hist-stat-label { font-size: 10.5px; color: var(--text3); font-weight: 600; text-transform: uppercase; letter-spacing: .05em; margin-top: 3px; }
-
-.hist-grafico-wrap {
-  background: var(--bg); border: 1px solid var(--border);
-  border-radius: 14px; padding: 20px 20px 12px;
-}
+.hist-grafico-wrap { background: var(--bg); border: 1px solid var(--border); border-radius: 14px; padding: 20px 20px 12px; }
 .hist-grafico-title { font-size: 10.5px; font-weight: 800; color: var(--text3); text-transform: uppercase; letter-spacing: .1em; margin-bottom: 20px; }
 .hist-grafico { display: flex; align-items: flex-end; gap: 10px; height: 100px; margin-bottom: 10px; }
-.hist-barra-wrap {
-  flex: 1; display: flex; flex-direction: column;
-  align-items: center; gap: 6px; height: 100%;
-  justify-content: flex-end; position: relative;
-}
-.hist-barra-val {
-  font-size: 10px; font-weight: 700; color: var(--text2);
-  white-space: nowrap; position: absolute; top: -18px;
-  left: 50%; transform: translateX(-50%);
-  opacity: 0; transition: opacity .2s;
-}
+.hist-barra-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; height: 100%; justify-content: flex-end; position: relative; }
+.hist-barra-val { font-size: 10px; font-weight: 700; color: var(--text2); white-space: nowrap; position: absolute; top: -18px; left: 50%; transform: translateX(-50%); opacity: 0; transition: opacity .2s; }
 .hist-barra-wrap:hover .hist-barra-val { opacity: 1; }
-.hist-barra {
-  width: 100%; border-radius: 6px 6px 0 0;
-  background: linear-gradient(180deg, var(--accent), var(--accent-2));
-  transition: height .5s cubic-bezier(.4,0,.2,1), opacity .3s;
-  min-height: 3px; cursor: pointer; position: relative;
-}
+.hist-barra { width: 100%; border-radius: 6px 6px 0 0; background: linear-gradient(180deg, var(--accent), var(--accent-2)); transition: height .5s cubic-bezier(.4,0,.2,1), opacity .3s; min-height: 3px; cursor: pointer; position: relative; }
 .hist-barra.ativo { background: linear-gradient(180deg, var(--green), var(--green-2)); box-shadow: 0 4px 12px rgba(22,163,74,0.25); }
 .hist-barra.zero { background: var(--border2); opacity: .5; }
 .hist-grafico-labels { display: flex; gap: 10px; }
 .hist-grafico-label { flex: 1; text-align: center; font-size: 10.5px; font-weight: 600; color: var(--text3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .hist-grafico-label.ativo { color: var(--accent); font-weight: 800; }
 
-/* ═══════════════════════════════════════════════════
-   PAINEL PAGAMENTOS
-═══════════════════════════════════════════════════ */
-.pag-empty-icon {
-  width: 76px; height: 76px; border-radius: 20px;
-  background: var(--accent-light); border: 1px solid var(--accent-mid);
-  display: flex; align-items: center; justify-content: center;
-  margin: 0 auto 22px;
-}
+/* ── PAINEL PAGAMENTOS ── */
+.pag-empty-icon { width: 76px; height: 76px; border-radius: 20px; background: var(--accent-light); border: 1px solid var(--accent-mid); display: flex; align-items: center; justify-content: center; margin: 0 auto 22px; }
 
-/* ═══════════════════════════════════════════════════
-   INLINE INPUT PAUSA
-═══════════════════════════════════════════════════ */
-#pausa-inicio, #pausa-fim, #pausa-label {
-  padding: 10px 12px; border: 1.5px solid var(--border2);
-  border-radius: 9px; font-size: 14px; font-weight: 600;
-  outline: none; font-family: inherit; text-align: center;
-  background: var(--bg-input); color: var(--text); transition: all .18s;
-}
+/* ── INLINE INPUT PAUSA ── */
+#pausa-inicio, #pausa-fim, #pausa-label { padding: 10px 12px; border: 1.5px solid var(--border2); border-radius: 9px; font-size: 14px; font-weight: 600; outline: none; font-family: inherit; text-align: center; background: var(--bg-input); color: var(--text); transition: all .18s; }
 #pausa-inicio:focus, #pausa-fim:focus, #pausa-label:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-light); }
 #pausa-label { text-align: left; }
 
-/* ═══════════════════════════════════════════════════
-   IOS TOAST
-═══════════════════════════════════════════════════ */
-@keyframes fadeInUp {
-  from { opacity:0; transform:translateX(-50%) translateY(12px); }
-  to   { opacity:1; transform:translateX(-50%) translateY(0); }
-}
+/* ── TOAST ── */
+@keyframes fadeInUp { from { opacity:0; transform:translateX(-50%) translateY(12px); } to { opacity:1; transform:translateX(-50%) translateY(0); } }
 
-/* ═══════════════════════════════════════════════════
-   DARK MODE OVERRIDES
-═══════════════════════════════════════════════════ */
+/* ── DARK MODE OVERRIDES ── */
 body.dark-mode .card-header { background: var(--bg-card); }
 body.dark-mode .section-block-header { background: var(--bg-card); }
 body.dark-mode thead tr { background: var(--bg); }
@@ -1198,12 +588,8 @@ body.dark-mode .bloqueio-card { background: var(--bg-card); }
 body.dark-mode .negocio-dropdown { background: #0a1428; }
 body.dark-mode ::placeholder { color: var(--text3); opacity: .7; }
 
-/* ═══════════════════════════════════════════════════
-   RESPONSIVE
-═══════════════════════════════════════════════════ */
-@media(max-width: 1024px) {
-  .stats { grid-template-columns: repeat(2,1fr); }
-}
+/* ── RESPONSIVE ── */
+@media(max-width: 1024px) { .stats { grid-template-columns: repeat(2,1fr); } }
 @media(max-width: 768px) {
   .sidebar { transform: translateX(calc(-1 * var(--sidebar-w))); }
   .sidebar.aberta { transform: translateX(0); }
@@ -1231,9 +617,7 @@ body.dark-mode ::placeholder { color: var(--text3); opacity: .7; }
   .servico-intervalo-card { flex-wrap: wrap; }
   .servico-intervalo-select { min-width: 100%; }
 }
-@media(max-width: 480px) {
-  .stats { grid-template-columns: 1fr; }
-}
+@media(max-width: 480px) { .stats { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
@@ -1375,6 +759,7 @@ body.dark-mode ::placeholder { color: var(--text3); opacity: .7; }
   </div>
 
   <div class="sidebar-footer">
+    <!-- Botão sempre visível; JS controla o comportamento por plataforma -->
     <button id="btn-instalar-app" class="btn-instalar">
       <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 2v7M4 6.5L6.5 9 9 6.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M1.5 9.5v1A1 1 0 0 0 2.5 11.5h8a1 1 0 0 0 1-1v-1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
       Instalar app
@@ -1414,30 +799,22 @@ body.dark-mode ::placeholder { color: var(--text3); opacity: .7; }
 
     <div class="stats">
       <div class="stat-card">
-        <div class="stat-icon">
-          <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="7.5" r="5.5" stroke="var(--accent)" stroke-width="1.4"/><path d="M7.5 4.5V8l2 2" stroke="var(--accent)" stroke-width="1.4" stroke-linecap="round"/></svg>
-        </div>
+        <div class="stat-icon"><svg width="15" height="15" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="7.5" r="5.5" stroke="var(--accent)" stroke-width="1.4"/><path d="M7.5 4.5V8l2 2" stroke="var(--accent)" stroke-width="1.4" stroke-linecap="round"/></svg></div>
         <div class="stat-valor" id="stat-hoje">0</div>
         <div class="stat-label">Hoje</div>
       </div>
       <div class="stat-card">
-        <div class="stat-icon">
-          <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><rect x="1.5" y="2.5" width="12" height="11" rx="1.5" stroke="var(--accent)" stroke-width="1.4"/><path d="M5 1.5v2M10 1.5v2M1.5 5.5h12" stroke="var(--accent)" stroke-width="1.4" stroke-linecap="round"/></svg>
-        </div>
+        <div class="stat-icon"><svg width="15" height="15" viewBox="0 0 15 15" fill="none"><rect x="1.5" y="2.5" width="12" height="11" rx="1.5" stroke="var(--accent)" stroke-width="1.4"/><path d="M5 1.5v2M10 1.5v2M1.5 5.5h12" stroke="var(--accent)" stroke-width="1.4" stroke-linecap="round"/></svg></div>
         <div class="stat-valor" id="stat-semana">0</div>
         <div class="stat-label">Esta semana</div>
       </div>
       <div class="stat-card">
-        <div class="stat-icon">
-          <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M1.5 11L5.5 7l3 3L13.5 4" stroke="var(--accent)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </div>
+        <div class="stat-icon"><svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M1.5 11L5.5 7l3 3L13.5 4" stroke="var(--accent)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
         <div class="stat-valor" id="stat-total">0</div>
         <div class="stat-label">Total geral</div>
       </div>
       <div class="stat-card">
-        <div class="stat-icon" style="background:var(--green-bg);border-color:var(--green-border)">
-          <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><rect x="1.5" y="3" width="12" height="9.5" rx="1.5" stroke="var(--green)" stroke-width="1.4"/><path d="M1.5 6h12M5 9h3" stroke="var(--green)" stroke-width="1.4" stroke-linecap="round"/></svg>
-        </div>
+        <div class="stat-icon" style="background:var(--green-bg);border-color:var(--green-border)"><svg width="15" height="15" viewBox="0 0 15 15" fill="none"><rect x="1.5" y="3" width="12" height="9.5" rx="1.5" stroke="var(--green)" stroke-width="1.4"/><path d="M1.5 6h12M5 9h3" stroke="var(--green)" stroke-width="1.4" stroke-linecap="round"/></svg></div>
         <div class="stat-valor" id="stat-lucro" style="font-size:18px;color:var(--green)">R$ 0,00</div>
         <div class="stat-label">Lucro do mês</div>
       </div>
@@ -1486,31 +863,16 @@ body.dark-mode ::placeholder { color: var(--text3); opacity: .7; }
       <div class="section-block-body" style="padding-bottom:28px">
         <div class="hist-cards" id="hist-cards">
           <div class="hist-stat">
-            <div class="hist-stat-icon" style="background:var(--green-bg);border-color:var(--green-border)">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1.5" y="3" width="13" height="10" rx="1.5" stroke="var(--green)" stroke-width="1.4"/><path d="M1.5 6.5h13M5 9.5h3" stroke="var(--green)" stroke-width="1.4" stroke-linecap="round"/></svg>
-            </div>
-            <div>
-              <div class="hist-stat-valor" id="hist-lucro">R$ 0,00</div>
-              <div class="hist-stat-label">Lucro total</div>
-            </div>
+            <div class="hist-stat-icon" style="background:var(--green-bg);border-color:var(--green-border)"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1.5" y="3" width="13" height="10" rx="1.5" stroke="var(--green)" stroke-width="1.4"/><path d="M1.5 6.5h13M5 9.5h3" stroke="var(--green)" stroke-width="1.4" stroke-linecap="round"/></svg></div>
+            <div><div class="hist-stat-valor" id="hist-lucro">R$ 0,00</div><div class="hist-stat-label">Lucro total</div></div>
           </div>
           <div class="hist-stat">
-            <div class="hist-stat-icon">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 12.5l3.5-3.5 2.5 2.5L13 5" stroke="var(--accent)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </div>
-            <div>
-              <div class="hist-stat-valor" id="hist-atend">0</div>
-              <div class="hist-stat-label">Atendimentos concluídos</div>
-            </div>
+            <div class="hist-stat-icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 12.5l3.5-3.5 2.5 2.5L13 5" stroke="var(--accent)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div><div class="hist-stat-valor" id="hist-atend">0</div><div class="hist-stat-label">Atendimentos concluídos</div></div>
           </div>
           <div class="hist-stat">
-            <div class="hist-stat-icon" style="background:var(--purple-bg);border-color:var(--purple-border)">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="6" r="2.5" stroke="var(--purple)" stroke-width="1.4"/><path d="M2.5 14c0-3 2.5-5 5.5-5s5.5 2 5.5 5" stroke="var(--purple)" stroke-width="1.4" stroke-linecap="round"/></svg>
-            </div>
-            <div>
-              <div class="hist-stat-valor" id="hist-ticket">R$ 0,00</div>
-              <div class="hist-stat-label">Ticket médio</div>
-            </div>
+            <div class="hist-stat-icon" style="background:var(--purple-bg);border-color:var(--purple-border)"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="6" r="2.5" stroke="var(--purple)" stroke-width="1.4"/><path d="M2.5 14c0-3 2.5-5 5.5-5s5.5 2 5.5 5" stroke="var(--purple)" stroke-width="1.4" stroke-linecap="round"/></svg></div>
+            <div><div class="hist-stat-valor" id="hist-ticket">R$ 0,00</div><div class="hist-stat-label">Ticket médio</div></div>
           </div>
         </div>
         <div class="hist-grafico-wrap">
@@ -1535,10 +897,7 @@ body.dark-mode ::placeholder { color: var(--text3); opacity: .7; }
     <div class="section-block">
       <div class="section-block-header">
         <div class="section-block-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7.5" stroke="var(--accent)" stroke-width="1.6"/><path d="M10 6v5l3 3" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round"/></svg></div>
-        <div>
-          <div class="section-block-title">Intervalo padrão entre atendimentos</div>
-          <div class="section-block-sub">Tempo reservado quando o serviço não tem intervalo próprio</div>
-        </div>
+        <div><div class="section-block-title">Intervalo padrão entre atendimentos</div><div class="section-block-sub">Tempo reservado quando o serviço não tem intervalo próprio</div></div>
       </div>
       <div class="section-block-body">
         <div class="intervalo-grid">
@@ -1571,10 +930,7 @@ body.dark-mode ::placeholder { color: var(--text3); opacity: .7; }
             <path d="M16 11.5V13l1 1" stroke="var(--accent)" stroke-width="1.3" stroke-linecap="round"/>
           </svg>
         </div>
-        <div>
-          <div class="section-block-title">Intervalo por serviço</div>
-          <div class="section-block-sub">Configure durações específicas para cada serviço</div>
-        </div>
+        <div><div class="section-block-title">Intervalo por serviço</div><div class="section-block-sub">Configure durações específicas para cada serviço</div></div>
       </div>
       <div class="section-block-body">
         <div class="intervalo-info-box">
@@ -1582,10 +938,7 @@ body.dark-mode ::placeholder { color: var(--text3); opacity: .7; }
           <span>Quando um serviço tem duração própria configurada, ela substitui o <strong>intervalo padrão</strong>.</span>
         </div>
         <div class="servicos-intervalos-grid" id="servicos-intervalos-grid">
-          <div class="servicos-vazio">
-            <div class="servicos-vazio-icon">🛠️</div>
-            Adicione serviços em <strong>Configurações → Serviços</strong> para configurar durações individuais.
-          </div>
+          <div class="servicos-vazio"><div class="servicos-vazio-icon">🛠️</div>Adicione serviços em <strong>Configurações → Serviços</strong> para configurar durações individuais.</div>
         </div>
         <div style="display:flex;align-items:center;margin-top:4px">
           <button class="btn-salvar" onclick="salvarIntervalosServicos()">
@@ -1600,10 +953,7 @@ body.dark-mode ::placeholder { color: var(--text3); opacity: .7; }
     <div class="section-block">
       <div class="section-block-header">
         <div class="section-block-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="2.5" y="3.5" width="15" height="13.5" rx="2.5" stroke="var(--accent)" stroke-width="1.6"/><path d="M2.5 7.5h15M7 2v3M13 2v3" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round"/></svg></div>
-        <div>
-          <div class="section-block-title">Dias e horários de atendimento</div>
-          <div class="section-block-sub">Defina em quais dias e horários você recebe clientes</div>
-        </div>
+        <div><div class="section-block-title">Dias e horários de atendimento</div><div class="section-block-sub">Defina em quais dias e horários você recebe clientes</div></div>
       </div>
       <div class="section-block-body">
         <div id="dias-container"></div>
@@ -1620,10 +970,7 @@ body.dark-mode ::placeholder { color: var(--text3); opacity: .7; }
     <div class="section-block">
       <div class="section-block-header">
         <div class="section-block-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7.5" stroke="var(--accent)" stroke-width="1.6"/><path d="M10 6.5v4M10 13v.5" stroke="var(--accent)" stroke-width="1.8" stroke-linecap="round"/></svg></div>
-        <div>
-          <div class="section-block-title">Pausas e intervalos</div>
-          <div class="section-block-sub">Bloqueie horários para almoço, café ou qualquer pausa</div>
-        </div>
+        <div><div class="section-block-title">Pausas e intervalos</div><div class="section-block-sub">Bloqueie horários para almoço, café ou qualquer pausa</div></div>
       </div>
       <div class="section-block-body">
         <div id="pausas-lista"></div>
@@ -1659,10 +1006,7 @@ body.dark-mode ::placeholder { color: var(--text3); opacity: .7; }
     <div class="section-block">
       <div class="section-block-header">
         <div class="section-block-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 2a6 6 0 0 1 6 6c0 3.3.7 4.7 1.4 5.5H2.6C3.3 12.7 4 11.3 4 8a6 6 0 0 1 6-6Z" stroke="var(--accent)" stroke-width="1.6" stroke-linejoin="round"/><path d="M8 16.5a2 2 0 0 0 4 0" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round"/></svg></div>
-        <div>
-          <div class="section-block-title">Lembrete automático 24h antes</div>
-          <div class="section-block-sub">Mensagem enviada pelo WhatsApp do AgendoRapido</div>
-        </div>
+        <div><div class="section-block-title">Lembrete automático 24h antes</div><div class="section-block-sub">Mensagem enviada pelo WhatsApp do AgendoRapido</div></div>
       </div>
       <div class="section-block-body">
         <div class="toggle-row">
@@ -1710,10 +1054,7 @@ body.dark-mode ::placeholder { color: var(--text3); opacity: .7; }
     <div class="section-block">
       <div class="section-block-header">
         <div class="section-block-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M17.5 10a7.5 7.5 0 1 1-15 0 7.5 7.5 0 0 1 15 0Z" stroke="var(--accent)" stroke-width="1.6"/><path d="M10 6.5v4M10 13v.5" stroke="var(--accent)" stroke-width="1.8" stroke-linecap="round"/></svg></div>
-        <div>
-          <div class="section-block-title">Seu link de agendamento</div>
-          <div class="section-block-sub">Cole este link na mensagem de saudação do WhatsApp Business</div>
-        </div>
+        <div><div class="section-block-title">Seu link de agendamento</div><div class="section-block-sub">Cole este link na mensagem de saudação do WhatsApp Business</div></div>
       </div>
       <div class="section-block-body">
         <div style="background:var(--accent-light);border:1.5px solid var(--accent-mid);border-radius:12px;padding:16px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
@@ -1731,10 +1072,7 @@ body.dark-mode ::placeholder { color: var(--text3); opacity: .7; }
     <div class="section-block">
       <div class="section-block-header">
         <div class="section-block-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 4h14v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4Z" stroke="var(--accent)" stroke-width="1.6"/><path d="M7 8h6M7 11h4" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round"/></svg></div>
-        <div>
-          <div class="section-block-title">Mensagem pronta para copiar</div>
-          <div class="section-block-sub">Cole essa mensagem no WhatsApp Business como saudação automática</div>
-        </div>
+        <div><div class="section-block-title">Mensagem pronta para copiar</div><div class="section-block-sub">Cole essa mensagem no WhatsApp Business como saudação automática</div></div>
       </div>
       <div class="section-block-body">
         <div style="background:var(--bg);border:1.5px solid var(--border2);border-radius:12px;padding:18px;margin-bottom:14px">
@@ -1749,10 +1087,7 @@ body.dark-mode ::placeholder { color: var(--text3); opacity: .7; }
     <div class="section-block">
       <div class="section-block-header">
         <div class="section-block-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 10h12M4 6h12M4 14h7" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round"/></svg></div>
-        <div>
-          <div class="section-block-title">Como configurar passo a passo</div>
-          <div class="section-block-sub">Siga as instruções abaixo no app WhatsApp Business do seu celular</div>
-        </div>
+        <div><div class="section-block-title">Como configurar passo a passo</div><div class="section-block-sub">Siga as instruções abaixo no app WhatsApp Business do seu celular</div></div>
       </div>
       <div class="section-block-body">
         <div class="passo"><div class="passo-num">1</div><div style="flex:1"><div class="passo-titulo">Copie a mensagem acima</div><div class="passo-desc">Clique em <strong>"Copiar mensagem completa"</strong>. O link de agendamento já está incluído.</div><div class="alerta-verde">✓ <strong>Dica:</strong> A mensagem já está com o seu link personalizado.</div></div></div>
@@ -1772,14 +1107,10 @@ body.dark-mode ::placeholder { color: var(--text3); opacity: .7; }
         <div class="page-header-accent"></div>
       </div>
     </div>
-
     <div class="section-block">
       <div class="section-block-header">
         <div class="section-block-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M2 5h16M2 10h10M2 15h12" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round"/></svg></div>
-        <div>
-          <div class="section-block-title">Serviços oferecidos</div>
-          <div class="section-block-sub">Adicione os serviços com seus respectivos preços</div>
-        </div>
+        <div><div class="section-block-title">Serviços oferecidos</div><div class="section-block-sub">Adicione os serviços com seus respectivos preços</div></div>
       </div>
       <div class="section-block-body">
         <div id="servicos-tags" style="margin-bottom:16px;min-height:36px"></div>
@@ -1800,7 +1131,6 @@ body.dark-mode ::placeholder { color: var(--text3); opacity: .7; }
         </div>
       </div>
     </div>
-
     <div class="section-block">
       <div class="section-block-header">
         <div class="section-block-icon">
@@ -1809,10 +1139,7 @@ body.dark-mode ::placeholder { color: var(--text3); opacity: .7; }
             <path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.22 4.22l1.42 1.42M14.36 14.36l1.42 1.42M4.22 15.78l1.42-1.42M14.36 5.64l1.42-1.42" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round"/>
           </svg>
         </div>
-        <div>
-          <div class="section-block-title">Aparência</div>
-          <div class="section-block-sub">Escolha entre o modo claro e escuro para o painel</div>
-        </div>
+        <div><div class="section-block-title">Aparência</div><div class="section-block-sub">Escolha entre o modo claro e escuro para o painel</div></div>
       </div>
       <div class="section-block-body">
         <div class="theme-selector-wrap">
@@ -1856,10 +1183,7 @@ body.dark-mode ::placeholder { color: var(--text3); opacity: .7; }
     <div class="section-block">
       <div class="section-block-header">
         <div class="section-block-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="3.5" stroke="var(--accent)" stroke-width="1.6"/><path d="M3 18c0-3.9 3.1-7 7-7s7 3.1 7 7" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round"/></svg></div>
-        <div>
-          <div class="section-block-title">Informações da página</div>
-          <div class="section-block-sub">Foto, descrição e dados de contato da sua bio</div>
-        </div>
+        <div><div class="section-block-title">Informações da página</div><div class="section-block-sub">Foto, descrição e dados de contato da sua bio</div></div>
       </div>
       <div class="section-block-body">
         <div class="foto-wrap">
@@ -1900,16 +1224,11 @@ body.dark-mode ::placeholder { color: var(--text3); opacity: .7; }
     <div class="section-block">
       <div class="section-block-header">
         <div class="section-block-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="2" y="5" width="16" height="13" rx="2.5" stroke="var(--accent)" stroke-width="1.6"/><path d="M2 9h16M6 13h4" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round"/></svg></div>
-        <div>
-          <div class="section-block-title">Cobrança via Pix</div>
-          <div class="section-block-sub">Receba antes do atendimento, automaticamente</div>
-        </div>
+        <div><div class="section-block-title">Cobrança via Pix</div><div class="section-block-sub">Receba antes do atendimento, automaticamente</div></div>
       </div>
       <div class="section-block-body">
         <div style="text-align:center;padding:40px 0 28px">
-          <div class="pag-empty-icon">
-            <svg width="34" height="34" viewBox="0 0 34 34" fill="none"><rect x="3" y="7" width="28" height="20" rx="3.5" stroke="var(--accent)" stroke-width="1.8"/><path d="M3 13h28M9 20h7" stroke="var(--accent)" stroke-width="1.8" stroke-linecap="round"/></svg>
-          </div>
+          <div class="pag-empty-icon"><svg width="34" height="34" viewBox="0 0 34 34" fill="none"><rect x="3" y="7" width="28" height="20" rx="3.5" stroke="var(--accent)" stroke-width="1.8"/><path d="M3 13h28M9 20h7" stroke="var(--accent)" stroke-width="1.8" stroke-linecap="round"/></svg></div>
           <div style="font-size:20px;font-weight:700;color:var(--text);margin-bottom:10px;letter-spacing:-0.02em">Pagamentos em breve</div>
           <p style="font-size:14px;color:var(--text2);max-width:340px;margin:0 auto;line-height:1.7">Cobrança antecipada via Pix com repasse automático e reembolso em cancelamentos.</p>
         </div>
@@ -1954,6 +1273,9 @@ body.dark-mode ::placeholder { color: var(--text3); opacity: .7; }
 </div><!-- /main -->
 
 <script>
+/* ═══════════════════════════════════════════════════
+   CONSTANTES E ESTADO GLOBAL
+═══════════════════════════════════════════════════ */
 const API = 'https://agendafacil-wf3q.onrender.com/api'
 let todosAgendamentos = []
 let servicosAtuais = []
@@ -1979,52 +1301,56 @@ const OPCOES_INTERVALO = [
 ]
 
 const servicosPorSegmento = {
-  'Clinica':['Consulta','Retorno','Exame','Avaliação','Procedimento'],
-  'Barbearia':['Corte','Barba','Corte + Barba','Pigmentação','Hidratação'],
-  'Salao':['Corte','Coloração','Escova','Manicure','Pedicure'],
-  'Pet Shop':['Banho','Tosa','Banho + Tosa','Consulta Vet','Vacina'],
-  'Academia':['Avaliação Física','Treino Personal','Pilates','Musculação'],
-  'Estudio':['Tatuagem','Orçamento','Retoque','Piercing'],
-  'Outro':['Serviço 1','Serviço 2','Serviço 3']
+  'Clinica':   ['Consulta','Retorno','Exame','Avaliação','Procedimento'],
+  'Barbearia': ['Corte','Barba','Corte + Barba','Pigmentação','Hidratação'],
+  'Salao':     ['Corte','Coloração','Escova','Manicure','Pedicure'],
+  'Pet Shop':  ['Banho','Tosa','Banho + Tosa','Consulta Vet','Vacina'],
+  'Academia':  ['Avaliação Física','Treino Personal','Pilates','Musculação'],
+  'Estudio':   ['Tatuagem','Orçamento','Retoque','Piercing'],
+  'Outro':     ['Serviço 1','Serviço 2','Serviço 3']
 }
 
+/* ═══════════════════════════════════════════════════
+   LUCRO — localStorage helpers
+═══════════════════════════════════════════════════ */
 function mesAtualChave() { return new Date().toISOString().slice(0, 7) }
-function lucroKey(negocioId) { return `lucro_val_${negocioId}_${mesAtualChave()}` }
-function lucroIdsKey(negocioId) { return `lucro_ids_${negocioId}_${mesAtualChave()}` }
-function getLucroMes(negocioId) { const val = localStorage.getItem(lucroKey(negocioId)); return val !== null ? parseFloat(val) : null }
-function getLucroIds(negocioId) { try { return JSON.parse(localStorage.getItem(lucroIdsKey(negocioId)) || '[]') } catch { return [] } }
-function setLucroMes(negocioId, valor) { localStorage.setItem(lucroKey(negocioId), String(valor)) }
-function setLucroIds(negocioId, ids) { localStorage.setItem(lucroIdsKey(negocioId), JSON.stringify(ids)) }
+function lucroKey(id)    { return `lucro_val_${id}_${mesAtualChave()}` }
+function lucroIdsKey(id) { return `lucro_ids_${id}_${mesAtualChave()}` }
+function getLucroMes(id) { const v = localStorage.getItem(lucroKey(id)); return v !== null ? parseFloat(v) : null }
+function getLucroIds(id) { try { return JSON.parse(localStorage.getItem(lucroIdsKey(id)) || '[]') } catch { return [] } }
+function setLucroMes(id, v) { localStorage.setItem(lucroKey(id), String(v)) }
+function setLucroIds(id, ids) { localStorage.setItem(lucroIdsKey(id), JSON.stringify(ids)) }
 
-function registrarLucro(agendamento) {
-  if (!negocioAtual || !agendamento || !agendamento._id) return
-  const negocioId = negocioAtual._id
-  const ids = getLucroIds(negocioId)
-  if (ids.includes(agendamento._id)) return
-  const preco = Number(agendamento.preco) || 0
+function registrarLucro(ag) {
+  if (!negocioAtual || !ag || !ag._id) return
+  const nid = negocioAtual._id
+  const ids = getLucroIds(nid)
+  if (ids.includes(ag._id)) return
+  const preco = Number(ag.preco) || 0
   if (preco <= 0) return
-  const atual = getLucroMes(negocioId) || 0
-  setLucroMes(negocioId, atual + preco)
-  setLucroIds(negocioId, [...ids, agendamento._id])
+  setLucroMes(nid, (getLucroMes(nid) || 0) + preco)
+  setLucroIds(nid, [...ids, ag._id])
 }
 
-function seedLucroDoMes(agendamentos) {
+function seedLucroDoMes(ags) {
   if (!negocioAtual) return
-  const negocioId = negocioAtual._id
-  const mesAtual = mesAtualChave()
-  if (getLucroMes(negocioId) !== null) return
-  setLucroMes(negocioId, 0)
-  agendamentos.filter(a => a.status === 'concluido' && a.data && a.data.startsWith(mesAtual)).forEach(a => registrarLucro(a))
+  const nid = negocioAtual._id
+  const mes = mesAtualChave()
+  if (getLucroMes(nid) !== null) return
+  setLucroMes(nid, 0)
+  ags.filter(a => a.status === 'concluido' && a.data && a.data.startsWith(mes)).forEach(registrarLucro)
 }
 
 function exibirLucro() {
   if (!negocioAtual) return
-  const valor = getLucroMes(negocioAtual._id) || 0
+  const v = getLucroMes(negocioAtual._id) || 0
   const el = document.getElementById('stat-lucro')
-  if (el) el.textContent = 'R$ ' + valor.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+  if (el) el.textContent = 'R$ ' + v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 }
 
-// TEMA
+/* ═══════════════════════════════════════════════════
+   TEMA
+═══════════════════════════════════════════════════ */
 function definirTema(tema) {
   document.body.classList.toggle('dark-mode', tema === 'escuro')
   localStorage.setItem('tema', tema)
@@ -2034,607 +1360,1030 @@ function atualizarBotoesTema(tema) {
   document.getElementById('theme-opt-claro').classList.toggle('ativo', tema === 'claro')
   document.getElementById('theme-opt-escuro').classList.toggle('ativo', tema === 'escuro')
 }
-function carregarTema() { const tema = localStorage.getItem('tema') || 'claro'; definirTema(tema) }
+function carregarTema() {
+  const tema = localStorage.getItem('tema') || 'claro'
+  definirTema(tema)
+}
 
-// SIDEBAR
-function toggleSidebar(){document.getElementById('sidebar').classList.toggle('aberta');document.getElementById('sidebar-overlay').classList.toggle('visivel')}
-function fecharSidebar(){document.getElementById('sidebar').classList.remove('aberta');document.getElementById('sidebar-overlay').classList.remove('visivel')}
-function toggleDropdown(){const dd=document.getElementById('neg-dropdown');const ch=document.getElementById('neg-chevron');dd.classList.toggle('show');ch.classList.toggle('open')}
-document.addEventListener('click',e=>{if(!e.target.closest('.negocio-selector')){document.getElementById('neg-dropdown').classList.remove('show');document.getElementById('neg-chevron').classList.remove('open')}})
-function renderDropdown(){document.getElementById('neg-lista').innerHTML=todosNegocios.map(n=>`<div class="negocio-opt ${n._id===negocioAtual?._id?'ativo':''}" onclick="trocarNegocio('${n._id}')"><div class="negocio-opt-avatar">${n.nome[0].toUpperCase()}</div>${n.nome}</div>`).join('')}
-function trocarNegocio(id){negocioAtual=todosNegocios.find(n=>n._id===id);localStorage.setItem('negocioId',negocioAtual._id);localStorage.setItem('negocio',negocioAtual.nome);atualizarSidebarNegocio();renderDropdown();document.getElementById('neg-dropdown').classList.remove('show');document.getElementById('neg-chevron').classList.remove('open');carregarDadosNegocio()}
-function atualizarSidebarNegocio(){
-  document.getElementById('neg-nome-sidebar').textContent=negocioAtual?.nome||''
-  document.getElementById('neg-avatar').textContent=(negocioAtual?.nome||'A')[0].toUpperCase()
-  const link=`https://agendorapido.com.br/agendar.html?id=${negocioAtual?._id}`
-  const linkBio=`https://agendorapido.com.br/bio.html?id=${negocioAtual?._id}`
-  if(document.getElementById('link-agendamento'))document.getElementById('link-agendamento').textContent=link
-  if(document.getElementById('link-bio'))document.getElementById('link-bio').textContent=linkBio
+/* ═══════════════════════════════════════════════════
+   SIDEBAR
+═══════════════════════════════════════════════════ */
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('aberta')
+  document.getElementById('sidebar-overlay').classList.toggle('visivel')
+}
+function fecharSidebar() {
+  document.getElementById('sidebar').classList.remove('aberta')
+  document.getElementById('sidebar-overlay').classList.remove('visivel')
+}
+function toggleDropdown() {
+  const dd = document.getElementById('neg-dropdown')
+  const ch = document.getElementById('neg-chevron')
+  dd.classList.toggle('show')
+  ch.classList.toggle('open')
+}
+document.addEventListener('click', e => {
+  if (!e.target.closest('.negocio-selector')) {
+    document.getElementById('neg-dropdown').classList.remove('show')
+    document.getElementById('neg-chevron').classList.remove('open')
+  }
+})
+
+function renderDropdown() {
+  document.getElementById('neg-lista').innerHTML = todosNegocios.map(n =>
+    `<div class="negocio-opt ${n._id === negocioAtual?._id ? 'ativo' : ''}" onclick="trocarNegocio('${n._id}')">
+      <div class="negocio-opt-avatar">${n.nome[0].toUpperCase()}</div>${n.nome}
+    </div>`
+  ).join('')
+}
+
+function trocarNegocio(id) {
+  negocioAtual = todosNegocios.find(n => n._id === id)
+  localStorage.setItem('negocioId', negocioAtual._id)
+  localStorage.setItem('negocio', negocioAtual.nome)
+  atualizarSidebarNegocio()
+  renderDropdown()
+  document.getElementById('neg-dropdown').classList.remove('show')
+  document.getElementById('neg-chevron').classList.remove('open')
+  carregarDadosNegocio()
+}
+
+function atualizarSidebarNegocio() {
+  document.getElementById('neg-nome-sidebar').textContent = negocioAtual?.nome || ''
+  document.getElementById('neg-avatar').textContent = (negocioAtual?.nome || 'A')[0].toUpperCase()
+  const link    = `https://agendorapido.com.br/agendar.html?id=${negocioAtual?._id}`
+  const linkBio = `https://agendorapido.com.br/bio.html?id=${negocioAtual?._id}`
+  const elLink = document.getElementById('link-agendamento')
+  const elBio  = document.getElementById('link-bio')
+  if (elLink) elLink.textContent = link
+  if (elBio)  elBio.textContent  = linkBio
   atualizarLinkWpp()
 }
-function abrirModalNegocio(){document.getElementById('neg-dropdown').classList.remove('show');document.getElementById('neg-nome').value='';document.getElementById('neg-erro').textContent='';document.getElementById('modal-negocio').style.display='flex'}
-function fecharModalNegocio(){document.getElementById('modal-negocio').style.display='none'}
-async function criarNegocio(){
-  const nome=document.getElementById('neg-nome').value.trim()
-  const segmento=document.getElementById('neg-segmento').value
-  const erro=document.getElementById('neg-erro')
-  if(!nome){erro.textContent='Digite o nome do negócio';return}
-  const token=localStorage.getItem('token')
-  const servicos=(servicosPorSegmento[segmento]||servicosPorSegmento['Outro']).map(s=>({nome:s,preco:0}))
-  const res=await fetch(`${API}/auth/negocios`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({nome,segmento,servicos})})
-  const data=await res.json()
-  if(!res.ok){erro.textContent=data.erro||'Erro ao criar painel';return}
-  todosNegocios.push({_id:data._id,nome:data.nome,segmento:data.segmento})
-  fecharModalNegocio();trocarNegocio(data._id)
+
+function abrirModalNegocio() {
+  document.getElementById('neg-dropdown').classList.remove('show')
+  document.getElementById('neg-nome').value = ''
+  document.getElementById('neg-erro').textContent = ''
+  document.getElementById('modal-negocio').style.display = 'flex'
 }
-async function mostrarPainel(){
-  const token=localStorage.getItem('token')
-  const res=await fetch(`${API}/auth/negocios`,{headers:{'Authorization':`Bearer ${token}`}})
-  const negocios=await res.json()
-  todosNegocios=negocios
-  const savedId=localStorage.getItem('negocioId')
-  negocioAtual=negocios.find(n=>n._id===savedId)||negocios[0]
-  if(negocioAtual){localStorage.setItem('negocioId',negocioAtual._id);localStorage.setItem('negocio',negocioAtual.nome)}
-  renderDropdown();atualizarSidebarNegocio()
-  document.getElementById('filtro-data').value=new Date().toISOString().split('T')[0]
-  carregarDadosNegocio();verificarAcesso()
+function fecharModalNegocio() { document.getElementById('modal-negocio').style.display = 'none' }
+
+async function criarNegocio() {
+  const nome = document.getElementById('neg-nome').value.trim()
+  const segmento = document.getElementById('neg-segmento').value
+  const erro = document.getElementById('neg-erro')
+  if (!nome) { erro.textContent = 'Digite o nome do negócio'; return }
+  const token = localStorage.getItem('token')
+  const servicos = (servicosPorSegmento[segmento] || servicosPorSegmento['Outro']).map(s => ({ nome: s, preco: 0 }))
+  const res = await fetch(`${API}/auth/negocios`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+    body: JSON.stringify({ nome, segmento, servicos })
+  })
+  const data = await res.json()
+  if (!res.ok) { erro.textContent = data.erro || 'Erro ao criar painel'; return }
+  todosNegocios.push({ _id: data._id, nome: data.nome, segmento: data.segmento })
+  fecharModalNegocio()
+  trocarNegocio(data._id)
 }
-function carregarDadosNegocio(){carregarAgendamentos();carregarServicos();carregarHorariosConfig();carregarBioConfig();carregarLembretes()}
-function irPara(pagina,btn){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('ativo'))
-  document.querySelectorAll('.menu-item').forEach(m=>m.classList.remove('ativo'))
+
+async function mostrarPainel() {
+  const token = localStorage.getItem('token')
+  const res = await fetch(`${API}/auth/negocios`, { headers: { 'Authorization': `Bearer ${token}` } })
+  const negocios = await res.json()
+  todosNegocios = negocios
+  const savedId = localStorage.getItem('negocioId')
+  negocioAtual = negocios.find(n => n._id === savedId) || negocios[0]
+  if (negocioAtual) {
+    localStorage.setItem('negocioId', negocioAtual._id)
+    localStorage.setItem('negocio', negocioAtual.nome)
+  }
+  renderDropdown()
+  atualizarSidebarNegocio()
+  document.getElementById('filtro-data').value = new Date().toISOString().split('T')[0]
+  carregarDadosNegocio()
+  verificarAcesso()
+}
+
+function carregarDadosNegocio() {
+  carregarAgendamentos()
+  carregarServicos()
+  carregarHorariosConfig()
+  carregarBioConfig()
+  carregarLembretes()
+}
+
+function irPara(pagina, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('ativo'))
+  document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('ativo'))
   document.getElementById(`page-${pagina}`).classList.add('ativo')
-  if(btn)btn.classList.add('ativo')
+  if (btn) btn.classList.add('ativo')
   fecharSidebar()
 }
 
-// WHATSAPP
-function atualizarLinkWpp(){
-  if(!negocioAtual)return
-  const link=`https://agendorapido.com.br/agendar.html?id=${negocioAtual._id}`
-  const elLink=document.getElementById('wpp-link-agendamento')
-  if(elLink)elLink.textContent=link
-  const elMsg=document.getElementById('wpp-mensagem-preview')
-  if(elMsg)elMsg.textContent=`Olá! 👋 Obrigado por entrar em contato com a *${negocioAtual.nome}*.\n\nPara agendar seu horário de forma rápida e fácil, acesse o link abaixo:\n\n🔗 ${link}\n\nEscolha o serviço, a data e o horário que preferir. É rápido e simples! 😊`
-}
-function copiarLinkWpp(){
-  if(!negocioAtual)return
-  const link=`https://agendorapido.com.br/agendar.html?id=${negocioAtual._id}`
-  navigator.clipboard.writeText(link)
-  const btn=document.querySelector('[onclick="copiarLinkWpp()"]')
-  if(btn){const orig=btn.innerHTML;btn.innerHTML='✓ Copiado!';setTimeout(()=>btn.innerHTML=orig,2000)}
-}
-function copiarMensagemWpp(){
-  const el=document.getElementById('wpp-mensagem-preview')
-  if(!el)return
-  navigator.clipboard.writeText(el.textContent)
-  const btn=document.getElementById('btn-copiar-msg')
-  if(btn){const orig=btn.innerHTML;btn.innerHTML='✓ Mensagem copiada!';setTimeout(()=>btn.innerHTML=orig,2000)}
+/* ═══════════════════════════════════════════════════
+   WHATSAPP
+═══════════════════════════════════════════════════ */
+function atualizarLinkWpp() {
+  if (!negocioAtual) return
+  const link = `https://agendorapido.com.br/agendar.html?id=${negocioAtual._id}`
+  const elLink = document.getElementById('wpp-link-agendamento')
+  const elMsg  = document.getElementById('wpp-mensagem-preview')
+  if (elLink) elLink.textContent = link
+  if (elMsg)  elMsg.textContent  = `Olá! 👋 Obrigado por entrar em contato com a *${negocioAtual.nome}*.\n\nPara agendar seu horário de forma rápida e fácil, acesse o link abaixo:\n\n🔗 ${link}\n\nEscolha o serviço, a data e o horário que preferir. É rápido e simples! 😊`
 }
 
-// AGENDAMENTOS
-async function carregarAgendamentos(){
-  if(!negocioAtual)return
-  const token=localStorage.getItem('token')
-  const res=await fetch(`${API}/agendamentos?negocioId=${negocioAtual._id}`,{headers:{'Authorization':`Bearer ${token}`}})
-  todosAgendamentos=await res.json()
-  const agora=new Date()
-  const passados=todosAgendamentos.filter(a=>{
-    if(a.status!=='confirmado')return false
-    if(!a.data||!a.hora)return false
-    const [ano,mes,dia]=a.data.split('-').map(Number)
-    const [h,m]=a.hora.split(':').map(Number)
-    return new Date(ano,mes-1,dia,h,m,0).getTime()<agora.getTime()
+function copiarLinkWpp() {
+  if (!negocioAtual) return
+  const link = `https://agendorapido.com.br/agendar.html?id=${negocioAtual._id}`
+  navigator.clipboard.writeText(link)
+  const btn = document.querySelector('[onclick="copiarLinkWpp()"]')
+  if (btn) { const o = btn.innerHTML; btn.innerHTML = '✓ Copiado!'; setTimeout(() => btn.innerHTML = o, 2000) }
+}
+
+function copiarMensagemWpp() {
+  const el = document.getElementById('wpp-mensagem-preview')
+  if (!el) return
+  navigator.clipboard.writeText(el.textContent)
+  const btn = document.getElementById('btn-copiar-msg')
+  if (btn) { const o = btn.innerHTML; btn.innerHTML = '✓ Mensagem copiada!'; setTimeout(() => btn.innerHTML = o, 2000) }
+}
+
+/* ═══════════════════════════════════════════════════
+   AGENDAMENTOS
+═══════════════════════════════════════════════════ */
+async function carregarAgendamentos() {
+  if (!negocioAtual) return
+  const token = localStorage.getItem('token')
+  const res = await fetch(`${API}/agendamentos?negocioId=${negocioAtual._id}`, { headers: { 'Authorization': `Bearer ${token}` } })
+  todosAgendamentos = await res.json()
+
+  const agora = new Date()
+  const passados = todosAgendamentos.filter(a => {
+    if (a.status !== 'confirmado' || !a.data || !a.hora) return false
+    const [ano, mes, dia] = a.data.split('-').map(Number)
+    const [h, m] = a.hora.split(':').map(Number)
+    return new Date(ano, mes - 1, dia, h, m, 0).getTime() < agora.getTime()
   })
-  if(passados.length>0){
-    await Promise.all(passados.map(a=>fetch(`${API}/agendamentos/${a._id}`,{method:'PATCH',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({status:'concluido'})})))
-    todosAgendamentos=todosAgendamentos.map(a=>{
-      const foi=passados.find(p=>p._id===a._id)
-      if(foi){const concluido={...a,status:'concluido'};registrarLucro(concluido);return concluido}
+
+  if (passados.length > 0) {
+    await Promise.all(passados.map(a =>
+      fetch(`${API}/agendamentos/${a._id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({ status: 'concluido' })
+      })
+    ))
+    todosAgendamentos = todosAgendamentos.map(a => {
+      const foi = passados.find(p => p._id === a._id)
+      if (foi) { const c = { ...a, status: 'concluido' }; registrarLucro(c); return c }
       return a
     })
   }
-  const hoje=new Date().toISOString().split('T')[0]
-  const semana=new Date(Date.now()+7*86400000).toISOString().split('T')[0]
-  document.getElementById('stat-total').textContent=todosAgendamentos.length
-  document.getElementById('stat-hoje').textContent=todosAgendamentos.filter(a=>a.data===hoje).length
-  document.getElementById('stat-semana').textContent=todosAgendamentos.filter(a=>a.data>=hoje&&a.data<=semana).length
+
+  const hoje  = new Date().toISOString().split('T')[0]
+  const semana = new Date(Date.now() + 7 * 86400000).toISOString().split('T')[0]
+  document.getElementById('stat-total').textContent  = todosAgendamentos.length
+  document.getElementById('stat-hoje').textContent   = todosAgendamentos.filter(a => a.data === hoje).length
+  document.getElementById('stat-semana').textContent = todosAgendamentos.filter(a => a.data >= hoje && a.data <= semana).length
   seedLucroDoMes(todosAgendamentos)
   exibirLucro()
   renderHistorico()
   filtrarData()
 }
 
-const POR_PAGINA=8;let paginaAtual=1;let listaFiltrada=[]
-function filtrarData(){
-  const data=document.getElementById('filtro-data').value
-  listaFiltrada=data?todosAgendamentos.filter(a=>a.data===data):todosAgendamentos
-  paginaAtual=1;renderTabela()
+const POR_PAGINA = 8
+let paginaAtual = 1
+let listaFiltrada = []
+
+function filtrarData() {
+  const data = document.getElementById('filtro-data').value
+  listaFiltrada = data ? todosAgendamentos.filter(a => a.data === data) : todosAgendamentos
+  paginaAtual = 1
+  renderTabela()
 }
-function renderTabela(){
-  const tbody=document.getElementById('tbody')
-  const agCards=document.getElementById('ag-cards')
-  const paginacao=document.getElementById('paginacao')
-  if(listaFiltrada.length===0){
-    tbody.innerHTML='<tr><td colspan="6" class="vazio">Nenhum agendamento encontrado</td></tr>'
-    if(agCards)agCards.innerHTML='<div class="vazio">Nenhum agendamento encontrado</div>'
-    paginacao.style.display='none';return
+
+function renderTabela() {
+  const tbody    = document.getElementById('tbody')
+  const agCards  = document.getElementById('ag-cards')
+  const paginacao = document.getElementById('paginacao')
+
+  if (listaFiltrada.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="6" class="vazio">Nenhum agendamento encontrado</td></tr>'
+    if (agCards) agCards.innerHTML = '<div class="vazio">Nenhum agendamento encontrado</div>'
+    paginacao.style.display = 'none'
+    return
   }
-  const totalPaginas=Math.ceil(listaFiltrada.length/POR_PAGINA)
-  const inicio=(paginaAtual-1)*POR_PAGINA
-  const fim=inicio+POR_PAGINA
-  const slice=listaFiltrada.slice(inicio,fim)
-  tbody.innerHTML=slice.map(a=>{
-    const acoes=a.status==='confirmado'?`<button class="btn-acao concluir" onclick="atualizar('${a._id}','concluido')">Concluir</button><button class="btn-acao cancelar" onclick="cancelarComAviso('${a._id}','${a.pacienteNome}','${a.pacienteTelefone}','${a.data}','${a.hora}')">Cancelar</button>`:''
-    return `<tr><td><div class="paciente-nome">${a.pacienteNome}</div><div class="paciente-tel">${a.pacienteTelefone}</div></td><td style="color:var(--text2)">${a.servico}</td><td style="color:var(--text2)">${formatarData(a.data)}</td><td style="font-weight:600">${a.hora}</td><td><span class="badge ${a.status}">${a.status}</span></td><td><div class="acoes">${acoes}</div></td></tr>`
+
+  const total  = Math.ceil(listaFiltrada.length / POR_PAGINA)
+  const inicio = (paginaAtual - 1) * POR_PAGINA
+  const fim    = inicio + POR_PAGINA
+  const slice  = listaFiltrada.slice(inicio, fim)
+
+  tbody.innerHTML = slice.map(a => {
+    const acoes = a.status === 'confirmado'
+      ? `<button class="btn-acao concluir" onclick="atualizar('${a._id}','concluido')">Concluir</button>
+         <button class="btn-acao cancelar" onclick="cancelarComAviso('${a._id}','${a.pacienteNome}','${a.pacienteTelefone}','${a.data}','${a.hora}')">Cancelar</button>`
+      : ''
+    return `<tr>
+      <td><div class="paciente-nome">${a.pacienteNome}</div><div class="paciente-tel">${a.pacienteTelefone}</div></td>
+      <td style="color:var(--text2)">${a.servico}</td>
+      <td style="color:var(--text2)">${formatarData(a.data)}</td>
+      <td style="font-weight:600">${a.hora}</td>
+      <td><span class="badge ${a.status}">${a.status}</span></td>
+      <td><div class="acoes">${acoes}</div></td>
+    </tr>`
   }).join('')
-  if(agCards){
-    agCards.innerHTML=slice.map(a=>{
-      const acoes=a.status==='confirmado'?`<div class="ag-card-actions"><button class="btn-acao concluir" onclick="atualizar('${a._id}','concluido')">Concluir</button><button class="btn-acao cancelar" onclick="cancelarComAviso('${a._id}','${a.pacienteNome}','${a.pacienteTelefone}','${a.data}','${a.hora}')">Cancelar</button></div>`:''
-      return `<div class="ag-card"><div class="ag-card-top"><div><div class="ag-card-nome">${a.pacienteNome}</div><div class="paciente-tel">${a.pacienteTelefone}</div></div><span class="badge ${a.status}">${a.status}</span></div><div class="ag-card-body"><div class="ag-chip">${formatarData(a.data)}</div><div class="ag-chip">${a.hora}</div><div class="ag-chip">${a.servico}</div></div>${acoes}</div>`
+
+  if (agCards) {
+    agCards.innerHTML = slice.map(a => {
+      const acoes = a.status === 'confirmado'
+        ? `<div class="ag-card-actions">
+            <button class="btn-acao concluir" onclick="atualizar('${a._id}','concluido')">Concluir</button>
+            <button class="btn-acao cancelar" onclick="cancelarComAviso('${a._id}','${a.pacienteNome}','${a.pacienteTelefone}','${a.data}','${a.hora}')">Cancelar</button>
+           </div>`
+        : ''
+      return `<div class="ag-card">
+        <div class="ag-card-top">
+          <div><div class="ag-card-nome">${a.pacienteNome}</div><div class="paciente-tel">${a.pacienteTelefone}</div></div>
+          <span class="badge ${a.status}">${a.status}</span>
+        </div>
+        <div class="ag-card-body">
+          <div class="ag-chip">${formatarData(a.data)}</div>
+          <div class="ag-chip">${a.hora}</div>
+          <div class="ag-chip">${a.servico}</div>
+        </div>
+        ${acoes}
+      </div>`
     }).join('')
   }
-  document.getElementById('pg-info').textContent=`${inicio+1}–${Math.min(fim,listaFiltrada.length)} de ${listaFiltrada.length}`
-  let btns=`<button class="pg-btn" onclick="irPagina(${paginaAtual-1})" ${paginaAtual===1?'disabled':''}>‹</button>`
-  for(let i=1;i<=totalPaginas;i++){
-    if(totalPaginas<=7||i===1||i===totalPaginas||Math.abs(i-paginaAtual)<=1)btns+=`<button class="pg-btn ${i===paginaAtual?'ativo':''}" onclick="irPagina(${i})">${i}</button>`
-    else if(Math.abs(i-paginaAtual)===2)btns+=`<span style="color:var(--text3);font-size:13px;padding:0 2px">…</span>`
+
+  document.getElementById('pg-info').textContent = `${inicio + 1}–${Math.min(fim, listaFiltrada.length)} de ${listaFiltrada.length}`
+
+  let btns = `<button class="pg-btn" onclick="irPagina(${paginaAtual - 1})" ${paginaAtual === 1 ? 'disabled' : ''}>‹</button>`
+  for (let i = 1; i <= total; i++) {
+    if (total <= 7 || i === 1 || i === total || Math.abs(i - paginaAtual) <= 1)
+      btns += `<button class="pg-btn ${i === paginaAtual ? 'ativo' : ''}" onclick="irPagina(${i})">${i}</button>`
+    else if (Math.abs(i - paginaAtual) === 2)
+      btns += `<span style="color:var(--text3);font-size:13px;padding:0 2px">…</span>`
   }
-  btns+=`<button class="pg-btn" onclick="irPagina(${paginaAtual+1})" ${paginaAtual===totalPaginas?'disabled':''}>›</button>`
-  document.getElementById('pg-btns').innerHTML=btns
-  paginacao.style.display=totalPaginas>1?'flex':'none'
+  btns += `<button class="pg-btn" onclick="irPagina(${paginaAtual + 1})" ${paginaAtual === total ? 'disabled' : ''}>›</button>`
+  document.getElementById('pg-btns').innerHTML = btns
+  paginacao.style.display = total > 1 ? 'flex' : 'none'
 }
-function irPagina(n){const total=Math.ceil(listaFiltrada.length/POR_PAGINA);if(n<1||n>total)return;paginaAtual=n;renderTabela();document.getElementById('page-agendamentos').scrollIntoView({behavior:'smooth',block:'start'})}
+
+function irPagina(n) {
+  const total = Math.ceil(listaFiltrada.length / POR_PAGINA)
+  if (n < 1 || n > total) return
+  paginaAtual = n
+  renderTabela()
+  document.getElementById('page-agendamentos').scrollIntoView({ behavior: 'smooth', block: 'start' })
+}
 
 async function atualizar(id, status) {
   const token = localStorage.getItem('token')
-  if (status === 'concluido') { const ag = todosAgendamentos.find(a => a._id === id); if (ag) registrarLucro(ag) }
-  await fetch(`${API}/agendamentos/${id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ status }) })
+  if (status === 'concluido') {
+    const ag = todosAgendamentos.find(a => a._id === id)
+    if (ag) registrarLucro(ag)
+  }
+  await fetch(`${API}/agendamentos/${id}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+    body: JSON.stringify({ status })
+  })
   todosAgendamentos = todosAgendamentos.map(a => a._id === id ? { ...a, status } : a)
-  exibirLucro(); renderHistorico(); filtrarData()
-}
-
-async function cancelarComAviso(id,nome,telefone,data,hora){
-  if(!confirm(`Cancelar agendamento de ${nome}?`))return
-  const token=localStorage.getItem('token')
-  await fetch(`${API}/agendamentos/${id}`,{method:'PATCH',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({status:'cancelado'})})
-  todosAgendamentos=todosAgendamentos.map(a=>a._id===id?{...a,status:'cancelado'}:a)
-  const [ano,mes,dia]=data.split('-')
-  const msg=encodeURIComponent(`Olá ${nome}! Infelizmente precisamos cancelar seu agendamento do dia ${dia}/${mes}/${ano} às ${hora}. Entre em contato para reagendar.`)
-  window.open(`https://wa.me/55${telefone.replace(/\D/g,'')}?text=${msg}`,'_blank')
+  exibirLucro()
+  renderHistorico()
   filtrarData()
 }
 
-function copiarLink(){
+async function cancelarComAviso(id, nome, telefone, data, hora) {
+  if (!confirm(`Cancelar agendamento de ${nome}?`)) return
+  const token = localStorage.getItem('token')
+  await fetch(`${API}/agendamentos/${id}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+    body: JSON.stringify({ status: 'cancelado' })
+  })
+  todosAgendamentos = todosAgendamentos.map(a => a._id === id ? { ...a, status: 'cancelado' } : a)
+  const [ano, mes, dia] = data.split('-')
+  const msg = encodeURIComponent(`Olá ${nome}! Infelizmente precisamos cancelar seu agendamento do dia ${dia}/${mes}/${ano} às ${hora}. Entre em contato para reagendar.`)
+  window.open(`https://wa.me/55${telefone.replace(/\D/g, '')}?text=${msg}`, '_blank')
+  filtrarData()
+}
+
+function copiarLink() {
   navigator.clipboard.writeText(document.getElementById('link-agendamento').textContent)
   const btn = document.getElementById('btn-copiar-agendamento')
-  if(btn){ const orig=btn.innerHTML; btn.innerHTML='✓ Copiado!'; setTimeout(()=>btn.innerHTML=orig,2000) }
+  if (btn) { const o = btn.innerHTML; btn.innerHTML = '✓ Copiado!'; setTimeout(() => btn.innerHTML = o, 2000) }
 }
-function copiarLinkBio(){
+function copiarLinkBio() {
   navigator.clipboard.writeText(document.getElementById('link-bio').textContent)
   const btn = document.getElementById('btn-copiar-bio')
-  if(btn){ const orig=btn.innerHTML; btn.innerHTML='✓ Copiado!'; setTimeout(()=>btn.innerHTML=orig,2000) }
+  if (btn) { const o = btn.innerHTML; btn.innerHTML = '✓ Copiado!'; setTimeout(() => btn.innerHTML = o, 2000) }
 }
 
-function formatarData(data){const[a,m,d]=data.split('-');return`${d}/${m}/${a}`}
-function sair(){localStorage.clear();window.location.href='/auth.html'}
+function formatarData(data) { const [a, m, d] = data.split('-'); return `${d}/${m}/${a}` }
+function sair() { localStorage.clear(); window.location.href = '/auth.html' }
 
-// SERVIÇOS
-async function carregarServicos(){
-  if(!negocioAtual)return
-  const res=await fetch(`${API}/auth/negocio/${negocioAtual._id}`)
-  const data=await res.json()
-  servicosAtuais=(data.servicos||[]).map(s=>typeof s==='object'?s:{nome:s,preco:0})
-  pagamentosConfig=data.pagamentos||{}
-  renderServicos();renderIntervalosServicos()
+/* ═══════════════════════════════════════════════════
+   SERVIÇOS
+═══════════════════════════════════════════════════ */
+async function carregarServicos() {
+  if (!negocioAtual) return
+  const res = await fetch(`${API}/auth/negocio/${negocioAtual._id}`)
+  const data = await res.json()
+  servicosAtuais = (data.servicos || []).map(s => typeof s === 'object' ? s : { nome: s, preco: 0 })
+  pagamentosConfig = data.pagamentos || {}
+  renderServicos()
+  renderIntervalosServicos()
 }
-function renderServicos(){
-  document.getElementById('servicos-tags').innerHTML=servicosAtuais.map((s,i)=>{
-    const nome=typeof s==='object'?s.nome:s
-    const preco=typeof s==='object'&&s.preco?Number(s.preco):0
-    const precoLabel=preco>0?`R$ ${preco.toFixed(2).replace('.',',')}`:''
-    return `<div class="servico-tag-wrap"><span class="servico-tag">${nome}${precoLabel?`<span class="servico-preco">${precoLabel}</span>`:''}<button onclick="removerServico(${i})" title="Remover">×</button></span></div>`
+
+function renderServicos() {
+  document.getElementById('servicos-tags').innerHTML = servicosAtuais.map((s, i) => {
+    const nome  = typeof s === 'object' ? s.nome  : s
+    const preco = typeof s === 'object' && s.preco ? Number(s.preco) : 0
+    const precoLabel = preco > 0 ? `R$ ${preco.toFixed(2).replace('.', ',')}` : ''
+    return `<div class="servico-tag-wrap">
+      <span class="servico-tag">
+        ${nome}
+        ${precoLabel ? `<span class="servico-preco">${precoLabel}</span>` : ''}
+        <button onclick="removerServico(${i})" title="Remover">×</button>
+      </span>
+    </div>`
   }).join('')
 }
-function adicionarServico(){
-  const nomeInput=document.getElementById('novo-servico')
-  const precoInput=document.getElementById('novo-preco')
-  const erroEl=document.getElementById('servico-erro')
-  const nome=nomeInput.value.trim()
-  const precoVal=precoInput.value.trim()
-  const preco=parseFloat(precoVal)
-  erroEl.textContent='';nomeInput.classList.remove('campo-erro');precoInput.classList.remove('campo-erro')
-  if(!nome){erroEl.textContent='⚠ Digite o nome do serviço.';nomeInput.classList.add('campo-erro');nomeInput.focus();return}
-  if(!precoVal||isNaN(preco)||preco<=0){erroEl.textContent='⚠ O preço é obrigatório e deve ser maior que R$ 0,00.';precoInput.classList.add('campo-erro');precoInput.focus();return}
-  const jaExiste=servicosAtuais.some(s=>(typeof s==='object'?s.nome:s).toLowerCase()===nome.toLowerCase())
-  if(jaExiste){erroEl.textContent='⚠ Já existe um serviço com esse nome.';nomeInput.classList.add('campo-erro');nomeInput.focus();return}
-  servicosAtuais.push({nome,preco});nomeInput.value='';precoInput.value='';renderServicos();renderIntervalosServicos()
-}
-document.addEventListener('DOMContentLoaded',()=>{
-  ['novo-servico','novo-preco'].forEach(id=>{
-    const el=document.getElementById(id)
-    if(el)el.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();adicionarServico()}})
-  })
-})
-function removerServico(i){
-  const nome=typeof servicosAtuais[i]==='object'?servicosAtuais[i].nome:servicosAtuais[i]
-  delete intervalosServicos[nome]
-  servicosAtuais.splice(i,1);renderServicos();renderIntervalosServicos()
-}
-async function salvarServicos(){
-  if(!negocioAtual)return
-  const token=localStorage.getItem('token')
-  await fetch(`${API}/auth/servicos`,{method:'PATCH',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({negocioId:negocioAtual._id,servicos:servicosAtuais})})
-  const msg=document.getElementById('salvo-msg');msg.style.display='inline';setTimeout(()=>msg.style.display='none',2500)
+
+function adicionarServico() {
+  const nomeInput  = document.getElementById('novo-servico')
+  const precoInput = document.getElementById('novo-preco')
+  const erroEl     = document.getElementById('servico-erro')
+  const nome     = nomeInput.value.trim()
+  const precoVal = precoInput.value.trim()
+  const preco    = parseFloat(precoVal)
+
+  erroEl.textContent = ''
+  nomeInput.classList.remove('campo-erro')
+  precoInput.classList.remove('campo-erro')
+
+  if (!nome) { erroEl.textContent = '⚠ Digite o nome do serviço.'; nomeInput.classList.add('campo-erro'); nomeInput.focus(); return }
+  if (!precoVal || isNaN(preco) || preco <= 0) { erroEl.textContent = '⚠ O preço é obrigatório e deve ser maior que R$ 0,00.'; precoInput.classList.add('campo-erro'); precoInput.focus(); return }
+  const jaExiste = servicosAtuais.some(s => (typeof s === 'object' ? s.nome : s).toLowerCase() === nome.toLowerCase())
+  if (jaExiste) { erroEl.textContent = '⚠ Já existe um serviço com esse nome.'; nomeInput.classList.add('campo-erro'); nomeInput.focus(); return }
+
+  servicosAtuais.push({ nome, preco })
+  nomeInput.value  = ''
+  precoInput.value = ''
+  renderServicos()
+  renderIntervalosServicos()
 }
 
-// INTERVALO PADRÃO
+document.addEventListener('DOMContentLoaded', () => {
+  ['novo-servico', 'novo-preco'].forEach(id => {
+    const el = document.getElementById(id)
+    if (el) el.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); adicionarServico() } })
+  })
+})
+
+function removerServico(i) {
+  const nome = typeof servicosAtuais[i] === 'object' ? servicosAtuais[i].nome : servicosAtuais[i]
+  delete intervalosServicos[nome]
+  servicosAtuais.splice(i, 1)
+  renderServicos()
+  renderIntervalosServicos()
+}
+
+async function salvarServicos() {
+  if (!negocioAtual) return
+  const token = localStorage.getItem('token')
+  await fetch(`${API}/auth/servicos`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+    body: JSON.stringify({ negocioId: negocioAtual._id, servicos: servicosAtuais })
+  })
+  const msg = document.getElementById('salvo-msg')
+  msg.style.display = 'inline'
+  setTimeout(() => msg.style.display = 'none', 2500)
+}
+
+/* ═══════════════════════════════════════════════════
+   INTERVALO PADRÃO
+═══════════════════════════════════════════════════ */
 function selecionarIntervalo(btn, valor) {
   document.querySelectorAll('.intervalo-btn').forEach(b => b.classList.remove('selecionado'))
   btn.classList.add('selecionado')
-  intervaloAtual = valor; intervaloCustomAtivo = false
+  intervaloAtual = valor
+  intervaloCustomAtivo = false
   document.getElementById('intervalo-custom-wrap').classList.remove('visivel')
 }
+
 function selecionarIntervaloCustom(btn) {
   document.querySelectorAll('.intervalo-btn').forEach(b => b.classList.remove('selecionado'))
-  btn.classList.add('selecionado'); intervaloCustomAtivo = true
-  const wrap = document.getElementById('intervalo-custom-wrap')
+  btn.classList.add('selecionado')
+  intervaloCustomAtivo = true
+  const wrap  = document.getElementById('intervalo-custom-wrap')
   wrap.classList.add('visivel')
   const input = document.getElementById('intervalo-custom')
-  const predefinidos = OPCOES_INTERVALO.map(o => o.valor)
-  if (!predefinidos.includes(intervaloAtual)) { input.value = intervaloAtual } else { input.value = '' }
+  const preds = OPCOES_INTERVALO.map(o => o.valor)
+  if (!preds.includes(intervaloAtual)) { input.value = intervaloAtual } else { input.value = '' }
   input.focus()
 }
-function atualizarIntervaloCustom(val) { const n = parseInt(val); if (!isNaN(n) && n >= 5 && n <= 480) intervaloAtual = n }
-function aplicarSelecaoIntervalo(valor) {
-  const predefinidos = OPCOES_INTERVALO.map(o => o.valor)
-  const btns = document.querySelectorAll('.intervalo-btn:not(.custom-btn)')
-  btns.forEach((btn, i) => { btn.classList.toggle('selecionado', OPCOES_INTERVALO[i].valor === valor) })
-  const customBtn = document.getElementById('btn-custom-intervalo')
-  const customWrap = document.getElementById('intervalo-custom-wrap')
-  if (!predefinidos.includes(valor)) {
-    customBtn.classList.add('selecionado'); customWrap.classList.add('visivel')
-    document.getElementById('intervalo-custom').value = valor; intervaloCustomAtivo = true
-  } else { customBtn.classList.remove('selecionado'); customWrap.classList.remove('visivel'); intervaloCustomAtivo = false }
+
+function atualizarIntervaloCustom(val) {
+  const n = parseInt(val)
+  if (!isNaN(n) && n >= 5 && n <= 480) intervaloAtual = n
 }
 
-// INTERVALO POR SERVIÇO
+function aplicarSelecaoIntervalo(valor) {
+  const preds = OPCOES_INTERVALO.map(o => o.valor)
+  const btns  = document.querySelectorAll('.intervalo-btn:not(.custom-btn)')
+  btns.forEach((btn, i) => { btn.classList.toggle('selecionado', OPCOES_INTERVALO[i].valor === valor) })
+  const customBtn  = document.getElementById('btn-custom-intervalo')
+  const customWrap = document.getElementById('intervalo-custom-wrap')
+  if (!preds.includes(valor)) {
+    customBtn.classList.add('selecionado')
+    customWrap.classList.add('visivel')
+    document.getElementById('intervalo-custom').value = valor
+    intervaloCustomAtivo = true
+  } else {
+    customBtn.classList.remove('selecionado')
+    customWrap.classList.remove('visivel')
+    intervaloCustomAtivo = false
+  }
+}
+
+/* ═══════════════════════════════════════════════════
+   INTERVALO POR SERVIÇO
+═══════════════════════════════════════════════════ */
 function formatarMinutos(min) {
   if (!min || min <= 0) return '—'
-  const h = Math.floor(min / 60); const m = min % 60
-  if (h === 0) return `${m} min`; if (m === 0) return `${h}h`; return `${h}h${String(m).padStart(2,'0')}`
+  const h = Math.floor(min / 60)
+  const m = min % 60
+  if (h === 0) return `${m} min`
+  if (m === 0) return `${h}h`
+  return `${h}h${String(m).padStart(2, '0')}`
 }
+
 function renderIntervalosServicos() {
   const grid = document.getElementById('servicos-intervalos-grid')
   if (!grid) return
-  if (!servicosAtuais.length) { grid.innerHTML = `<div class="servicos-vazio"><div class="servicos-vazio-icon">🛠️</div>Adicione serviços em <strong>Configurações → Serviços</strong> para configurar durações individuais.</div>`; return }
+  if (!servicosAtuais.length) {
+    grid.innerHTML = `<div class="servicos-vazio"><div class="servicos-vazio-icon">🛠️</div>Adicione serviços em <strong>Configurações → Serviços</strong> para configurar durações individuais.</div>`
+    return
+  }
   const opcoesHtml = `<option value="0">Usar padrão</option><option value="5">5 min</option><option value="10">10 min</option><option value="15">15 min</option><option value="20">20 min</option><option value="25">25 min</option><option value="30">30 min</option><option value="45">45 min</option><option value="60">1 hora</option><option value="75">1h15</option><option value="90">1h30</option><option value="105">1h45</option><option value="120">2 horas</option><option value="150">2h30</option><option value="180">3 horas</option><option value="240">4 horas</option><option value="300">5 horas</option><option value="360">6 horas</option><option value="custom">Personalizado...</option>`
   grid.innerHTML = servicosAtuais.map(s => {
-    const nome = typeof s === 'object' ? s.nome : s
-    const preco = typeof s === 'object' && s.preco ? Number(s.preco) : 0
+    const nome   = typeof s === 'object' ? s.nome  : s
+    const preco  = typeof s === 'object' && s.preco ? Number(s.preco) : 0
     const duracao = intervalosServicos[nome] || 0
-    const precoLabel = preco > 0 ? `R$ ${preco.toFixed(2).replace('.',',')}` : ''
-    const temCustom = duracao > 0
-    const badgeClass = temCustom ? 'custom' : ''
-    const badgeLabel = temCustom ? formatarMinutos(duracao) : `Padrão (${formatarMinutos(intervaloAtual)})`
-    return `<div class="servico-intervalo-card" id="card-servico-${nome.replace(/\s+/g,'-')}"><div class="servico-intervalo-info"><div class="servico-intervalo-nome">${nome}</div>${precoLabel?`<div class="servico-intervalo-preco">${precoLabel}</div>`:''}</div><span class="servico-intervalo-badge ${badgeClass}" id="badge-${nome.replace(/\s+/g,'-')}">${badgeLabel}</span><select class="servico-intervalo-select" data-servico="${nome}" onchange="alterarIntervaloServico(this)">${opcoesHtml}</select></div>`
+    const precoLabel  = preco > 0 ? `R$ ${preco.toFixed(2).replace('.', ',')}` : ''
+    const badgeClass  = duracao > 0 ? 'custom' : ''
+    const badgeLabel  = duracao > 0 ? formatarMinutos(duracao) : `Padrão (${formatarMinutos(intervaloAtual)})`
+    return `<div class="servico-intervalo-card" id="card-servico-${nome.replace(/\s+/g, '-')}">
+      <div class="servico-intervalo-info">
+        <div class="servico-intervalo-nome">${nome}</div>
+        ${precoLabel ? `<div class="servico-intervalo-preco">${precoLabel}</div>` : ''}
+      </div>
+      <span class="servico-intervalo-badge ${badgeClass}" id="badge-${nome.replace(/\s+/g, '-')}">${badgeLabel}</span>
+      <select class="servico-intervalo-select" data-servico="${nome}" onchange="alterarIntervaloServico(this)">${opcoesHtml}</select>
+    </div>`
   }).join('')
+
   servicosAtuais.forEach(s => {
-    const nome = typeof s === 'object' ? s.nome : s
+    const nome    = typeof s === 'object' ? s.nome : s
     const duracao = intervalosServicos[nome] || 0
-    const select = grid.querySelector(`[data-servico="${nome}"]`)
+    const select  = grid.querySelector(`[data-servico="${nome}"]`)
     if (!select) return
-    const predefinidos = [0,5,10,15,20,25,30,45,60,75,90,105,120,150,180,240,300,360]
-    if (duracao === 0 || predefinidos.includes(duracao)) { select.value = String(duracao) }
-    else { const opt = document.createElement('option'); opt.value = String(duracao); opt.textContent = formatarMinutos(duracao); select.insertBefore(opt, select.querySelector('[value="custom"]')); select.value = String(duracao) }
+    const preds = [0,5,10,15,20,25,30,45,60,75,90,105,120,150,180,240,300,360]
+    if (duracao === 0 || preds.includes(duracao)) {
+      select.value = String(duracao)
+    } else {
+      const opt = document.createElement('option')
+      opt.value = String(duracao)
+      opt.textContent = formatarMinutos(duracao)
+      select.insertBefore(opt, select.querySelector('[value="custom"]'))
+      select.value = String(duracao)
+    }
   })
 }
+
 function alterarIntervaloServico(select) {
-  const nome = select.dataset.servico; const val = select.value
+  const nome = select.dataset.servico
+  const val  = select.value
   if (val === 'custom') {
     const customVal = prompt(`Digite a duração em minutos para "${nome}":`, intervalosServicos[nome] || 60)
     if (customVal === null) { select.value = String(intervalosServicos[nome] || 0); return }
     const min = parseInt(customVal)
-    if (isNaN(min) || min < 1 || min > 720) { alert('Por favor, informe um valor entre 1 e 720 minutos.'); select.value = String(intervalosServicos[nome] || 0); return }
+    if (isNaN(min) || min < 1 || min > 720) { alert('Informe um valor entre 1 e 720 minutos.'); select.value = String(intervalosServicos[nome] || 0); return }
     intervalosServicos[nome] = min
     const existing = select.querySelector(`[value="${min}"]`)
     if (!existing) { const opt = document.createElement('option'); opt.value = String(min); opt.textContent = formatarMinutos(min); select.insertBefore(opt, select.querySelector('[value="custom"]')) }
     select.value = String(min)
-  } else { const min = parseInt(val); if (min === 0) { delete intervalosServicos[nome] } else { intervalosServicos[nome] = min } }
-  const nomeSlug = nome.replace(/\s+/g,'-')
-  const badge = document.getElementById(`badge-${nomeSlug}`)
-  if (badge) { const duracao = intervalosServicos[nome] || 0; badge.textContent = duracao > 0 ? formatarMinutos(duracao) : `Padrão (${formatarMinutos(intervaloAtual)})`; badge.className = `servico-intervalo-badge ${duracao > 0 ? 'custom' : ''}` }
+  } else {
+    const min = parseInt(val)
+    if (min === 0) { delete intervalosServicos[nome] } else { intervalosServicos[nome] = min }
+  }
+  const slug  = nome.replace(/\s+/g, '-')
+  const badge = document.getElementById(`badge-${slug}`)
+  if (badge) {
+    const d = intervalosServicos[nome] || 0
+    badge.textContent = d > 0 ? formatarMinutos(d) : `Padrão (${formatarMinutos(intervaloAtual)})`
+    badge.className = `servico-intervalo-badge ${d > 0 ? 'custom' : ''}`
+  }
 }
+
 async function salvarIntervalosServicos() {
   if (!negocioAtual) return
   const token = localStorage.getItem('token')
-  await fetch(`${API}/auth/horarios`, { method: 'PATCH', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ negocioId: negocioAtual._id, horarios: horariosConfig, intervalo: intervaloAtual, pausas: pausasAtuais, intervalosServicos }) })
-  const msg = document.getElementById('salvo-intervalos-servicos'); msg.style.display = 'inline'; setTimeout(() => msg.style.display = 'none', 2500)
+  await fetch(`${API}/auth/horarios`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+    body: JSON.stringify({ negocioId: negocioAtual._id, horarios: horariosConfig, intervalo: intervaloAtual, pausas: pausasAtuais, intervalosServicos })
+  })
+  const msg = document.getElementById('salvo-intervalos-servicos')
+  msg.style.display = 'inline'
+  setTimeout(() => msg.style.display = 'none', 2500)
 }
 
-// HORÁRIOS
-function renderDias(){
-  document.getElementById('dias-container').innerHTML=diasNomes.map((nome,i)=>{
-    const config=horariosConfig[i]||{ativo:false,inicio:'08:00',fim:'18:00'}
-    return `<div class="dia-row ${config.ativo?'':'dia-inativo'}" id="dia-row-${i}"><div class="dia-toggle"><input type="checkbox" id="dia-${i}" ${config.ativo?'checked':''} onchange="toggleDia(${i})"><label for="dia-${i}">${nome}</label></div><div class="dia-horarios"><span>Das</span><input type="time" id="inicio-${i}" value="${config.inicio}" /><span>às</span><input type="time" id="fim-${i}" value="${config.fim}" /></div></div>`
+/* ═══════════════════════════════════════════════════
+   HORÁRIOS
+═══════════════════════════════════════════════════ */
+function renderDias() {
+  document.getElementById('dias-container').innerHTML = diasNomes.map((nome, i) => {
+    const config = horariosConfig[i] || { ativo: false, inicio: '08:00', fim: '18:00' }
+    return `<div class="dia-row ${config.ativo ? '' : 'dia-inativo'}" id="dia-row-${i}">
+      <div class="dia-toggle">
+        <input type="checkbox" id="dia-${i}" ${config.ativo ? 'checked' : ''} onchange="toggleDia(${i})">
+        <label for="dia-${i}">${nome}</label>
+      </div>
+      <div class="dia-horarios">
+        <span>Das</span>
+        <input type="time" id="inicio-${i}" value="${config.inicio}" />
+        <span>às</span>
+        <input type="time" id="fim-${i}" value="${config.fim}" />
+      </div>
+    </div>`
   }).join('')
 }
-function toggleDia(i){document.getElementById(`dia-row-${i}`).classList.toggle('dia-inativo',!document.getElementById(`dia-${i}`).checked)}
-async function carregarHorariosConfig(){
-  if(!negocioAtual)return
-  const res=await fetch(`${API}/auth/negocio/${negocioAtual._id}`)
-  const data=await res.json()
-  horariosConfig=data.horarios||{}; intervaloAtual=data.intervalo||30; pausasAtuais=data.pausas||[]; intervalosServicos=data.intervalosServicos||{}
-  renderPausas(); aplicarSelecaoIntervalo(intervaloAtual); renderDias(); renderIntervalosServicos()
-}
-async function salvarHorarios(){
-  if(!negocioAtual)return
-  const horarios={}
-  diasNomes.forEach((_,i)=>{horarios[i]={ativo:document.getElementById(`dia-${i}`).checked,inicio:document.getElementById(`inicio-${i}`).value,fim:document.getElementById(`fim-${i}`).value}})
-  const token=localStorage.getItem('token')
-  await fetch(`${API}/auth/horarios`,{method:'PATCH',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({negocioId:negocioAtual._id,horarios,intervalo:intervaloAtual,pausas:pausasAtuais,intervalosServicos})})
-  const msg=document.getElementById('salvo-horarios');msg.style.display='inline';setTimeout(()=>msg.style.display='none',2500)
+
+function toggleDia(i) {
+  document.getElementById(`dia-row-${i}`).classList.toggle('dia-inativo', !document.getElementById(`dia-${i}`).checked)
 }
 
-// PAUSAS
-function mascaraHora(inp){let v=inp.value.replace(/\D/g,'').slice(0,4);if(v.length>=3)v=v.slice(0,2)+':'+v.slice(2);inp.value=v}
-function renderPausas(){
-  const lista=document.getElementById('pausas-lista')
-  if(!pausasAtuais.length){lista.innerHTML='<p style="font-size:12.5px;color:var(--text3);padding:8px 0">Nenhuma pausa configurada</p>';return}
-  lista.innerHTML=pausasAtuais.map((p,i)=>`<div class="pausa-item"><span class="pausa-item-label">${p.label||'Pausa'}</span><span class="pausa-item-hora">${p.inicio} – ${p.fim}</span><button onclick="removerPausa(${i})" style="margin-left:auto;background:none;border:none;color:var(--text3);cursor:pointer;font-size:18px;line-height:1;padding:2px 4px;border-radius:5px;transition:all .15s" onmouseover="this.style.color='var(--red)';this.style.background='var(--red-bg)'" onmouseout="this.style.color='var(--text3)';this.style.background='none'">×</button></div>`).join('')
-}
-function adicionarPausa(){
-  const inicio=document.getElementById('pausa-inicio').value; const fim=document.getElementById('pausa-fim').value; const label=document.getElementById('pausa-label').value.trim()||'Pausa'
-  if(!inicio||!fim){alert('Preencha o horário de início e fim');return}
-  if(inicio>=fim){alert('O horário de início deve ser anterior ao fim');return}
-  pausasAtuais.push({inicio,fim,label}); document.getElementById('pausa-inicio').value=''; document.getElementById('pausa-fim').value=''; document.getElementById('pausa-label').value=''; renderPausas()
-}
-function removerPausa(i){pausasAtuais.splice(i,1);renderPausas()}
-async function salvarPausas(){
-  if(!negocioAtual)return
-  const token=localStorage.getItem('token')
-  await fetch(`${API}/auth/horarios`,{method:'PATCH',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({negocioId:negocioAtual._id,horarios:horariosConfig,intervalo:intervaloAtual,pausas:pausasAtuais,intervalosServicos})})
-  const msg=document.getElementById('salvo-pausas');msg.style.display='inline';setTimeout(()=>msg.style.display='none',2500)
+async function carregarHorariosConfig() {
+  if (!negocioAtual) return
+  const res  = await fetch(`${API}/auth/negocio/${negocioAtual._id}`)
+  const data = await res.json()
+  horariosConfig     = data.horarios || {}
+  intervaloAtual     = data.intervalo || 30
+  pausasAtuais       = data.pausas || []
+  intervalosServicos = data.intervalosServicos || {}
+  renderPausas()
+  aplicarSelecaoIntervalo(intervaloAtual)
+  renderDias()
+  renderIntervalosServicos()
 }
 
-// BIO
-async function carregarBioConfig(){
-  if(!negocioAtual)return
-  const res=await fetch(`${API}/auth/negocio/${negocioAtual._id}`)
-  const data=await res.json(); const bio=data.bio||{}
-  document.getElementById('bio-foto').value=bio.foto||''; document.getElementById('bio-descricao').value=bio.descricao||''; document.getElementById('bio-endereco').value=bio.endereco||''; document.getElementById('bio-instagram').value=bio.instagram||''; document.getElementById('bio-whatsapp').value=bio.whatsapp||''
-  if(bio.foto)document.getElementById('foto-preview').innerHTML=`<img src="${bio.foto}">` ; else document.getElementById('foto-preview').textContent='👤'
+async function salvarHorarios() {
+  if (!negocioAtual) return
+  const horarios = {}
+  diasNomes.forEach((_, i) => {
+    horarios[i] = {
+      ativo:  document.getElementById(`dia-${i}`).checked,
+      inicio: document.getElementById(`inicio-${i}`).value,
+      fim:    document.getElementById(`fim-${i}`).value
+    }
+  })
+  const token = localStorage.getItem('token')
+  await fetch(`${API}/auth/horarios`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+    body: JSON.stringify({ negocioId: negocioAtual._id, horarios, intervalo: intervaloAtual, pausas: pausasAtuais, intervalosServicos })
+  })
+  const msg = document.getElementById('salvo-horarios')
+  msg.style.display = 'inline'
+  setTimeout(() => msg.style.display = 'none', 2500)
 }
-async function salvarBio(){
-  if(!negocioAtual)return
-  const token=localStorage.getItem('token')
-  await fetch(`${API}/auth/bio`,{method:'PATCH',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({negocioId:negocioAtual._id,foto:document.getElementById('bio-foto').value,descricao:document.getElementById('bio-descricao').value,endereco:document.getElementById('bio-endereco').value,instagram:document.getElementById('bio-instagram').value,whatsapp:document.getElementById('bio-whatsapp').value})})
-  const msg=document.getElementById('salvo-bio');msg.style.display='inline';setTimeout(()=>msg.style.display='none',2500)
+
+/* ═══════════════════════════════════════════════════
+   PAUSAS
+═══════════════════════════════════════════════════ */
+function mascaraHora(inp) {
+  let v = inp.value.replace(/\D/g, '').slice(0, 4)
+  if (v.length >= 3) v = v.slice(0, 2) + ':' + v.slice(2)
+  inp.value = v
 }
-async function uploadFoto(input){
-  const file=input.files[0];if(!file)return
-  document.getElementById('foto-status').textContent='Enviando...'
-  const reader=new FileReader()
-  reader.onload=async(e)=>{
-    const token=localStorage.getItem('token')
-    const res=await fetch(`${API}/upload`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({imagem:e.target.result})})
-    const data=await res.json()
-    if(res.ok){document.getElementById('bio-foto').value=data.url;document.getElementById('foto-status').textContent='✓ Foto enviada!';document.getElementById('foto-preview').innerHTML=`<img src="${data.url}">`}
-    else document.getElementById('foto-status').textContent='Erro ao enviar foto'
+
+function renderPausas() {
+  const lista = document.getElementById('pausas-lista')
+  if (!pausasAtuais.length) {
+    lista.innerHTML = '<p style="font-size:12.5px;color:var(--text3);padding:8px 0">Nenhuma pausa configurada</p>'
+    return
+  }
+  lista.innerHTML = pausasAtuais.map((p, i) =>
+    `<div class="pausa-item">
+      <span class="pausa-item-label">${p.label || 'Pausa'}</span>
+      <span class="pausa-item-hora">${p.inicio} – ${p.fim}</span>
+      <button onclick="removerPausa(${i})"
+        style="margin-left:auto;background:none;border:none;color:var(--text3);cursor:pointer;font-size:18px;line-height:1;padding:2px 4px;border-radius:5px;transition:all .15s"
+        onmouseover="this.style.color='var(--red)';this.style.background='var(--red-bg)'"
+        onmouseout="this.style.color='var(--text3)';this.style.background='none'">×</button>
+    </div>`
+  ).join('')
+}
+
+function adicionarPausa() {
+  const inicio = document.getElementById('pausa-inicio').value
+  const fim    = document.getElementById('pausa-fim').value
+  const label  = document.getElementById('pausa-label').value.trim() || 'Pausa'
+  if (!inicio || !fim) { alert('Preencha o horário de início e fim'); return }
+  if (inicio >= fim)   { alert('O horário de início deve ser anterior ao fim'); return }
+  pausasAtuais.push({ inicio, fim, label })
+  document.getElementById('pausa-inicio').value = ''
+  document.getElementById('pausa-fim').value    = ''
+  document.getElementById('pausa-label').value  = ''
+  renderPausas()
+}
+
+function removerPausa(i) { pausasAtuais.splice(i, 1); renderPausas() }
+
+async function salvarPausas() {
+  if (!negocioAtual) return
+  const token = localStorage.getItem('token')
+  await fetch(`${API}/auth/horarios`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+    body: JSON.stringify({ negocioId: negocioAtual._id, horarios: horariosConfig, intervalo: intervaloAtual, pausas: pausasAtuais, intervalosServicos })
+  })
+  const msg = document.getElementById('salvo-pausas')
+  msg.style.display = 'inline'
+  setTimeout(() => msg.style.display = 'none', 2500)
+}
+
+/* ═══════════════════════════════════════════════════
+   BIO
+═══════════════════════════════════════════════════ */
+async function carregarBioConfig() {
+  if (!negocioAtual) return
+  const res  = await fetch(`${API}/auth/negocio/${negocioAtual._id}`)
+  const data = await res.json()
+  const bio  = data.bio || {}
+  document.getElementById('bio-foto').value      = bio.foto      || ''
+  document.getElementById('bio-descricao').value = bio.descricao || ''
+  document.getElementById('bio-endereco').value  = bio.endereco  || ''
+  document.getElementById('bio-instagram').value = bio.instagram || ''
+  document.getElementById('bio-whatsapp').value  = bio.whatsapp  || ''
+  const prev = document.getElementById('foto-preview')
+  if (bio.foto) prev.innerHTML = `<img src="${bio.foto}">` ; else prev.textContent = '👤'
+}
+
+async function salvarBio() {
+  if (!negocioAtual) return
+  const token = localStorage.getItem('token')
+  await fetch(`${API}/auth/bio`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+    body: JSON.stringify({
+      negocioId:  negocioAtual._id,
+      foto:       document.getElementById('bio-foto').value,
+      descricao:  document.getElementById('bio-descricao').value,
+      endereco:   document.getElementById('bio-endereco').value,
+      instagram:  document.getElementById('bio-instagram').value,
+      whatsapp:   document.getElementById('bio-whatsapp').value
+    })
+  })
+  const msg = document.getElementById('salvo-bio')
+  msg.style.display = 'inline'
+  setTimeout(() => msg.style.display = 'none', 2500)
+}
+
+async function uploadFoto(input) {
+  const file = input.files[0]
+  if (!file) return
+  document.getElementById('foto-status').textContent = 'Enviando...'
+  const reader = new FileReader()
+  reader.onload = async e => {
+    const token = localStorage.getItem('token')
+    const res   = await fetch(`${API}/upload`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      body: JSON.stringify({ imagem: e.target.result })
+    })
+    const data = await res.json()
+    if (res.ok) {
+      document.getElementById('bio-foto').value     = data.url
+      document.getElementById('foto-status').textContent = '✓ Foto enviada!'
+      document.getElementById('foto-preview').innerHTML  = `<img src="${data.url}">`
+    } else {
+      document.getElementById('foto-status').textContent = 'Erro ao enviar foto'
+    }
   }
   reader.readAsDataURL(file)
 }
 
-// ACESSO
-async function verificarAcesso(){
-  const token=localStorage.getItem('token');if(!token)return
-  const res=await fetch(`${API}/assinatura/status`,{headers:{'Authorization':`Bearer ${token}`}})
-  const data=await res.json()
-  if(!data.temAcesso){document.getElementById('bloqueio').style.display='flex';return}
-  if(data.plano==='trial'&&data.diasRestantes<=7){
-    const banner=document.createElement('div');banner.className='trial-banner'
-    banner.innerHTML=`<p>⏰ Seu trial expira em <strong>${data.diasRestantes} dias</strong>. Assine para não perder o acesso.</p><button class="btn-assinar-banner" onclick="window.location.href='/planos.html'">Ver planos</button>`
+/* ═══════════════════════════════════════════════════
+   ACESSO / TRIAL
+═══════════════════════════════════════════════════ */
+async function verificarAcesso() {
+  const token = localStorage.getItem('token')
+  if (!token) return
+  const res  = await fetch(`${API}/assinatura/status`, { headers: { 'Authorization': `Bearer ${token}` } })
+  const data = await res.json()
+  if (!data.temAcesso) { document.getElementById('bloqueio').style.display = 'flex'; return }
+  if (data.plano === 'trial' && data.diasRestantes <= 7) {
+    const banner = document.createElement('div')
+    banner.className = 'trial-banner'
+    banner.innerHTML = `<p>⏰ Seu trial expira em <strong>${data.diasRestantes} dias</strong>. Assine para não perder o acesso.</p><button class="btn-assinar-banner" onclick="window.location.href='/planos.html'">Ver planos</button>`
     document.querySelector('.main').prepend(banner)
   }
 }
 
-// MODAL AGENDAMENTO
-function abrirModalNovoAgendamento(){
-  if(!negocioAtual)return
-  const hoje=new Date().toISOString().split('T')[0]
-  document.getElementById('m-data').value=hoje; document.getElementById('m-data').min=hoje; document.getElementById('m-nome').value=''; document.getElementById('m-telefone').value=''; document.getElementById('m-erro').textContent=''
-  document.getElementById('m-servico').innerHTML=servicosAtuais.map(s=>{const n=typeof s==='object'?s.nome:s;return`<option value="${n}">${n}</option>`}).join('')
-  document.getElementById('modal-agendamento').style.display='flex'; carregarHorariosModal()
+/* ═══════════════════════════════════════════════════
+   MODAL AGENDAMENTO
+═══════════════════════════════════════════════════ */
+function abrirModalNovoAgendamento() {
+  if (!negocioAtual) return
+  const hoje = new Date().toISOString().split('T')[0]
+  document.getElementById('m-data').value    = hoje
+  document.getElementById('m-data').min      = hoje
+  document.getElementById('m-nome').value    = ''
+  document.getElementById('m-telefone').value = ''
+  document.getElementById('m-erro').textContent = ''
+  document.getElementById('m-servico').innerHTML = servicosAtuais.map(s => {
+    const n = typeof s === 'object' ? s.nome : s
+    return `<option value="${n}">${n}</option>`
+  }).join('')
+  document.getElementById('modal-agendamento').style.display = 'flex'
+  carregarHorariosModal()
 }
-function fecharModal(){document.getElementById('modal-agendamento').style.display='none'}
-async function carregarHorariosModal(){
-  const data=document.getElementById('m-data').value;if(!data||!negocioAtual)return
-  const select=document.getElementById('m-hora');select.innerHTML='<option>Carregando...</option>'
-  const res=await fetch(`${API}/agendamentos/horarios-ocupados?clinicaId=${negocioAtual._id}&data=${data}`)
-  const resultado=await res.json()
-  if(resultado.diaInativo||resultado.horarios.length===0){select.innerHTML='<option value="">Sem horários disponíveis</option>';return}
-  select.innerHTML=resultado.horarios.map(h=>{const ocu=resultado.ocupados.includes(h);return`<option value="${h}" ${ocu?'disabled':''}>${h}${ocu?' (ocupado)':''}</option>`}).join('')
-  const livre=resultado.horarios.find(h=>!resultado.ocupados.includes(h));if(livre)select.value=livre
-}
-async function salvarAgendamentoManual(){
-  const nome=document.getElementById('m-nome').value.trim(); const telefone=document.getElementById('m-telefone').value.trim(); const servico=document.getElementById('m-servico').value; const data=document.getElementById('m-data').value; const hora=document.getElementById('m-hora').value; const erro=document.getElementById('m-erro')
-  if(!nome){erro.textContent='Digite o nome do cliente';return}
-  if(!hora){erro.textContent='Selecione um horário';return}
-  erro.textContent=''
-  const btn=document.querySelector('.btn-salvar-modal');btn.disabled=true;btn.textContent='Salvando...'
-  const token=localStorage.getItem('token')
-  const res=await fetch(`${API}/agendamentos`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({clinicaId:negocioAtual._id,pacienteNome:nome,pacienteTelefone:telefone,servico,data,hora})})
-  const resposta=await res.json();btn.disabled=false;btn.textContent='Confirmar agendamento'
-  if(res.ok){fecharModal();carregarAgendamentos()}else erro.textContent=resposta.erro||'Erro ao criar agendamento'
+function fecharModal() { document.getElementById('modal-agendamento').style.display = 'none' }
+
+async function carregarHorariosModal() {
+  const data = document.getElementById('m-data').value
+  if (!data || !negocioAtual) return
+  const select = document.getElementById('m-hora')
+  select.innerHTML = '<option>Carregando...</option>'
+  const res = await fetch(`${API}/agendamentos/horarios-ocupados?clinicaId=${negocioAtual._id}&data=${data}`)
+  const resultado = await res.json()
+  if (resultado.diaInativo || resultado.horarios.length === 0) {
+    select.innerHTML = '<option value="">Sem horários disponíveis</option>'
+    return
+  }
+  select.innerHTML = resultado.horarios.map(h => {
+    const ocu = resultado.ocupados.includes(h)
+    return `<option value="${h}" ${ocu ? 'disabled' : ''}>${h}${ocu ? ' (ocupado)' : ''}</option>`
+  }).join('')
+  const livre = resultado.horarios.find(h => !resultado.ocupados.includes(h))
+  if (livre) select.value = livre
 }
 
-// LEMBRETES
-function atualizarToggleVisual(ativo){
-  const track=document.getElementById('toggle-track'); const thumb=document.getElementById('toggle-thumb')
-  if(!track||!thumb)return
-  track.style.background=ativo?'var(--accent)':''; thumb.style.left=ativo?'24px':'3px'
-  document.getElementById('lembrete-info').style.display=ativo?'block':'none'
+async function salvarAgendamentoManual() {
+  const nome     = document.getElementById('m-nome').value.trim()
+  const telefone = document.getElementById('m-telefone').value.trim()
+  const servico  = document.getElementById('m-servico').value
+  const data     = document.getElementById('m-data').value
+  const hora     = document.getElementById('m-hora').value
+  const erro     = document.getElementById('m-erro')
+
+  if (!nome) { erro.textContent = 'Digite o nome do cliente'; return }
+  if (!hora) { erro.textContent = 'Selecione um horário'; return }
+  erro.textContent = ''
+
+  const btn = document.querySelector('.btn-salvar-modal')
+  btn.disabled = true
+  btn.textContent = 'Salvando...'
+
+  const token = localStorage.getItem('token')
+  const res = await fetch(`${API}/agendamentos`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+    body: JSON.stringify({ clinicaId: negocioAtual._id, pacienteNome: nome, pacienteTelefone: telefone, servico, data, hora })
+  })
+  const resposta = await res.json()
+  btn.disabled = false
+  btn.textContent = 'Confirmar agendamento'
+
+  if (res.ok) { fecharModal(); carregarAgendamentos() }
+  else erro.textContent = resposta.erro || 'Erro ao criar agendamento'
 }
-async function carregarLembretes(){
-  if(!negocioAtual)return
-  const res=await fetch(`${API}/auth/negocio/${negocioAtual._id}`); const data=await res.json(); const lembrete=data.lembrete||{}
-  const checkbox=document.getElementById('toggle-lembrete'); if(checkbox)checkbox.checked=!!lembrete.ativo
+
+/* ═══════════════════════════════════════════════════
+   LEMBRETES
+═══════════════════════════════════════════════════ */
+function atualizarToggleVisual(ativo) {
+  const track = document.getElementById('toggle-track')
+  const thumb = document.getElementById('toggle-thumb')
+  if (!track || !thumb) return
+  track.style.background = ativo ? 'var(--accent)' : ''
+  thumb.style.left = ativo ? '24px' : '3px'
+  document.getElementById('lembrete-info').style.display = ativo ? 'block' : 'none'
+}
+
+async function carregarLembretes() {
+  if (!negocioAtual) return
+  const res  = await fetch(`${API}/auth/negocio/${negocioAtual._id}`)
+  const data = await res.json()
+  const lembrete = data.lembrete || {}
+  const checkbox = document.getElementById('toggle-lembrete')
+  if (checkbox) checkbox.checked = !!lembrete.ativo
   atualizarToggleVisual(!!lembrete.ativo)
-  if(lembrete.mensagem)document.getElementById('lembrete-msg').value=lembrete.mensagem
-}
-async function salvarLembrete(){
-  const ativo=document.getElementById('toggle-lembrete').checked; atualizarToggleVisual(ativo)
-  if(!negocioAtual)return
-  const token=localStorage.getItem('token')
-  await fetch(`${API}/auth/lembretes`,{method:'PATCH',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({negocioId:negocioAtual._id,ativo})})
-}
-async function salvarConfLembrete(){
-  if(!negocioAtual)return
-  const token=localStorage.getItem('token'); const ativo=document.getElementById('toggle-lembrete').checked; const mensagem=document.getElementById('lembrete-msg').value
-  await fetch(`${API}/auth/lembretes`,{method:'PATCH',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({negocioId:negocioAtual._id,ativo,mensagem})})
-  const msg=document.getElementById('salvo-lembrete');msg.style.display='inline';setTimeout(()=>msg.style.display='none',2500)
+  if (lembrete.mensagem) document.getElementById('lembrete-msg').value = lembrete.mensagem
 }
 
-// HISTÓRICO MENSAL
+async function salvarLembrete() {
+  const ativo = document.getElementById('toggle-lembrete').checked
+  atualizarToggleVisual(ativo)
+  if (!negocioAtual) return
+  const token = localStorage.getItem('token')
+  await fetch(`${API}/auth/lembretes`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+    body: JSON.stringify({ negocioId: negocioAtual._id, ativo })
+  })
+}
+
+async function salvarConfLembrete() {
+  if (!negocioAtual) return
+  const token    = localStorage.getItem('token')
+  const ativo    = document.getElementById('toggle-lembrete').checked
+  const mensagem = document.getElementById('lembrete-msg').value
+  await fetch(`${API}/auth/lembretes`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+    body: JSON.stringify({ negocioId: negocioAtual._id, ativo, mensagem })
+  })
+  const msg = document.getElementById('salvo-lembrete')
+  msg.style.display = 'inline'
+  setTimeout(() => msg.style.display = 'none', 2500)
+}
+
+/* ═══════════════════════════════════════════════════
+   HISTÓRICO MENSAL
+═══════════════════════════════════════════════════ */
 let historicoMesOffset = 0
-function chaveDoOffset(offset) { const d = new Date(); d.setDate(1); d.setMonth(d.getMonth() + offset); return d.toISOString().slice(0, 7) }
-function formatarMesLabel(chave) { const [ano, mes] = chave.split('-').map(Number); const nomes = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro']; return `${nomes[mes - 1]} ${ano}` }
-function formatarCompacto(val) { if (val >= 1000) return `${(val/1000).toFixed(1).replace('.0','')}k`; return `${val.toFixed(0)}` }
+
+function chaveDoOffset(offset) {
+  const d = new Date(); d.setDate(1); d.setMonth(d.getMonth() + offset)
+  return d.toISOString().slice(0, 7)
+}
+function formatarMesLabel(chave) {
+  const [ano, mes] = chave.split('-').map(Number)
+  const nomes = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro']
+  return `${nomes[mes - 1]} ${ano}`
+}
+function formatarCompacto(val) {
+  if (val >= 1000) return `${(val / 1000).toFixed(1).replace('.0', '')}k`
+  return `${val.toFixed(0)}`
+}
 function dadosMes(negocioId, chave) {
   const lucro = parseFloat(localStorage.getItem(`lucro_val_${negocioId}_${chave}`)) || 0
-  const ids = (() => { try { return JSON.parse(localStorage.getItem(`lucro_ids_${negocioId}_${chave}`) || '[]') } catch { return [] } })()
+  const ids   = (() => { try { return JSON.parse(localStorage.getItem(`lucro_ids_${negocioId}_${chave}`) || '[]') } catch { return [] } })()
   return { lucro, atendimentos: ids.length }
 }
+
 function renderHistorico() {
   if (!negocioAtual) return
-  const negocioId = negocioAtual._id
-  const chaveSelecionada = chaveDoOffset(historicoMesOffset)
-  const dados = dadosMes(negocioId, chaveSelecionada)
-  const isMesAtual = historicoMesOffset === 0
-  document.getElementById('hist-mes-label').textContent = isMesAtual ? 'Este mês' : formatarMesLabel(chaveSelecionada)
+  const nid  = negocioAtual._id
+  const chav = chaveDoOffset(historicoMesOffset)
+  const dados = dadosMes(nid, chav)
+  const isMes = historicoMesOffset === 0
+
+  document.getElementById('hist-mes-label').textContent = isMes ? 'Este mês' : formatarMesLabel(chav)
   document.getElementById('hist-next').disabled = historicoMesOffset >= 0
-  const lucro = dados.lucro; const atend = dados.atendimentos; const ticket = atend > 0 ? lucro / atend : 0
-  document.getElementById('hist-lucro').textContent = 'R$ ' + lucro.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-  document.getElementById('hist-atend').textContent = atend
+
+  const lucro  = dados.lucro
+  const atend  = dados.atendimentos
+  const ticket = atend > 0 ? lucro / atend : 0
+
+  document.getElementById('hist-lucro').textContent  = 'R$ ' + lucro.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+  document.getElementById('hist-atend').textContent  = atend
   document.getElementById('hist-ticket').textContent = 'R$ ' + ticket.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+
   const meses = []
-  for (let i = -5; i <= 0; i++) { const chave = chaveDoOffset(i); const d = dadosMes(negocioId, chave); meses.push({ chave, offset: i, lucro: d.lucro, atend: d.atendimentos }) }
+  for (let i = -5; i <= 0; i++) {
+    const c = chaveDoOffset(i)
+    const d = dadosMes(nid, c)
+    meses.push({ chave: c, offset: i, lucro: d.lucro, atend: d.atendimentos })
+  }
   const maxLucro = Math.max(...meses.map(m => m.lucro), 1)
-  const grafico = document.getElementById('hist-grafico'); const labels = document.getElementById('hist-grafico-labels')
-  grafico.innerHTML = meses.map(m => {
-    const pct = Math.max((m.lucro / maxLucro) * 100, m.lucro > 0 ? 4 : 0)
-    const ativo = m.chave === chaveSelecionada; const zero = m.lucro === 0
-    const valFormatado = 'R$ ' + m.lucro.toLocaleString('pt-BR', { minimumFractionDigits: 2 })
-    return `<div class="hist-barra-wrap" onclick="historicoIrPara(${m.offset})" title="${formatarMesLabel(m.chave)}: ${valFormatado}"><span class="hist-barra-val">${formatarCompacto(m.lucro)}</span><div class="hist-barra ${ativo ? 'ativo' : ''} ${zero ? 'zero' : ''}" style="height:${pct}%"></div></div>`
+
+  document.getElementById('hist-grafico').innerHTML = meses.map(m => {
+    const pct   = Math.max((m.lucro / maxLucro) * 100, m.lucro > 0 ? 4 : 0)
+    const ativo = m.chave === chav
+    const zero  = m.lucro === 0
+    const val   = 'R$ ' + m.lucro.toLocaleString('pt-BR', { minimumFractionDigits: 2 })
+    return `<div class="hist-barra-wrap" onclick="historicoIrPara(${m.offset})" title="${formatarMesLabel(m.chave)}: ${val}">
+      <span class="hist-barra-val">${formatarCompacto(m.lucro)}</span>
+      <div class="hist-barra ${ativo ? 'ativo' : ''} ${zero ? 'zero' : ''}" style="height:${pct}%"></div>
+    </div>`
   }).join('')
-  labels.innerHTML = meses.map(m => {
-    const [ano, mes] = m.chave.split('-').map(Number)
+
+  document.getElementById('hist-grafico-labels').innerHTML = meses.map(m => {
+    const [, mes] = m.chave.split('-').map(Number)
     const nomes = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez']
-    const ativo = m.chave === chaveSelecionada
-    return `<div class="hist-grafico-label ${ativo ? 'ativo' : ''}">${nomes[mes-1]}</div>`
+    return `<div class="hist-grafico-label ${m.chave === chav ? 'ativo' : ''}">${nomes[mes - 1]}</div>`
   }).join('')
 }
-function historicoPaginar(dir) { const novo = historicoMesOffset + dir; if (novo > 0) return; historicoMesOffset = novo; renderHistorico() }
-function historicoIrPara(offset) { if (offset > 0) return; historicoMesOffset = offset; renderHistorico() }
 
-// ═══════════════════════════════════════════════════
-// INIT
-// ═══════════════════════════════════════════════════
+function historicoPaginar(dir) {
+  const novo = historicoMesOffset + dir
+  if (novo > 0) return
+  historicoMesOffset = novo
+  renderHistorico()
+}
+function historicoIrPara(offset) {
+  if (offset > 0) return
+  historicoMesOffset = offset
+  renderHistorico()
+}
+
+/* ═══════════════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════════════ */
 carregarTema()
-const token = localStorage.getItem('token')
-if (token) { mostrarPainel() } else { window.location.href = '/auth.html' }
+const _token = localStorage.getItem('token')
+if (_token) { mostrarPainel() } else { window.location.href = '/auth.html' }
 
-// ═══════════════════════════════════════════════════
-// PWA — INSTALAR APP (CORRIGIDO)
-// Botão só aparece quando o Chrome confirma que pode instalar.
-// Nenhum alert é exibido em nenhuma situação.
-// ═══════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════
+   PWA — INSTALAR APP
+   Botão sempre visível; comportamento por plataforma.
+   Nunca exibe alert(). Esconde somente após instalação.
+═══════════════════════════════════════════════════ */
 let deferredPrompt = null
 
-// Registra o Service Worker silenciosamente
+// Registra SW silenciosamente
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/sw.js').catch(() => {})
 }
 
-// Chrome/Android/PC: captura o evento nativo e mostra o botão
+// Chrome / Android / Desktop — captura o prompt nativo
 window.addEventListener('beforeinstallprompt', e => {
   e.preventDefault()
   deferredPrompt = e
-
-  const btn = document.getElementById('btn-instalar-app')
-  if (btn) {
-    btn.style.display = 'flex'
-    btn.onclick = instalarApp
-  }
 })
 
-// iPhone/iPad: Safari não dispara beforeinstallprompt,
-// então mostramos o botão com um toast elegante no lugar do alert
-const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream
-const isStandalone = window.navigator.standalone === true
-
-if (isIOS && !isStandalone) {
-  const btn = document.getElementById('btn-instalar-app')
-  if (btn) {
-    btn.style.display = 'flex'
-    btn.onclick = () => {
-      // Remove toast anterior se existir
-      const existing = document.getElementById('ios-install-toast')
-      if (existing) existing.remove()
-
-      const toast = document.createElement('div')
-      toast.id = 'ios-install-toast'
-      toast.style.cssText = [
-        'position:fixed',
-        'bottom:24px',
-        'left:50%',
-        'transform:translateX(-50%)',
-        'background:#0f172a',
-        'color:#e2e8f0',
-        'padding:16px 20px',
-        'border-radius:16px',
-        'font-size:13px',
-        'font-weight:500',
-        'z-index:9999',
-        'box-shadow:0 8px 32px rgba(0,0,0,0.5)',
-        'text-align:center',
-        'border:1px solid rgba(255,255,255,0.1)',
-        'line-height:1.7',
-        'max-width:300px',
-        'width:calc(100vw - 48px)',
-        'animation:fadeInUp .25s ease',
-        'font-family:inherit'
-      ].join(';')
-
-      toast.innerHTML = `
-        <div style="font-size:22px;margin-bottom:8px">📲</div>
-        Toque em <strong style="color:#60a5fa">Compartilhar</strong> (□↑)<br>
-        depois em <strong style="color:#60a5fa">"Adicionar à Tela de Início"</strong>
-      `
-
-      document.body.appendChild(toast)
-      setTimeout(() => { if (toast.parentNode) toast.remove() }, 5000)
-    }
-  }
-}
-
-// Função chamada pelo botão no Chrome/Android/PC
-function instalarApp() {
-  if (!deferredPrompt) return
-  deferredPrompt.prompt()
-  deferredPrompt.userChoice.then(() => {
-    deferredPrompt = null
-    const btn = document.getElementById('btn-instalar-app')
-    if (btn) btn.style.display = 'none'
-  })
-}
-
-// Esconde o botão assim que o app for instalado
+// Após instalação concluída — esconde o botão
 window.addEventListener('appinstalled', () => {
   deferredPrompt = null
   const btn = document.getElementById('btn-instalar-app')
   if (btn) btn.style.display = 'none'
 })
+
+// Helper para exibir toast informativo (sem alert)
+function mostrarToast(html) {
+  const old = document.getElementById('pwa-toast')
+  if (old) old.remove()
+  const toast = document.createElement('div')
+  toast.id = 'pwa-toast'
+  toast.style.cssText = [
+    'position:fixed', 'bottom:24px', 'left:50%',
+    'transform:translateX(-50%)',
+    'background:#0f172a', 'color:#e2e8f0',
+    'padding:16px 20px', 'border-radius:16px',
+    'font-size:13px', 'font-weight:500', 'z-index:9999',
+    'box-shadow:0 8px 32px rgba(0,0,0,0.5)',
+    'text-align:center', 'border:1px solid rgba(255,255,255,0.1)',
+    'line-height:1.7', 'max-width:300px',
+    'width:calc(100vw - 48px)',
+    'animation:fadeInUp .25s ease', 'font-family:inherit'
+  ].join(';')
+  toast.innerHTML = html
+  document.body.appendChild(toast)
+  setTimeout(() => { if (toast.parentNode) toast.remove() }, 5000)
+}
+
+// Clique no botão — lida com todos os casos
+document.getElementById('btn-instalar-app').onclick = function () {
+  const isIOS        = /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream
+  const isStandalone = window.navigator.standalone === true
+
+  // Já instalado como PWA standalone — esconde e sai
+  if (isStandalone) {
+    this.style.display = 'none'
+    return
+  }
+
+  // Chrome / Android / Desktop — prompt nativo disponível
+  if (deferredPrompt) {
+    deferredPrompt.prompt()
+    deferredPrompt.userChoice.then(() => { deferredPrompt = null })
+    return
+  }
+
+  // iPhone / iPad (Safari) — instrução via toast
+  if (isIOS) {
+    mostrarToast(`<div style="font-size:22px;margin-bottom:8px">📲</div>
+      Toque em <strong style="color:#60a5fa">Compartilhar</strong> (□↑)<br>
+      depois em <strong style="color:#60a5fa">"Adicionar à Tela de Início"</strong>`)
+    return
+  }
+
+  // Outros navegadores (Firefox, Edge, Samsung etc.)
+  mostrarToast(`<div style="font-size:22px;margin-bottom:8px">💡</div>
+    No menu do seu navegador,<br>escolha
+    <strong style="color:#60a5fa">"Instalar app"</strong> ou<br>
+    <strong style="color:#60a5fa">"Adicionar à tela inicial"</strong>`)
+}
 </script>
 </body>
 </html>
