@@ -1170,6 +1170,14 @@ tbody tr:hover td { background: var(--bg); }
 #pausa-label { text-align: left; }
 
 /* ═══════════════════════════════════════════════════
+   IOS TOAST
+═══════════════════════════════════════════════════ */
+@keyframes fadeInUp {
+  from { opacity:0; transform:translateX(-50%) translateY(12px); }
+  to   { opacity:1; transform:translateX(-50%) translateY(0); }
+}
+
+/* ═══════════════════════════════════════════════════
    DARK MODE OVERRIDES
 ═══════════════════════════════════════════════════ */
 body.dark-mode .card-header { background: var(--bg-card); }
@@ -1367,7 +1375,7 @@ body.dark-mode ::placeholder { color: var(--text3); opacity: .7; }
   </div>
 
   <div class="sidebar-footer">
-    <button id="btn-instalar-app" class="btn-instalar" onclick="instalarApp()">
+    <button id="btn-instalar-app" class="btn-instalar">
       <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 2v7M4 6.5L6.5 9 9 6.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M1.5 9.5v1A1 1 0 0 0 2.5 11.5h8a1 1 0 0 0 1-1v-1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
       Instalar app
     </button>
@@ -2536,38 +2544,23 @@ carregarTema()
 const token = localStorage.getItem('token')
 if (token) { mostrarPainel() } else { window.location.href = '/auth.html' }
 
-// ✅ CORREÇÃO: botão instalar aparece tanto quando SW registra com sucesso quanto quando falha
+// ═══════════════════════════════════════════════════
+// PWA — INSTALAR APP (CORRIGIDO)
+// Botão só aparece quando o Chrome confirma que pode instalar.
+// Nenhum alert é exibido em nenhuma situação.
+// ═══════════════════════════════════════════════════
+let deferredPrompt = null
+
+// Registra o Service Worker silenciosamente
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/sw.js')
-    .then(() => {
-      // SW registrado com sucesso — mostra botão e aguarda beforeinstallprompt
-      const btn = document.getElementById('btn-instalar-app')
-      if (btn) {
-        btn.style.display = 'flex'
-        btn.onclick = instalarApp
-      }
-    })
-    .catch(() => {
-      // SW falhou — mostra botão com instrução manual
-      const btn = document.getElementById('btn-instalar-app')
-      if (btn) {
-        btn.style.display = 'flex'
-        btn.onclick = () => {
-          const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent)
-          if (isIOS) {
-            alert('Para instalar no iPhone/iPad: toque em Compartilhar (□↑) → "Adicionar à Tela de Início"')
-          } else {
-            alert('Para instalar: no Chrome, toque nos 3 pontos (⋮) → "Adicionar à tela inicial" ou "Instalar aplicativo"')
-          }
-        }
-      }
-    })
+  navigator.serviceWorker.register('/sw.js').catch(() => {})
 }
 
-let deferredPrompt = null
+// Chrome/Android/PC: captura o evento nativo e mostra o botão
 window.addEventListener('beforeinstallprompt', e => {
   e.preventDefault()
   deferredPrompt = e
+
   const btn = document.getElementById('btn-instalar-app')
   if (btn) {
     btn.style.display = 'flex'
@@ -2575,16 +2568,59 @@ window.addEventListener('beforeinstallprompt', e => {
   }
 })
 
-function instalarApp() {
-  if (!deferredPrompt) {
-    const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent)
-    if (isIOS) {
-      alert('Para instalar no iPhone/iPad: toque em Compartilhar (□↑) → "Adicionar à Tela de Início"')
-    } else {
-      alert('Para instalar: no Chrome, toque nos 3 pontos (⋮) → "Adicionar à tela inicial" ou "Instalar aplicativo"')
+// iPhone/iPad: Safari não dispara beforeinstallprompt,
+// então mostramos o botão com um toast elegante no lugar do alert
+const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream
+const isStandalone = window.navigator.standalone === true
+
+if (isIOS && !isStandalone) {
+  const btn = document.getElementById('btn-instalar-app')
+  if (btn) {
+    btn.style.display = 'flex'
+    btn.onclick = () => {
+      // Remove toast anterior se existir
+      const existing = document.getElementById('ios-install-toast')
+      if (existing) existing.remove()
+
+      const toast = document.createElement('div')
+      toast.id = 'ios-install-toast'
+      toast.style.cssText = [
+        'position:fixed',
+        'bottom:24px',
+        'left:50%',
+        'transform:translateX(-50%)',
+        'background:#0f172a',
+        'color:#e2e8f0',
+        'padding:16px 20px',
+        'border-radius:16px',
+        'font-size:13px',
+        'font-weight:500',
+        'z-index:9999',
+        'box-shadow:0 8px 32px rgba(0,0,0,0.5)',
+        'text-align:center',
+        'border:1px solid rgba(255,255,255,0.1)',
+        'line-height:1.7',
+        'max-width:300px',
+        'width:calc(100vw - 48px)',
+        'animation:fadeInUp .25s ease',
+        'font-family:inherit'
+      ].join(';')
+
+      toast.innerHTML = `
+        <div style="font-size:22px;margin-bottom:8px">📲</div>
+        Toque em <strong style="color:#60a5fa">Compartilhar</strong> (□↑)<br>
+        depois em <strong style="color:#60a5fa">"Adicionar à Tela de Início"</strong>
+      `
+
+      document.body.appendChild(toast)
+      setTimeout(() => { if (toast.parentNode) toast.remove() }, 5000)
     }
-    return
   }
+}
+
+// Função chamada pelo botão no Chrome/Android/PC
+function instalarApp() {
+  if (!deferredPrompt) return
   deferredPrompt.prompt()
   deferredPrompt.userChoice.then(() => {
     deferredPrompt = null
@@ -2593,7 +2629,9 @@ function instalarApp() {
   })
 }
 
+// Esconde o botão assim que o app for instalado
 window.addEventListener('appinstalled', () => {
+  deferredPrompt = null
   const btn = document.getElementById('btn-instalar-app')
   if (btn) btn.style.display = 'none'
 })
