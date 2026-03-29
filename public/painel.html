@@ -1367,7 +1367,6 @@ body.dark-mode ::placeholder { color: var(--text3); opacity: .7; }
   </div>
 
   <div class="sidebar-footer">
-    <!-- ✅ FIX 2: btn-instalar agora tem id e fallback robusto -->
     <button id="btn-instalar-app" class="btn-instalar" onclick="instalarApp()">
       <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 2v7M4 6.5L6.5 9 9 6.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M1.5 9.5v1A1 1 0 0 0 2.5 11.5h8a1 1 0 0 0 1-1v-1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
       Instalar app
@@ -1841,7 +1840,6 @@ body.dark-mode ::placeholder { color: var(--text3); opacity: .7; }
         <div class="link-card-label">Link da sua bio</div>
         <div class="link-card-url" id="link-bio"></div>
       </div>
-      <!-- ✅ FIX 1: id único no botão copiar bio -->
       <button class="btn-copiar" id="btn-copiar-bio" onclick="copiarLinkBio()">
         <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M1 8.5V2a1 1 0 0 1 1-1h6.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
         Copiar link
@@ -2199,7 +2197,6 @@ async function cancelarComAviso(id,nome,telefone,data,hora){
   filtrarData()
 }
 
-// ✅ FIX 1: copiarLink e copiarLinkBio usando id únicos — sem dependência de índice
 function copiarLink(){
   navigator.clipboard.writeText(document.getElementById('link-agendamento').textContent)
   const btn = document.getElementById('btn-copiar-agendamento')
@@ -2539,14 +2536,19 @@ carregarTema()
 const token = localStorage.getItem('token')
 if (token) { mostrarPainel() } else { window.location.href = '/auth.html' }
 
-// ✅ FIX 2: Service Worker com fallback robusto para botão instalar
+// ✅ CORREÇÃO: botão instalar aparece tanto quando SW registra com sucesso quanto quando falha
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/sw.js')
     .then(() => {
-      // SW registrado com sucesso — aguarda beforeinstallprompt normalmente
+      // SW registrado com sucesso — mostra botão e aguarda beforeinstallprompt
+      const btn = document.getElementById('btn-instalar-app')
+      if (btn) {
+        btn.style.display = 'flex'
+        btn.onclick = instalarApp
+      }
     })
     .catch(() => {
-      // SW falhou (arquivo não encontrado ou erro) — mostra botão com instrução manual
+      // SW falhou — mostra botão com instrução manual
       const btn = document.getElementById('btn-instalar-app')
       if (btn) {
         btn.style.display = 'flex'
@@ -2569,7 +2571,6 @@ window.addEventListener('beforeinstallprompt', e => {
   const btn = document.getElementById('btn-instalar-app')
   if (btn) {
     btn.style.display = 'flex'
-    // Restaura o onclick original para o fluxo nativo
     btn.onclick = instalarApp
   }
 })
