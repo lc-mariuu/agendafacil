@@ -1005,44 +1005,95 @@ tbody tr:hover td { background: var(--bg); }
 .alerta-azul  { background: var(--accent-light); border: 1px solid var(--accent-mid); border-radius: 10px; padding: 11px 14px; font-size: 12.5px; color: var(--accent); line-height: 1.5; margin-top: 10px; }
 
 /* ══════════════════════════════════════════════════
-   THEME SELECTOR
+   THEME SELECTOR — CORRIGIDO
+   Previews sempre fixos (não herdam o tema ativo).
+   Textos sempre usam os tokens corretos do tema atual.
 ══════════════════════════════════════════════════ */
 .theme-selector-wrap { display: flex; gap: 12px; margin-top: 4px; flex-wrap: wrap; }
+
 .theme-option {
-  flex: 1; min-width: 120px; max-width: 180px;
+  flex: 1; min-width: 140px; max-width: 200px;
   border: 2px solid var(--border2); border-radius: 14px; padding: 14px 16px;
   cursor: pointer; background: var(--bg-card);
   display: flex; flex-direction: column; gap: 10px;
   position: relative; user-select: none; transition: all .2s;
 }
-.theme-option:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: var(--shadow-md); }
-.theme-option.ativo { border-color: var(--accent); background: var(--accent-light); box-shadow: 0 0 0 3px var(--accent-glow); }
+.theme-option:hover {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+.theme-option.ativo {
+  border-color: var(--accent);
+  background: var(--accent-light);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+/* Checkmark badge */
 .theme-option-check {
   position: absolute; top: 10px; right: 10px;
   width: 18px; height: 18px; border-radius: 50%;
-  background: var(--accent); display: none; align-items: center; justify-content: center;
+  background: var(--accent);
+  display: none; align-items: center; justify-content: center;
   box-shadow: var(--shadow-accent);
+  /* Garante que o z-index não sobreponha o preview */
+  z-index: 1;
 }
 .theme-option.ativo .theme-option-check { display: flex; }
+
+/* Preview em miniatura — cores SEMPRE fixas, independente do tema */
 .theme-preview {
   width: 100%; height: 50px; border-radius: 8px; overflow: hidden;
-  border: 1px solid var(--border); display: flex; gap: 4px; padding: 6px;
+  border: 1px solid rgba(0,0,0,0.08);
+  display: flex; gap: 4px; padding: 6px;
+  /* Isola do sistema de transição de cores do tema */
+  transition: none;
 }
+.theme-preview * { transition: none; }
+
 .theme-preview-sidebar { width: 28%; border-radius: 5px; height: 100%; }
 .theme-preview-content { flex: 1; display: flex; flex-direction: column; gap: 3px; }
 .theme-preview-bar  { height: 8px; border-radius: 3px; width: 90%; }
 .theme-preview-bar2 { height: 8px; border-radius: 3px; width: 60%; }
-.theme-preview.claro  { background: #f0f4f8; }
-.theme-preview.claro  .theme-preview-sidebar { background: #0a0f1e; }
-.theme-preview.claro  .theme-preview-bar  { background: #e2e8f0; }
-.theme-preview.claro  .theme-preview-bar2 { background: #2563eb; }
-.theme-preview.escuro { background: #070c18; }
-.theme-preview.escuro .theme-preview-sidebar { background: #050a14; }
-.theme-preview.escuro .theme-preview-bar  { background: #0d1424; }
-.theme-preview.escuro .theme-preview-bar2 { background: #3b82f6; }
-.theme-option-label { font-size: 13px; font-weight: 700; color: var(--text); }
-.theme-option-desc  { font-size: 11.5px; color: var(--text3); margin-top: -4px; }
+
+/* Modo claro — fixo */
+.theme-preview.claro                   { background: #f0f4f8 !important; }
+.theme-preview.claro .theme-preview-sidebar { background: #0a0f1e !important; }
+.theme-preview.claro .theme-preview-bar     { background: #e2e8f0 !important; }
+.theme-preview.claro .theme-preview-bar2    { background: #2563eb !important; }
+
+/* Modo escuro — fixo */
+.theme-preview.escuro                   { background: #070c18 !important; }
+.theme-preview.escuro .theme-preview-sidebar { background: #050a14 !important; }
+.theme-preview.escuro .theme-preview-bar     { background: #1e293b !important; }
+.theme-preview.escuro .theme-preview-bar2    { background: #3b82f6 !important; }
+
+/* Textos — sempre herdam o tema ATIVO do painel (var tokens) */
+.theme-option-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.2;
+}
+.theme-option-desc {
+  font-size: 11.5px;
+  color: var(--text2);
+  margin-top: -4px;
+  line-height: 1.4;
+}
 .theme-option-emoji { font-size: 20px; line-height: 1; }
+
+/* Dark mode: garante legibilidade dos cards de tema */
+body.dark-mode .theme-option             { background: var(--bg-card); }
+body.dark-mode .theme-option.ativo       { background: var(--accent-light); }
+body.dark-mode .theme-option-label       { color: var(--text); }
+body.dark-mode .theme-option-desc        { color: var(--text2); }
+body.dark-mode .theme-preview            { border-color: rgba(255,255,255,0.08); }
+
+/* Responsivo */
+@media (max-width: 768px) {
+  .theme-option { max-width: 100%; }
+}
 
 /* Pagamentos */
 .pag-empty-icon {

@@ -1109,9 +1109,10 @@ function mostrarSalvo(id) {
 
 /* ═══════════════════════════════════════════════════
    PWA — INSTALAR APP
+   - Esconde o botão imediatamente se já estiver instalado
    - Chrome/Edge/Android: instala direto via prompt nativo
    - Já instalado (standalone): esconde o botão
-   - Outros navegadores: não faz nada (sem toast, sem alert)
+   - Outros navegadores: não faz nada
 ═══════════════════════════════════════════════════ */
 let deferredPrompt = null
 
@@ -1120,10 +1121,38 @@ if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/sw.js').catch(() => {})
 }
 
+// Verifica se o app já está rodando como PWA instalado
+function isAppInstalled() {
+  return (
+    window.navigator.standalone === true ||
+    window.matchMedia('(display-mode: standalone)').matches
+  )
+}
+
+// Atualiza visibilidade do botão com base no estado atual
+function atualizarBotaoInstalar() {
+  const btn = document.getElementById('btn-instalar-app')
+  if (!btn) return
+  if (isAppInstalled()) {
+    btn.style.display = 'none'
+  }
+}
+
+// Checa logo no carregamento da página
+atualizarBotaoInstalar()
+
+// Checa novamente quando o usuário volta para a aba (após instalar em outra janela)
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden) atualizarBotaoInstalar()
+})
+
 // Captura o prompt nativo (Chrome/Edge/Android/Desktop)
 window.addEventListener('beforeinstallprompt', e => {
   e.preventDefault()
   deferredPrompt = e
+  // App não instalado — garante que o botão esteja visível
+  const btn = document.getElementById('btn-instalar-app')
+  if (btn) btn.style.display = ''
 })
 
 // Após instalação concluída — esconde o botão
@@ -1134,11 +1163,8 @@ window.addEventListener('appinstalled', () => {
 })
 
 document.getElementById('btn-instalar-app').onclick = function () {
-  // Se já está rodando como PWA instalado — esconde o botão
-  const isStandalone =
-    window.navigator.standalone === true ||
-    window.matchMedia('(display-mode: standalone)').matches
-  if (isStandalone) { this.style.display = 'none'; return }
+  // Já instalado → esconde botão
+  if (isAppInstalled()) { this.style.display = 'none'; return }
 
   // Prompt nativo disponível → instala direto
   if (deferredPrompt) {
