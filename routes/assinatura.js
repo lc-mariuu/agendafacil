@@ -80,7 +80,7 @@ router.post('/checkout', autenticar, async (req, res) => {
     // Cria cobrança de assinatura
     const { data: billing } = await abacate.post('/billing/create', {
       frequency:  'MONTHLY',
-      methods:    ['CREDIT_CARD'],
+      methods:    methods: ['PIX'],
       products: [{ externalId: productId, quantity: 1 }],
       customer: { id: customerId },
       redirectUrl: `${process.env.URL_BASE}/painel.html?assinatura=sucesso`,
