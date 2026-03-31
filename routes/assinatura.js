@@ -79,14 +79,20 @@ router.post('/checkout', autenticar, async (req, res) => {
 
     // Cria cobrança de assinatura
     const { data: billing } = await abacate.post('/billing/create', {
-     frequency:     'ONE_TIME',
-     methods:       ['PIX'],
-     products:      [{ externalId: productId, quantity: 1 }],
-     customerId:    customerId,
-     returnUrl:     `${process.env.URL_BASE}/planos.html`,
-     completionUrl: `${process.env.URL_BASE}/painel.html?assinatura=sucesso`,
-     metadata:      { userId: String(user._id), plano },
-   })
+    frequency:     'ONE_TIME',
+    methods:       ['PIX'],
+    products: [{
+    externalId:  productId,
+    name:        plano === 'pro' ? 'Plano Profissional' : 'Plano Básico',
+    description: plano === 'pro' ? 'Assinatura mensal Profissional' : 'Assinatura mensal Básico',
+    quantity:    1,
+    price:       plano === 'pro' ? 4900 : 2900, // centavos
+   }],
+    customerId:    customerId,
+    returnUrl:     `${process.env.URL_BASE}/planos.html`,
+    completionUrl: `${process.env.URL_BASE}/painel.html?assinatura=sucesso`,
+    metadata:      { userId: String(user._id), plano },
+})
 
     res.json({ url: billing.data.url })
   } catch (err) {
