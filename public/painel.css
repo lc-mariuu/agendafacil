@@ -340,8 +340,18 @@ body {
 }
 .page-header h1 {
   font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 24px; font-weight: 800; color: var(--text);
+  font-size: 24px; font-weight: 800;
   letter-spacing: -0.035em; line-height: 1.2;
+  background: linear-gradient(135deg, #0f172a 0%, #2563eb 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+body.dark-mode .page-header h1 {
+  background: linear-gradient(135deg, #e2e8f0 0%, #60a5fa 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 .page-header p { color: var(--text2); font-size: 13px; margin-top: 5px; }
 .page-header-accent {
