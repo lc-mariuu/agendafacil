@@ -426,45 +426,21 @@ body {
    BOTÃO SALVAR — padronizado
 ══════════════════════════════════════════════════ */
 .btn-salvar {
-  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-  height: 40px; padding: 0 22px;
-  background: linear-gradient(135deg, var(--green), var(--green-2));
-  color: white; border: none; border-radius: 10px;
-  font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit;
-  box-shadow: 0 2px 12px rgba(22,163,74,0.28), 0 1px 3px rgba(22,163,74,0.15);
-  transition: all .18s cubic-bezier(.4,0,.2,1);
-  letter-spacing: -0.01em; white-space: nowrap;
-  position: relative; overflow: hidden;
-  margin-top: 18px;
+  display: inline-flex; align-items: center; gap: 7px;
+  background: var(--green); color: white; border: none;
+  padding: 10px 22px; border-radius: 10px;
+  font-size: 13.5px; font-weight: 600; cursor: pointer;
+  margin-top: 18px; font-family: inherit;
+  box-shadow: 0 2px 10px rgba(22,163,74,0.25); transition: all .2s;
 }
-.btn-salvar::before {
-  content: ''; position: absolute; inset: 0;
-  background: rgba(255,255,255,0.12);
-  opacity: 0; transition: opacity .15s;
-  pointer-events: none;
-}
-.btn-salvar:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 20px rgba(22,163,74,0.38), 0 1px 4px rgba(22,163,74,0.2);
-}
-.btn-salvar:hover::before { opacity: 1; }
-.btn-salvar:active { transform: translateY(0); box-shadow: 0 1px 6px rgba(22,163,74,0.28); }
+.btn-salvar:hover { background: #15803d; transform: translateY(-1px); box-shadow: 0 4px 18px rgba(22,163,74,0.3); }
 
-body.dark-mode .btn-salvar {
-  background: linear-gradient(135deg, var(--green), var(--green-2));
-  box-shadow: 0 2px 14px rgba(52,211,153,0.22);
-}
-body.dark-mode .btn-salvar:hover {
-  box-shadow: 0 4px 22px rgba(52,211,153,0.35);
-}
+body.dark-mode .btn-salvar { background: var(--green); }
+body.dark-mode .btn-salvar:hover { background: #059669; }
 
 .salvo-msg {
-  display: inline-flex; align-items: center; gap: 5px;
-  color: var(--green); font-size: 12px; font-weight: 700;
-  background: var(--green-bg); border: 1px solid var(--green-border);
-  padding: 4px 12px; border-radius: 100px;
-  margin-left: 10px; white-space: nowrap;
-  animation: fadeIn .2s ease;
+  color: var(--green); font-size: 12.5px; margin-left: 12px;
+  display: none; font-weight: 700; animation: fadeIn .2s ease;
 }
 
 .btn-add {
@@ -1144,7 +1120,7 @@ body.dark-mode .theme-preview            { border-color: rgba(255,255,255,0.08);
   .theme-option { max-width: 100%; }
   .servico-intervalo-card { flex-wrap: wrap; }
   .servico-intervalo-select { min-width: 100%; }
-  .btn-salvar { width: 100%; justify-content: center; }
+
 }
 
 @media (max-width: 480px) {
