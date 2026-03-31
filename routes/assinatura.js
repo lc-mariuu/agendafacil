@@ -70,8 +70,8 @@ router.post('/checkout', autenticar, async (req, res) => {
       const { data: cliente } = await abacate.post('/customer/create', {
       name:      user.nome,
       email:     user.email,
-      cellphone: '00000000000',
-      taxId:     '00000000000',
+      cellphone: '11999999999',
+      taxId:     '111.444.777-35',
     })
       customerId = cliente.data.id
       await User.findByIdAndUpdate(req.userId, { abacateCustomerId: customerId })
