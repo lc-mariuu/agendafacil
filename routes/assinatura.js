@@ -71,6 +71,7 @@ router.post('/checkout', autenticar, async (req, res) => {
       name:      user.nome,
       email:     user.email,
       cellphone: '00000000000',
+      taxId:     '00000000000',
     })
       customerId = cliente.data.id
       await User.findByIdAndUpdate(req.userId, { abacateCustomerId: customerId })
