@@ -80,7 +80,7 @@ router.post('/checkout', autenticar, async (req, res) => {
     // Cria cobrança de assinatura
     const { data: billing } = await abacate.post('/billing/create', {
     frequency:     'ONE_TIME',
-    methods:       ['PIX'],
+    methods:       ['PIX', 'CARD'],
     products: [{
     externalId:  productId,
     name:        plano === 'pro' ? 'Plano Profissional' : 'Plano Básico',
