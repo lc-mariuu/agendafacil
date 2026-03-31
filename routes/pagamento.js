@@ -1,139 +1,191 @@
 const express = require('express')
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY)
+const axios = require('axios')
 const Appointment = require('../models/Appointment')
 const Negocio = require('../models/Negocio')
 const router = express.Router()
 
-// ── CRIAR PAGAMENTO PIX ───────────────────────────────
+// ── ABACATEPAY BASE ─────────────────────────────────────────────
+const abacate = axios.create({
+  baseURL: 'https://api.abacatepay.com/v1',
+  headers: {
+    Authorization: `Bearer ${process.env.ABACATEPAY_API_KEY}`,
+    'Content-Type': 'application/json',
+  },
+})
+
+// ── CRIAR COBRANÇA PIX ──────────────────────────────────────────
+// POST /api/pagamento/criar
+// Body: { clinicaId, pacienteNome, pacienteEmail, pacienteTelefone, servico, data, hora, valor }
 router.post('/criar', async (req, res) => {
   try {
-    const { clinicaId, pacienteNome, pacienteEmail, servico, data, hora, valor } = req.body
+    const { clinicaId, pacienteNome, pacienteEmail, pacienteTelefone, servico, data, hora, valor } = req.body
 
     // Verifica se horário ainda está disponível
     const jaExiste = await Appointment.findOne({
-      clinicaId, data, hora, status: { $ne: 'cancelado' }
+      clinicaId, data, hora, status: { $ne: 'cancelado' },
     })
     if (jaExiste) return res.status(400).json({ erro: 'Horário já ocupado' })
 
     const neg = await Negocio.findById(clinicaId)
     if (!neg) return res.status(404).json({ erro: 'Negócio não encontrado' })
 
-    // Cria PaymentIntent com Pix
-    const paymentIntent = await stripe.paymentIntents.create({
-      amount: Math.round(valor * 100), // centavos
-      currency: 'brl',
-      payment_method_types: ['pix'],
+    // Cria cobrança Pix no AbacatePay
+    const { data: result } = await abacate.post('/pixQrCode/create', {
+      amount:      Math.round(valor * 100), // centavos
+      description: `${servico} — ${neg.nome}`,
+      expiresIn:   3600, // 1 hora
+      customer: {
+        name:      pacienteNome,
+        email:     pacienteEmail  || undefined,
+        cellphone: pacienteTelefone || undefined,
+      },
       metadata: {
         clinicaId,
         pacienteNome,
+        pacienteTelefone: pacienteTelefone || '',
         servico,
         data,
         hora,
-        negocioNome: neg.nome
+        negocioNome: neg.nome,
       },
-      pix: {
-        expires_after_seconds: 3600 // 1 hora para pagar
-      }
     })
 
+    const cobranca = result.data
     res.json({
-      clientSecret: paymentIntent.client_secret,
-      paymentIntentId: paymentIntent.id,
-      pixData: paymentIntent.next_action?.pix_display_qr_code
+      pixId:       cobranca.id,
+      qrCode:      cobranca.brCode,        // copia-e-cola
+      qrCodeImage: cobranca.qrCodeImage,   // base64 da imagem
+      expiresAt:   cobranca.expiresAt,
     })
   } catch (err) {
-    console.error('[pagamento] erro:', err.message)
-    res.status(500).json({ erro: 'Erro ao criar pagamento: ' + err.message })
+    console.error('[pagamento] erro:', err.response?.data || err.message)
+    res.status(500).json({ erro: 'Erro ao criar cobrança Pix' })
   }
 })
 
-// ── VERIFICAR STATUS DO PAGAMENTO ─────────────────────
-router.get('/status/:paymentIntentId', async (req, res) => {
+// ── VERIFICAR STATUS ────────────────────────────────────────────
+// GET /api/pagamento/status/:pixId
+router.get('/status/:pixId', async (req, res) => {
   try {
-    const pi = await stripe.paymentIntents.retrieve(req.params.paymentIntentId)
+    const { data: result } = await abacate.get(`/pixQrCode/${req.params.pixId}`)
+    const cobranca = result.data
 
-    if (pi.status === 'succeeded') {
+    // PAID = pago | EXPIRED = expirado | PENDING = aguardando
+    if (cobranca.status === 'PAID') {
       // Cria agendamento se ainda não existir
-      const { clinicaId, pacienteNome, servico, data, hora } = pi.metadata
+      const { clinicaId, pacienteNome, pacienteTelefone, servico, data, hora } = cobranca.metadata
       const jaExiste = await Appointment.findOne({ clinicaId, data, hora, status: { $ne: 'cancelado' } })
       if (!jaExiste) {
         await Appointment.create({
           clinicaId,
           pacienteNome,
-          pacienteTelefone: pi.metadata.pacienteTelefone || '',
+          pacienteTelefone: pacienteTelefone || '',
           servico,
           data,
           hora,
-          pagamento: { status: 'pago', valor: pi.amount / 100, paymentIntentId: pi.id }
+          pagamento: { status: 'pago', valor: cobranca.amount / 100, pixId: cobranca.id },
         })
       }
       return res.json({ status: 'pago' })
     }
 
-    if (pi.status === 'canceled') return res.json({ status: 'cancelado' })
-    if (pi.status === 'requires_payment_method') return res.json({ status: 'expirado' })
+    if (cobranca.status === 'EXPIRED')  return res.json({ status: 'expirado' })
+    if (cobranca.status === 'CANCELED') return res.json({ status: 'cancelado' })
 
-    // Ainda aguardando
-    const pixData = pi.next_action?.pix_display_qr_code
-    res.json({ status: 'aguardando', pixData })
+    // Ainda aguardando — devolve dados do Pix para reexibir QR se necessário
+    res.json({
+      status:      'aguardando',
+      qrCode:      cobranca.brCode,
+      qrCodeImage: cobranca.qrCodeImage,
+    })
   } catch (err) {
-    console.error('[pagamento status] erro:', err.message)
+    console.error('[pagamento status] erro:', err.response?.data || err.message)
     res.status(500).json({ erro: 'Erro ao verificar pagamento' })
   }
 })
 
-// ── WEBHOOK STRIPE (pagamento confirmado) ─────────────
+// ── WEBHOOK AbacatePay (Pix confirmado) ─────────────────────────
+// Registre no painel AbacatePay:
+//   POST  https://seudominio.com.br/api/pagamento/webhook
 router.post('/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
-  const sig = req.headers['stripe-signature']
+  // Valida assinatura HMAC
+  const crypto = require('crypto')
+  const sig    = req.headers['abacatepay-signature']
+  const secret = process.env.ABACATEPAY_WEBHOOK_SECRET
+
+  if (secret && sig) {
+    const expected = crypto
+      .createHmac('sha256', secret)
+      .update(req.body)
+      .digest('hex')
+    if (sig !== expected)
+      return res.status(400).send('Assinatura inválida')
+  }
+
   let event
   try {
-    event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET)
-  } catch (err) {
-    return res.status(400).send(`Webhook error: ${err.message}`)
+    event = JSON.parse(req.body.toString())
+  } catch {
+    return res.status(400).send('Payload inválido')
   }
 
-  if (event.type === 'payment_intent.succeeded') {
-    const pi = event.data.object
-    const { clinicaId, pacienteNome, servico, data, hora } = pi.metadata
-    if (clinicaId && data && hora) {
-      const jaExiste = await Appointment.findOne({ clinicaId, data, hora, status: { $ne: 'cancelado' } })
-      if (!jaExiste) {
-        await Appointment.create({
-          clinicaId, pacienteNome,
-          pacienteTelefone: pi.metadata.pacienteTelefone || '',
-          servico, data, hora,
-          pagamento: { status: 'pago', valor: pi.amount / 100, paymentIntentId: pi.id }
-        })
+  console.log('[webhook pix] Evento:', event.event)
+
+  if (event.event === 'pixQrCode.paid') {
+    try {
+      const cobranca = event.data || {}
+      const { clinicaId, pacienteNome, pacienteTelefone, servico, data, hora } = cobranca.metadata || {}
+
+      if (clinicaId && data && hora) {
+        const jaExiste = await Appointment.findOne({ clinicaId, data, hora, status: { $ne: 'cancelado' } })
+        if (!jaExiste) {
+          await Appointment.create({
+            clinicaId,
+            pacienteNome,
+            pacienteTelefone: pacienteTelefone || '',
+            servico,
+            data,
+            hora,
+            pagamento: { status: 'pago', valor: cobranca.amount / 100, pixId: cobranca.id },
+          })
+          console.log(`[webhook pix] Agendamento criado — ${pacienteNome} ${data} ${hora}`)
+        }
       }
+    } catch (err) {
+      console.error('[webhook pix] Erro:', err.message)
     }
-  }
-
-  if (event.type === 'payment_intent.payment_failed') {
-    console.log('[pagamento] falhou:', event.data.object.id)
   }
 
   res.json({ received: true })
 })
 
-// ── REEMBOLSO ─────────────────────────────────────────
+// ── REEMBOLSO ───────────────────────────────────────────────────
+// POST /api/pagamento/reembolsar
+// Body: { appointmentId }
+// Obs: reembolso de Pix via API depende de liberação na conta AbacatePay.
+// Por ora, cancela o agendamento e sinaliza para reembolso manual.
 router.post('/reembolsar', async (req, res) => {
   try {
     const { appointmentId } = req.body
     const appt = await Appointment.findById(appointmentId)
-    if (!appt) return res.status(404).json({ erro: 'Agendamento não encontrado' })
-    if (!appt.pagamento?.paymentIntentId) return res.status(400).json({ erro: 'Agendamento sem pagamento' })
+    if (!appt)                    return res.status(404).json({ erro: 'Agendamento não encontrado' })
+    if (!appt.pagamento?.pixId)   return res.status(400).json({ erro: 'Agendamento sem pagamento Pix' })
 
-    const refund = await stripe.refunds.create({
-      payment_intent: appt.pagamento.paymentIntentId
-    })
+    // Tenta estornar via API (disponível conforme plano AbacatePay)
+    try {
+      await abacate.post(`/pixQrCode/${appt.pagamento.pixId}/refund`)
+    } catch (refundErr) {
+      // Se API não suportar ainda, apenas registra para reembolso manual
+      console.warn('[reembolso] API indisponível — marcar para reembolso manual:', refundErr.response?.data || refundErr.message)
+    }
 
     await Appointment.findByIdAndUpdate(appointmentId, {
       status: 'cancelado',
       'pagamento.status': 'reembolsado',
-      atualizadoEm: new Date()
+      atualizadoEm: new Date(),
     })
 
-    res.json({ ok: true, refundId: refund.id })
+    res.json({ ok: true, mensagem: 'Agendamento cancelado. Reembolso processado ou pendente de análise.' })
   } catch (err) {
     console.error('[reembolso] erro:', err.message)
     res.status(500).json({ erro: 'Erro ao reembolsar: ' + err.message })

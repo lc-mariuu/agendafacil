@@ -1,9 +1,20 @@
 const express = require('express')
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY)
 const jwt = require('jsonwebtoken')
+const axios = require('axios')
 const User = require('../models/User')
 const router = express.Router()
 
+// ── ABACATEPAY BASE ─────────────────────────────────────────────
+const ABACATE_API = 'https://api.abacatepay.com/v1'
+const abacate = axios.create({
+  baseURL: ABACATE_API,
+  headers: {
+    Authorization: `Bearer ${process.env.ABACATEPAY_API_KEY}`,
+    'Content-Type': 'application/json',
+  },
+})
+
+// ── MIDDLEWARE DE AUTH ───────────────────────────────────────────
 const autenticar = async (req, res, next) => {
   try {
     const token = req.headers.authorization?.split(' ')[1]
@@ -15,7 +26,16 @@ const autenticar = async (req, res, next) => {
   }
 }
 
-// ── STATUS ──────────────────────────────────────────────────
+// ── PLANOS ───────────────────────────────────────────────────────
+// Configure no .env:
+//   ABACATEPAY_PRODUCT_BASICO=prod_xxx
+//   ABACATEPAY_PRODUCT_PRO=prod_xxx
+const PRODUTOS = {
+  basico: process.env.ABACATEPAY_PRODUCT_BASICO,
+  pro:    process.env.ABACATEPAY_PRODUCT_PRO,
+}
+
+// ── STATUS ───────────────────────────────────────────────────────
 router.get('/status', autenticar, async (req, res) => {
   try {
     const user = await User.findById(req.userId)
@@ -23,173 +43,169 @@ router.get('/status', autenticar, async (req, res) => {
     const diasRestantes = user.plano === 'trial'
       ? Math.max(0, Math.ceil((new Date(user.trialExpira) - new Date()) / (1000 * 60 * 60 * 24)))
       : null
-    res.json({ plano: user.plano, temAcesso, diasRestantes, assinaturaAtiva: user.assinaturaAtiva })
+    res.json({
+      plano: user.plano,
+      temAcesso,
+      diasRestantes,
+      assinaturaAtiva: user.assinaturaAtiva,
+      assinaturaCancelando: user.assinaturaCancelando || false,
+    })
   } catch (err) {
     res.status(500).json({ erro: 'Erro ao buscar status' })
   }
 })
 
-// ── CHECKOUT ─────────────────────────────────────────────────
+// ── CHECKOUT (gera link de pagamento AbacatePay) ─────────────────
 router.post('/checkout', autenticar, async (req, res) => {
   try {
     const { plano } = req.body
     const user = await User.findById(req.userId)
-    const priceId = plano === 'pro' ? process.env.STRIPE_PRICE_PRO : process.env.STRIPE_PRICE_BASICO
 
-    let customerId = user.stripeCustomerId
+    const productId = PRODUTOS[plano]
+    if (!productId) return res.status(400).json({ erro: 'Plano inválido' })
+
+    // Cria ou recupera cliente no AbacatePay
+    let customerId = user.abacateCustomerId
     if (!customerId) {
-      const customer = await stripe.customers.create({ email: user.email, name: user.nome })
-      customerId = customer.id
-      await User.findByIdAndUpdate(req.userId, { stripeCustomerId: customerId })
+      const { data: cliente } = await abacate.post('/customer/create', {
+        name:  user.nome,
+        email: user.email,
+        // cellphone e taxId são opcionais — adicione se tiver
+      })
+      customerId = cliente.data.id
+      await User.findByIdAndUpdate(req.userId, { abacateCustomerId: customerId })
     }
 
-    const session = await stripe.checkout.sessions.create({
-      customer: customerId,
-      payment_method_types: ['card'],
-      line_items: [{ price: priceId, quantity: 1 }],
-      mode: 'subscription',
-      success_url: `${process.env.URL_BASE}/painel.html?assinatura=sucesso`,
-      cancel_url: `${process.env.URL_BASE}/planos.html`,
+    // Cria cobrança de assinatura
+    const { data: billing } = await abacate.post('/billing/create', {
+      frequency:  'MONTHLY',
+      methods:    ['CREDIT_CARD'],
+      products: [{ externalId: productId, quantity: 1 }],
+      customer: { id: customerId },
+      redirectUrl: `${process.env.URL_BASE}/painel.html?assinatura=sucesso`,
+      metadata: { userId: String(user._id), plano },
     })
 
-    res.json({ url: session.url })
+    res.json({ url: billing.data.url })
   } catch (err) {
-    console.error('[checkout]', err.message)
+    console.error('[checkout]', err.response?.data || err.message)
     res.status(500).json({ erro: 'Erro ao criar checkout' })
   }
 })
 
-// ── CANCELAMENTO ─────────────────────────────────────────────
+// ── CANCELAR (no fim do período) ────────────────────────────────
 router.post('/cancelar', autenticar, async (req, res) => {
   try {
     const user = await User.findById(req.userId)
-
-    if (!user.stripeSubscriptionId) {
+    if (!user.abacateSubscriptionId)
       return res.status(400).json({ erro: 'Nenhuma assinatura ativa encontrada' })
-    }
 
-    // Cancela no fim do período pago (não cancela imediatamente)
-    await stripe.subscriptions.update(user.stripeSubscriptionId, {
-      cancel_at_period_end: true
-    })
+    await abacate.post(`/subscription/${user.abacateSubscriptionId}/cancel`)
 
+    await User.findByIdAndUpdate(req.userId, { assinaturaCancelando: true })
     res.json({ ok: true, mensagem: 'Assinatura será cancelada no fim do período atual' })
   } catch (err) {
-    console.error('[cancelar]', err.message)
+    console.error('[cancelar]', err.response?.data || err.message)
     res.status(500).json({ erro: 'Erro ao cancelar assinatura' })
   }
 })
 
-// ── REATIVAR (desfazer cancelamento) ─────────────────────────
-router.post('/reativar', autenticar, async (req, res) => {
-  try {
-    const user = await User.findById(req.userId)
-
-    if (!user.stripeSubscriptionId) {
-      return res.status(400).json({ erro: 'Nenhuma assinatura encontrada' })
-    }
-
-    await stripe.subscriptions.update(user.stripeSubscriptionId, {
-      cancel_at_period_end: false
-    })
-
-    res.json({ ok: true, mensagem: 'Assinatura reativada com sucesso' })
-  } catch (err) {
-    console.error('[reativar]', err.message)
-    res.status(500).json({ erro: 'Erro ao reativar assinatura' })
-  }
-})
-
-// ── PORTAL DO CLIENTE (gerenciar cartão, faturas) ─────────────
+// ── PORTAL (link para gerenciar cartão/faturas) ──────────────────
 router.post('/portal', autenticar, async (req, res) => {
   try {
     const user = await User.findById(req.userId)
+    if (!user.abacateCustomerId)
+      return res.status(400).json({ erro: 'Cliente não encontrado' })
 
-    if (!user.stripeCustomerId) {
-      return res.status(400).json({ erro: 'Cliente não encontrado no Stripe' })
-    }
-
-    const session = await stripe.billingPortal.sessions.create({
-      customer: user.stripeCustomerId,
-      return_url: `${process.env.URL_BASE}/painel.html`,
+    const { data } = await abacate.post('/customer/portal', {
+      customerId:  user.abacateCustomerId,
+      redirectUrl: `${process.env.URL_BASE}/painel.html`,
     })
 
-    res.json({ url: session.url })
+    res.json({ url: data.data.url })
   } catch (err) {
-    console.error('[portal]', err.message)
+    console.error('[portal]', err.response?.data || err.message)
     res.status(500).json({ erro: 'Erro ao abrir portal' })
   }
 })
 
-// ── WEBHOOK ──────────────────────────────────────────────────
-// IMPORTANTE: esta rota precisa ficar ANTES do express.json() no server.js
-// Use: app.use('/api/assinatura/webhook', express.raw({ type: 'application/json' }), webhookHandler)
+// ── WEBHOOK AbacatePay ───────────────────────────────────────────
+// Registre no painel AbacatePay:
+//   POST  https://seudominio.com/api/assinatura/webhook
+//
+// Valide a assinatura com o header "abacatepay-signature"
+// e a variável ABACATEPAY_WEBHOOK_SECRET no .env
 router.post('/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
-  const sig = req.headers['stripe-signature']
-  let event
+  // ── Validação de assinatura ──────────────────────────────────
+  const crypto = require('crypto')
+  const sig    = req.headers['abacatepay-signature']
+  const secret = process.env.ABACATEPAY_WEBHOOK_SECRET
 
-  try {
-    event = stripe.webhooks.constructEvent(
-      req.body,
-      sig,
-      process.env.STRIPE_WEBHOOK_SECRET
-    )
-  } catch (err) {
-    console.error('[webhook] Assinatura inválida:', err.message)
-    return res.status(400).send(`Webhook error: ${err.message}`)
+  if (secret && sig) {
+    const expected = crypto
+      .createHmac('sha256', secret)
+      .update(req.body)
+      .digest('hex')
+    if (sig !== expected)
+      return res.status(400).send('Assinatura inválida')
   }
 
-  console.log('[webhook] Evento recebido:', event.type)
+  let event
+  try {
+    event = JSON.parse(req.body.toString())
+  } catch {
+    return res.status(400).send('Payload inválido')
+  }
+
+  console.log('[webhook] Evento AbacatePay:', event.event)
 
   try {
-    switch (event.type) {
-      case 'customer.subscription.created':
-      case 'customer.subscription.updated': {
-        const sub = event.data.object
-        const plano = sub.items.data[0].price.id === process.env.STRIPE_PRICE_PRO ? 'pro' : 'basico'
-        const cancelando = sub.cancel_at_period_end
+    const data = event.data || {}
 
-        await User.findOneAndUpdate(
-          { stripeCustomerId: sub.customer },
-          {
-            assinaturaAtiva: sub.status === 'active',
-            stripeSubscriptionId: sub.id,
-            plano,
-            // Salva se está agendado para cancelar
-            ...(cancelando ? { assinaturaCancelando: true } : { assinaturaCancelando: false })
-          }
-        )
-        console.log(`[webhook] Assinatura ${event.type} — plano: ${plano}, status: ${sub.status}`)
+    switch (event.event) {
+
+      // Assinatura criada ou renovada com sucesso
+      case 'subscription.paid':
+      case 'billing.paid': {
+        const meta  = data.metadata || {}
+        const userId = meta.userId
+        const plano  = meta.plano || 'basico'
+        if (!userId) break
+
+        await User.findByIdAndUpdate(userId, {
+          assinaturaAtiva:      true,
+          assinaturaCancelando: false,
+          plano,
+          abacateSubscriptionId: data.subscriptionId || data.id || '',
+        })
+        console.log(`[webhook] Pagamento confirmado — userId: ${userId}, plano: ${plano}`)
         break
       }
 
-      case 'customer.subscription.deleted': {
-        const sub = event.data.object
-        await User.findOneAndUpdate(
-          { stripeCustomerId: sub.customer },
-          { assinaturaAtiva: false, plano: 'inativo', stripeSubscriptionId: '', assinaturaCancelando: false }
-        )
-        console.log('[webhook] Assinatura cancelada definitivamente')
+      // Pagamento falhou (cartão recusado, expirado, etc.)
+      case 'billing.failed':
+      case 'subscription.payment_failed': {
+        const meta   = data.metadata || {}
+        const userId = meta.userId
+        if (!userId) break
+        await User.findByIdAndUpdate(userId, { assinaturaAtiva: false })
+        console.log(`[webhook] Pagamento falhou — acesso suspenso userId: ${userId}`)
         break
       }
 
-      case 'invoice.payment_failed': {
-        const invoice = event.data.object
-        await User.findOneAndUpdate(
-          { stripeCustomerId: invoice.customer },
-          { assinaturaAtiva: false }
-        )
-        console.log('[webhook] Pagamento falhou — acesso suspenso')
-        break
-      }
-
-      case 'invoice.paid': {
-        const invoice = event.data.object
-        await User.findOneAndUpdate(
-          { stripeCustomerId: invoice.customer },
-          { assinaturaAtiva: true }
-        )
-        console.log('[webhook] Pagamento confirmado — acesso ativo')
+      // Assinatura cancelada definitivamente
+      case 'subscription.canceled':
+      case 'subscription.expired': {
+        const meta   = data.metadata || {}
+        const userId = meta.userId
+        if (!userId) break
+        await User.findByIdAndUpdate(userId, {
+          assinaturaAtiva:      false,
+          assinaturaCancelando: false,
+          plano:                'inativo',
+          abacateSubscriptionId: '',
+        })
+        console.log(`[webhook] Assinatura encerrada — userId: ${userId}`)
         break
       }
     }
