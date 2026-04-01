@@ -114,6 +114,9 @@ router.post('/enviar-codigo', async (req, res) => {
     if (userVerificado)
       return res.status(400).json({ erro: 'Email já cadastrado' })
 
+    // Remove rascunho pendente para evitar E11000 no cadastro
+    await User.deleteOne({ email: email.toLowerCase(), verificado: false })
+
     const codigo = gerarCodigo()
     await salvarCodigo(email, 'cadastro', codigo)
     await enviarEmail(email, '', codigo, 'cadastro')
