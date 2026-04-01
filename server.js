@@ -16,8 +16,7 @@ app.use(express.urlencoded({ limit: '10mb', extended: true }))
 app.use(express.static('public'))
 
 // ── Rotas ─────────────────────────────────────────────────────
-app.use('/api/auth',          require('./routes/auth'))
-app.use('/api/auth',          require('./routes/verificacao'))
+app.use('/api/auth',          require('./routes/auth'))        // auth.js unificado (sem verificacao.js)
 app.use('/api/agendamentos',  require('./routes/appointments'))
 app.use('/api/upload',        require('./routes/upload'))
 app.use('/api/assinatura',    require('./routes/assinatura'))
@@ -52,11 +51,9 @@ mongoose.connect(process.env.MONGO_URI)
     console.log('MongoDB conectado!')
     app.listen(PORT, () => console.log(`Servidor rodando em http://localhost:${PORT}`))
 
-    // Limpeza automática de agendamentos
     limparAgendamentos()
     setInterval(limparAgendamentos, 60 * 60 * 1000)
 
-    // Cron job de lembretes via WhatsApp
     const { iniciarCronLembretes } = require('./jobs/lembretes')
     iniciarCronLembretes()
   })
