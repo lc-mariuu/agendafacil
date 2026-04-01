@@ -35,7 +35,6 @@ function gerarCodigo() {
 }
 
 // ── Schema de verificação (sem índice unique) ─────────
-// Sem unique para evitar conflito de E11000 no upsert
 const codigoSchema = new mongoose.Schema({
   email:      { type: String, required: true },
   codigo:     { type: String, required: true },
@@ -43,7 +42,7 @@ const codigoSchema = new mongoose.Schema({
   verificado: { type: Boolean, default: false },
   criadoEm:  { type: Date, default: Date.now, expires: 900 }
 })
-codigoSchema.index({ email: 1, tipo: 1 }) // índice simples, sem unique
+codigoSchema.index({ email: 1, tipo: 1 })
 
 const CodigoVerificacao = mongoose.models.CodigoVerificacao
   || mongoose.model('CodigoVerificacao', codigoSchema)
@@ -60,7 +59,7 @@ function templateEmail(nome, codigo, tipo) {
     html: `
       <div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:32px 24px;color:#0d0f12">
         <div style="font-size:20px;font-weight:800;margin-bottom:24px">
-          Agendo<span style="color:#c4622d">Rapido</span>
+          Agendo<span style="color:#2563eb">Rapido</span>
         </div>
         <p style="color:#5a6072;font-size:15px;margin:0 0 8px">Olá${nome ? ', ' + nome : ''}!</p>
         <p style="color:#5a6072;font-size:15px;margin:0 0 24px">${descricao}</p>
@@ -133,7 +132,6 @@ router.post('/verificar-codigo', async (req, res) => {
     if (!email || !emailValido(email))
       return res.status(400).json({ erro: 'Email inválido' })
 
-    // Pega o mais recente (caso haja múltiplos)
     const registro = await CodigoVerificacao.findOne(
       { email: email.toLowerCase(), tipo },
       {},
@@ -178,7 +176,6 @@ router.post('/cadastro', async (req, res) => {
 
     const senhaCriptografada = await bcrypt.hash(senha, 10)
 
-    // Reaproveita rascunho pendente ou cria novo
     let user = await User.findOne({ email: email.toLowerCase(), verificado: false })
     if (user) {
       user.nome       = nome
@@ -210,8 +207,6 @@ router.post('/cadastro', async (req, res) => {
 })
 
 // ── LOGIN ─────────────────────────────────────────────
-// CORREÇÃO PRINCIPAL: usuários com senha válida entram mesmo com verificado=false
-// Isso resolve o problema de usuários criados antes do sistema de verificação
 router.post('/login', async (req, res) => {
   try {
     const { email, senha } = req.body
@@ -228,7 +223,6 @@ router.post('/login', async (req, res) => {
     if (!senhaCorreta)
       return res.status(400).json({ erro: 'Email ou senha incorretos' })
 
-    // Auto-corrige usuários antigos com verificado=false mas senha real
     if (!user.verificado) {
       user.verificado = true
       await user.save()
