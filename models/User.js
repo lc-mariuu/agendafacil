@@ -6,15 +6,19 @@ const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   senha: { type: String, required: true },
 
-  plano:        { type: String, default: 'trial' },   // 'trial' | 'basico' | 'pro' | 'inativo'
+  plano:        { type: String, default: 'trial' },
   trialExpira:  { type: Date, default: () => new Date(Date.now() + 14 * 24 * 60 * 60 * 1000) },
 
-  // ── AbacatePay ──────────────────────────────────────────────
   abacateCustomerId:     { type: String, default: '' },
   abacateSubscriptionId: { type: String, default: '' },
 
-  assinaturaAtiva:     { type: Boolean, default: false },
+  assinaturaAtiva:      { type: Boolean, default: false },
   assinaturaCancelando: { type: Boolean, default: false },
+
+  // ── Verificação de email ─────────────────────────────────────
+  verificado:         { type: Boolean, default: false },
+  codigoVerificacao:  { type: String },
+  codigoExpira:       { type: Date },
 
   criadoEm: { type: Date, default: Date.now },
 })
