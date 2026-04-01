@@ -34,27 +34,25 @@ function gerarCodigo() {
   return String(crypto.randomInt(100000, 999999))
 }
 
-// ── Schema de verificação (coleção separada) ──────────
+// ── Schema de verificação (sem índice unique) ─────────
+// Sem unique para evitar conflito de E11000 no upsert
 const codigoSchema = new mongoose.Schema({
   email:      { type: String, required: true },
   codigo:     { type: String, required: true },
   tipo:       { type: String, enum: ['cadastro', 'recuperacao'], default: 'cadastro' },
   verificado: { type: Boolean, default: false },
-  criadoEm:  { type: Date, default: Date.now, expires: 900 } // expira em 15 min
+  criadoEm:  { type: Date, default: Date.now, expires: 900 }
 })
-codigoSchema.index({ email: 1, tipo: 1 }, { unique: true })
+codigoSchema.index({ email: 1, tipo: 1 }) // índice simples, sem unique
+
 const CodigoVerificacao = mongoose.models.CodigoVerificacao
   || mongoose.model('CodigoVerificacao', codigoSchema)
 
 // ── Template de email ─────────────────────────────────
 function templateEmail(nome, codigo, tipo) {
-  const titulo = tipo === 'recuperacao'
-    ? 'Redefinição de senha'
-    : 'Confirme seu email'
   const descricao = tipo === 'recuperacao'
     ? 'Use o código abaixo para criar uma nova senha:'
     : 'Use o código abaixo para confirmar seu email:'
-
   return {
     assunto: tipo === 'recuperacao'
       ? `${codigo} — código para redefinir sua senha`
@@ -62,7 +60,7 @@ function templateEmail(nome, codigo, tipo) {
     html: `
       <div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:32px 24px;color:#0d0f12">
         <div style="font-size:20px;font-weight:800;margin-bottom:24px">
-          Agendo<span style="color:#0057FF">Rapido</span>
+          Agendo<span style="color:#c4622d">Rapido</span>
         </div>
         <p style="color:#5a6072;font-size:15px;margin:0 0 8px">Olá${nome ? ', ' + nome : ''}!</p>
         <p style="color:#5a6072;font-size:15px;margin:0 0 24px">${descricao}</p>
@@ -90,27 +88,37 @@ async function enviarEmail(email, nome, codigo, tipo) {
   if (error) throw new Error(`Resend erro: ${JSON.stringify(error)}`)
 }
 
+// ── Salvar código (delete + create, sem upsert) ───────
+async function salvarCodigo(email, tipo, codigo) {
+  await CodigoVerificacao.deleteMany({ email: email.toLowerCase(), tipo })
+  await CodigoVerificacao.create({
+    email: email.toLowerCase(),
+    tipo,
+    codigo,
+    verificado: false,
+    criadoEm: new Date()
+  })
+}
+
+// ══════════════════════════════════════════════════════
+// ROTAS
+// ══════════════════════════════════════════════════════
+
 // ── ENVIAR CÓDIGO (pré-cadastro) ──────────────────────
-// Usa CodigoVerificacao — NÃO cria User ainda (evita erro de validação)
 router.post('/enviar-codigo', async (req, res) => {
   try {
     const { email } = req.body
     if (!email || !emailValido(email))
       return res.status(400).json({ erro: 'Email inválido' })
 
-    const userExistente = await User.findOne({ email: email.toLowerCase(), verificado: true })
-    if (userExistente)
+    const userVerificado = await User.findOne({ email: email.toLowerCase(), verificado: true })
+    if (userVerificado)
       return res.status(400).json({ erro: 'Email já cadastrado' })
 
     const codigo = gerarCodigo()
-
-    await CodigoVerificacao.findOneAndUpdate(
-      { email: email.toLowerCase(), tipo: 'cadastro' },
-      { codigo, criadoEm: new Date(), verificado: false },
-      { upsert: true, new: true }
-    )
-
+    await salvarCodigo(email, 'cadastro', codigo)
     await enviarEmail(email, '', codigo, 'cadastro')
+
     res.json({ ok: true })
   } catch (err) {
     console.error('Erro enviar-codigo:', err.message)
@@ -118,31 +126,34 @@ router.post('/enviar-codigo', async (req, res) => {
   }
 })
 
-// ── VERIFICAR CÓDIGO (cadastro e recuperação) ─────────
+// ── VERIFICAR CÓDIGO ──────────────────────────────────
 router.post('/verificar-codigo', async (req, res) => {
   try {
     const { email, codigo, tipo = 'cadastro' } = req.body
     if (!email || !emailValido(email))
       return res.status(400).json({ erro: 'Email inválido' })
 
-    const registro = await CodigoVerificacao.findOne({ email: email.toLowerCase(), tipo })
+    // Pega o mais recente (caso haja múltiplos)
+    const registro = await CodigoVerificacao.findOne(
+      { email: email.toLowerCase(), tipo },
+      {},
+      { sort: { criadoEm: -1 } }
+    )
+
     if (!registro)
       return res.status(400).json({ erro: 'Código expirado. Solicite um novo.' })
 
-    // Comparação segura contra timing attacks
     const esperado = Buffer.from(registro.codigo)
-    const recebido = Buffer.from(String(codigo))
-    const valido = esperado.length === recebido.length
+    const recebido = Buffer.from(String(codigo).trim())
+    const valido   = esperado.length === recebido.length
       && crypto.timingSafeEqual(esperado, recebido)
 
     if (!valido)
       return res.status(400).json({ erro: 'Código incorreto. Verifique e tente novamente.' })
 
     if (tipo === 'cadastro') {
-      // Remove após verificar — o cadastro completo acontece na rota /cadastro
-      await CodigoVerificacao.deleteOne({ _id: registro._id })
+      await CodigoVerificacao.deleteMany({ email: email.toLowerCase(), tipo: 'cadastro' })
     } else {
-      // Marca como verificado para permitir troca de senha
       await CodigoVerificacao.updateOne({ _id: registro._id }, { $set: { verificado: true } })
     }
 
@@ -153,7 +164,7 @@ router.post('/verificar-codigo', async (req, res) => {
   }
 })
 
-// ── CADASTRO (chamado após verificar código) ──────────
+// ── CADASTRO (após verificar código) ─────────────────
 router.post('/cadastro', async (req, res) => {
   try {
     const { nome, email, senha, negocio, segmento, servicos } = req.body
@@ -161,22 +172,31 @@ router.post('/cadastro', async (req, res) => {
     if (!nome || !email || !senha)
       return res.status(400).json({ erro: 'Dados incompletos' })
 
-    const userExistente = await User.findOne({ email: email.toLowerCase(), verificado: true })
-    if (userExistente)
+    const userVerificado = await User.findOne({ email: email.toLowerCase(), verificado: true })
+    if (userVerificado)
       return res.status(400).json({ erro: 'Email já cadastrado' })
 
     const senhaCriptografada = await bcrypt.hash(senha, 10)
 
-    const user = await User.create({
-      nome,
-      email: email.toLowerCase(),
-      senha: senhaCriptografada,
-      verificado: true,
-    })
+    // Reaproveita rascunho pendente ou cria novo
+    let user = await User.findOne({ email: email.toLowerCase(), verificado: false })
+    if (user) {
+      user.nome       = nome
+      user.senha      = senhaCriptografada
+      user.verificado = true
+      await user.save()
+    } else {
+      user = await User.create({
+        nome,
+        email: email.toLowerCase(),
+        senha: senhaCriptografada,
+        verificado: true,
+      })
+    }
 
     const neg = await Negocio.create({
-      userId: user._id,
-      nome: negocio,
+      userId:   user._id,
+      nome:     negocio,
       segmento: segmento || 'Outro',
       servicos: servicos || [],
     })
@@ -190,40 +210,41 @@ router.post('/cadastro', async (req, res) => {
 })
 
 // ── LOGIN ─────────────────────────────────────────────
+// CORREÇÃO PRINCIPAL: usuários com senha válida entram mesmo com verificado=false
+// Isso resolve o problema de usuários criados antes do sistema de verificação
 router.post('/login', async (req, res) => {
   try {
     const { email, senha } = req.body
-    const user = await User.findOne({ email: email?.toLowerCase() })
+
+    if (!email || !senha)
+      return res.status(400).json({ erro: 'Preencha email e senha' })
+
+    const user = await User.findOne({ email: email.toLowerCase() })
 
     if (!user || user.senha === 'pendente')
       return res.status(400).json({ erro: 'Email ou senha incorretos' })
 
-    const ok = await user.compararSenha(senha)
-    if (!ok)
+    const senhaCorreta = await user.compararSenha(senha)
+    if (!senhaCorreta)
       return res.status(400).json({ erro: 'Email ou senha incorretos' })
 
+    // Auto-corrige usuários antigos com verificado=false mas senha real
     if (!user.verificado) {
-      const codigo = gerarCodigo()
-      await CodigoVerificacao.findOneAndUpdate(
-        { email: user.email, tipo: 'cadastro' },
-        { codigo, criadoEm: new Date(), verificado: false },
-        { upsert: true, new: true }
-      )
-      await enviarEmail(user.email, user.nome, codigo, 'cadastro')
-      return res.status(403).json({ erro: 'Confirme seu email antes de entrar. Reenviamos o código.' })
+      user.verificado = true
+      await user.save()
     }
 
-    const negocios = await Negocio.find({ userId: user._id }).sort({ criadoEm: 1 })
+    const negocios    = await Negocio.find({ userId: user._id }).sort({ criadoEm: 1 })
     const negPrincipal = negocios[0]
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' })
+    const token       = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' })
 
     res.json({
       token,
-      nome: user.nome,
-      negocio: negPrincipal?.nome || '',
-      negocioId: negPrincipal?._id || null,
-      userId: user._id,
-      negocios: negocios.map(n => ({ _id: n._id, nome: n.nome, segmento: n.segmento })),
+      nome:      user.nome,
+      negocio:   negPrincipal?.nome   || '',
+      negocioId: negPrincipal?._id    || null,
+      userId:    user._id,
+      negocios:  negocios.map(n => ({ _id: n._id, nome: n.nome, segmento: n.segmento })),
     })
   } catch (err) {
     console.error('Erro no login:', err.message)
@@ -238,17 +259,12 @@ router.post('/recuperar-senha', async (req, res) => {
     if (!email || !emailValido(email))
       return res.status(400).json({ erro: 'Email inválido' })
 
-    const user = await User.findOne({ email: email.toLowerCase(), verificado: true })
-    if (user) {
+    const user = await User.findOne({ email: email.toLowerCase() })
+    if (user && user.senha !== 'pendente') {
       const codigo = gerarCodigo()
-      await CodigoVerificacao.findOneAndUpdate(
-        { email: user.email, tipo: 'recuperacao' },
-        { codigo, criadoEm: new Date(), verificado: false },
-        { upsert: true, new: true }
-      )
+      await salvarCodigo(email, 'recuperacao', codigo)
       await enviarEmail(user.email, user.nome, codigo, 'recuperacao')
     }
-    // Responde ok mesmo se email não existe (não revela cadastros)
     res.json({ ok: true })
   } catch (err) {
     console.error('Erro recuperar-senha:', err.message)
@@ -266,9 +282,9 @@ router.post('/nova-senha', async (req, res) => {
       return res.status(400).json({ erro: 'Senha deve ter ao menos 6 caracteres' })
 
     const registro = await CodigoVerificacao.findOne({
-      email: email.toLowerCase(),
-      tipo: 'recuperacao',
-      verificado: true
+      email:      email.toLowerCase(),
+      tipo:       'recuperacao',
+      verificado: true,
     })
     if (!registro)
       return res.status(403).json({ erro: 'Verificação não concluída. Solicite um novo código.' })
@@ -276,12 +292,12 @@ router.post('/nova-senha', async (req, res) => {
     const hash = await bcrypt.hash(senha, 10)
     const resultado = await User.updateOne(
       { email: email.toLowerCase() },
-      { $set: { senha: hash } }
+      { $set: { senha: hash, verificado: true } }
     )
     if (resultado.matchedCount === 0)
       return res.status(404).json({ erro: 'Usuário não encontrado' })
 
-    await CodigoVerificacao.deleteOne({ _id: registro._id })
+    await CodigoVerificacao.deleteMany({ email: email.toLowerCase(), tipo: 'recuperacao' })
     res.json({ ok: true })
   } catch (err) {
     console.error('Erro nova-senha:', err.message)
@@ -289,7 +305,10 @@ router.post('/nova-senha', async (req, res) => {
   }
 })
 
-// ── LISTAR NEGÓCIOS DO USUÁRIO ────────────────────────
+// ══════════════════════════════════════════════════════
+// ROTAS DE NEGÓCIOS
+// ══════════════════════════════════════════════════════
+
 router.get('/negocios', autenticar, async (req, res) => {
   try {
     const negocios = await Negocio.find({ userId: req.userId }).sort({ criadoEm: 1 })
@@ -299,12 +318,11 @@ router.get('/negocios', autenticar, async (req, res) => {
   }
 })
 
-// ── CRIAR NOVO NEGÓCIO ────────────────────────────────
 router.post('/negocios', autenticar, async (req, res) => {
   try {
-    const user = await User.findById(req.userId)
+    const user   = await User.findById(req.userId)
     const limite = user.limiteNegocios()
-    const total = await Negocio.countDocuments({ userId: req.userId })
+    const total  = await Negocio.countDocuments({ userId: req.userId })
     if (total >= limite) {
       return res.status(403).json({
         erro: limite === 1
@@ -321,7 +339,6 @@ router.post('/negocios', autenticar, async (req, res) => {
   }
 })
 
-// ── EXCLUIR NEGÓCIO ───────────────────────────────────
 router.delete('/negocios/:negocioId', autenticar, async (req, res) => {
   try {
     const neg = await Negocio.findOne({ _id: req.params.negocioId, userId: req.userId })
@@ -335,21 +352,20 @@ router.delete('/negocios/:negocioId', autenticar, async (req, res) => {
   }
 })
 
-// ── BUSCAR NEGÓCIO PÚBLICO ────────────────────────────
 router.get('/negocio/:id', async (req, res) => {
   try {
     let neg = await Negocio.findById(req.params.id)
     if (neg) {
       return res.json({
-        negocio: neg.nome,
-        segmento: neg.segmento,
-        servicos: neg.servicos,
-        horarios: neg.horarios,
-        intervalo: neg.intervalo,
-        pausas: neg.pausas || [],
-        pagamentos: neg.pagamentos || {},
-        bio: neg.bio,
-        lembrete: neg.lembrete,
+        negocio:            neg.nome,
+        segmento:           neg.segmento,
+        servicos:           neg.servicos,
+        horarios:           neg.horarios,
+        intervalo:          neg.intervalo,
+        pausas:             neg.pausas || [],
+        pagamentos:         neg.pagamentos || {},
+        bio:                neg.bio,
+        lembrete:           neg.lembrete,
         intervalosServicos: neg.intervalosServicos || {},
       })
     }
@@ -358,12 +374,12 @@ router.get('/negocio/:id', async (req, res) => {
     const negUser = await Negocio.findOne({ userId: user._id })
     if (negUser) {
       return res.json({
-        negocio: negUser.nome,
+        negocio:  negUser.nome,
         segmento: negUser.segmento,
         servicos: negUser.servicos,
         horarios: negUser.horarios,
         intervalo: negUser.intervalo,
-        bio: negUser.bio,
+        bio:      negUser.bio,
       })
     }
     res.status(404).json({ erro: 'Negócio não encontrado' })
@@ -372,7 +388,6 @@ router.get('/negocio/:id', async (req, res) => {
   }
 })
 
-// ── ATUALIZAR SERVIÇOS ────────────────────────────────
 router.patch('/servicos', autenticar, async (req, res) => {
   try {
     const { negocioId, servicos } = req.body
@@ -388,12 +403,11 @@ router.patch('/servicos', autenticar, async (req, res) => {
   }
 })
 
-// ── ATUALIZAR HORÁRIOS ────────────────────────────────
 router.patch('/horarios', autenticar, async (req, res) => {
   try {
     const { negocioId, horarios, intervalo, pausas, intervalosServicos } = req.body
     const update = { horarios, intervalo }
-    if (pausas !== undefined) update.pausas = pausas
+    if (pausas             !== undefined) update.pausas             = pausas
     if (intervalosServicos !== undefined) update.intervalosServicos = intervalosServicos
     await Negocio.findOneAndUpdate(
       { _id: negocioId, userId: req.userId },
@@ -406,7 +420,6 @@ router.patch('/horarios', autenticar, async (req, res) => {
   }
 })
 
-// ── ATUALIZAR PAGAMENTOS ──────────────────────────────
 router.patch('/pagamentos', autenticar, async (req, res) => {
   try {
     const { negocioId, pagamentos } = req.body
@@ -421,7 +434,6 @@ router.patch('/pagamentos', autenticar, async (req, res) => {
   }
 })
 
-// ── ATUALIZAR BIO ─────────────────────────────────────
 router.patch('/bio', autenticar, async (req, res) => {
   try {
     const { negocioId, ...bioData } = req.body
@@ -436,7 +448,6 @@ router.patch('/bio', autenticar, async (req, res) => {
   }
 })
 
-// ── ATUALIZAR NOME DO NEGÓCIO ─────────────────────────
 router.patch('/negocios/:negocioId', autenticar, async (req, res) => {
   try {
     const { nome, segmento } = req.body
@@ -452,7 +463,6 @@ router.patch('/negocios/:negocioId', autenticar, async (req, res) => {
   }
 })
 
-// ── ATUALIZAR LEMBRETES ───────────────────────────────
 router.patch('/lembretes', autenticar, async (req, res) => {
   try {
     const { negocioId, ativo, numero, mensagem } = req.body
