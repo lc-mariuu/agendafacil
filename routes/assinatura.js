@@ -52,7 +52,7 @@ router.get('/status', autenticar, async (req, res) => {
   }
 })
 
-// ── CHECKOUT (gera link de pagamento AbacatePay) ─────────────────
+// ── CHECKOUT ─────────────────────────────────────────────────────
 router.post('/checkout', autenticar, async (req, res) => {
   try {
     const { plano } = req.body
@@ -60,8 +60,6 @@ router.post('/checkout', autenticar, async (req, res) => {
 
     const productId = PRODUTOS[plano]
     if (!productId) return res.status(400).json({ erro: 'Plano inválido' })
-
-    console.log(`[checkout] userId: ${user._id} | email: ${user.email} | customerId existente: ${user.abacateCustomerId || 'nenhum'}`)
 
     let customerId = user.abacateCustomerId
     if (!customerId) {
@@ -72,11 +70,8 @@ router.post('/checkout', autenticar, async (req, res) => {
         taxId:     '111.444.777-35',
       })
       customerId = cliente.data.id
-      console.log(`[checkout] Novo customerId criado: ${customerId}`)
       await User.findByIdAndUpdate(req.userId, { abacateCustomerId: customerId })
     }
-
-    console.log(`[checkout] Usando customerId: ${customerId}`)
 
     const { data: billing } = await abacate.post('/billing/create', {
       frequency:     'ONE_TIME',
@@ -94,7 +89,15 @@ router.post('/checkout', autenticar, async (req, res) => {
       metadata:      { userId: String(user._id), plano },
     })
 
-    console.log(`[checkout] Billing criado: ${billing.data.id} | url: ${billing.data.url}`)
+    const billingId = billing.data.id
+
+    // Salva o billingId pendente no usuário para identificar no webhook
+    await User.findByIdAndUpdate(req.userId, {
+      abacateSubscriptionId: billingId,
+      pendingPlano: plano,
+    })
+
+    console.log(`[checkout] userId: ${user._id} | billingId: ${billingId} | plano: ${plano}`)
     res.json({ url: billing.data.url })
   } catch (err) {
     console.error('[checkout]', err.response?.data || err.message)
@@ -159,66 +162,67 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
     return res.status(400).send('Payload inválido')
   }
 
-  console.log('[webhook] Evento AbacatePay:', event.event)
+  console.log('[webhook] Evento:', event.event)
 
   try {
-    const data = event.data || {}
+    const data    = event.data || {}
+    const billing = data.billing || {}
+    const billingId  = billing.id
+    const customerId = billing.customer?.id
+    const email      = billing.customer?.metadata?.email
 
-    async function acharUsuario(billing) {
-      const customerId = billing.customer?.id
-      const email      = billing.customer?.metadata?.email
+    console.log(`[webhook] billingId: ${billingId} | customerId: ${customerId} | email: ${email}`)
 
-      console.log(`[webhook] Buscando usuário — customerId: ${customerId} | email: ${email}`)
+    async function acharUsuario() {
+      // 1. Busca pelo billingId (mais confiável — salvo no checkout)
+      let user = billingId
+        ? await User.findOne({ abacateSubscriptionId: billingId })
+        : null
+      if (user) { console.log(`[webhook] Encontrado por billingId: ${user._id}`); return user }
 
-      let user = customerId
+      // 2. Busca pelo customerId
+      user = customerId
         ? await User.findOne({ abacateCustomerId: customerId })
         : null
+      if (user) { console.log(`[webhook] Encontrado por customerId: ${user._id}`); return user }
 
+      // 3. Busca pelo email
+      user = email
+        ? await User.findOne({ email: email.toLowerCase() })
+        : null
       if (user) {
-        console.log(`[webhook] Usuário encontrado por customerId: ${user._id} | email: ${user.email}`)
+        console.log(`[webhook] Encontrado por email: ${user._id}`)
+        if (customerId) await User.findByIdAndUpdate(user._id, { abacateCustomerId: customerId })
+        return user
       }
 
-      if (!user && email) {
-        user = await User.findOne({ email: email.toLowerCase() })
-        if (user) {
-          console.log(`[webhook] Usuário encontrado por email: ${user._id} | email: ${user.email}`)
-          if (customerId) {
-            await User.findByIdAndUpdate(user._id, { abacateCustomerId: customerId })
-            console.log(`[webhook] customerId ${customerId} salvo no usuário ${user._id}`)
-          }
-        }
-      }
-
-      if (!user) {
-        console.log(`[webhook] AVISO: usuário não encontrado — customerId: ${customerId}, email: ${email}`)
-      }
-      return user
+      console.log(`[webhook] AVISO: usuário não encontrado`)
+      return null
     }
 
     switch (event.event) {
 
       case 'subscription.paid':
       case 'billing.paid': {
-        const billing = data.billing || {}
-        const prodId  = billing.products?.[0]?.externalId
-        const plano   = prodId === process.env.ABACATEPAY_PRODUCT_PRO ? 'pro' : 'basico'
-        const user    = await acharUsuario(billing)
+        const prodId = billing.products?.[0]?.externalId
+        const plano  = prodId === process.env.ABACATEPAY_PRODUCT_PRO ? 'pro' : 'basico'
+        const user   = await acharUsuario()
         if (!user) break
 
         await User.findByIdAndUpdate(user._id, {
           assinaturaAtiva:       true,
           assinaturaCancelando:  false,
           plano,
-          abacateSubscriptionId: billing.id || '',
+          abacateSubscriptionId: billingId || '',
+          pendingPlano:          null,
         })
-        console.log(`[webhook] ✓ Pagamento confirmado — userId: ${user._id} | email: ${user.email} | plano: ${plano}`)
+        console.log(`[webhook] ✓ Ativado — userId: ${user._id} | plano: ${plano}`)
         break
       }
 
       case 'billing.failed':
       case 'subscription.payment_failed': {
-        const billing = data.billing || {}
-        const user    = await acharUsuario(billing)
+        const user = await acharUsuario()
         if (!user) break
         await User.findByIdAndUpdate(user._id, { assinaturaAtiva: false })
         console.log(`[webhook] Pagamento falhou — userId: ${user._id}`)
@@ -227,8 +231,7 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
 
       case 'subscription.canceled':
       case 'subscription.expired': {
-        const billing = data.billing || {}
-        const user    = await acharUsuario(billing)
+        const user = await acharUsuario()
         if (!user) break
         await User.findByIdAndUpdate(user._id, {
           assinaturaAtiva:       false,
@@ -236,12 +239,12 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
           plano:                 'inativo',
           abacateSubscriptionId: '',
         })
-        console.log(`[webhook] Assinatura encerrada — userId: ${user._id}`)
+        console.log(`[webhook] Encerrado — userId: ${user._id}`)
         break
       }
     }
   } catch (err) {
-    console.error('[webhook] Erro ao processar evento:', err.message)
+    console.error('[webhook] Erro:', err.message)
   }
 
   res.json({ received: true })
