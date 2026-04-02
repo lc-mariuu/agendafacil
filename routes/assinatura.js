@@ -27,9 +27,6 @@ const autenticar = async (req, res, next) => {
 }
 
 // ── PLANOS ───────────────────────────────────────────────────────
-// Configure no .env:
-//   ABACATEPAY_PRODUCT_BASICO=prod_xxx
-//   ABACATEPAY_PRODUCT_PRO=prod_xxx
 const PRODUTOS = {
   basico: process.env.ABACATEPAY_PRODUCT_BASICO,
   pro:    process.env.ABACATEPAY_PRODUCT_PRO,
@@ -68,31 +65,31 @@ router.post('/checkout', autenticar, async (req, res) => {
     let customerId = user.abacateCustomerId
     if (!customerId) {
       const { data: cliente } = await abacate.post('/customer/create', {
-      name:      user.nome,
-      email:     user.email,
-      cellphone: '11999999999',
-      taxId:     '111.444.777-35',
-    })
+        name:      user.nome,
+        email:     user.email,
+        cellphone: '11999999999',
+        taxId:     '111.444.777-35',
+      })
       customerId = cliente.data.id
       await User.findByIdAndUpdate(req.userId, { abacateCustomerId: customerId })
     }
 
     // Cria cobrança de assinatura
     const { data: billing } = await abacate.post('/billing/create', {
-    frequency:     'ONE_TIME',
-    methods:       ['PIX', 'CARD'],
-    products: [{
-    externalId:  productId,
-    name:        plano === 'pro' ? 'Plano Profissional' : 'Plano Básico',
-    description: plano === 'pro' ? 'Assinatura mensal Profissional' : 'Assinatura mensal Básico',
-    quantity:    1,
-    price:       plano === 'pro' ? 4900 : 2900, // centavos
-   }],
-    customerId:    customerId,
-    returnUrl:     `${process.env.URL_BASE}/planos.html`,
-    completionUrl: `${process.env.URL_BASE}/painel.html?assinatura=sucesso`,
-    metadata:      { userId: String(user._id), plano },
-})
+      frequency:     'ONE_TIME',
+      methods:       ['PIX', 'CARD'],
+      products: [{
+        externalId:  productId,
+        name:        plano === 'pro' ? 'Plano Profissional' : 'Plano Básico',
+        description: plano === 'pro' ? 'Assinatura mensal Profissional' : 'Assinatura mensal Básico',
+        quantity:    1,
+        price:       plano === 'pro' ? 4900 : 2900,
+      }],
+      customerId:    customerId,
+      returnUrl:     `${process.env.URL_BASE}/planos.html`,
+      completionUrl: `${process.env.URL_BASE}/painel.html?assinatura=sucesso`,
+      metadata:      { userId: String(user._id), plano },
+    })
 
     res.json({ url: billing.data.url })
   } catch (err) {
@@ -138,13 +135,7 @@ router.post('/portal', autenticar, async (req, res) => {
 })
 
 // ── WEBHOOK AbacatePay ───────────────────────────────────────────
-// Registre no painel AbacatePay:
-//   POST  https://seudominio.com/api/assinatura/webhook
-//
-// Valide a assinatura com o header "abacatepay-signature"
-// e a variável ABACATEPAY_WEBHOOK_SECRET no .env
 router.post('/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
-  // ── Validação de assinatura ──────────────────────────────────
   const crypto = require('crypto')
   const sig    = req.headers['abacatepay-signature']
   const secret = process.env.ABACATEPAY_WEBHOOK_SECRET
@@ -166,19 +157,22 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
   }
 
   console.log('[webhook] Evento AbacatePay:', event.event)
+  console.log('[webhook] Payload completo:', JSON.stringify(event, null, 2))
 
   try {
     const data = event.data || {}
 
     switch (event.event) {
 
-      // Assinatura criada ou renovada com sucesso
       case 'subscription.paid':
       case 'billing.paid': {
-        const meta  = data.metadata || {}
+        const meta   = data.metadata || {}
         const userId = meta.userId
         const plano  = meta.plano || 'basico'
-        if (!userId) break
+        if (!userId) {
+          console.log('[webhook] AVISO: userId não encontrado no metadata:', JSON.stringify(meta))
+          break
+        }
 
         await User.findByIdAndUpdate(userId, {
           assinaturaAtiva:      true,
@@ -190,7 +184,6 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
         break
       }
 
-      // Pagamento falhou (cartão recusado, expirado, etc.)
       case 'billing.failed':
       case 'subscription.payment_failed': {
         const meta   = data.metadata || {}
@@ -201,7 +194,6 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
         break
       }
 
-      // Assinatura cancelada definitivamente
       case 'subscription.canceled':
       case 'subscription.expired': {
         const meta   = data.metadata || {}
