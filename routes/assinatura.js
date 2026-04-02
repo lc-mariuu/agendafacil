@@ -61,7 +61,6 @@ router.post('/checkout', autenticar, async (req, res) => {
     const productId = PRODUTOS[plano]
     if (!productId) return res.status(400).json({ erro: 'Plano inválido' })
 
-    // Cria ou recupera cliente no AbacatePay
     let customerId = user.abacateCustomerId
     if (!customerId) {
       const { data: cliente } = await abacate.post('/customer/create', {
@@ -74,7 +73,6 @@ router.post('/checkout', autenticar, async (req, res) => {
       await User.findByIdAndUpdate(req.userId, { abacateCustomerId: customerId })
     }
 
-    // Cria cobrança de assinatura
     const { data: billing } = await abacate.post('/billing/create', {
       frequency:     'ONE_TIME',
       methods:       ['PIX', 'CARD'],
@@ -98,7 +96,7 @@ router.post('/checkout', autenticar, async (req, res) => {
   }
 })
 
-// ── CANCELAR (no fim do período) ────────────────────────────────
+// ── CANCELAR ────────────────────────────────────────────────────
 router.post('/cancelar', autenticar, async (req, res) => {
   try {
     const user = await User.findById(req.userId)
@@ -106,7 +104,6 @@ router.post('/cancelar', autenticar, async (req, res) => {
       return res.status(400).json({ erro: 'Nenhuma assinatura ativa encontrada' })
 
     await abacate.post(`/subscription/${user.abacateSubscriptionId}/cancel`)
-
     await User.findByIdAndUpdate(req.userId, { assinaturaCancelando: true })
     res.json({ ok: true, mensagem: 'Assinatura será cancelada no fim do período atual' })
   } catch (err) {
@@ -115,7 +112,7 @@ router.post('/cancelar', autenticar, async (req, res) => {
   }
 })
 
-// ── PORTAL (link para gerenciar cartão/faturas) ──────────────────
+// ── PORTAL ──────────────────────────────────────────────────────
 router.post('/portal', autenticar, async (req, res) => {
   try {
     const user = await User.findById(req.userId)
@@ -157,63 +154,75 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
   }
 
   console.log('[webhook] Evento AbacatePay:', event.event)
-  console.log('[webhook] Payload completo:', JSON.stringify(event, null, 2))
 
   try {
     const data = event.data || {}
+
+    // Helper: encontra usuário por customerId ou email
+    async function acharUsuario(billing) {
+      const customerId = billing.customer?.id
+      const email      = billing.customer?.metadata?.email
+
+      let user = customerId
+        ? await User.findOne({ abacateCustomerId: customerId })
+        : null
+
+      if (!user && email) {
+        user = await User.findOne({ email: email.toLowerCase() })
+        // Salva customerId para futuras cobranças
+        if (user && customerId) {
+          await User.findByIdAndUpdate(user._id, { abacateCustomerId: customerId })
+        }
+      }
+
+      if (!user) {
+        console.log(`[webhook] AVISO: usuário não encontrado — customerId: ${customerId}, email: ${email}`)
+      }
+      return user
+    }
 
     switch (event.event) {
 
       case 'subscription.paid':
       case 'billing.paid': {
         const billing = data.billing || {}
-        const email   = billing.customer?.metadata?.email
         const prodId  = billing.products?.[0]?.externalId
         const plano   = prodId === process.env.ABACATEPAY_PRODUCT_PRO ? 'pro' : 'basico'
-
-        if (!email) {
-          console.log('[webhook] AVISO: email não encontrado no payload')
-          break
-        }
-
-        const user = await User.findOne({ email: email.toLowerCase() })
-        if (!user) {
-          console.log(`[webhook] AVISO: usuário não encontrado para email: ${email}`)
-          break
-        }
+        const user    = await acharUsuario(billing)
+        if (!user) break
 
         await User.findByIdAndUpdate(user._id, {
-          assinaturaAtiva:      true,
-          assinaturaCancelando: false,
+          assinaturaAtiva:       true,
+          assinaturaCancelando:  false,
           plano,
           abacateSubscriptionId: billing.id || '',
         })
-        console.log(`[webhook] Pagamento confirmado — email: ${email}, plano: ${plano}`)
+        console.log(`[webhook] Pagamento confirmado — userId: ${user._id}, plano: ${plano}`)
         break
       }
 
       case 'billing.failed':
       case 'subscription.payment_failed': {
-        const meta   = data.metadata || {}
-        const userId = meta.userId
-        if (!userId) break
-        await User.findByIdAndUpdate(userId, { assinaturaAtiva: false })
-        console.log(`[webhook] Pagamento falhou — acesso suspenso userId: ${userId}`)
+        const billing = data.billing || {}
+        const user    = await acharUsuario(billing)
+        if (!user) break
+        await User.findByIdAndUpdate(user._id, { assinaturaAtiva: false })
+        console.log(`[webhook] Pagamento falhou — userId: ${user._id}`)
         break
       }
 
       case 'subscription.canceled':
       case 'subscription.expired': {
-        const meta   = data.metadata || {}
-        const userId = meta.userId
-        if (!userId) break
-        await User.findByIdAndUpdate(userId, {
-          assinaturaAtiva:      false,
-          assinaturaCancelando: false,
-          plano:                'inativo',
+        const billing = data.billing || {}
+        const user    = await acharUsuario(billing)
+        if (!user) break
+        await User.findByIdAndUpdate(user._id, {
+          assinaturaAtiva:       false,
+          assinaturaCancelando:  false,
+          plano:                 'inativo',
           abacateSubscriptionId: '',
         })
-        console.log(`[webhook] Assinatura encerrada — userId: ${userId}`)
+        console.log(`[webhook] Assinatura encerrada — userId: ${user._id}`)
         break
       }
     }
