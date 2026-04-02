@@ -61,6 +61,8 @@ router.post('/checkout', autenticar, async (req, res) => {
     const productId = PRODUTOS[plano]
     if (!productId) return res.status(400).json({ erro: 'Plano inválido' })
 
+    console.log(`[checkout] userId: ${user._id} | email: ${user.email} | customerId existente: ${user.abacateCustomerId || 'nenhum'}`)
+
     let customerId = user.abacateCustomerId
     if (!customerId) {
       const { data: cliente } = await abacate.post('/customer/create', {
@@ -70,8 +72,11 @@ router.post('/checkout', autenticar, async (req, res) => {
         taxId:     '111.444.777-35',
       })
       customerId = cliente.data.id
+      console.log(`[checkout] Novo customerId criado: ${customerId}`)
       await User.findByIdAndUpdate(req.userId, { abacateCustomerId: customerId })
     }
+
+    console.log(`[checkout] Usando customerId: ${customerId}`)
 
     const { data: billing } = await abacate.post('/billing/create', {
       frequency:     'ONE_TIME',
@@ -89,6 +94,7 @@ router.post('/checkout', autenticar, async (req, res) => {
       metadata:      { userId: String(user._id), plano },
     })
 
+    console.log(`[checkout] Billing criado: ${billing.data.id} | url: ${billing.data.url}`)
     res.json({ url: billing.data.url })
   } catch (err) {
     console.error('[checkout]', err.response?.data || err.message)
@@ -158,20 +164,28 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
   try {
     const data = event.data || {}
 
-    // Helper: encontra usuário por customerId ou email
     async function acharUsuario(billing) {
       const customerId = billing.customer?.id
       const email      = billing.customer?.metadata?.email
+
+      console.log(`[webhook] Buscando usuário — customerId: ${customerId} | email: ${email}`)
 
       let user = customerId
         ? await User.findOne({ abacateCustomerId: customerId })
         : null
 
+      if (user) {
+        console.log(`[webhook] Usuário encontrado por customerId: ${user._id} | email: ${user.email}`)
+      }
+
       if (!user && email) {
         user = await User.findOne({ email: email.toLowerCase() })
-        // Salva customerId para futuras cobranças
-        if (user && customerId) {
-          await User.findByIdAndUpdate(user._id, { abacateCustomerId: customerId })
+        if (user) {
+          console.log(`[webhook] Usuário encontrado por email: ${user._id} | email: ${user.email}`)
+          if (customerId) {
+            await User.findByIdAndUpdate(user._id, { abacateCustomerId: customerId })
+            console.log(`[webhook] customerId ${customerId} salvo no usuário ${user._id}`)
+          }
         }
       }
 
@@ -197,7 +211,7 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
           plano,
           abacateSubscriptionId: billing.id || '',
         })
-        console.log(`[webhook] Pagamento confirmado — userId: ${user._id}, plano: ${plano}`)
+        console.log(`[webhook] ✓ Pagamento confirmado — userId: ${user._id} | email: ${user.email} | plano: ${plano}`)
         break
       }
 
