@@ -121,15 +121,21 @@ router.post('/cancelar', autenticar, async (req, res) => {
 })
 
 // ── PORTAL ──────────────────────────────────────────────────────
-// AbacatePay não possui portal de autoatendimento como o Stripe.
-// Redirecionamos para a página de cancelamento interna do sistema.
+// CORREÇÃO: verificar assinaturaAtiva em vez de abacateCustomerId.
+// O customerId pode não existir para usuários em trial,
+// mas o botão de portal só aparece no frontend quando assinaturaAtiva=true,
+// garantindo que o customerId já foi criado no checkout.
 router.post('/portal', autenticar, async (req, res) => {
   try {
     const user = await User.findById(req.userId)
-    if (!user || !user.abacateCustomerId)
-      return res.status(400).json({ erro: 'Cliente não encontrado' })
 
-    res.json({ url: `${process.env.URL_BASE}/cancelar.html` })
+    if (!user || !user.assinaturaAtiva) {
+      return res.status(400).json({ erro: 'Nenhuma assinatura ativa para gerenciar' })
+    }
+
+    // AbacatePay não possui portal de autoatendimento como o Stripe.
+    // Redirecionamos para a página de cancelamento interna do sistema.
+    res.json({ url: `${process.env.URL_BASE}/cancelar-assinatura.html` })
   } catch (err) {
     console.error('[portal]', err.message)
     res.status(500).json({ erro: 'Erro ao abrir portal' })

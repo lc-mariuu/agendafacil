@@ -179,7 +179,6 @@ nav {
 .btn-portal:hover:not(:disabled) { background: #dbeafe; }
 .btn-portal:disabled { opacity: 0.6; cursor: not-allowed; }
 
-/* Toast de erro do portal */
 .portal-erro {
   font-size: 12px; color: #dc2626;
   margin-top: 6px; display: none;
@@ -206,7 +205,6 @@ nav {
 
 <div class="page">
 
-  <!-- STATUS DO USUÁRIO (aparece se logado) -->
   <div class="status-card" id="status-card" style="display:none">
     <div>
       <div class="status-label">Plano atual</div>
@@ -218,6 +216,7 @@ nav {
     </div>
     <div id="status-extra"></div>
     <div style="display:flex; flex-direction:column; align-items:flex-end; gap:4px;">
+      <!-- CORREÇÃO: botão só aparece se assinaturaAtiva=true (tem abacateCustomerId garantido) -->
       <button class="btn-portal" id="btn-portal" onclick="abrirPortal()" style="display:none">
         Gerenciar assinatura
       </button>
@@ -358,10 +357,13 @@ async function carregarStatus() {
     })
     const data = await res.json()
     if (!res.ok) return
+
     const card = document.getElementById('status-card')
     card.style.display = 'flex'
+
     const planos = { trial: 'Trial gratuito', basico: 'Básico', pro: 'Profissional', inativo: 'Inativo' }
     document.getElementById('status-plano-txt').textContent = planos[data.plano] || data.plano
+
     const badge = document.getElementById('status-badge')
     if (data.plano === 'trial') {
       badge.textContent = `${data.diasRestantes} dias restantes`
@@ -369,10 +371,13 @@ async function carregarStatus() {
     } else if (data.assinaturaAtiva) {
       badge.textContent = 'Ativo'
       badge.className = 'status-badge sb-ativo'
+      // CORREÇÃO: só exibe o botão se a assinatura estiver realmente ativa
+      // garantindo que abacateCustomerId existe no backend
       document.getElementById('btn-portal').style.display = 'block'
     } else {
       badge.textContent = 'Inativo'
       badge.className = 'status-badge sb-inativo'
+      // Inativo: não exibe botão de gerenciar
     }
   } catch(e) {}
 }

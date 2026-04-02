@@ -42,7 +42,7 @@ p{font-size:14px;color:#5a5a6a;line-height:1.6;margin-bottom:20px}
     <svg width="32" height="32" viewBox="0 0 32 32" fill="none"><path d="M16 10v8M16 22v.5" stroke="#dc2626" stroke-width="2.5" stroke-linecap="round"/><path d="M14 4.27L2.5 24a2 2 0 0 0 1.74 3h23.52a2 2 0 0 0 1.74-3L18 4.27a2 2 0 0 0-3.48 0Z" stroke="#dc2626" stroke-width="2" stroke-linejoin="round"/></svg>
   </div>
   <h2>Cancelar agendamento?</h2>
-  <p>Tem certeza que deseja cancelar? Essa acao nao pode ser desfeita.</p>
+  <p>Tem certeza que deseja cancelar? Essa ação não pode ser desfeita.</p>
   <div class="resumo" id="resumo"></div>
   <div class="err-box" id="err-box" style="display:none"></div>
   <button class="btn-cancelar" id="btn-cancelar" onclick="cancelar()">Sim, cancelar agendamento</button>
@@ -61,14 +61,17 @@ p{font-size:14px;color:#5a5a6a;line-height:1.6;margin-bottom:20px}
   <div class="icon-wrap icon-warn">
     <svg width="32" height="32" viewBox="0 0 32 32" fill="none"><path d="M16 10v8M16 22v.5" stroke="#dc2626" stroke-width="2.5" stroke-linecap="round"/><path d="M14 4.27L2.5 24a2 2 0 0 0 1.74 3h23.52a2 2 0 0 0 1.74-3L18 4.27a2 2 0 0 0-3.48 0Z" stroke="#dc2626" stroke-width="2" stroke-linejoin="round"/></svg>
   </div>
-  <h2>Link invalido</h2>
-  <p>Este link de cancelamento e invalido ou o agendamento ja foi cancelado.</p>
+  <h2>Link inválido</h2>
+  <p id="erro-msg">Este link de cancelamento é inválido ou o agendamento já foi cancelado.</p>
 </div>
 
 <script>
 const API = 'https://agendafacil-wf3q.onrender.com/api'
 const params = new URLSearchParams(window.location.search)
 const agendamentoId = params.get('id')
+
+// CORREÇÃO: status que permitem cancelamento
+const STATUS_CANCELAVEIS = ['confirmado', 'agendado', 'pendente']
 
 function mostrar(id) {
   ['card-loading','card-confirmar','card-sucesso','card-erro'].forEach(c => {
@@ -79,46 +82,72 @@ function mostrar(id) {
 function formatarData(iso) {
   if (!iso) return '-'
   const [a,m,d] = iso.split('-')
-  const dias = ['Domingo','Segunda','Terca','Quarta','Quinta','Sexta','Sabado']
+  const dias = ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado']
   const dt = new Date(iso + 'T12:00:00')
   return dias[dt.getDay()] + ', ' + d + '/' + m + '/' + a
 }
 
 async function carregarAgendamento() {
-  if (!agendamentoId) { mostrar('card-erro'); return }
+  if (!agendamentoId) {
+    mostrar('card-erro')
+    return
+  }
   try {
     const res = await fetch(API + '/agendamentos/' + agendamentoId + '/publico')
-    if (!res.ok) { mostrar('card-erro'); return }
+
+    // CORREÇÃO: 404 ou qualquer erro HTTP mostra card-erro
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}))
+      document.getElementById('erro-msg').textContent =
+        data.erro || 'Este link de cancelamento é inválido ou o agendamento já foi cancelado.'
+      mostrar('card-erro')
+      return
+    }
+
     const data = await res.json()
-    if (data.status !== 'confirmado') { mostrar('card-erro'); return }
+
+    // CORREÇÃO: aceita qualquer status cancelável, não só 'confirmado'
+    if (!STATUS_CANCELAVEIS.includes(data.status?.toLowerCase())) {
+      mostrar('card-erro')
+      return
+    }
+
     document.getElementById('resumo').innerHTML =
-      '<div class="resumo-row"><span class="resumo-label">Cliente</span><span class="resumo-val">' + data.pacienteNome + '</span></div>' +
-      '<div class="resumo-row"><span class="resumo-label">Servico</span><span class="resumo-val">' + data.servico + '</span></div>' +
+      '<div class="resumo-row"><span class="resumo-label">Cliente</span><span class="resumo-val">' + (data.pacienteNome || '-') + '</span></div>' +
+      '<div class="resumo-row"><span class="resumo-label">Serviço</span><span class="resumo-val">' + (data.servico || '-') + '</span></div>' +
       '<div class="resumo-row"><span class="resumo-label">Data</span><span class="resumo-val">' + formatarData(data.data) + '</span></div>' +
-      '<div class="resumo-row"><span class="resumo-label">Horario</span><span class="resumo-val">' + data.hora + '</span></div>'
+      '<div class="resumo-row"><span class="resumo-label">Horário</span><span class="resumo-val">' + (data.hora || '-') + '</span></div>'
+
     mostrar('card-confirmar')
-  } catch(e) { mostrar('card-erro') }
+  } catch(e) {
+    mostrar('card-erro')
+  }
 }
 
 async function cancelar() {
   const btn = document.getElementById('btn-cancelar')
-  btn.disabled = true; btn.textContent = 'Cancelando...'
+  btn.disabled = true
+  btn.textContent = 'Cancelando...'
   document.getElementById('err-box').style.display = 'none'
   try {
     const res = await fetch(API + '/agendamentos/' + agendamentoId + '/cancelar-publico', {
-      method: 'PATCH', headers: { 'Content-Type': 'application/json' }
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' }
     })
-    if (res.ok) { mostrar('card-sucesso') }
-    else {
-      const data = await res.json()
+    if (res.ok) {
+      mostrar('card-sucesso')
+    } else {
+      const data = await res.json().catch(() => ({}))
       document.getElementById('err-box').textContent = data.erro || 'Erro ao cancelar. Tente novamente.'
       document.getElementById('err-box').style.display = 'block'
-      btn.disabled = false; btn.textContent = 'Sim, cancelar agendamento'
+      btn.disabled = false
+      btn.textContent = 'Sim, cancelar agendamento'
     }
   } catch(e) {
-    document.getElementById('err-box').textContent = 'Erro de conexao. Tente novamente.'
+    document.getElementById('err-box').textContent = 'Erro de conexão. Tente novamente.'
     document.getElementById('err-box').style.display = 'block'
-    btn.disabled = false; btn.textContent = 'Sim, cancelar agendamento'
+    btn.disabled = false
+    btn.textContent = 'Sim, cancelar agendamento'
   }
 }
 
