@@ -91,7 +91,6 @@ router.post('/checkout', autenticar, async (req, res) => {
 
     const billingId = billing.data.id
 
-    // Salva o billingId pendente no usuário para identificar no webhook
     await User.findByIdAndUpdate(req.userId, {
       abacateSubscriptionId: billingId,
       pendingPlano: plano,
@@ -122,20 +121,17 @@ router.post('/cancelar', autenticar, async (req, res) => {
 })
 
 // ── PORTAL ──────────────────────────────────────────────────────
+// AbacatePay não possui portal de autoatendimento como o Stripe.
+// Redirecionamos para a página de cancelamento interna do sistema.
 router.post('/portal', autenticar, async (req, res) => {
   try {
     const user = await User.findById(req.userId)
-    if (!user.abacateCustomerId)
+    if (!user || !user.abacateCustomerId)
       return res.status(400).json({ erro: 'Cliente não encontrado' })
 
-    const { data } = await abacate.post('/customer/portal', {
-      customerId:  user.abacateCustomerId,
-      redirectUrl: `${process.env.URL_BASE}/painel.html`,
-    })
-
-    res.json({ url: data.data.url })
+    res.json({ url: `${process.env.URL_BASE}/cancelar.html` })
   } catch (err) {
-    console.error('[portal]', err.response?.data || err.message)
+    console.error('[portal]', err.message)
     res.status(500).json({ erro: 'Erro ao abrir portal' })
   }
 })
@@ -174,19 +170,16 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
     console.log(`[webhook] billingId: ${billingId} | customerId: ${customerId} | email: ${email}`)
 
     async function acharUsuario() {
-      // 1. Busca pelo billingId (mais confiável — salvo no checkout)
       let user = billingId
         ? await User.findOne({ abacateSubscriptionId: billingId })
         : null
       if (user) { console.log(`[webhook] Encontrado por billingId: ${user._id}`); return user }
 
-      // 2. Busca pelo customerId
       user = customerId
         ? await User.findOne({ abacateCustomerId: customerId })
         : null
       if (user) { console.log(`[webhook] Encontrado por customerId: ${user._id}`); return user }
 
-      // 3. Busca pelo email
       user = email
         ? await User.findOne({ email: email.toLowerCase() })
         : null

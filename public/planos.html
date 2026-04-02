@@ -176,12 +176,21 @@ nav {
   font-family: inherit; transition: background .15s;
   white-space: nowrap;
 }
-.btn-portal:hover { background: #dbeafe; }
+.btn-portal:hover:not(:disabled) { background: #dbeafe; }
+.btn-portal:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* Toast de erro do portal */
+.portal-erro {
+  font-size: 12px; color: #dc2626;
+  margin-top: 6px; display: none;
+  text-align: right; width: 100%;
+}
 
 @media (max-width: 640px) {
   .plans-grid { grid-template-columns: 1fr; }
   .page { padding: 40px 16px 60px; }
   .trust-row { gap: 16px; }
+  .status-card { flex-direction: column; align-items: flex-start; }
 }
 </style>
 </head>
@@ -208,9 +217,12 @@ nav {
       <span class="status-badge" id="status-badge">—</span>
     </div>
     <div id="status-extra"></div>
-    <button class="btn-portal" id="btn-portal" onclick="abrirPortal()" style="display:none">
-      Gerenciar assinatura
-    </button>
+    <div style="display:flex; flex-direction:column; align-items:flex-end; gap:4px;">
+      <button class="btn-portal" id="btn-portal" onclick="abrirPortal()" style="display:none">
+        Gerenciar assinatura
+      </button>
+      <span class="portal-erro" id="portal-erro"></span>
+    </div>
   </div>
 
   <div class="page-header">
@@ -309,12 +321,32 @@ async function assinar(plano, btn) {
 
 async function abrirPortal() {
   const token = localStorage.getItem('token')
-  const res = await fetch(`${API}/assinatura/portal`, {
-    method: 'POST',
-    headers: { 'Authorization': `Bearer ${token}` }
-  })
-  const data = await res.json()
-  if (res.ok) window.location.href = data.url
+  const btn = document.getElementById('btn-portal')
+  const erroEl = document.getElementById('portal-erro')
+
+  const textoOriginal = btn.textContent
+  btn.disabled = true
+  btn.textContent = 'Abrindo...'
+  erroEl.style.display = 'none'
+  erroEl.textContent = ''
+
+  try {
+    const res = await fetch(`${API}/assinatura/portal`, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${token}` }
+    })
+    const data = await res.json()
+    if (res.ok && data.url) {
+      window.location.href = data.url
+    } else {
+      throw new Error(data.erro || 'Erro ao abrir gerenciamento')
+    }
+  } catch(e) {
+    erroEl.textContent = e.message
+    erroEl.style.display = 'block'
+    btn.disabled = false
+    btn.textContent = textoOriginal
+  }
 }
 
 async function carregarStatus() {
@@ -345,7 +377,6 @@ async function carregarStatus() {
   } catch(e) {}
 }
 
-// Verifica se veio da tela de sucesso
 if (window.location.search.includes('assinatura=sucesso')) {
   const h = document.querySelector('.page-header h1')
   if (h) h.textContent = 'Assinatura ativada!'
