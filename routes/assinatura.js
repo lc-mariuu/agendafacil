@@ -4,10 +4,19 @@ const axios = require('axios')
 const User = require('../models/User')
 const router = express.Router()
 
-// ── ABACATEPAY BASE ─────────────────────────────────────────────
+// ── ABACATEPAY v1 (customer) ─────────────────────────────────────
 const ABACATE_API = 'https://api.abacatepay.com/v1'
 const abacate = axios.create({
   baseURL: ABACATE_API,
+  headers: {
+    Authorization: `Bearer ${process.env.ABACATEPAY_API_KEY}`,
+    'Content-Type': 'application/json',
+  },
+})
+
+// ── ABACATEPAY v2 (subscriptions) ────────────────────────────────
+const abacateV2 = axios.create({
+  baseURL: 'https://api.abacatepay.com/v2',
   headers: {
     Authorization: `Bearer ${process.env.ABACATEPAY_API_KEY}`,
     'Content-Type': 'application/json',
@@ -53,6 +62,8 @@ router.get('/status', autenticar, async (req, res) => {
 })
 
 // ── CHECKOUT ─────────────────────────────────────────────────────
+// Usa /v2/subscriptions/create para cobrança recorrente no cartão.
+// O produto precisa ter o ciclo (frequency) definido no dashboard da AbacatePay.
 router.post('/checkout', autenticar, async (req, res) => {
   try {
     const { plano } = req.body
@@ -61,6 +72,7 @@ router.post('/checkout', autenticar, async (req, res) => {
     const productId = PRODUTOS[plano]
     if (!productId) return res.status(400).json({ erro: 'Plano inválido' })
 
+    // Cria o customer na AbacatePay se ainda não existir
     let customerId = user.abacateCustomerId
     if (!customerId) {
       const { data: cliente } = await abacate.post('/customer/create', {
@@ -73,58 +85,57 @@ router.post('/checkout', autenticar, async (req, res) => {
       await User.findByIdAndUpdate(req.userId, { abacateCustomerId: customerId })
     }
 
-    const { data: billing } = await abacate.post('/billing/create', {
-      frequency:     'ONE_TIME',
-      methods:       ['PIX', 'CARD'],
-      products: [{
-        externalId:  productId,
-        name:        plano === 'pro' ? 'Plano Profissional' : 'Plano Básico',
-        description: plano === 'pro' ? 'Assinatura mensal Profissional' : 'Assinatura mensal Básico',
-        quantity:    1,
-        price:       plano === 'pro' ? 4900 : 2900,
-      }],
-      customerId:    customerId,
+    // Cria o checkout de assinatura recorrente (v2)
+    const { data: subscription } = await abacateV2.post('/subscriptions/create', {
+      items: [{ id: productId, quantity: 1 }],
+      customerId,
+      methods:       ['CARD'],
       returnUrl:     `${process.env.URL_BASE}/planos.html`,
       completionUrl: `${process.env.URL_BASE}/painel.html?assinatura=sucesso`,
-      metadata:      { userId: String(user._id), plano },
+      externalId:    String(user._id),
     })
 
-    const billingId = billing.data.id
+    const subscriptionId = subscription.data.id
 
     await User.findByIdAndUpdate(req.userId, {
-      abacateSubscriptionId: billingId,
+      abacateSubscriptionId: subscriptionId,
       pendingPlano: plano,
     })
 
-    console.log(`[checkout] userId: ${user._id} | billingId: ${billingId} | plano: ${plano}`)
-    res.json({ url: billing.data.url })
+    console.log(`[checkout] userId: ${user._id} | subscriptionId: ${subscriptionId} | plano: ${plano}`)
+    res.json({ url: subscription.data.url })
   } catch (err) {
     console.error('[checkout]', err.response?.data || err.message)
     res.status(500).json({ erro: 'Erro ao criar checkout' })
   }
 })
 
-// ── CANCELAR ────────────────────────────────────────────────────
+// ── CANCELAR ─────────────────────────────────────────────────────
+// A AbacatePay não tem endpoint de cancelamento de assinatura via API.
+// Marcamos localmente como "cancelando" — o acesso segue até o fim do ciclo
+// e, como o webhook de renovação não virá, o usuário cai para inativo automaticamente.
 router.post('/cancelar', autenticar, async (req, res) => {
   try {
     const user = await User.findById(req.userId)
-    if (!user.abacateSubscriptionId)
+
+    if (!user.assinaturaAtiva)
       return res.status(400).json({ erro: 'Nenhuma assinatura ativa encontrada' })
 
-    await abacate.post(`/subscription/${user.abacateSubscriptionId}/cancel`)
+    if (user.assinaturaCancelando)
+      return res.status(400).json({ erro: 'Cancelamento já solicitado anteriormente' })
+
     await User.findByIdAndUpdate(req.userId, { assinaturaCancelando: true })
+
     res.json({ ok: true, mensagem: 'Assinatura será cancelada no fim do período atual' })
   } catch (err) {
-    console.error('[cancelar]', err.response?.data || err.message)
+    console.error('[cancelar]', err.message)
     res.status(500).json({ erro: 'Erro ao cancelar assinatura' })
   }
 })
 
-// ── PORTAL ──────────────────────────────────────────────────────
-// CORREÇÃO: verificar assinaturaAtiva em vez de abacateCustomerId.
-// O customerId pode não existir para usuários em trial,
-// mas o botão de portal só aparece no frontend quando assinaturaAtiva=true,
-// garantindo que o customerId já foi criado no checkout.
+// ── PORTAL ───────────────────────────────────────────────────────
+// Redireciona para a página interna de gerenciamento/cancelamento.
+// O botão só aparece no frontend quando assinaturaAtiva=true.
 router.post('/portal', autenticar, async (req, res) => {
   try {
     const user = await User.findById(req.userId)
@@ -133,8 +144,6 @@ router.post('/portal', autenticar, async (req, res) => {
       return res.status(400).json({ erro: 'Nenhuma assinatura ativa para gerenciar' })
     }
 
-    // AbacatePay não possui portal de autoatendimento como o Stripe.
-    // Redirecionamos para a página de cancelamento interna do sistema.
     res.json({ url: `${process.env.URL_BASE}/cancelar-assinatura.html` })
   } catch (err) {
     console.error('[portal]', err.message)
@@ -168,9 +177,9 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
 
   try {
     const data    = event.data || {}
-    const billing = data.billing || {}
+    const billing = data.billing || data.subscription || {}
     const billingId  = billing.id
-    const customerId = billing.customer?.id
+    const customerId = billing.customer?.id || billing.customerId
     const email      = billing.customer?.metadata?.email
 
     console.log(`[webhook] billingId: ${billingId} | customerId: ${customerId} | email: ${email}`)
@@ -180,6 +189,13 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
         ? await User.findOne({ abacateSubscriptionId: billingId })
         : null
       if (user) { console.log(`[webhook] Encontrado por billingId: ${user._id}`); return user }
+
+      // Tenta pelo externalId (userId que enviamos no checkout)
+      const externalId = billing.externalId
+      user = externalId
+        ? await User.findById(externalId).catch(() => null)
+        : null
+      if (user) { console.log(`[webhook] Encontrado por externalId: ${user._id}`); return user }
 
       user = customerId
         ? await User.findOne({ abacateCustomerId: customerId })
@@ -203,7 +219,7 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
 
       case 'subscription.paid':
       case 'billing.paid': {
-        const prodId = billing.products?.[0]?.externalId
+        const prodId = billing.products?.[0]?.externalId || billing.items?.[0]?.id
         const plano  = prodId === process.env.ABACATEPAY_PRODUCT_PRO ? 'pro' : 'basico'
         const user   = await acharUsuario()
         if (!user) break
