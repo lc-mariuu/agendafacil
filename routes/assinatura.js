@@ -166,21 +166,29 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
 
       case 'subscription.paid':
       case 'billing.paid': {
-        const meta   = data.metadata || {}
-        const userId = meta.userId
-        const plano  = meta.plano || 'basico'
-        if (!userId) {
-          console.log('[webhook] AVISO: userId não encontrado no metadata:', JSON.stringify(meta))
+        const billing = data.billing || {}
+        const email   = billing.customer?.metadata?.email
+        const prodId  = billing.products?.[0]?.externalId
+        const plano   = prodId === process.env.ABACATEPAY_PRODUCT_PRO ? 'pro' : 'basico'
+
+        if (!email) {
+          console.log('[webhook] AVISO: email não encontrado no payload')
           break
         }
 
-        await User.findByIdAndUpdate(userId, {
+        const user = await User.findOne({ email: email.toLowerCase() })
+        if (!user) {
+          console.log(`[webhook] AVISO: usuário não encontrado para email: ${email}`)
+          break
+        }
+
+        await User.findByIdAndUpdate(user._id, {
           assinaturaAtiva:      true,
           assinaturaCancelando: false,
           plano,
-          abacateSubscriptionId: data.subscriptionId || data.id || '',
+          abacateSubscriptionId: billing.id || '',
         })
-        console.log(`[webhook] Pagamento confirmado — userId: ${userId}, plano: ${plano}`)
+        console.log(`[webhook] Pagamento confirmado — email: ${email}, plano: ${plano}`)
         break
       }
 
