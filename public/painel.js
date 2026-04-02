@@ -147,7 +147,6 @@ function toggleDropdown() {
   document.getElementById('neg-chevron').classList.toggle('open')
 }
 
-// Fecha ao clicar fora
 document.addEventListener('click', e => {
   if (!e.target.closest('.negocio-selector')) {
     document.getElementById('neg-dropdown').classList.remove('show')
@@ -196,16 +195,40 @@ function abrirModalNegocio() {
   document.getElementById('neg-dropdown').classList.remove('show')
   document.getElementById('neg-nome').value  = ''
   document.getElementById('neg-erro').textContent = ''
+
+  const plano      = localStorage.getItem('plano') || 'trial'
+  const assinatura = localStorage.getItem('assinaturaAtiva') === 'true'
+  const badge      = document.getElementById('badge-plano')
+  if (badge) {
+    badge.textContent        = (plano === 'pro' && assinatura) ? 'Plano Pro' : 'Plano Trial'
+    badge.style.background   = (plano === 'pro' && assinatura) ? '#2563eb' : '#f59e0b'
+    badge.style.color        = '#fff'
+    badge.style.padding      = '4px 12px'
+    badge.style.borderRadius = '100px'
+    badge.style.fontSize     = '12px'
+    badge.style.fontWeight   = '600'
+  }
+
   document.getElementById('modal-negocio').style.display = 'flex'
 }
+
 function fecharModalNegocio() {
   document.getElementById('modal-negocio').style.display = 'none'
 }
+
 async function criarNegocio() {
   const nome     = document.getElementById('neg-nome').value.trim()
   const segmento = document.getElementById('neg-segmento').value
   const erro     = document.getElementById('neg-erro')
   if (!nome) { erro.textContent = 'Digite o nome do negócio'; return }
+
+  const plano      = localStorage.getItem('plano') || 'trial'
+  const assinatura = localStorage.getItem('assinaturaAtiva') === 'true'
+
+  if (plano !== 'pro' || !assinatura) {
+    erro.textContent = 'Faça upgrade para o plano Pro para criar mais painéis'
+    return
+  }
 
   const token    = localStorage.getItem('token')
   const servicos = (servicosPorSegmento[segmento] || servicosPorSegmento['Outro'])
@@ -288,7 +311,6 @@ function copiarMensagemWpp() {
   flashBtn('btn-copiar-msg', '✓ Mensagem copiada!')
 }
 
-// Helpers para flash de botão
 function flashBtn(id, txt) {
   const btn = document.getElementById(id)
   if (btn) flash(btn, txt)
@@ -311,7 +333,6 @@ async function carregarAgendamentos() {
   })
   todosAgendamentos = await res.json()
 
-  // Auto-concluir agendamentos passados
   const agora    = new Date()
   const passados = todosAgendamentos.filter(a => {
     if (a.status !== 'confirmado' || !a.data || !a.hora) return false
@@ -380,7 +401,6 @@ function renderTabela() {
   const fim    = inicio + POR_PAGINA
   const slice  = listaFiltrada.slice(inicio, fim)
 
-  // Tabela desktop
   tbody.innerHTML = slice.map(a => {
     const acoes = a.status === 'confirmado'
       ? `<button class="btn-acao concluir" onclick="atualizar('${a._id}','concluido')">Concluir</button>
@@ -399,7 +419,6 @@ function renderTabela() {
     </tr>`
   }).join('')
 
-  // Cards mobile
   agCards.innerHTML = slice.map(a => {
     const acoes = a.status === 'confirmado'
       ? `<div class="ag-card-actions">
@@ -424,7 +443,6 @@ function renderTabela() {
     </div>`
   }).join('')
 
-  // Info e botões de paginação
   document.getElementById('pg-info').textContent =
     `${inicio + 1}–${Math.min(fim, listaFiltrada.length)} de ${listaFiltrada.length}`
 
@@ -633,7 +651,6 @@ async function salvarServicos() {
   mostrarSalvo('salvo-msg')
 }
 
-// Enter nos campos de serviço
 document.addEventListener('DOMContentLoaded', () => {
   ['novo-servico', 'novo-preco'].forEach(id => {
     const el = document.getElementById(id)
@@ -726,7 +743,6 @@ function renderIntervalosServicos() {
     </div>`
   }).join('')
 
-  // Selecionar valor correto em cada select
   const preds = [0,5,10,15,20,25,30,45,60,75,90,105,120,150,180,240,300,360]
   servicosAtuais.forEach(s => {
     const nome    = typeof s === 'object' ? s.nome : s
@@ -831,7 +847,6 @@ async function salvarHorarios() {
   mostrarSalvo('salvo-horarios')
 }
 
-// Helper compartilhado: salva tudo de horários num único PATCH
 async function patchHorarios() {
   const token = localStorage.getItem('token')
   await fetch(`${API}/auth/horarios`, {
@@ -1012,6 +1027,10 @@ async function verificarAcesso() {
   const res  = await fetch(`${API}/assinatura/status`, { headers: { 'Authorization': `Bearer ${token}` } })
   const data = await res.json()
 
+  // Salva plano e assinatura no localStorage para uso em outros lugares
+  localStorage.setItem('plano', data.plano || 'trial')
+  localStorage.setItem('assinaturaAtiva', data.assinaturaAtiva ? 'true' : 'false')
+
   if (!data.temAcesso) { document.getElementById('bloqueio').style.display = 'flex'; return }
 
   if (data.plano === 'trial' && data.diasRestantes <= 7) {
@@ -1059,7 +1078,6 @@ function renderHistorico() {
   document.getElementById('hist-atend').textContent  = atend
   document.getElementById('hist-ticket').textContent = fmtBRL(ticket)
 
-  // Gráfico dos últimos 6 meses
   const meses = []
   for (let i = -5; i <= 0; i++) {
     const c = chaveDoOffset(i)
@@ -1109,19 +1127,13 @@ function mostrarSalvo(id) {
 
 /* ═══════════════════════════════════════════════════
    PWA — INSTALAR APP
-   - Esconde o botão imediatamente se já estiver instalado
-   - Chrome/Edge/Android: instala direto via prompt nativo
-   - Já instalado (standalone): esconde o botão
-   - Outros navegadores: não faz nada
 ═══════════════════════════════════════════════════ */
 let deferredPrompt = null
 
-// Registra Service Worker silenciosamente
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/sw.js').catch(() => {})
 }
 
-// Verifica se o app já está rodando como PWA instalado
 function isAppInstalled() {
   return (
     window.navigator.standalone === true ||
@@ -1129,7 +1141,6 @@ function isAppInstalled() {
   )
 }
 
-// Atualiza visibilidade do botão com base no estado atual
 function atualizarBotaoInstalar() {
   const btn = document.getElementById('btn-instalar-app')
   if (!btn) return
@@ -1138,24 +1149,19 @@ function atualizarBotaoInstalar() {
   }
 }
 
-// Checa logo no carregamento da página
 atualizarBotaoInstalar()
 
-// Checa novamente quando o usuário volta para a aba (após instalar em outra janela)
 document.addEventListener('visibilitychange', () => {
   if (!document.hidden) atualizarBotaoInstalar()
 })
 
-// Captura o prompt nativo (Chrome/Edge/Android/Desktop)
 window.addEventListener('beforeinstallprompt', e => {
   e.preventDefault()
   deferredPrompt = e
-  // App não instalado — garante que o botão esteja visível
   const btn = document.getElementById('btn-instalar-app')
   if (btn) btn.style.display = ''
 })
 
-// Após instalação concluída — esconde o botão
 window.addEventListener('appinstalled', () => {
   deferredPrompt = null
   const btn = document.getElementById('btn-instalar-app')
@@ -1163,17 +1169,12 @@ window.addEventListener('appinstalled', () => {
 })
 
 document.getElementById('btn-instalar-app').onclick = function () {
-  // Já instalado → esconde botão
   if (isAppInstalled()) { this.style.display = 'none'; return }
-
-  // Prompt nativo disponível → instala direto
   if (deferredPrompt) {
     deferredPrompt.prompt()
     deferredPrompt.userChoice.then(() => { deferredPrompt = null })
     return
   }
-
-  // Navegador não suporta → não faz nada
 }
 
 /* ═══════════════════════════════════════════════════
