@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gerenciar Assinatura — AgendoRapido</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #ffffff;
+  --bg2: #f7f7f8;
+  --border: rgba(0,0,0,0.08);
+  --border2: rgba(0,0,0,0.14);
+  --text: #0d0d0e;
+  --text2: #5a5a6a;
+  --text3: #9a9aaa;
+  --accent: #2563eb;
+  --accent-hover: #1d4ed8;
+  --accent-light: #eff4ff;
+  --green: #16a34a;
+  --green-light: #f0fdf4;
+  --red: #dc2626;
+  --red-light: #fef2f2;
+}
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Inter', -apple-system, sans-serif;
+  background: var(--bg2);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  -webkit-font-smoothing: antialiased;
+}
+
+nav {
+  position: fixed; top: 0; left: 0; right: 0;
+  height: 56px;
+  background: rgba(255,255,255,0.95);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 24px; z-index: 10;
+}
+.nav-logo { font-size: 16px; font-weight: 700; color: var(--text); text-decoration: none; }
+.nav-logo span { color: var(--accent); }
+.btn-back-nav {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 13px; color: var(--text2); text-decoration: none;
+  font-weight: 500; transition: color .15s;
+}
+.btn-back-nav:hover { color: var(--text); }
+
+.card {
+  background: white;
+  border: 1.5px solid var(--border2);
+  border-radius: 20px;
+  padding: 36px 32px;
+  max-width: 460px;
+  width: 100%;
+  text-align: center;
+  margin-top: 56px;
+}
+
+.icon-wrap {
+  width: 72px; height: 72px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 20px;
+}
+.icon-warn { background: var(--red-light); }
+.icon-ok   { background: var(--green-light); }
+.icon-info { background: var(--accent-light); }
+
+h2 { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 8px; }
+.subtitle { font-size: 14px; color: var(--text2); line-height: 1.6; margin-bottom: 24px; }
+
+.resumo {
+  background: var(--bg2); border-radius: 12px;
+  overflow: hidden; margin-bottom: 24px; text-align: left;
+}
+.resumo-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 13px 16px; border-bottom: 1px solid var(--border);
+  font-size: 13.5px;
+}
+.resumo-row:last-child { border-bottom: none; }
+.resumo-label { color: var(--text3); font-weight: 500; }
+.resumo-val { color: var(--text); font-weight: 600; }
+.resumo-val.green { color: var(--green); }
+.resumo-val.red   { color: var(--red); }
+.resumo-val.orange { color: #d97706; }
+
+.aviso-box {
+  background: #fffbeb;
+  border: 1px solid rgba(217,119,6,0.25);
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-size: 13px;
+  color: #92400e;
+  line-height: 1.5;
+  margin-bottom: 24px;
+  text-align: left;
+}
+.aviso-box strong { font-weight: 600; }
+
+.btn-cancelar {
+  width: 100%; padding: 14px;
+  background: var(--red); color: #fff;
+  border: none; border-radius: 10px;
+  font-size: 15px; font-weight: 600;
+  cursor: pointer; font-family: inherit;
+  transition: background .15s; margin-bottom: 10px;
+}
+.btn-cancelar:hover:not(:disabled) { background: #b91c1c; }
+.btn-cancelar:disabled { opacity: .55; cursor: not-allowed; }
+
+.btn-voltar {
+  width: 100%; padding: 12px;
+  background: transparent; color: var(--text2);
+  border: 1.5px solid var(--border2); border-radius: 10px;
+  font-size: 14px; font-weight: 500;
+  cursor: pointer; font-family: inherit;
+  transition: background .15s; text-decoration: none;
+  display: block;
+}
+.btn-voltar:hover { background: var(--bg2); }
+
+.err-box {
+  background: var(--red-light);
+  border: 1px solid rgba(220,38,38,0.2);
+  border-radius: 8px; padding: 11px 14px;
+  font-size: 13px; color: var(--red);
+  margin-bottom: 14px; display: none;
+}
+
+.loading { color: var(--text3); font-size: 14px; padding: 40px 0; }
+
+/* spinner */
+.spinner {
+  display: inline-block; width: 18px; height: 18px;
+  border: 2px solid rgba(255,255,255,0.4);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin .6s linear infinite;
+  vertical-align: middle; margin-right: 8px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="nav-logo">Agendo<span>Rapido</span></a>
+  <a href="/planos.html" class="btn-back-nav">
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+      <path d="M11 7H3M6.5 3.5L3 7l3.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    Voltar aos planos
+  </a>
+</nav>
+
+<!-- Loading -->
+<div class="card" id="card-loading">
+  <div class="loading">Carregando informações da assinatura...</div>
+</div>
+
+<!-- Confirmar cancelamento -->
+<div class="card" id="card-confirmar" style="display:none">
+  <div class="icon-wrap icon-warn">
+    <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+      <path d="M16 10v8M16 22v.5" stroke="#dc2626" stroke-width="2.5" stroke-linecap="round"/>
+      <path d="M14 4.27L2.5 24a2 2 0 0 0 1.74 3h23.52a2 2 0 0 0 1.74-3L18 4.27a2 2 0 0 0-3.48 0Z"
+            stroke="#dc2626" stroke-width="2" stroke-linejoin="round"/>
+    </svg>
+  </div>
+  <h2>Cancelar assinatura?</h2>
+  <p class="subtitle">Você continuará tendo acesso até o fim do período pago. Após isso, sua conta voltará ao plano inativo.</p>
+
+  <div class="resumo">
+    <div class="resumo-row">
+      <span class="resumo-label">Plano atual</span>
+      <span class="resumo-val" id="info-plano">—</span>
+    </div>
+    <div class="resumo-row">
+      <span class="resumo-label">Status</span>
+      <span class="resumo-val green" id="info-status">Ativo</span>
+    </div>
+    <div class="resumo-row">
+      <span class="resumo-label">O que acontece</span>
+      <span class="resumo-val orange">Acesso até fim do ciclo</span>
+    </div>
+  </div>
+
+  <div class="aviso-box">
+    <strong>Atenção:</strong> após o cancelamento, você perderá acesso a todos os recursos do plano, incluindo agendamentos ilimitados, lembretes automáticos e suporte prioritário.
+  </div>
+
+  <div class="err-box" id="err-box"></div>
+
+  <button class="btn-cancelar" id="btn-cancelar" onclick="confirmarCancelamento()">
+    Sim, cancelar minha assinatura
+  </button>
+  <a class="btn-voltar" href="/planos.html">Voltar — manter assinatura</a>
+</div>
+
+<!-- Sucesso -->
+<div class="card" id="card-sucesso" style="display:none">
+  <div class="icon-wrap icon-ok">
+    <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+      <path d="M6 16l7 7L26 9" stroke="#16a34a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </div>
+  <h2>Assinatura cancelada</h2>
+  <p class="subtitle">Seu cancelamento foi registrado. Você ainda terá acesso ao plano até o fim do período atual.</p>
+  <a class="btn-voltar" href="/painel.html" style="display:block; margin-top:8px;">Ir para o painel</a>
+</div>
+
+<!-- Erro / sem assinatura -->
+<div class="card" id="card-erro" style="display:none">
+  <div class="icon-wrap icon-warn">
+    <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+      <path d="M16 10v8M16 22v.5" stroke="#dc2626" stroke-width="2.5" stroke-linecap="round"/>
+      <path d="M14 4.27L2.5 24a2 2 0 0 0 1.74 3h23.52a2 2 0 0 0 1.74-3L18 4.27a2 2 0 0 0-3.48 0Z"
+            stroke="#dc2626" stroke-width="2" stroke-linejoin="round"/>
+    </svg>
+  </div>
+  <h2>Sem assinatura ativa</h2>
+  <p class="subtitle" id="erro-msg">Você não possui nenhuma assinatura ativa para cancelar.</p>
+  <a class="btn-voltar" href="/planos.html" style="display:block; margin-top:8px;">Ver planos</a>
+</div>
+
+<script>
+const API = 'https://agendafacil-wf3q.onrender.com/api'
+
+function mostrar(id) {
+  ['card-loading','card-confirmar','card-sucesso','card-erro'].forEach(c => {
+    document.getElementById(c).style.display = c === id ? 'block' : 'none'
+  })
+}
+
+async function carregarStatus() {
+  const token = localStorage.getItem('token')
+  if (!token) { window.location.href = '/auth.html'; return }
+
+  try {
+    const res = await fetch(`${API}/assinatura/status`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    })
+    const data = await res.json()
+
+    if (!res.ok || !data.assinaturaAtiva) {
+      mostrar('card-erro')
+      return
+    }
+
+    const nomes = { basico: 'Básico — R$29/mês', pro: 'Profissional — R$49/mês' }
+    document.getElementById('info-plano').textContent = nomes[data.plano] || data.plano
+
+    if (data.assinaturaCancelando) {
+      document.getElementById('info-status').textContent = 'Cancelamento agendado'
+      document.getElementById('info-status').className = 'resumo-val orange'
+      document.getElementById('btn-cancelar').disabled = true
+      document.getElementById('btn-cancelar').textContent = 'Cancelamento já solicitado'
+    }
+
+    mostrar('card-confirmar')
+  } catch(e) {
+    mostrar('card-erro')
+  }
+}
+
+async function confirmarCancelamento() {
+  const token = localStorage.getItem('token')
+  const btn = document.getElementById('btn-cancelar')
+  const errBox = document.getElementById('err-box')
+
+  btn.disabled = true
+  btn.innerHTML = '<span class="spinner"></span>Cancelando...'
+  errBox.style.display = 'none'
+
+  try {
+    const res = await fetch(`${API}/assinatura/cancelar`, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${token}` }
+    })
+    const data = await res.json()
+
+    if (res.ok) {
+      mostrar('card-sucesso')
+    } else {
+      throw new Error(data.erro || 'Erro ao cancelar assinatura')
+    }
+  } catch(e) {
+    errBox.textContent = e.message
+    errBox.style.display = 'block'
+    btn.disabled = false
+    btn.textContent = 'Sim, cancelar minha assinatura'
+  }
+}
+
+carregarStatus()
+</script>
+</body>
+</html>
