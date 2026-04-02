@@ -110,8 +110,12 @@ function sair() { localStorage.clear(); window.location.href = '/auth.html' }
 /* ═══════════════════════════════════════════════════
    TEMA
 ═══════════════════════════════════════════════════ */
-function carregarTema() {
-  definirTema(localStorage.getItem('tema') || 'escuro') // escuro como padrão
+function definirTema(tema) {
+  document.body.classList.remove('dark-mode', 'light-mode')
+  document.body.classList.add(tema === 'claro' ? 'light-mode' : 'dark-mode')
+  localStorage.setItem('tema', tema)
+  document.getElementById('theme-opt-claro').classList.toggle('ativo', tema === 'claro')
+  document.getElementById('theme-opt-escuro').classList.toggle('ativo', tema === 'escuro')
 }
 function carregarTema() {
   definirTema(localStorage.getItem('tema') || 'claro')
