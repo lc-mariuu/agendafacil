@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AgendoRapido — Painel</title>
   <meta name="description" content="AgendoRapido é o sistema de agendamento online completo para barbearias, clínicas, salões e pequenos negócios.">
-  <meta name="theme-color" content="#0a0f1e">
+  <meta name="theme-color" content="#0b0f1a">
   <link rel="manifest" href="/manifest.json">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230f172a'/%3E%3Crect x='13' y='18' width='38' height='32' rx='5' fill='none' stroke='%232563eb' stroke-width='3'/%3E%3Cpath d='M13 27h38' stroke='%232563eb' stroke-width='2.5' stroke-linecap='round'/%3E%3Cpath d='M23 14v6M41 14v6' stroke='%2360a5fa' stroke-width='3' stroke-linecap='round'/%3E%3Cpath d='M21 36h8M21 42h14' stroke='%2360a5fa' stroke-width='2.5' stroke-linecap='round'/%3E%3Ccircle cx='44' cy='42' r='7' fill='%232563eb'/%3E%3Cpath d='M41.5 42l2 2 4-4' stroke='white' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -96,7 +96,7 @@
     <div class="erro-msg" id="neg-erro"></div>
     <div class="modal-footer">
       <button class="btn-cancelar-modal" onclick="fecharModalNegocio()">Cancelar</button>
-      <button class="btn-salvar-modal"   onclick="criarNegocio()">Criar painel</button>
+      <button class="btn-salvar-modal" onclick="criarNegocio()">Criar painel</button>
     </div>
   </div>
 </div>
@@ -106,11 +106,11 @@
 ══════════════════════════════════════════════════ -->
 <div id="bloqueio" class="bloqueio" style="display:none">
   <div class="bloqueio-card">
-    <div style="font-size:48px;margin-bottom:16px">⏰</div>
+    <div style="font-size:44px;margin-bottom:14px">⏰</div>
     <h2>Seu trial expirou</h2>
     <p>Seus 14 dias gratuitos acabaram. Assine um plano para continuar usando o AgendoRapido.</p>
     <a href="/planos.html" class="btn-ver-planos">Ver planos a partir de R$29/mês</a>
-    <button onclick="sair()" style="background:none;border:none;color:var(--text3);font-size:13px;cursor:pointer;margin-top:8px;font-family:inherit">
+    <button onclick="sair()" style="background:none;border:none;color:var(--text3);font-size:12.5px;cursor:pointer;margin-top:8px;font-family:inherit">
       Sair da conta
     </button>
   </div>
@@ -123,10 +123,10 @@
   <div class="sidebar-top">
     <div class="sidebar-brand">
       <div class="sidebar-brand-icon">
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-          <rect x="1.5" y="2" width="13" height="12" rx="2" stroke="white" stroke-width="1.4"/>
-          <path d="M1.5 6h13M5 1v2M11 1v2" stroke="white" stroke-width="1.4" stroke-linecap="round"/>
-          <path d="M4.5 9.5h3M4.5 11.5h5" stroke="#93c5fd" stroke-width="1.3" stroke-linecap="round"/>
+        <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+          <rect x="1.5" y="2" width="12" height="11" rx="2" stroke="white" stroke-width="1.3"/>
+          <path d="M1.5 5.5h12M5 1v2M10 1v2" stroke="white" stroke-width="1.3" stroke-linecap="round"/>
+          <path d="M4 8.5h3M4 10.5h5" stroke="#93c5fd" stroke-width="1.2" stroke-linecap="round"/>
         </svg>
       </div>
       <div class="sidebar-brand-text">Agendo<span>Rapido</span></div>
@@ -135,16 +135,16 @@
     <div class="negocio-selector">
       <div class="negocio-atual" onclick="toggleDropdown()">
         <div class="negocio-avatar" id="neg-avatar">A</div>
-        <div class="negocio-nome"   id="neg-nome-sidebar">Carregando...</div>
-        <svg class="negocio-chevron" id="neg-chevron" width="14" height="14" viewBox="0 0 14 14" fill="none">
-          <path d="M3 5l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <div class="negocio-nome" id="neg-nome-sidebar">Carregando...</div>
+        <svg class="negocio-chevron" id="neg-chevron" width="13" height="13" viewBox="0 0 13 13" fill="none">
+          <path d="M3 5l3.5 3.5L10 5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </div>
       <div class="negocio-dropdown" id="neg-dropdown">
         <div id="neg-lista"></div>
         <div class="negocio-add" onclick="abrirModalNegocio()">
-          <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
-            <path d="M6.5 2v9M2 6.5h9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+            <path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
           </svg>
           Adicionar painel
         </div>
@@ -153,57 +153,65 @@
   </div>
 
   <div class="sidebar-menu">
-    <div class="menu-section">Principal</div>
+    <div class="menu-section">Pasnipal</div>
     <button class="menu-item ativo" onclick="irPara('agendamentos',this)">
-      <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><rect x="1.5" y="2.5" width="12" height="11" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M5 1.5v2M10 1.5v2M1.5 5.5h12" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><path d="M4.5 9h2.5M4.5 11h4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      <svg width="14" height="14" viewBox="0 0 15 15" fill="none"><rect x="1.5" y="2.5" width="12" height="11" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M5 1.5v2M10 1.5v2M1.5 5.5h12" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><path d="M4.5 9h2.5M4.5 11h4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      Dashboard
+    </button>
+    <button class="menu-item" onclick="irPara('agendamentos',this)">
+      <svg width="14" height="14" viewBox="0 0 15 15" fill="none"><rect x="1.5" y="2.5" width="12" height="11" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M5 1.5v2M10 1.5v2M1.5 5.5h12" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
       Agendamentos
     </button>
-    <button class="menu-item" onclick="irPara('horarios',this)">
-      <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="7.5" r="5.5" stroke="currentColor" stroke-width="1.3"/><path d="M7.5 4.5V8l2 2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
-      Horários
+    <button class="menu-item" onclick="irPara('bio',this)">
+      <svg width="14" height="14" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="5" r="2.5" stroke="currentColor" stroke-width="1.3"/><path d="M2 13c0-2.8 2.5-5 5.5-5s5.5 2.2 5.5 5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      Clientes
+    </button>
+    <button class="menu-item" onclick="irPara('pagamentos',this)">
+      <svg width="14" height="14" viewBox="0 0 15 15" fill="none"><path d="M2 4h11v8a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V4Z" stroke="currentColor" stroke-width="1.3"/><path d="M2 4V3a1 1 0 0 1 1-1h9a1 1 0 0 1 1 1v1" stroke="currentColor" stroke-width="1.3"/><path d="M5 8h5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      Financeiro
     </button>
     <button class="menu-item" onclick="irPara('lembretes',this)">
-      <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M7.5 1.5a4.5 4.5 0 0 1 4.5 4.5c0 2.5.5 3.5 1 4H2c.5-.5 1-1.5 1-4a4.5 4.5 0 0 1 4.5-4.5Z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M6 12.5a1.5 1.5 0 0 0 3 0" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
-      Lembretes
+      <svg width="14" height="14" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="7.5" r="5.5" stroke="currentColor" stroke-width="1.3"/><path d="M5 8s.5 1.5 2.5 1.5S10 8 10 8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><path d="M5.5 5.5h.01M9.5 5.5h.01" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      Automação
     </button>
     <button class="menu-item" onclick="irPara('whatsapp',this)">
-      <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="7.5" r="5.5" stroke="currentColor" stroke-width="1.3"/><path d="M5 8s.5 1.5 2.5 1.5S10 8 10 8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><path d="M5.5 5.5h.01M9.5 5.5h.01" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      <svg width="14" height="14" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="7.5" r="5.5" stroke="currentColor" stroke-width="1.3"/><path d="M5 8s.5 1.5 2.5 1.5S10 8 10 8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><path d="M5.5 5.5h.01M9.5 5.5h.01" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
       WhatsApp Auto
     </button>
     <button class="menu-item" onclick="irPara('bio',this)">
-      <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="5" r="2.5" stroke="currentColor" stroke-width="1.3"/><path d="M2 13c0-2.8 2.5-5 5.5-5s5.5 2.2 5.5 5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      <svg width="14" height="14" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="5" r="2.5" stroke="currentColor" stroke-width="1.3"/><path d="M2 13c0-2.8 2.5-5 5.5-5s5.5 2.2 5.5 5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
       Minha Bio
     </button>
     <button class="menu-item" onclick="irPara('configuracoes',this)">
-      <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="7.5" r="2" stroke="currentColor" stroke-width="1.3"/><path d="M7.5 1v1.5M7.5 12.5V14M1 7.5h1.5M12.5 7.5H14M3 3l1 1M11 11l1 1M3 12l1-1M11 4l1-1" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      <svg width="14" height="14" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="7.5" r="2" stroke="currentColor" stroke-width="1.3"/><path d="M7.5 1v1.5M7.5 12.5V14M1 7.5h1.5M12.5 7.5H14M3 3l1 1M11 11l1 1M3 12l1-1M11 4l1-1" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
       Configurações
     </button>
 
     <div class="menu-section">Conta</div>
     <button class="menu-item" onclick="irPara('pagamentos',this)">
-      <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M2 4h11v8a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V4Z" stroke="currentColor" stroke-width="1.3"/><path d="M2 4V3a1 1 0 0 1 1-1h9a1 1 0 0 1 1 1v1" stroke="currentColor" stroke-width="1.3"/><path d="M5 8h5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      <svg width="14" height="14" viewBox="0 0 15 15" fill="none"><path d="M2 4h11v8a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V4Z" stroke="currentColor" stroke-width="1.3"/><path d="M2 4V3a1 1 0 0 1 1-1h9a1 1 0 0 1 1 1v1" stroke="currentColor" stroke-width="1.3"/><path d="M5 8h5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
       Pagamentos
     </button>
     <button class="menu-item" onclick="window.location.href='planos.html'">
-      <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><rect x="1.5" y="3.5" width="12" height="9" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M1.5 6.5h12" stroke="currentColor" stroke-width="1.3"/></svg>
+      <svg width="14" height="14" viewBox="0 0 15 15" fill="none"><rect x="1.5" y="3.5" width="12" height="9" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M1.5 6.5h12" stroke="currentColor" stroke-width="1.3"/></svg>
       Planos
     </button>
     <button class="menu-item" onclick="irPara('suporte',this)">
-      <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="7.5" r="5.5" stroke="currentColor" stroke-width="1.3"/><path d="M7.5 8.5V8a2 2 0 1 0-2-2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><circle cx="7.5" cy="10.5" r=".5" fill="currentColor"/></svg>
+      <svg width="14" height="14" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="7.5" r="5.5" stroke="currentColor" stroke-width="1.3"/><path d="M7.5 8.5V8a2 2 0 1 0-2-2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><circle cx="7.5" cy="10.5" r=".5" fill="currentColor"/></svg>
       Suporte
     </button>
   </div>
 
   <div class="sidebar-footer">
     <button id="btn-instalar-app" class="btn-instalar">
-      <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+      <svg width="12" height="12" viewBox="0 0 13 13" fill="none">
         <path d="M6.5 2v7M4 6.5L6.5 9 9 6.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
         <path d="M1.5 9.5v1A1 1 0 0 0 2.5 11.5h8a1 1 0 0 0 1-1v-1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
       </svg>
       Instalar app
     </button>
     <button class="btn-sair" onclick="sair()">
-      <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+      <svg width="12" height="12" viewBox="0 0 13 13" fill="none">
         <path d="M5 6.5h6M8.5 4.5L11 6.5l-2.5 2M7.5 2H3a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h4.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
       Sair da conta
@@ -216,130 +224,289 @@
 ══════════════════════════════════════════════════ -->
 <div class="main">
 
-  <!-- ── AGENDAMENTOS ── -->
-  <div class="page ativo" id="page-agendamentos">
-    <div class="page-header">
-      <div class="page-header-text">
-        <h1>Agendamentos</h1>
-        <p>Gerencie os horários do seu negócio</p>
-        <div class="page-header-accent"></div>
+  <!-- TOPBAR DESKTOP -->
+  <div class="main-topbar">
+    <div class="main-topbar-left">
+      <div class="main-topbar-search">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+          <circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1.4"/>
+          <path d="M9.5 9.5L12 12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+        </svg>
+        <span>Buscar...</span>
+      </div>
+      <div>
+        <div class="main-topbar-title" id="topbar-page-title">Dashboard</div>
+        <div class="main-topbar-sub">Painel de controle do seu negócio</div>
       </div>
     </div>
+    <div class="main-topbar-right">
+      <!-- Ícone modo claro/escuro -->
+      <button class="topbar-icon-btn" title="Modo" onclick="toggleTema()">
+        <svg width="15" height="15" viewBox="0 0 15 15" fill="none" id="topbar-tema-icon">
+          <path d="M7.5 1v1.5M7.5 12.5V14M1 7.5h1.5M12.5 7.5H14M3 3l1 1M11 11l1 1M3 12l1-1M11 4l1-1" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+          <circle cx="7.5" cy="7.5" r="2.5" stroke="currentColor" stroke-width="1.3"/>
+        </svg>
+      </button>
+      <button class="topbar-icon-btn" title="Notificações">
+        <svg width="14" height="14" viewBox="0 0 15 15" fill="none"><path d="M7.5 1.5a4.5 4.5 0 0 1 4.5 4.5c0 2.5.5 3.5 1 4H2c.5-.5 1-1.5 1-4a4.5 4.5 0 0 1 4.5-4.5Z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M6 12.5a1.5 1.5 0 0 0 3 0" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      </button>
+      <button class="topbar-icon-btn" title="Mensagens">
+        <svg width="14" height="14" viewBox="0 0 15 15" fill="none"><path d="M1.5 2.5h12v9h-12V2.5Z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M1.5 2.5l6 5 6-5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      </button>
+      <button class="topbar-icon-btn" title="Suporte" onclick="irPara('suporte', document.querySelector('[onclick*=suporte]'))">
+        <svg width="14" height="14" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="7.5" r="5.5" stroke="currentColor" stroke-width="1.3"/><path d="M7.5 8.5V8a2 2 0 1 0-2-2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><circle cx="7.5" cy="10.5" r=".5" fill="currentColor"/></svg>
+      </button>
+      <div class="topbar-avatar" id="topbar-avatar-btn">A</div>
+    </div>
+  </div>
+
+  <!-- ── AGENDAMENTOS / DASHBOARD ── -->
+  <div class="page ativo" id="page-agendamentos">
 
     <div class="link-card">
       <div>
         <div class="link-card-label">Link de agendamento</div>
-        <div class="link-card-url" id="link-agendamento"></div>
+        <div class="link-card-url" id="link-agendamento">https://agendorapido.com.br/agendar.html?id=—</div>
       </div>
       <button class="btn-copiar" id="btn-copiar-agendamento" onclick="copiarLink()">
-        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M1 8.5V2a1 1 0 0 1 1-1h6.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+        <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M1 8.5V2a1 1 0 0 1 1-1h6.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
         Copiar link
       </button>
     </div>
 
+    <!-- Stats -->
     <div class="stats">
       <div class="stat-card">
-        <div class="stat-icon"><svg width="15" height="15" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="7.5" r="5.5" stroke="var(--accent)" stroke-width="1.4"/><path d="M7.5 4.5V8l2 2" stroke="var(--accent)" stroke-width="1.4" stroke-linecap="round"/></svg></div>
-        <div class="stat-valor" id="stat-hoje">0</div>
-        <div class="stat-label">Hoje</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-icon"><svg width="15" height="15" viewBox="0 0 15 15" fill="none"><rect x="1.5" y="2.5" width="12" height="11" rx="1.5" stroke="var(--accent)" stroke-width="1.4"/><path d="M5 1.5v2M10 1.5v2M1.5 5.5h12" stroke="var(--accent)" stroke-width="1.4" stroke-linecap="round"/></svg></div>
-        <div class="stat-valor" id="stat-semana">0</div>
-        <div class="stat-label">Esta semana</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-icon"><svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M1.5 11L5.5 7l3 3L13.5 4" stroke="var(--accent)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-        <div class="stat-valor" id="stat-total">0</div>
-        <div class="stat-label">Total geral</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-icon" style="background:var(--green-bg);border-color:var(--green-border)">
-          <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><rect x="1.5" y="3" width="12" height="9.5" rx="1.5" stroke="var(--green)" stroke-width="1.4"/><path d="M1.5 6h12M5 9h3" stroke="var(--green)" stroke-width="1.4" stroke-linecap="round"/></svg>
+        <div class="stat-card-inner">
+          <div class="stat-icon">
+            <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="7.5" r="5.5" stroke="var(--accent)" stroke-width="1.4"/><path d="M7.5 4.5V8l2 2" stroke="var(--accent)" stroke-width="1.4" stroke-linecap="round"/></svg>
+          </div>
+          <div class="stat-valor" id="stat-hoje">0</div>
+          <div class="stat-label">Hoje</div>
         </div>
-        <div class="stat-valor" id="stat-lucro" style="font-size:18px;color:var(--green)">R$ 0,00</div>
-        <div class="stat-label">Lucro do mês</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-inner">
+          <div class="stat-icon">
+            <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><rect x="1.5" y="2.5" width="12" height="11" rx="1.5" stroke="var(--accent)" stroke-width="1.4"/><path d="M5 1.5v2M10 1.5v2M1.5 5.5h12" stroke="var(--accent)" stroke-width="1.4" stroke-linecap="round"/></svg>
+          </div>
+          <div class="stat-valor" id="stat-semana">0</div>
+          <div class="stat-label">Esta semana</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-inner">
+          <div class="stat-icon green-icon">
+            <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><rect x="1.5" y="3" width="12" height="9.5" rx="1.5" stroke="var(--green)" stroke-width="1.4"/><path d="M1.5 6h12M5 9h3" stroke="var(--green)" stroke-width="1.4" stroke-linecap="round"/></svg>
+          </div>
+          <div class="stat-valor" id="stat-lucro" style="font-size:20px;color:var(--green)">R$ 0,00</div>
+          <div class="stat-label">Lucro do mês</div>
+        </div>
+      </div>
+      <div class="stat-card card-lucro-semana">
+        <div class="stat-card-inner">
+          <div class="stat-icon green-icon">
+            <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M1.5 11L5.5 7l3 3L13.5 4" stroke="var(--green)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="stat-label" style="margin-bottom:6px">Lucro da semana</div>
+          <div class="stat-valor" id="stat-total" style="font-size:20px;color:#34d399">R$ 0,00</div>
+        </div>
+        <!-- Mini chart decorativo -->
+        <div class="stat-mini-chart">
+          <svg viewBox="0 0 200 60" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#10b981" stop-opacity="0.6"/>
+                <stop offset="100%" stop-color="#10b981" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <path d="M0 50 L30 42 L60 38 L90 30 L120 20 L150 15 L180 10 L200 5 L200 60 L0 60 Z" fill="url(#chartGrad)"/>
+            <path d="M0 50 L30 42 L60 38 L90 30 L120 20 L150 15 L180 10 L200 5" stroke="#10b981" stroke-width="2" fill="none"/>
+          </svg>
+        </div>
       </div>
     </div>
 
-    <div class="card">
-      <div class="card-header">
-        <div class="card-title">Lista de agendamentos</div>
-        <div class="card-actions">
-          <input type="date" class="filtro-data" id="filtro-data" onchange="filtrarData()">
-          <button class="btn-novo" onclick="abrirModalNovoAgendamento()">
-            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
-            Novo
-          </button>
-        </div>
+    <!-- Alert banner -->
+    <div class="alert-banner" id="alert-clientes-inativos" style="display:none">
+      <span class="alert-banner-icon">⚠</span>
+      <div class="alert-banner-text" id="alert-clientes-texto">
+        <strong>Clientes inativos</strong>, mande uma promoção para reativá-los
       </div>
-      <div class="tabela-scroll">
-        <table>
-          <thead><tr><th>Cliente</th><th>Serviço</th><th>Data</th><th>Hora</th><th>Status</th><th>Ações</th></tr></thead>
-          <tbody id="tbody"></tbody>
-        </table>
-      </div>
-      <div class="ag-cards" id="ag-cards"></div>
-      <div class="paginacao" id="paginacao" style="display:none">
-        <span class="paginacao-info" id="pg-info"></span>
-        <div class="paginacao-btns" id="pg-btns"></div>
-      </div>
+      <button class="alert-banner-btn">Enviar mensagem</button>
     </div>
 
-    <!-- Histórico mensal -->
-    <div class="section-block">
-      <div class="section-block-header">
-        <div class="section-block-icon">
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="2.5" y="3.5" width="15" height="13.5" rx="2.5" stroke="var(--accent)" stroke-width="1.6"/><path d="M2.5 7.5h15M7 2v3M13 2v3" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round"/><path d="M6 11.5h3M11 11.5h3M6 14h2" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round"/></svg>
+    <!-- Grid: Lista agendamentos + Insights -->
+    <div class="dashboard-grid">
+      <!-- Coluna principal -->
+      <div>
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Próximos agendamentos</div>
+            <div class="card-actions">
+              <input type="date" class="filtro-data" id="filtro-data" onchange="filtrarData()">
+              <button class="btn-novo" onclick="abrirModalNovoAgendamento()">
+                <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+                Novo
+              </button>
+            </div>
+          </div>
+
+          <!-- Tabela desktop com avatares -->
+          <div class="tabela-scroll" id="tabela-desktop">
+            <div id="tbody-rows"></div>
+          </div>
+
+          <!-- Cards mobile -->
+          <div class="ag-cards" id="ag-cards"></div>
+
+          <div class="paginacao" id="paginacao" style="display:none">
+            <span class="paginacao-info" id="pg-info"></span>
+            <div class="paginacao-btns" id="pg-btns"></div>
+          </div>
         </div>
-        <div style="flex:1">
-          <div class="section-block-title">Histórico de lucro mensal</div>
-          <div class="section-block-sub">Receita acumulada dos últimos meses</div>
-        </div>
-        <div class="hist-nav">
-          <button class="hist-nav-btn" id="hist-prev" onclick="historicoPaginar(-1)">‹</button>
-          <span class="hist-mes-label" id="hist-mes-label">—</span>
-          <button class="hist-nav-btn" id="hist-next" onclick="historicoPaginar(1)">›</button>
+
+        <!-- Histórico mensal -->
+        <div class="section-block">
+          <div class="section-block-header">
+            <div class="section-block-icon">
+              <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><rect x="2.5" y="3.5" width="15" height="13.5" rx="2.5" stroke="var(--accent)" stroke-width="1.6"/><path d="M2.5 7.5h15M7 2v3M13 2v3" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round"/></svg>
+            </div>
+            <div style="flex:1">
+              <div class="section-block-title">Histórico de lucro mensal</div>
+              <div class="section-block-sub">Receita acumulada dos últimos meses</div>
+            </div>
+            <div class="hist-nav">
+              <button class="hist-nav-btn" id="hist-prev" onclick="historicoPaginar(-1)">‹</button>
+              <span class="hist-mes-label" id="hist-mes-label">—</span>
+              <button class="hist-nav-btn" id="hist-next" onclick="historicoPaginar(1)">›</button>
+            </div>
+          </div>
+          <div class="section-block-body" style="padding-bottom:24px">
+            <div class="hist-cards">
+              <div class="hist-stat">
+                <div class="hist-stat-icon" style="background:var(--green-bg);border-color:var(--green-border)"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><rect x="1.5" y="3" width="13" height="10" rx="1.5" stroke="var(--green)" stroke-width="1.4"/><path d="M1.5 6.5h13M5 9.5h3" stroke="var(--green)" stroke-width="1.4" stroke-linecap="round"/></svg></div>
+                <div><div class="hist-stat-valor" id="hist-lucro">R$ 0,00</div><div class="hist-stat-label">Lucro total</div></div>
+              </div>
+              <div class="hist-stat">
+                <div class="hist-stat-icon"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M2 12.5l3.5-3.5 2.5 2.5L13 5" stroke="var(--accent)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div><div class="hist-stat-valor" id="hist-atend">0</div><div class="hist-stat-label">Concluídos</div></div>
+              </div>
+              <div class="hist-stat">
+                <div class="hist-stat-icon" style="background:var(--purple-bg);border-color:var(--purple-border)"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="6" r="2.5" stroke="var(--purple)" stroke-width="1.4"/><path d="M2.5 14c0-3 2.5-5 5.5-5s5.5 2 5.5 5" stroke="var(--purple)" stroke-width="1.4" stroke-linecap="round"/></svg></div>
+                <div><div class="hist-stat-valor" id="hist-ticket">R$ 0,00</div><div class="hist-stat-label">Ticket médio</div></div>
+              </div>
+            </div>
+            <div class="hist-grafico-wrap">
+              <div class="hist-grafico-title">Evolução dos últimos 6 meses</div>
+              <div class="hist-grafico" id="hist-grafico"></div>
+              <div class="hist-grafico-labels" id="hist-grafico-labels"></div>
+            </div>
+          </div>
         </div>
       </div>
-      <div class="section-block-body" style="padding-bottom:28px">
-        <div class="hist-cards">
-          <div class="hist-stat">
-            <div class="hist-stat-icon" style="background:var(--green-bg);border-color:var(--green-border)"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1.5" y="3" width="13" height="10" rx="1.5" stroke="var(--green)" stroke-width="1.4"/><path d="M1.5 6.5h13M5 9.5h3" stroke="var(--green)" stroke-width="1.4" stroke-linecap="round"/></svg></div>
-            <div><div class="hist-stat-valor" id="hist-lucro">R$ 0,00</div><div class="hist-stat-label">Lucro total</div></div>
+
+      <!-- Coluna direita — Insights + Finance -->
+      <div class="insights-panel">
+
+        <!-- Insights Inteligentes -->
+        <div class="insight-card">
+          <div class="insight-header">
+            <div class="insight-title">Insights Inteligentes</div>
+            <div class="insight-dots">
+              <div class="insight-dot"></div>
+              <div class="insight-dot"></div>
+              <div class="insight-dot"></div>
+            </div>
           </div>
-          <div class="hist-stat">
-            <div class="hist-stat-icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 12.5l3.5-3.5 2.5 2.5L13 5" stroke="var(--accent)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-            <div><div class="hist-stat-valor" id="hist-atend">0</div><div class="hist-stat-label">Atendimentos concluídos</div></div>
+          <div class="insight-item">
+            <div class="insight-item-icon">
+              <svg width="14" height="14" viewBox="0 0 15 15" fill="none"><rect x="1.5" y="2.5" width="12" height="11" rx="1.5" stroke="var(--accent)" stroke-width="1.3"/><path d="M5 1.5v2M10 1.5v2M1.5 5.5h12" stroke="var(--accent)" stroke-width="1.3" stroke-linecap="round"/></svg>
+            </div>
+            <div class="insight-item-body">
+              <div class="insight-item-label">Melhor agendamento</div>
+              <div class="insight-item-value" id="insight-melhor-horario">Sábados 10:00 – 11:00</div>
+              <div class="insight-item-sub">Horário mais reservado</div>
+            </div>
           </div>
-          <div class="hist-stat">
-            <div class="hist-stat-icon" style="background:var(--purple-bg);border-color:var(--purple-border)"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="6" r="2.5" stroke="var(--purple)" stroke-width="1.4"/><path d="M2.5 14c0-3 2.5-5 5.5-5s5.5 2 5.5 5" stroke="var(--purple)" stroke-width="1.4" stroke-linecap="round"/></svg></div>
-            <div><div class="hist-stat-valor" id="hist-ticket">R$ 0,00</div><div class="hist-stat-label">Ticket médio</div></div>
+          <div class="insight-item">
+            <div class="insight-item-icon green">
+              <svg width="14" height="14" viewBox="0 0 15 15" fill="none"><path d="M2 4h11v8a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V4Z" stroke="var(--green)" stroke-width="1.3"/><path d="M5 8h5" stroke="var(--green)" stroke-width="1.3" stroke-linecap="round"/></svg>
+            </div>
+            <div class="insight-item-body">
+              <div class="insight-item-label">Serviço mais lucrativo</div>
+              <div class="insight-item-value" id="insight-servico-top">—</div>
+              <div class="insight-item-sub" id="insight-servico-receita">no mês</div>
+            </div>
+          </div>
+          <div class="insight-item">
+            <div class="insight-item-icon purple">
+              <svg width="14" height="14" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="5" r="2.5" stroke="var(--purple)" stroke-width="1.3"/><path d="M2 13c0-2.8 2.5-5 5.5-5s5.5 2.2 5.5 5" stroke="var(--purple)" stroke-width="1.3" stroke-linecap="round"/></svg>
+            </div>
+            <div class="insight-item-body">
+              <div class="insight-item-label">Clientes sem agendar</div>
+              <div class="insight-item-value" id="insight-inativos">—</div>
+              <div class="insight-item-sub warning" id="insight-inativos-sub">há mais de 30 dias</div>
+            </div>
           </div>
         </div>
-        <div class="hist-grafico-wrap">
-          <div class="hist-grafico-title">Evolução dos últimos 6 meses</div>
-          <div class="hist-grafico"        id="hist-grafico"></div>
-          <div class="hist-grafico-labels" id="hist-grafico-labels"></div>
+
+        <!-- Finance mini card -->
+        <div class="finance-card">
+          <div class="finance-header">
+            <div class="finance-title">Este mês</div>
+            <div class="finance-period">
+              <span>Ver histórico</span>
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M3 4l2 2 2-2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+          </div>
+          <div class="finance-body">
+            <div class="finance-amount"><span>R$</span> <span id="finance-amount-val">0,00</span></div>
+            <div class="finance-meta" id="finance-meta">Movidas: 0 agendamentos</div>
+            <!-- Mini chart -->
+            <div class="finance-mini-chart">
+              <svg viewBox="0 0 280 70" preserveAspectRatio="none">
+                <defs>
+                  <linearGradient id="finGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.25"/>
+                    <stop offset="100%" stop-color="#3b82f6" stop-opacity="0"/>
+                  </linearGradient>
+                </defs>
+                <path d="M0 60 L40 52 L80 48 L120 35 L160 28 L200 20 L240 12 L280 8 L280 70 L0 70 Z" fill="url(#finGrad)"/>
+                <path d="M0 60 L40 52 L80 48 L120 35 L160 28 L200 20 L240 12 L280 8" stroke="#3b82f6" stroke-width="2" fill="none" stroke-linejoin="round"/>
+                <!-- Valor máximo label -->
+                <text x="260" y="12" font-size="9" fill="#3b82f6" text-anchor="middle" font-family="Inter" font-weight="700" id="finance-chart-label">R$0</text>
+              </svg>
+            </div>
+            <div class="finance-stats">
+              <div class="finance-stat">
+                <div class="finance-stat-label">Pontuações</div>
+                <div class="finance-stat-value" id="finance-atend">0</div>
+              </div>
+              <div class="finance-stat">
+                <div class="finance-stat-label">Pix Recebidos</div>
+                <div class="finance-stat-value" id="finance-pix">0%</div>
+              </div>
+            </div>
+          </div>
         </div>
+
       </div>
     </div>
   </div><!-- /page-agendamentos -->
 
   <!-- ── HORÁRIOS ── -->
   <div class="page" id="page-horarios">
-    <div class="page-header">
-      <div class="page-header-text">
-        <h1>Horários de Atendimento</h1>
-        <p>Configure os dias e horários que seu negócio atende</p>
-        <div class="page-header-accent"></div>
+    <div class="main-topbar" style="position:relative;margin:0 -36px 28px;padding:0 32px">
+      <div class="main-topbar-left">
+        <div><div class="main-topbar-title">Horários de Atendimento</div><div class="main-topbar-sub">Configure dias e horários que seu negócio atende</div></div>
       </div>
     </div>
 
     <!-- Intervalo padrão -->
     <div class="section-block">
       <div class="section-block-header">
-        <div class="section-block-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7.5" stroke="var(--accent)" stroke-width="1.6"/><path d="M10 6v5l3 3" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round"/></svg></div>
+        <div class="section-block-icon"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7.5" stroke="var(--accent)" stroke-width="1.6"/><path d="M10 6v5l3 3" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round"/></svg></div>
         <div>
           <div class="section-block-title">Intervalo padrão entre atendimentos</div>
           <div class="section-block-sub">Tempo reservado quando o serviço não tem intervalo próprio</div>
@@ -355,7 +522,7 @@
           <button class="intervalo-btn" onclick="selecionarIntervalo(this,90)">1h30</button>
           <button class="intervalo-btn" onclick="selecionarIntervalo(this,120)">2 horas</button>
           <button class="intervalo-btn custom-btn" id="btn-custom-intervalo" onclick="selecionarIntervaloCustom(this)">
-            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+            <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
             Personalizado
           </button>
         </div>
@@ -370,13 +537,7 @@
     <!-- Intervalo por serviço -->
     <div class="section-block">
       <div class="section-block-header">
-        <div class="section-block-icon">
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-            <path d="M3 5h14M3 10h8M3 15h10" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round"/>
-            <circle cx="16" cy="13" r="3" stroke="var(--accent)" stroke-width="1.4"/>
-            <path d="M16 11.5V13l1 1" stroke="var(--accent)" stroke-width="1.3" stroke-linecap="round"/>
-          </svg>
-        </div>
+        <div class="section-block-icon"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M3 5h14M3 10h8M3 15h10" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round"/><circle cx="16" cy="13" r="3" stroke="var(--accent)" stroke-width="1.4"/><path d="M16 11.5V13l1 1" stroke="var(--accent)" stroke-width="1.3" stroke-linecap="round"/></svg></div>
         <div>
           <div class="section-block-title">Intervalo por serviço</div>
           <div class="section-block-sub">Configure durações específicas para cada serviço</div>
@@ -384,18 +545,15 @@
       </div>
       <div class="section-block-body">
         <div class="intervalo-info-box">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.4"/><path d="M8 7v4M8 5.5v.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.4"/><path d="M8 7v4M8 5.5v.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
           <span>Quando um serviço tem duração própria configurada, ela substitui o <strong>intervalo padrão</strong>.</span>
         </div>
         <div class="servicos-intervalos-grid" id="servicos-intervalos-grid">
-          <div class="servicos-vazio">
-            <div class="servicos-vazio-icon">🛠️</div>
-            Adicione serviços em <strong>Configurações → Serviços</strong> para configurar durações individuais.
-          </div>
+          <div class="servicos-vazio"><div class="servicos-vazio-icon">🛠️</div>Adicione serviços em <strong>Configurações → Serviços</strong>.</div>
         </div>
         <div style="display:flex;align-items:center;margin-top:4px">
           <button class="btn-salvar" onclick="salvarIntervalosServicos()">
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
             Salvar durações
           </button>
           <span class="salvo-msg" id="salvo-intervalos-servicos">✓ Salvo!</span>
@@ -406,7 +564,7 @@
     <!-- Dias e horários -->
     <div class="section-block">
       <div class="section-block-header">
-        <div class="section-block-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="2.5" y="3.5" width="15" height="13.5" rx="2.5" stroke="var(--accent)" stroke-width="1.6"/><path d="M2.5 7.5h15M7 2v3M13 2v3" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round"/></svg></div>
+        <div class="section-block-icon"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><rect x="2.5" y="3.5" width="15" height="13.5" rx="2.5" stroke="var(--accent)" stroke-width="1.6"/><path d="M2.5 7.5h15M7 2v3M13 2v3" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round"/></svg></div>
         <div>
           <div class="section-block-title">Dias e horários de atendimento</div>
           <div class="section-block-sub">Defina em quais dias e horários você recebe clientes</div>
@@ -416,7 +574,7 @@
         <div id="dias-container"></div>
         <div style="display:flex;align-items:center;margin-top:8px">
           <button class="btn-salvar" onclick="salvarHorarios()">
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
             Salvar horários
           </button>
           <span class="salvo-msg" id="salvo-horarios">✓ Salvo!</span>
@@ -427,7 +585,7 @@
     <!-- Pausas -->
     <div class="section-block">
       <div class="section-block-header">
-        <div class="section-block-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7.5" stroke="var(--accent)" stroke-width="1.6"/><path d="M10 6.5v4M10 13v.5" stroke="var(--accent)" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+        <div class="section-block-icon"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7.5" stroke="var(--accent)" stroke-width="1.6"/><path d="M10 6.5v4M10 13v.5" stroke="var(--accent)" stroke-width="1.8" stroke-linecap="round"/></svg></div>
         <div>
           <div class="section-block-title">Pausas e intervalos</div>
           <div class="section-block-sub">Bloqueie horários para almoço, café ou qualquer pausa</div>
@@ -435,18 +593,18 @@
       </div>
       <div class="section-block-body">
         <div id="pausas-lista"></div>
-        <div style="margin-top:14px;display:flex;flex-direction:column;gap:8px">
-          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:14px;background:var(--bg);border-radius:13px;border:1.5px dashed var(--border3)">
-            <input type="text" id="pausa-inicio" placeholder="12:00" maxlength="5" inputmode="numeric" oninput="mascaraHora(this)" style="flex:1;min-width:80px;">
-            <span style="font-size:12px;color:var(--text3);font-weight:700">às</span>
-            <input type="text" id="pausa-fim"    placeholder="13:00" maxlength="5" inputmode="numeric" oninput="mascaraHora(this)" style="flex:1;min-width:80px;">
-            <input type="text" id="pausa-label"  placeholder="Nome da pausa" style="flex:1.5;min-width:100px;text-align:left;">
+        <div style="margin-top:12px;display:flex;flex-direction:column;gap:7px">
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:13px;background:rgba(255,255,255,0.02);border-radius:12px;border:1px dashed var(--border3)">
+            <input type="text" id="pausa-inicio" placeholder="12:00" maxlength="5" inputmode="numeric" oninput="mascaraHora(this)" style="flex:1;min-width:75px;">
+            <span style="font-size:11px;color:var(--text3);font-weight:700">às</span>
+            <input type="text" id="pausa-fim" placeholder="13:00" maxlength="5" inputmode="numeric" oninput="mascaraHora(this)" style="flex:1;min-width:75px;">
+            <input type="text" id="pausa-label" placeholder="Nome da pausa" style="flex:1.5;min-width:95px;text-align:left;">
           </div>
           <button class="btn-add" style="width:100%" onclick="adicionarPausa()">+ Adicionar pausa</button>
         </div>
         <div style="display:flex;align-items:center;margin-top:4px">
           <button class="btn-salvar" onclick="salvarPausas()">
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
             Salvar pausas
           </button>
           <span class="salvo-msg" id="salvo-pausas">✓ Salvo!</span>
@@ -457,16 +615,12 @@
 
   <!-- ── LEMBRETES ── -->
   <div class="page" id="page-lembretes">
-    <div class="page-header">
-      <div class="page-header-text">
-        <h1>Lembretes Automáticos</h1>
-        <p>Avise seus clientes 24h antes do agendamento via WhatsApp</p>
-        <div class="page-header-accent"></div>
-      </div>
+    <div class="main-topbar" style="position:relative;margin:0 -36px 28px;padding:0 32px">
+      <div class="main-topbar-left"><div><div class="main-topbar-title">Lembretes Automáticos</div><div class="main-topbar-sub">Avise seus clientes 24h antes via WhatsApp</div></div></div>
     </div>
     <div class="section-block">
       <div class="section-block-header">
-        <div class="section-block-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 2a6 6 0 0 1 6 6c0 3.3.7 4.7 1.4 5.5H2.6C3.3 12.7 4 11.3 4 8a6 6 0 0 1 6-6Z" stroke="var(--accent)" stroke-width="1.6" stroke-linejoin="round"/><path d="M8 16.5a2 2 0 0 0 4 0" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round"/></svg></div>
+        <div class="section-block-icon"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M10 2a6 6 0 0 1 6 6c0 3.3.7 4.7 1.4 5.5H2.6C3.3 12.7 4 11.3 4 8a6 6 0 0 1 6-6Z" stroke="var(--accent)" stroke-width="1.6" stroke-linejoin="round"/><path d="M8 16.5a2 2 0 0 0 4 0" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round"/></svg></div>
         <div>
           <div class="section-block-title">Lembrete automático 24h antes</div>
           <div class="section-block-sub">Mensagem enviada pelo WhatsApp do AgendoRapido</div>
@@ -476,7 +630,7 @@
         <div class="toggle-row">
           <div>
             <div class="toggle-row-label">Ativar lembretes automáticos</div>
-            <div class="toggle-row-desc">Seus clientes recebem uma mensagem no WhatsApp 24h antes do horário</div>
+            <div class="toggle-row-desc">Seus clientes recebem uma mensagem no WhatsApp 24h antes</div>
           </div>
           <label class="toggle-switch">
             <input type="checkbox" id="toggle-lembrete" onchange="salvarLembrete()">
@@ -486,18 +640,18 @@
         </div>
         <div id="lembrete-info" style="display:none" class="info-box green">
           <div class="info-box-title">✓ Lembretes ativados</div>
-          Seus clientes receberão automaticamente uma mensagem de lembrete 24 horas antes do agendamento.
+          Seus clientes receberão automaticamente uma mensagem 24h antes.
         </div>
-        <div style="margin-top:20px">
+        <div style="margin-top:18px">
           <div class="form-group">
             <label>Mensagem do lembrete</label>
-            <textarea id="lembrete-msg" style="resize:vertical;min-height:100px">Olá {nome}! A *{negocio}* lembra que você tem um agendamento amanhã, {data} às {hora} — {servico}. Te esperamos!</textarea>
+            <textarea id="lembrete-msg" style="resize:vertical;min-height:95px">Olá {nome}! A *{negocio}* lembra que você tem um agendamento amanhã, {data} às {hora} — {servico}. Te esperamos!</textarea>
             <div class="form-hint">Variáveis: <strong>{nome}</strong>, <strong>{negocio}</strong>, <strong>{data}</strong>, <strong>{hora}</strong>, <strong>{servico}</strong></div>
           </div>
         </div>
         <div style="display:flex;align-items:center">
           <button class="btn-salvar" onclick="salvarConfLembrete()">
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
             Salvar configurações
           </button>
           <span class="salvo-msg" id="salvo-lembrete">✓ Salvo!</span>
@@ -508,61 +662,54 @@
 
   <!-- ── WHATSAPP AUTO ── -->
   <div class="page" id="page-whatsapp">
-    <div class="page-header">
-      <div class="page-header-text">
-        <h1>WhatsApp Automático</h1>
-        <p>Configure seu WhatsApp Business para enviar o link de agendamento</p>
-        <div class="page-header-accent"></div>
-      </div>
+    <div class="main-topbar" style="position:relative;margin:0 -36px 28px;padding:0 32px">
+      <div class="main-topbar-left"><div><div class="main-topbar-title">WhatsApp Automático</div><div class="main-topbar-sub">Configure seu WhatsApp Business para enviar o link de agendamento</div></div></div>
     </div>
-
     <div class="section-block">
       <div class="section-block-header">
-        <div class="section-block-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M17.5 10a7.5 7.5 0 1 1-15 0 7.5 7.5 0 0 1 15 0Z" stroke="var(--accent)" stroke-width="1.6"/><path d="M10 6.5v4M10 13v.5" stroke="var(--accent)" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+        <div class="section-block-icon"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M17.5 10a7.5 7.5 0 1 1-15 0 7.5 7.5 0 0 1 15 0Z" stroke="var(--accent)" stroke-width="1.6"/><path d="M10 6.5v4M10 13v.5" stroke="var(--accent)" stroke-width="1.8" stroke-linecap="round"/></svg></div>
         <div>
           <div class="section-block-title">Seu link de agendamento</div>
           <div class="section-block-sub">Cole este link na mensagem de saudação do WhatsApp Business</div>
         </div>
       </div>
       <div class="section-block-body">
-        <div style="background:var(--accent-light);border:1.5px solid var(--accent-mid);border-radius:12px;padding:16px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+        <div style="background:var(--accent-light);border:1px solid var(--accent-mid);border-radius:11px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
           <div style="flex:1">
-            <div style="font-size:9.5px;font-weight:800;color:var(--accent);text-transform:uppercase;letter-spacing:.12em;margin-bottom:4px">Link de agendamento</div>
-            <div style="font-size:13px;color:var(--accent);word-break:break-all;font-weight:500;opacity:.8" id="wpp-link-agendamento">—</div>
+            <div style="font-size:9px;font-weight:800;color:var(--accent);text-transform:uppercase;letter-spacing:.12em;margin-bottom:4px">Link de agendamento</div>
+            <div style="font-size:12.5px;color:var(--accent);word-break:break-all;font-weight:500;opacity:.8" id="wpp-link-agendamento">—</div>
           </div>
           <button class="btn-copiar" onclick="copiarLinkWpp()">
-            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M1 8.5V2a1 1 0 0 1 1-1h6.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+            <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M1 8.5V2a1 1 0 0 1 1-1h6.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
             Copiar
           </button>
         </div>
       </div>
     </div>
-
     <div class="section-block">
       <div class="section-block-header">
-        <div class="section-block-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 4h14v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4Z" stroke="var(--accent)" stroke-width="1.6"/><path d="M7 8h6M7 11h4" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round"/></svg></div>
+        <div class="section-block-icon"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M3 4h14v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4Z" stroke="var(--accent)" stroke-width="1.6"/><path d="M7 8h6M7 11h4" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round"/></svg></div>
         <div>
           <div class="section-block-title">Mensagem pronta para copiar</div>
-          <div class="section-block-sub">Cole essa mensagem no WhatsApp Business como saudação automática</div>
+          <div class="section-block-sub">Cole no WhatsApp Business como saudação automática</div>
         </div>
       </div>
       <div class="section-block-body">
-        <div style="background:var(--bg);border:1.5px solid var(--border2);border-radius:12px;padding:18px;margin-bottom:14px">
-          <div style="font-size:13.5px;color:var(--text);line-height:1.8;white-space:pre-wrap" id="wpp-mensagem-preview">Carregando...</div>
+        <div style="background:rgba(255,255,255,0.02);border:1px solid var(--border2);border-radius:11px;padding:16px;margin-bottom:12px">
+          <div style="font-size:13px;color:var(--text);line-height:1.8;white-space:pre-wrap" id="wpp-mensagem-preview">Carregando...</div>
         </div>
-        <button id="btn-copiar-msg" onclick="copiarMensagemWpp()" style="display:flex;align-items:center;gap:7px;background:var(--accent);color:white;border:none;padding:10px 20px;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;box-shadow:var(--shadow-accent);transition:all .18s">
-          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M1 8.5V2a1 1 0 0 1 1-1h6.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+        <button id="btn-copiar-msg" onclick="copiarMensagemWpp()" style="display:flex;align-items:center;gap:7px;background:var(--accent);color:white;border:none;padding:9px 18px;border-radius:8px;font-size:12.5px;font-weight:600;cursor:pointer;font-family:inherit;box-shadow:var(--shadow-accent);transition:all .18s">
+          <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M1 8.5V2a1 1 0 0 1 1-1h6.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
           Copiar mensagem completa
         </button>
       </div>
     </div>
-
     <div class="section-block">
       <div class="section-block-header">
-        <div class="section-block-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 10h12M4 6h12M4 14h7" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round"/></svg></div>
+        <div class="section-block-icon"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M4 10h12M4 6h12M4 14h7" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round"/></svg></div>
         <div>
           <div class="section-block-title">Como configurar passo a passo</div>
-          <div class="section-block-sub">Siga as instruções abaixo no app WhatsApp Business do seu celular</div>
+          <div class="section-block-sub">Siga as instruções abaixo no app WhatsApp Business</div>
         </div>
       </div>
       <div class="section-block-body">
@@ -570,15 +717,14 @@
           <div class="passo-num">1</div>
           <div style="flex:1">
             <div class="passo-titulo">Copie a mensagem acima</div>
-            <div class="passo-desc">Clique em <strong>"Copiar mensagem completa"</strong>. O link de agendamento já está incluído.</div>
-            <div class="alerta-verde">✓ <strong>Dica:</strong> A mensagem já está com o seu link personalizado.</div>
+            <div class="passo-desc">Clique em <strong>"Copiar mensagem completa"</strong>. O link já está incluído.</div>
+            <div class="alerta-verde">✓ <strong>Dica:</strong> A mensagem já está com seu link personalizado.</div>
           </div>
         </div>
         <div class="passo">
           <div class="passo-num">2</div>
           <div style="flex:1">
-            <div class="passo-titulo">Abra o WhatsApp Business e vá em Ferramentas Comerciais</div>
-            <div class="passo-desc">No app do WhatsApp Business, siga os passos:</div>
+            <div class="passo-titulo">Abra o WhatsApp Business → Ferramentas Comerciais</div>
             <div class="passo-steps">
               <div class="passo-step"><div class="passo-step-num">1</div>Abra o <strong>WhatsApp Business</strong></div>
               <div class="passo-step"><div class="passo-step-num">2</div>Toque nos <strong>3 pontos ⋮</strong></div>
@@ -594,17 +740,17 @@
             <div class="passo-steps">
               <div class="passo-step"><div class="passo-step-num">1</div>Ative <strong>"Enviar mensagem de saudação"</strong></div>
               <div class="passo-step"><div class="passo-step-num">2</div>Toque em <strong>Editar mensagem</strong></div>
-              <div class="passo-step"><div class="passo-step-num">3</div>Apague o padrão e <strong>cole a mensagem copiada</strong></div>
+              <div class="passo-step"><div class="passo-step-num">3</div>Cole a mensagem copiada</div>
               <div class="passo-step"><div class="passo-step-num">4</div>Toque em <strong>OK</strong></div>
             </div>
-            <div class="alerta-azul">ℹ️ Enviada automaticamente para quem mandar mensagem pela <strong>primeira vez</strong> ou após <strong>14 dias sem contato</strong>.</div>
+            <div class="alerta-azul">ℹ️ Enviada automaticamente para quem mandar mensagem pela <strong>primeira vez</strong>.</div>
           </div>
         </div>
         <div class="passo">
           <div class="passo-num verde">✓</div>
           <div style="flex:1">
             <div class="passo-titulo">Pronto! Seu WhatsApp está configurado</div>
-            <div class="passo-desc">Qualquer cliente que mandar mensagem pela primeira vez vai receber o link automaticamente.</div>
+            <div class="passo-desc">Qualquer cliente que mandar mensagem pela primeira vez vai receber o link.</div>
             <div class="alerta-verde">💡 Isso funciona apenas no <strong>WhatsApp Business</strong> (app gratuito da Meta).</div>
           </div>
         </div>
@@ -614,25 +760,19 @@
 
   <!-- ── CONFIGURAÇÕES ── -->
   <div class="page" id="page-configuracoes">
-    <div class="page-header">
-      <div class="page-header-text">
-        <h1>Configurações</h1>
-        <p>Personalize os serviços e a aparência do seu painel</p>
-        <div class="page-header-accent"></div>
-      </div>
+    <div class="main-topbar" style="position:relative;margin:0 -36px 28px;padding:0 32px">
+      <div class="main-topbar-left"><div><div class="main-topbar-title">Configurações</div><div class="main-topbar-sub">Personalize os serviços e a aparência do seu painel</div></div></div>
     </div>
-
-    <!-- Serviços -->
     <div class="section-block">
       <div class="section-block-header">
-        <div class="section-block-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M2 5h16M2 10h10M2 15h12" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round"/></svg></div>
+        <div class="section-block-icon"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M2 5h16M2 10h10M2 15h12" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round"/></svg></div>
         <div>
           <div class="section-block-title">Serviços oferecidos</div>
           <div class="section-block-sub">Adicione os serviços com seus respectivos preços</div>
         </div>
       </div>
       <div class="section-block-body">
-        <div id="servicos-tags" style="margin-bottom:16px;min-height:36px"></div>
+        <div id="servicos-tags" style="margin-bottom:14px;min-height:34px"></div>
         <div class="add-servico-wrap">
           <div class="add-servico-row">
             <div class="add-field-group add-field-nome">
@@ -649,23 +789,16 @@
         </div>
         <div style="display:flex;align-items:center">
           <button class="btn-salvar" onclick="salvarServicos()">
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
             Salvar serviços
           </button>
           <span class="salvo-msg" id="salvo-msg">✓ Salvo!</span>
         </div>
       </div>
     </div>
-
-    <!-- Aparência -->
     <div class="section-block">
       <div class="section-block-header">
-        <div class="section-block-icon">
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-            <circle cx="10" cy="10" r="4" stroke="var(--accent)" stroke-width="1.6"/>
-            <path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.22 4.22l1.42 1.42M14.36 14.36l1.42 1.42M4.22 15.78l1.42-1.42M14.36 5.64l1.42-1.42" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round"/>
-          </svg>
-        </div>
+        <div class="section-block-icon"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="4" stroke="var(--accent)" stroke-width="1.6"/><path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.22 4.22l1.42 1.42M14.36 14.36l1.42 1.42M4.22 15.78l1.42-1.42M14.36 5.64l1.42-1.42" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round"/></svg></div>
         <div>
           <div class="section-block-title">Aparência</div>
           <div class="section-block-sub">Escolha entre o modo claro e escuro para o painel</div>
@@ -674,37 +807,29 @@
       <div class="section-block-body">
         <div class="theme-selector-wrap">
           <div class="theme-option" id="theme-opt-claro" onclick="definirTema('claro')">
-            <div class="theme-option-check"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5L8 3" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div class="theme-option-check"><svg width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5L8 3" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
             <div class="theme-preview claro">
               <div class="theme-preview-sidebar"></div>
-              <div class="theme-preview-content">
-                <div class="theme-preview-bar"></div>
-                <div class="theme-preview-bar2"></div>
-                <div class="theme-preview-bar" style="width:75%"></div>
-              </div>
+              <div class="theme-preview-content"><div class="theme-preview-bar"></div><div class="theme-preview-bar2"></div><div class="theme-preview-bar" style="width:70%"></div></div>
             </div>
             <div>
-              <div style="display:flex;align-items:center;gap:6px"><span class="theme-option-emoji">☀️</span><span class="theme-option-label">Modo Claro</span></div>
+              <div style="display:flex;align-items:center;gap:5px"><span class="theme-option-emoji">☀️</span><span class="theme-option-label">Modo Claro</span></div>
               <div class="theme-option-desc">Interface clara e limpa</div>
             </div>
           </div>
           <div class="theme-option" id="theme-opt-escuro" onclick="definirTema('escuro')">
-            <div class="theme-option-check"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5L8 3" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div class="theme-option-check"><svg width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5L8 3" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
             <div class="theme-preview escuro">
               <div class="theme-preview-sidebar"></div>
-              <div class="theme-preview-content">
-                <div class="theme-preview-bar"></div>
-                <div class="theme-preview-bar2"></div>
-                <div class="theme-preview-bar" style="width:75%"></div>
-              </div>
+              <div class="theme-preview-content"><div class="theme-preview-bar"></div><div class="theme-preview-bar2"></div><div class="theme-preview-bar" style="width:70%"></div></div>
             </div>
             <div>
-              <div style="display:flex;align-items:center;gap:6px"><span class="theme-option-emoji">🌙</span><span class="theme-option-label">Modo Escuro</span></div>
+              <div style="display:flex;align-items:center;gap:5px"><span class="theme-option-emoji">🌙</span><span class="theme-option-label">Modo Escuro</span></div>
               <div class="theme-option-desc">Confortável para uso noturno</div>
             </div>
           </div>
         </div>
-        <div style="margin-top:16px;padding:12px 16px;background:var(--accent-light);border:1px solid var(--accent-mid);border-radius:10px;font-size:12.5px;color:var(--accent);font-weight:500;line-height:1.5">
+        <div style="margin-top:14px;padding:11px 14px;background:var(--accent-light);border:1px solid var(--accent-mid);border-radius:9px;font-size:12px;color:var(--accent);font-weight:500;line-height:1.5">
           💾 A preferência de tema é salva automaticamente no seu navegador.
         </div>
       </div>
@@ -713,28 +838,22 @@
 
   <!-- ── MINHA BIO ── -->
   <div class="page" id="page-bio">
-    <div class="page-header">
-      <div class="page-header-text">
-        <h1>Minha Página Bio</h1>
-        <p>Personalize sua página pública para o Instagram</p>
-        <div class="page-header-accent"></div>
-      </div>
+    <div class="main-topbar" style="position:relative;margin:0 -36px 28px;padding:0 32px">
+      <div class="main-topbar-left"><div><div class="main-topbar-title">Minha Página Bio</div><div class="main-topbar-sub">Personalize sua página pública para o Instagram</div></div></div>
     </div>
-
     <div class="link-card">
       <div>
         <div class="link-card-label">Link da sua bio</div>
         <div class="link-card-url" id="link-bio"></div>
       </div>
       <button class="btn-copiar" id="btn-copiar-bio" onclick="copiarLinkBio()">
-        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M1 8.5V2a1 1 0 0 1 1-1h6.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+        <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M1 8.5V2a1 1 0 0 1 1-1h6.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
         Copiar link
       </button>
     </div>
-
     <div class="section-block">
       <div class="section-block-header">
-        <div class="section-block-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="3.5" stroke="var(--accent)" stroke-width="1.6"/><path d="M3 18c0-3.9 3.1-7 7-7s7 3.1 7 7" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round"/></svg></div>
+        <div class="section-block-icon"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="3.5" stroke="var(--accent)" stroke-width="1.6"/><path d="M3 18c0-3.9 3.1-7 7-7s7 3.1 7 7" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round"/></svg></div>
         <div>
           <div class="section-block-title">Informações da página</div>
           <div class="section-block-sub">Foto, descrição e dados de contato da sua bio</div>
@@ -750,27 +869,15 @@
           </div>
           <input type="hidden" id="bio-foto">
         </div>
-        <div class="form-group">
-          <label>Descrição / Bio</label>
-          <textarea id="bio-descricao" placeholder="Ex: Barbearia premium no centro de SP." style="resize:vertical;min-height:80px"></textarea>
-        </div>
-        <div class="form-group">
-          <label>Link do Google Maps</label>
-          <input type="text" id="bio-endereco" placeholder="Cole aqui o link do Google Maps">
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
-          <div class="form-group" style="margin-bottom:0">
-            <label>Instagram</label>
-            <input type="text" id="bio-instagram" placeholder="@seunegocio">
-          </div>
-          <div class="form-group" style="margin-bottom:0">
-            <label>WhatsApp</label>
-            <input type="text" id="bio-whatsapp" placeholder="(11) 99999-9999">
-          </div>
+        <div class="form-group"><label>Descrição / Bio</label><textarea id="bio-descricao" placeholder="Ex: Barbearia premium no centro." style="resize:vertical;min-height:75px"></textarea></div>
+        <div class="form-group"><label>Link do Google Maps</label><input type="text" id="bio-endereco" placeholder="Cole aqui o link do Google Maps"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:13px">
+          <div class="form-group" style="margin-bottom:0"><label>Instagram</label><input type="text" id="bio-instagram" placeholder="@seunegocio"></div>
+          <div class="form-group" style="margin-bottom:0"><label>WhatsApp</label><input type="text" id="bio-whatsapp" placeholder="(11) 99999-9999"></div>
         </div>
         <div style="display:flex;align-items:center">
           <button class="btn-salvar" onclick="salvarBio()">
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
             Salvar bio
           </button>
           <span class="salvo-msg" id="salvo-bio">✓ Salvo!</span>
@@ -781,26 +888,22 @@
 
   <!-- ── PAGAMENTOS ── -->
   <div class="page" id="page-pagamentos">
-    <div class="page-header">
-      <div class="page-header-text">
-        <h1>Pagamentos</h1>
-        <p>Configure cobrança antecipada via Pix por serviço</p>
-        <div class="page-header-accent"></div>
-      </div>
+    <div class="main-topbar" style="position:relative;margin:0 -36px 28px;padding:0 32px">
+      <div class="main-topbar-left"><div><div class="main-topbar-title">Pagamentos</div><div class="main-topbar-sub">Configure cobrança antecipada via Pix por serviço</div></div></div>
     </div>
     <div class="section-block">
       <div class="section-block-header">
-        <div class="section-block-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="2" y="5" width="16" height="13" rx="2.5" stroke="var(--accent)" stroke-width="1.6"/><path d="M2 9h16M6 13h4" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round"/></svg></div>
+        <div class="section-block-icon"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><rect x="2" y="5" width="16" height="13" rx="2.5" stroke="var(--accent)" stroke-width="1.6"/><path d="M2 9h16M6 13h4" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round"/></svg></div>
         <div>
           <div class="section-block-title">Cobrança via Pix</div>
           <div class="section-block-sub">Receba antes do atendimento, automaticamente</div>
         </div>
       </div>
       <div class="section-block-body">
-        <div style="text-align:center;padding:40px 0 28px">
-          <div class="pag-empty-icon"><svg width="34" height="34" viewBox="0 0 34 34" fill="none"><rect x="3" y="7" width="28" height="20" rx="3.5" stroke="var(--accent)" stroke-width="1.8"/><path d="M3 13h28M9 20h7" stroke="var(--accent)" stroke-width="1.8" stroke-linecap="round"/></svg></div>
-          <div style="font-size:20px;font-weight:700;color:var(--text);margin-bottom:10px;letter-spacing:-0.02em">Pagamentos em breve</div>
-          <p style="font-size:14px;color:var(--text2);max-width:340px;margin:0 auto;line-height:1.7">Cobrança antecipada via Pix com repasse automático e reembolso em cancelamentos.</p>
+        <div style="text-align:center;padding:36px 0 26px">
+          <div class="pag-empty-icon"><svg width="32" height="32" viewBox="0 0 34 34" fill="none"><rect x="3" y="7" width="28" height="20" rx="3.5" stroke="var(--accent)" stroke-width="1.8"/><path d="M3 13h28M9 20h7" stroke="var(--accent)" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+          <div style="font-size:19px;font-weight:700;color:var(--text);margin-bottom:9px">Pagamentos em breve</div>
+          <p style="font-size:13.5px;color:var(--text2);max-width:320px;margin:0 auto;line-height:1.7">Cobrança antecipada via Pix com repasse automático e reembolso em cancelamentos.</p>
         </div>
       </div>
     </div>
@@ -808,26 +911,18 @@
 
   <!-- ── SUPORTE ── -->
   <div class="page" id="page-suporte">
-    <div class="page-header">
-      <div class="page-header-text">
-        <h1>Suporte</h1>
-        <p>Estamos aqui para ajudar você</p>
-        <div class="page-header-accent"></div>
-      </div>
+    <div class="main-topbar" style="position:relative;margin:0 -36px 28px;padding:0 32px">
+      <div class="main-topbar-left"><div><div class="main-topbar-title">Suporte</div><div class="main-topbar-sub">Estamos aqui para ajudar você</div></div></div>
     </div>
     <div class="section-block">
       <div class="suporte-hero">
         <div class="suporte-avatar">
-          <svg width="36" height="36" viewBox="0 0 38 38" fill="none">
-            <path d="M31 23c0 1.3-.5 2.5-1.3 3.3l-1.6 1.7c-1 .9-2.2 1.4-3.3 1.4-4.6 0-9-1.8-12.4-5.1C9.1 21 7.2 16.6 7.2 12c0-1.2.4-2.4 1.3-3.3l1.7-1.7c.9-.9 2.2-.9 3 0l3.6 3.6c.9.9.9 2.2 0 3l-1.3 1.3c-.2.3-.2.7 0 .9 1.3 1.8 2.9 3.4 4.7 4.7.3.2.6.2.9 0l1.3-1.3c.8-.9 2.1-.9 3 0l3.6 3.6c.7.8.7 2 0 2.8z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
+          <svg width="34" height="34" viewBox="0 0 38 38" fill="none"><path d="M31 23c0 1.3-.5 2.5-1.3 3.3l-1.6 1.7c-1 .9-2.2 1.4-3.3 1.4-4.6 0-9-1.8-12.4-5.1C9.1 21 7.2 16.6 7.2 12c0-1.2.4-2.4 1.3-3.3l1.7-1.7c.9-.9 2.2-.9 3 0l3.6 3.6c.9.9.9 2.2 0 3l-1.3 1.3c-.2.3-.2.7 0 .9 1.3 1.8 2.9 3.4 4.7 4.7.3.2.6.2.9 0l1.3-1.3c.8-.9 2.1-.9 3 0l3.6 3.6c.7.8.7 2 0 2.8z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </div>
-        <div style="font-size:22px;font-weight:700;color:var(--text);margin-bottom:10px;letter-spacing:-0.025em">Fale com o suporte</div>
-        <p style="font-size:14px;color:var(--text2);line-height:1.7;margin-bottom:28px;max-width:320px;margin-left:auto;margin-right:auto">
-          Tem alguma dúvida ou problema? Nossa equipe está pronta para te ajudar pelo WhatsApp.
-        </p>
+        <div style="font-size:21px;font-weight:700;color:var(--text);margin-bottom:9px">Fale com o suporte</div>
+        <p style="font-size:13.5px;color:var(--text2);line-height:1.7;margin-bottom:26px;max-width:300px;margin-left:auto;margin-right:auto">Tem alguma dúvida ou problema? Nossa equipe está pronta para te ajudar pelo WhatsApp.</p>
         <a href="https://wa.me/5500000000000?text=Olá%2C+preciso+de+ajuda+com+o+AgendoRapido!" target="_blank" class="btn-whatsapp-suporte">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.118 1.528 5.852L.057 23.885l6.204-1.628A11.945 11.945 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.808 9.808 0 0 1-5.001-1.366l-.359-.213-3.682.966.983-3.594-.234-.371A9.818 9.818 0 0 1 2.182 12C2.182 6.57 6.57 2.182 12 2.182S21.818 6.57 21.818 12 17.43 21.818 12 21.818z"/></svg>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.118 1.528 5.852L.057 23.885l6.204-1.628A11.945 11.945 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.808 9.808 0 0 1-5.001-1.366l-.359-.213-3.682.966.983-3.594-.234-.371A9.818 9.818 0 0 1 2.182 12C2.182 6.57 6.57 2.182 12 2.182S21.818 6.57 21.818 12 17.43 21.818 12 21.818z"/></svg>
           Chamar no WhatsApp
         </a>
       </div>
@@ -835,14 +930,8 @@
       <div class="suporte-horarios">
         <div class="suporte-horarios-title">Horário de atendimento</div>
         <div class="horario-grid">
-          <div class="horario-item">
-            <div class="horario-item-dia">Segunda a Sexta</div>
-            <div class="horario-item-hora">9h às 18h</div>
-          </div>
-          <div class="horario-item">
-            <div class="horario-item-dia">Sábado</div>
-            <div class="horario-item-hora">9h às 13h</div>
-          </div>
+          <div class="horario-item"><div class="horario-item-dia">Segunda a Sexta</div><div class="horario-item-hora">9h às 18h</div></div>
+          <div class="horario-item"><div class="horario-item-dia">Sábado</div><div class="horario-item-hora">9h às 13h</div></div>
         </div>
       </div>
     </div>
@@ -850,6 +939,241 @@
 
 </div><!-- /main -->
 
+<script>
+/* ═══════════════════════════════════
+   FUNÇÕES ADICIONADAS/MODIFICADAS
+   para o novo layout
+═══════════════════════════════════ */
+
+// Toggle tema rápido pelo botão da topbar
+function toggleTema() {
+  const atual = localStorage.getItem('tema') || 'escuro';
+  definirTema(atual === 'escuro' ? 'claro' : 'escuro');
+}
+
+// Sobrescreve a função definirTema para incluir o default dark
+const _definirTema = window.definirTema;
+
+// Cores para avatares (gera cor consistente por nome)
+function avatarColor(nome) {
+  const colors = [
+    ['#1d4ed8','#3b82f6'],['#7c3aed','#8b5cf6'],['#0e7490','#06b6d4'],
+    ['#15803d','#22c55e'],['#b45309','#f59e0b'],['#be185d','#ec4899'],
+    ['#0369a1','#38bdf8'],['#6d28d9','#a78bfa'],
+  ];
+  let h = 0;
+  for (let c of (nome || 'A')) h = ((h << 5) - h) + c.charCodeAt(0);
+  const idx = Math.abs(h) % colors.length;
+  return colors[idx];
+}
+
+// Renderiza as linhas com avatares
+function renderizarLinhasComAvatar(slice) {
+  return slice.map(a => {
+    const ini = (a.pacienteNome || 'C')[0].toUpperCase();
+    const [c1, c2] = avatarColor(a.pacienteNome);
+    const isOnline = a.status === 'confirmado';
+
+    const acoes = a.status === 'confirmado'
+      ? `<div class="acoes">
+           <button class="btn-acao concluir" onclick="atualizar('${a._id}','concluido')">Concluir</button>
+           <button class="btn-acao cancelar" onclick="cancelarComAviso('${a._id}','${a.pacienteNome}','${a.pacienteTelefone}','${a.data}','${a.hora}')">Cancelar</button>
+         </div>`
+      : '';
+
+    const preco = a.preco ? `R$${Number(a.preco).toFixed(2).replace('.',',')}` : '—';
+
+    return `<div style="display:contents">
+      <div class="ag-row">
+        <div class="ag-avatar" style="background:linear-gradient(135deg,${c1},${c2})">
+          ${ini}
+          ${isOnline ? '<div class="ag-avatar-online"></div>' : ''}
+        </div>
+        <div class="ag-info">
+          <div class="ag-nome">${a.pacienteNome}</div>
+          <div class="ag-servico">${a.servico}</div>
+        </div>
+        <div class="ag-time">
+          <div class="ag-hora">às ${a.hora}</div>
+          <div class="ag-data">${a.data ? formatarData(a.data) : ''}</div>
+        </div>
+        <span class="badge ${a.status}">${a.status}</span>
+        <div class="ag-preco">${preco}</div>
+        ${acoes}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// Atualiza o painel de insights com os dados reais
+function atualizarInsights() {
+  if (!window.todosAgendamentos) return;
+  const ags = window.todosAgendamentos;
+
+  // Serviço mais frequente
+  const servFreq = {};
+  ags.filter(a => a.status === 'concluido').forEach(a => {
+    if (a.servico) servFreq[a.servico] = (servFreq[a.servico] || 0) + (Number(a.preco) || 0);
+  });
+  const topServico = Object.entries(servFreq).sort((a,b) => b[1]-a[1])[0];
+  if (topServico) {
+    document.getElementById('insight-servico-top').textContent = topServico[0];
+    document.getElementById('insight-servico-receita').textContent =
+      `+R$${topServico[1].toFixed(0).replace('.',',')} no mês`;
+  }
+
+  // Clientes inativos (simplificado: sem agendamentos nas últimas 4 semanas)
+  const cutoff = new Date(); cutoff.setDate(cutoff.getDate() - 30);
+  const cutStr = cutoff.toISOString().split('T')[0];
+  const clientesRecentes = new Set(ags.filter(a => a.data >= cutStr).map(a => a.pacienteNome));
+  const todosClientes = new Set(ags.map(a => a.pacienteNome));
+  const inativos = [...todosClientes].filter(c => !clientesRecentes.has(c)).length;
+  document.getElementById('insight-inativos').textContent = `${inativos} clientes`;
+
+  // Alert banner
+  const banner = document.getElementById('alert-clientes-inativos');
+  if (inativos >= 3 && banner) {
+    banner.style.display = 'flex';
+    const t = document.getElementById('alert-clientes-texto');
+    if (t) t.innerHTML = `<strong>${inativos} clientes estão inativos</strong>, mande uma promoção para reativá-los`;
+  }
+
+  // Finance card
+  const mes = new Date().toISOString().slice(0,7);
+  const lucroMes = parseFloat(localStorage.getItem(`lucro_val_${window.negocioAtual?._id}_${mes}`)) || 0;
+  const atendMes = (() => { try { return JSON.parse(localStorage.getItem(`lucro_ids_${window.negocioAtual?._id}_${mes}`) || '[]').length } catch { return 0 }})();
+
+  const fv = document.getElementById('finance-amount-val');
+  const fm = document.getElementById('finance-meta');
+  const fa = document.getElementById('finance-atend');
+  const fcl = document.getElementById('finance-chart-label');
+
+  if (fv) fv.textContent = lucroMes.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2});
+  if (fm) fm.textContent = `Movidas: ${atendMes} agendamentos`;
+  if (fa) fa.textContent = atendMes;
+  if (fcl) fcl.textContent = `R$${Math.round(lucroMes)}`;
+
+  // stat-total = lucro da semana (últimos 7 dias)
+  const hoje = new Date().toISOString().split('T')[0];
+  const semStart = new Date(); semStart.setDate(semStart.getDate()-7);
+  const semStr = semStart.toISOString().split('T')[0];
+  const lucroSem = ags
+    .filter(a => a.status === 'concluido' && a.data >= semStr && a.data <= hoje)
+    .reduce((acc, a) => acc + (Number(a.preco) || 0), 0);
+  const stTotal = document.getElementById('stat-total');
+  if (stTotal) stTotal.textContent = 'R$ ' + lucroSem.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2});
+}
+</script>
+
 <script src="/painel.js"></script>
+
+<script>
+/* ── PATCH: sobrescreve renderTabela para usar o novo layout com avatares ── */
+(function() {
+  const _orig = window.renderTabela;
+  window.renderTabela = function() {
+    const desktopWrap = document.getElementById('tbody-rows');
+    const agCards = document.getElementById('ag-cards');
+    const paginacao = document.getElementById('paginacao');
+
+    if (!listaFiltrada.length) {
+      if (desktopWrap) desktopWrap.innerHTML = '<div class="vazio">Nenhum agendamento encontrado</div>';
+      if (agCards)     agCards.innerHTML    = '<div class="vazio">Nenhum agendamento encontrado</div>';
+      if (paginacao)   paginacao.style.display = 'none';
+      return;
+    }
+
+    const total  = Math.ceil(listaFiltrada.length / POR_PAGINA);
+    const inicio = (paginaAtual - 1) * POR_PAGINA;
+    const fim    = inicio + POR_PAGINA;
+    const slice  = listaFiltrada.slice(inicio, fim);
+
+    if (desktopWrap) desktopWrap.innerHTML = renderizarLinhasComAvatar(slice);
+
+    // Mobile cards
+    if (agCards) {
+      agCards.innerHTML = slice.map(a => {
+        const [c1, c2] = avatarColor(a.pacienteNome);
+        const ini = (a.pacienteNome || 'C')[0].toUpperCase();
+        const acoes = a.status === 'confirmado'
+          ? `<div class="ag-card-actions">
+               <button class="btn-acao concluir" onclick="atualizar('${a._id}','concluido')">Concluir</button>
+               <button class="btn-acao cancelar" onclick="cancelarComAviso('${a._id}','${a.pacienteNome}','${a.pacienteTelefone}','${a.data}','${a.hora}')">Cancelar</button>
+             </div>` : '';
+        return `<div class="ag-card">
+          <div class="ag-card-top">
+            <div style="display:flex;align-items:center;gap:10px">
+              <div class="ag-avatar" style="background:linear-gradient(135deg,${c1},${c2});width:32px;height:32px;font-size:11px;flex-shrink:0">${ini}</div>
+              <div>
+                <div class="ag-card-nome">${a.pacienteNome}</div>
+                <div class="paciente-tel">${a.pacienteTelefone || ''}</div>
+              </div>
+            </div>
+            <span class="badge ${a.status}">${a.status}</span>
+          </div>
+          <div class="ag-card-body">
+            <div class="ag-chip">${formatarData(a.data)}</div>
+            <div class="ag-chip">${a.hora}</div>
+            <div class="ag-chip">${a.servico}</div>
+          </div>
+          ${acoes}
+        </div>`;
+      }).join('');
+    }
+
+    if (paginacao) {
+      document.getElementById('pg-info').textContent =
+        `${inicio + 1}–${Math.min(fim, listaFiltrada.length)} de ${listaFiltrada.length}`;
+      let btns = `<button class="pg-btn" onclick="irPagina(${paginaAtual - 1})" ${paginaAtual === 1 ? 'disabled' : ''}>‹</button>`;
+      for (let i = 1; i <= total; i++) {
+        if (total <= 7 || i === 1 || i === total || Math.abs(i - paginaAtual) <= 1)
+          btns += `<button class="pg-btn ${i === paginaAtual ? 'ativo' : ''}" onclick="irPagina(${i})">${i}</button>`;
+        else if (Math.abs(i - paginaAtual) === 2)
+          btns += `<span style="color:var(--text3);font-size:12px;padding:0 2px">…</span>`;
+      }
+      btns += `<button class="pg-btn" onclick="irPagina(${paginaAtual + 1})" ${paginaAtual === total ? 'disabled' : ''}>›</button>`;
+      document.getElementById('pg-btns').innerHTML = btns;
+      paginacao.style.display = total > 1 ? 'flex' : 'none';
+    }
+
+    // Atualiza insights sempre que a tabela renderiza
+    setTimeout(atualizarInsights, 100);
+  };
+
+  // Patch: carregarTema para default dark
+  const _ctema = window.carregarTema;
+  window.carregarTema = function() {
+    const tema = localStorage.getItem('tema') || 'escuro';
+    definirTema(tema);
+  };
+
+  // Patch: definirTema para não usar dark/light-mode mas apenas body class
+  window.definirTema = function(tema) {
+    document.body.classList.remove('dark-mode', 'light-mode');
+    if (tema === 'claro') document.body.classList.add('light-mode');
+    // 'escuro' = default, sem class (usa :root vars que já são dark)
+    localStorage.setItem('tema', tema);
+    const optClaro  = document.getElementById('theme-opt-claro');
+    const optEscuro = document.getElementById('theme-opt-escuro');
+    if (optClaro)  optClaro.classList.toggle('ativo',  tema === 'claro');
+    if (optEscuro) optEscuro.classList.toggle('ativo',  tema === 'escuro');
+  };
+
+  // Atualiza o topbar ao navegar
+  const _irPara = window.irPara;
+  window.irPara = function(pagina, btn) {
+    _irPara && _irPara(pagina, btn);
+    // Não há mais topbar dinâmico separado por página no main header
+  };
+
+  // Avatar da topbar = inicial do negócio
+  const _aSidebar = window.atualizarSidebarNegocio;
+  window.atualizarSidebarNegocio = function() {
+    _aSidebar && _aSidebar();
+    const av = document.getElementById('topbar-avatar-btn');
+    if (av && window.negocioAtual) av.textContent = (window.negocioAtual.nome || 'A')[0].toUpperCase();
+  };
+})();
+</script>
 </body>
 </html>
