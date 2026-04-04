@@ -144,13 +144,11 @@
   <div class="sidebar-menu">
     <div class="menu-section">Painel</div>
 
-    <!-- DASHBOARD — aponta para page-dashboard -->
     <button class="menu-item ativo" id="menu-dashboard" onclick="irPara('dashboard',this)">
       <svg width="14" height="14" viewBox="0 0 15 15" fill="none"><rect x="1.5" y="2.5" width="12" height="11" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M5 1.5v2M10 1.5v2M1.5 5.5h12" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><path d="M4.5 9h2.5M4.5 11h4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
       Dashboard
     </button>
 
-    <!-- AGENDAMENTOS — aponta para page-agendamentos -->
     <button class="menu-item" id="menu-agendamentos" onclick="irPara('agendamentos',this)">
       <svg width="14" height="14" viewBox="0 0 15 15" fill="none"><rect x="1.5" y="2.5" width="12" height="11" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M5 1.5v2M10 1.5v2M1.5 5.5h12" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
       Agendamentos
@@ -251,7 +249,7 @@
   </div>
 
   <!-- ══════════════════════════════════════════════════
-       PAGE: DASHBOARD (stats + insights + gráfico)
+       PAGE: DASHBOARD
   ══════════════════════════════════════════════════ -->
   <div class="page ativo" id="page-dashboard">
 
@@ -322,7 +320,6 @@
     <!-- Grid: agendamentos do dia + Insights -->
     <div class="dashboard-grid">
       <div>
-        <!-- Mini lista de hoje no dashboard -->
         <div class="card">
           <div class="card-header">
             <div class="card-title">Agendamentos de hoje</div>
@@ -467,7 +464,7 @@
   </div><!-- /page-dashboard -->
 
   <!-- ══════════════════════════════════════════════════
-       PAGE: AGENDAMENTOS (lista completa)
+       PAGE: AGENDAMENTOS
   ══════════════════════════════════════════════════ -->
   <div class="page" id="page-agendamentos">
     <div class="card">
@@ -492,379 +489,673 @@
     </div>
   </div><!-- /page-agendamentos -->
 
-  <!-- ── HORÁRIOS ── -->
+  <!-- ══════════════════════════════════════════════
+       PAGE: HORÁRIOS (redesenhado)
+  ══════════════════════════════════════════════ -->
   <div class="page" id="page-horarios">
-    <div class="main-topbar" style="position:relative;margin:0 -36px 28px;padding:0 32px">
-      <div class="main-topbar-left">
-        <div><div class="main-topbar-title">Horários de Atendimento</div><div class="main-topbar-sub">Configure dias e horários que seu negócio atende</div></div>
+
+    <!-- Hero header -->
+    <div class="inner-hero">
+      <div class="inner-hero-icon" style="background:linear-gradient(135deg,#1d4ed8,#6366f1)">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="12" r="9" stroke="white" stroke-width="1.8"/>
+          <path d="M12 7v6l4 2" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div>
+        <h1 class="inner-hero-title">Horários de Atendimento</h1>
+        <p class="inner-hero-sub">Configure quando e como seus clientes podem agendar</p>
       </div>
     </div>
-    <div class="section-block">
-      <div class="section-block-header">
-        <div class="section-block-icon"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7.5" stroke="var(--accent)" stroke-width="1.6"/><path d="M10 6v5l3 3" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round"/></svg></div>
-        <div>
-          <div class="section-block-title">Intervalo padrão entre atendimentos</div>
-          <div class="section-block-sub">Tempo reservado quando o serviço não tem intervalo próprio</div>
-        </div>
-      </div>
-      <div class="section-block-body">
-        <div class="intervalo-grid">
-          <button class="intervalo-btn" onclick="selecionarIntervalo(this,15)">15 min</button>
-          <button class="intervalo-btn" onclick="selecionarIntervalo(this,20)">20 min</button>
-          <button class="intervalo-btn" onclick="selecionarIntervalo(this,30)">30 min</button>
-          <button class="intervalo-btn" onclick="selecionarIntervalo(this,45)">45 min</button>
-          <button class="intervalo-btn" onclick="selecionarIntervalo(this,60)">1 hora</button>
-          <button class="intervalo-btn" onclick="selecionarIntervalo(this,90)">1h30</button>
-          <button class="intervalo-btn" onclick="selecionarIntervalo(this,120)">2 horas</button>
-          <button class="intervalo-btn custom-btn" id="btn-custom-intervalo" onclick="selecionarIntervaloCustom(this)">
-            <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
-            Personalizado
-          </button>
-        </div>
-        <div class="intervalo-custom-wrap" id="intervalo-custom-wrap">
-          <span class="intervalo-custom-label">Duração:</span>
-          <input type="number" id="intervalo-custom" min="5" max="480" step="5" placeholder="60" oninput="atualizarIntervaloCustom(this.value)">
-          <span class="intervalo-custom-suffix">minutos</span>
-        </div>
-      </div>
-    </div>
-    <div class="section-block">
-      <div class="section-block-header">
-        <div class="section-block-icon"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M3 5h14M3 10h8M3 15h10" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round"/><circle cx="16" cy="13" r="3" stroke="var(--accent)" stroke-width="1.4"/><path d="M16 11.5V13l1 1" stroke="var(--accent)" stroke-width="1.3" stroke-linecap="round"/></svg></div>
-        <div>
-          <div class="section-block-title">Intervalo por serviço</div>
-          <div class="section-block-sub">Configure durações específicas para cada serviço</div>
-        </div>
-      </div>
-      <div class="section-block-body">
-        <div class="intervalo-info-box">
-          <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.4"/><path d="M8 7v4M8 5.5v.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-          <span>Quando um serviço tem duração própria configurada, ela substitui o <strong>intervalo padrão</strong>.</span>
-        </div>
-        <div class="servicos-intervalos-grid" id="servicos-intervalos-grid">
-          <div class="servicos-vazio"><div class="servicos-vazio-icon">🛠️</div>Adicione serviços em <strong>Configurações → Serviços</strong>.</div>
-        </div>
-        <div style="display:flex;align-items:center;margin-top:4px">
-          <button class="btn-salvar" onclick="salvarIntervalosServicos()">
-            <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            Salvar durações
-          </button>
-          <span class="salvo-msg" id="salvo-intervalos-servicos">✓ Salvo!</span>
-        </div>
-      </div>
-    </div>
-    <div class="section-block">
-      <div class="section-block-header">
-        <div class="section-block-icon"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><rect x="2.5" y="3.5" width="15" height="13.5" rx="2.5" stroke="var(--accent)" stroke-width="1.6"/><path d="M2.5 7.5h15M7 2v3M13 2v3" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round"/></svg></div>
-        <div>
-          <div class="section-block-title">Dias e horários de atendimento</div>
-          <div class="section-block-sub">Defina em quais dias e horários você recebe clientes</div>
-        </div>
-      </div>
-      <div class="section-block-body">
-        <div id="dias-container"></div>
-        <div style="display:flex;align-items:center;margin-top:8px">
-          <button class="btn-salvar" onclick="salvarHorarios()">
-            <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            Salvar horários
-          </button>
-          <span class="salvo-msg" id="salvo-horarios">✓ Salvo!</span>
-        </div>
-      </div>
-    </div>
-    <div class="section-block">
-      <div class="section-block-header">
-        <div class="section-block-icon"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7.5" stroke="var(--accent)" stroke-width="1.6"/><path d="M10 6.5v4M10 13v.5" stroke="var(--accent)" stroke-width="1.8" stroke-linecap="round"/></svg></div>
-        <div>
-          <div class="section-block-title">Pausas e intervalos</div>
-          <div class="section-block-sub">Bloqueie horários para almoço, café ou qualquer pausa</div>
-        </div>
-      </div>
-      <div class="section-block-body">
-        <div id="pausas-lista"></div>
-        <div style="margin-top:12px;display:flex;flex-direction:column;gap:7px">
-          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:13px;background:rgba(255,255,255,0.02);border-radius:12px;border:1px dashed var(--border3)">
-            <input type="text" id="pausa-inicio" placeholder="12:00" maxlength="5" inputmode="numeric" oninput="mascaraHora(this)" style="flex:1;min-width:75px;">
-            <span style="font-size:11px;color:var(--text3);font-weight:700">às</span>
-            <input type="text" id="pausa-fim" placeholder="13:00" maxlength="5" inputmode="numeric" oninput="mascaraHora(this)" style="flex:1;min-width:75px;">
-            <input type="text" id="pausa-label" placeholder="Nome da pausa" style="flex:1.5;min-width:95px;text-align:left;">
+
+    <!-- Grid 2 colunas no desktop -->
+    <div class="inner-grid">
+
+      <!-- Coluna esquerda -->
+      <div>
+        <!-- Intervalo padrão -->
+        <div class="inner-card">
+          <div class="inner-card-header">
+            <div class="inner-card-icon blue">
+              <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7.5" stroke="var(--accent)" stroke-width="1.6"/><path d="M10 6v5l3 3" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round"/></svg>
+            </div>
+            <div>
+              <div class="inner-card-title">Intervalo padrão</div>
+              <div class="inner-card-sub">Tempo entre cada atendimento</div>
+            </div>
           </div>
-          <button class="btn-add" style="width:100%" onclick="adicionarPausa()">+ Adicionar pausa</button>
+          <div class="inner-card-body">
+            <div class="intervalo-grid">
+              <button class="intervalo-btn" onclick="selecionarIntervalo(this,15)">15 min</button>
+              <button class="intervalo-btn" onclick="selecionarIntervalo(this,20)">20 min</button>
+              <button class="intervalo-btn" onclick="selecionarIntervalo(this,30)">30 min</button>
+              <button class="intervalo-btn" onclick="selecionarIntervalo(this,45)">45 min</button>
+              <button class="intervalo-btn" onclick="selecionarIntervalo(this,60)">1 hora</button>
+              <button class="intervalo-btn" onclick="selecionarIntervalo(this,90)">1h30</button>
+              <button class="intervalo-btn" onclick="selecionarIntervalo(this,120)">2 horas</button>
+              <button class="intervalo-btn custom-btn" id="btn-custom-intervalo" onclick="selecionarIntervaloCustom(this)">
+                <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+                Personalizado
+              </button>
+            </div>
+            <div class="intervalo-custom-wrap" id="intervalo-custom-wrap">
+              <span class="intervalo-custom-label">Duração:</span>
+              <input type="number" id="intervalo-custom" min="5" max="480" step="5" placeholder="60" oninput="atualizarIntervaloCustom(this.value)">
+              <span class="intervalo-custom-suffix">minutos</span>
+            </div>
+          </div>
         </div>
-        <div style="display:flex;align-items:center;margin-top:4px">
-          <button class="btn-salvar" onclick="salvarPausas()">
-            <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            Salvar pausas
-          </button>
-          <span class="salvo-msg" id="salvo-pausas">✓ Salvo!</span>
+
+        <!-- Dias e horários -->
+        <div class="inner-card">
+          <div class="inner-card-header">
+            <div class="inner-card-icon purple">
+              <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><rect x="2.5" y="3.5" width="15" height="13.5" rx="2.5" stroke="var(--purple)" stroke-width="1.6"/><path d="M2.5 7.5h15M7 2v3M13 2v3" stroke="var(--purple)" stroke-width="1.6" stroke-linecap="round"/></svg>
+            </div>
+            <div>
+              <div class="inner-card-title">Dias e horários</div>
+              <div class="inner-card-sub">Defina quando você atende</div>
+            </div>
+          </div>
+          <div class="inner-card-body">
+            <div id="dias-container"></div>
+            <div style="display:flex;align-items:center;margin-top:12px">
+              <button class="btn-salvar" onclick="salvarHorarios()">
+                <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Salvar horários
+              </button>
+              <span class="salvo-msg" id="salvo-horarios">✓ Salvo!</span>
+            </div>
+          </div>
         </div>
       </div>
+
+      <!-- Coluna direita -->
+      <div>
+        <!-- Intervalo por serviço -->
+        <div class="inner-card">
+          <div class="inner-card-header">
+            <div class="inner-card-icon green">
+              <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M3 5h14M3 10h8M3 15h10" stroke="var(--green)" stroke-width="1.6" stroke-linecap="round"/><circle cx="16" cy="13" r="3" stroke="var(--green)" stroke-width="1.4"/><path d="M16 11.5V13l1 1" stroke="var(--green)" stroke-width="1.3" stroke-linecap="round"/></svg>
+            </div>
+            <div>
+              <div class="inner-card-title">Duração por serviço</div>
+              <div class="inner-card-sub">Tempo específico por tipo de atendimento</div>
+            </div>
+          </div>
+          <div class="inner-card-body">
+            <div class="intervalo-info-box">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.4"/><path d="M8 7v4M8 5.5v.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+              <span>Substitui o intervalo padrão quando configurado.</span>
+            </div>
+            <div class="servicos-intervalos-grid" id="servicos-intervalos-grid">
+              <div class="servicos-vazio"><div class="servicos-vazio-icon">🛠️</div>Adicione serviços em <strong>Configurações</strong>.</div>
+            </div>
+            <div style="display:flex;align-items:center;margin-top:8px">
+              <button class="btn-salvar" onclick="salvarIntervalosServicos()">
+                <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Salvar durações
+              </button>
+              <span class="salvo-msg" id="salvo-intervalos-servicos">✓ Salvo!</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pausas -->
+        <div class="inner-card">
+          <div class="inner-card-header">
+            <div class="inner-card-icon yellow">
+              <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7.5" stroke="var(--yellow)" stroke-width="1.6"/><path d="M10 6.5v4M10 13v.5" stroke="var(--yellow)" stroke-width="1.8" stroke-linecap="round"/></svg>
+            </div>
+            <div>
+              <div class="inner-card-title">Pausas e intervalos</div>
+              <div class="inner-card-sub">Bloqueie horários para almoço ou descanso</div>
+            </div>
+          </div>
+          <div class="inner-card-body">
+            <div id="pausas-lista"></div>
+            <div style="margin-top:10px;display:flex;flex-direction:column;gap:7px">
+              <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:12px;background:rgba(255,255,255,0.02);border-radius:11px;border:1px dashed var(--border3)">
+                <input type="text" id="pausa-inicio" placeholder="12:00" maxlength="5" inputmode="numeric" oninput="mascaraHora(this)" style="flex:1;min-width:70px;">
+                <span style="font-size:11px;color:var(--text3);font-weight:700">às</span>
+                <input type="text" id="pausa-fim" placeholder="13:00" maxlength="5" inputmode="numeric" oninput="mascaraHora(this)" style="flex:1;min-width:70px;">
+                <input type="text" id="pausa-label" placeholder="Almoço, café..." style="flex:2;min-width:90px;text-align:left;">
+              </div>
+              <button class="btn-add" style="width:100%" onclick="adicionarPausa()">+ Adicionar pausa</button>
+            </div>
+            <div style="display:flex;align-items:center;margin-top:6px">
+              <button class="btn-salvar" onclick="salvarPausas()">
+                <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Salvar pausas
+              </button>
+              <span class="salvo-msg" id="salvo-pausas">✓ Salvo!</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div><!-- /page-horarios -->
 
-  <!-- ── LEMBRETES ── -->
+  <!-- ══════════════════════════════════════════════
+       PAGE: LEMBRETES (redesenhado)
+  ══════════════════════════════════════════════ -->
   <div class="page" id="page-lembretes">
-    <div class="main-topbar" style="position:relative;margin:0 -36px 28px;padding:0 32px">
-      <div class="main-topbar-left"><div><div class="main-topbar-title">Lembretes Automáticos</div><div class="main-topbar-sub">Avise seus clientes 24h antes via WhatsApp</div></div></div>
+
+    <div class="inner-hero">
+      <div class="inner-hero-icon" style="background:linear-gradient(135deg,#7c3aed,#a855f7)">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+          <path d="M12 3a7 7 0 0 1 7 7c0 4 .8 5.5 1.5 6.5H3.5C4.2 15.5 5 14 5 10a7 7 0 0 1 7-7Z" stroke="white" stroke-width="1.8" stroke-linejoin="round"/>
+          <path d="M9 19.5a3 3 0 0 0 6 0" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div>
+        <h1 class="inner-hero-title">Lembretes Automáticos</h1>
+        <p class="inner-hero-sub">Reduza faltas enviando lembretes 24h antes pelo WhatsApp</p>
+      </div>
     </div>
-    <div class="section-block">
-      <div class="section-block-header">
-        <div class="section-block-icon"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M10 2a6 6 0 0 1 6 6c0 3.3.7 4.7 1.4 5.5H2.6C3.3 12.7 4 11.3 4 8a6 6 0 0 1 6-6Z" stroke="var(--accent)" stroke-width="1.6" stroke-linejoin="round"/><path d="M8 16.5a2 2 0 0 0 4 0" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round"/></svg></div>
-        <div>
-          <div class="section-block-title">Lembrete automático 24h antes</div>
-          <div class="section-block-sub">Mensagem enviada pelo WhatsApp do AgendoRapido</div>
-        </div>
+
+    <!-- Banner de status -->
+    <div class="lembrete-status-banner" id="lembrete-banner-off">
+      <div class="lembrete-banner-icon">💤</div>
+      <div class="lembrete-banner-text">
+        <strong>Lembretes desativados</strong>
+        <span>Ative abaixo para notificar seus clientes automaticamente</span>
       </div>
-      <div class="section-block-body">
-        <div class="toggle-row">
+      <label class="toggle-switch" style="flex-shrink:0">
+        <input type="checkbox" id="toggle-lembrete" onchange="salvarLembrete()">
+        <span class="toggle-track" id="toggle-track"></span>
+        <span class="toggle-thumb" id="toggle-thumb"></span>
+      </label>
+    </div>
+
+    <div class="inner-grid" style="grid-template-columns:1fr 340px">
+
+      <!-- Mensagem -->
+      <div class="inner-card">
+        <div class="inner-card-header">
+          <div class="inner-card-icon purple">
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M3 4h14v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4Z" stroke="var(--purple)" stroke-width="1.6"/><path d="M7 8h6M7 11h4" stroke="var(--purple)" stroke-width="1.6" stroke-linecap="round"/></svg>
+          </div>
           <div>
-            <div class="toggle-row-label">Ativar lembretes automáticos</div>
-            <div class="toggle-row-desc">Seus clientes recebem uma mensagem no WhatsApp 24h antes</div>
+            <div class="inner-card-title">Mensagem do lembrete</div>
+            <div class="inner-card-sub">Personalize o texto enviado aos clientes</div>
           </div>
-          <label class="toggle-switch">
-            <input type="checkbox" id="toggle-lembrete" onchange="salvarLembrete()">
-            <span class="toggle-track" id="toggle-track"></span>
-            <span class="toggle-thumb" id="toggle-thumb"></span>
-          </label>
         </div>
-        <div id="lembrete-info" style="display:none" class="info-box green">
-          <div class="info-box-title">✓ Lembretes ativados</div>
-          Seus clientes receberão automaticamente uma mensagem 24h antes.
-        </div>
-        <div style="margin-top:18px">
+        <div class="inner-card-body">
+          <div id="lembrete-info" style="display:none" class="info-box green">
+            <div class="info-box-title">✓ Lembretes ativados</div>
+            Seus clientes receberão uma mensagem 24h antes do horário agendado.
+          </div>
           <div class="form-group">
-            <label>Mensagem do lembrete</label>
-            <textarea id="lembrete-msg" style="resize:vertical;min-height:95px">Olá {nome}! A *{negocio}* lembra que você tem um agendamento amanhã, {data} às {hora} — {servico}. Te esperamos!</textarea>
-            <div class="form-hint">Variáveis: <strong>{nome}</strong>, <strong>{negocio}</strong>, <strong>{data}</strong>, <strong>{hora}</strong>, <strong>{servico}</strong></div>
+            <label>Texto da mensagem</label>
+            <textarea id="lembrete-msg" style="resize:vertical;min-height:120px;font-size:13.5px;line-height:1.7">Olá {nome}! A *{negocio}* lembra que você tem um agendamento amanhã, {data} às {hora} — {servico}. Te esperamos!</textarea>
           </div>
-        </div>
-        <div style="display:flex;align-items:center">
-          <button class="btn-salvar" onclick="salvarConfLembrete()">
-            <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            Salvar configurações
-          </button>
-          <span class="salvo-msg" id="salvo-lembrete">✓ Salvo!</span>
+          <div class="variaveis-grid">
+            <div class="variavel-tag">{nome}</div>
+            <div class="variavel-tag">{negocio}</div>
+            <div class="variavel-tag">{data}</div>
+            <div class="variavel-tag">{hora}</div>
+            <div class="variavel-tag">{servico}</div>
+          </div>
+          <div style="display:flex;align-items:center;margin-top:4px">
+            <button class="btn-salvar" onclick="salvarConfLembrete()">
+              <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Salvar configurações
+            </button>
+            <span class="salvo-msg" id="salvo-lembrete">✓ Salvo!</span>
+          </div>
         </div>
       </div>
+
+      <!-- Preview -->
+      <div>
+        <div class="inner-card">
+          <div class="inner-card-header">
+            <div class="inner-card-icon green">
+              <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M10 2a8 8 0 1 0 0 16A8 8 0 0 0 10 2Z" stroke="var(--green)" stroke-width="1.5"/><path d="M7 10s.7 2 3 2 3-2 3-2" stroke="var(--green)" stroke-width="1.5" stroke-linecap="round"/><path d="M7.5 7.5h.01M12.5 7.5h.01" stroke="var(--green)" stroke-width="2" stroke-linecap="round"/></svg>
+            </div>
+            <div>
+              <div class="inner-card-title">Preview WhatsApp</div>
+              <div class="inner-card-sub">Como o cliente vai ver</div>
+            </div>
+          </div>
+          <div class="inner-card-body">
+            <div class="wpp-preview-bubble">
+              <div class="wpp-preview-header">
+                <div class="wpp-preview-avatar">🗓️</div>
+                <div class="wpp-preview-nome">AgendoRapido</div>
+              </div>
+              <div class="wpp-preview-msg">
+                Olá <strong>João</strong>! A <strong>Barbearia Cortes</strong> lembra que você tem um agendamento amanhã, <strong>05/04</strong> às <strong>10:00</strong> — <strong>Corte + Barba</strong>. Te esperamos!
+              </div>
+              <div class="wpp-preview-time">agora ✓✓</div>
+            </div>
+            <div style="margin-top:14px;padding:10px 12px;background:var(--green-bg);border:1px solid var(--green-border);border-radius:9px;font-size:11.5px;color:var(--green);line-height:1.5">
+              ✓ Enviado automaticamente 24h antes via WhatsApp
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div><!-- /page-lembretes -->
 
-  <!-- ── WHATSAPP AUTO ── -->
+  <!-- ══════════════════════════════════════════════
+       PAGE: WHATSAPP AUTO (redesenhado)
+  ══════════════════════════════════════════════ -->
   <div class="page" id="page-whatsapp">
-    <div class="main-topbar" style="position:relative;margin:0 -36px 28px;padding:0 32px">
-      <div class="main-topbar-left"><div><div class="main-topbar-title">WhatsApp Automático</div><div class="main-topbar-sub">Configure seu WhatsApp Business para enviar o link de agendamento</div></div></div>
-    </div>
-    <div class="section-block">
-      <div class="section-block-header">
-        <div class="section-block-icon"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M17.5 10a7.5 7.5 0 1 1-15 0 7.5 7.5 0 0 1 15 0Z" stroke="var(--accent)" stroke-width="1.6"/><path d="M10 6.5v4M10 13v.5" stroke="var(--accent)" stroke-width="1.8" stroke-linecap="round"/></svg></div>
-        <div>
-          <div class="section-block-title">Seu link de agendamento</div>
-          <div class="section-block-sub">Cole este link na mensagem de saudação do WhatsApp Business</div>
-        </div>
+
+    <div class="inner-hero">
+      <div class="inner-hero-icon" style="background:linear-gradient(135deg,#059669,#10b981)">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="white">
+          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+          <path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.118 1.528 5.852L.057 23.885l6.204-1.628A11.945 11.945 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.808 9.808 0 0 1-5.001-1.366l-.359-.213-3.682.966.983-3.594-.234-.371A9.818 9.818 0 0 1 2.182 12C2.182 6.57 6.57 2.182 12 2.182S21.818 6.57 21.818 12 17.43 21.818 12 21.818z"/>
+        </svg>
       </div>
-      <div class="section-block-body">
-        <div style="background:var(--accent-light);border:1px solid var(--accent-mid);border-radius:11px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
-          <div style="flex:1">
-            <div style="font-size:9px;font-weight:800;color:var(--accent);text-transform:uppercase;letter-spacing:.12em;margin-bottom:4px">Link de agendamento</div>
-            <div style="font-size:12.5px;color:var(--accent);word-break:break-all;font-weight:500;opacity:.8" id="wpp-link-agendamento">—</div>
+      <div>
+        <h1 class="inner-hero-title">WhatsApp Automático</h1>
+        <p class="inner-hero-sub">Envie seu link de agendamento automaticamente para novos contatos</p>
+      </div>
+    </div>
+
+    <!-- Link destaque -->
+    <div class="wpp-link-destaque">
+      <div class="wpp-link-destaque-label">Seu link de agendamento</div>
+      <div class="wpp-link-destaque-url" id="wpp-link-agendamento">—</div>
+      <button class="btn-copiar" onclick="copiarLinkWpp()">
+        <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M1 8.5V2a1 1 0 0 1 1-1h6.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+        Copiar link
+      </button>
+    </div>
+
+    <div class="inner-grid" style="grid-template-columns:1fr 1fr">
+
+      <!-- Mensagem pronta -->
+      <div class="inner-card">
+        <div class="inner-card-header">
+          <div class="inner-card-icon green">
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M3 4h14v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4Z" stroke="var(--green)" stroke-width="1.6"/><path d="M7 8h6M7 11h4" stroke="var(--green)" stroke-width="1.6" stroke-linecap="round"/></svg>
           </div>
-          <button class="btn-copiar" onclick="copiarLinkWpp()">
-            <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M1 8.5V2a1 1 0 0 1 1-1h6.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
-            Copiar
+          <div>
+            <div class="inner-card-title">Mensagem pronta</div>
+            <div class="inner-card-sub">Cole no WhatsApp Business</div>
+          </div>
+        </div>
+        <div class="inner-card-body">
+          <div style="background:rgba(255,255,255,0.02);border:1px solid var(--border2);border-radius:11px;padding:16px;margin-bottom:14px;font-size:13px;color:var(--text);line-height:1.8;white-space:pre-wrap" id="wpp-mensagem-preview">Carregando...</div>
+          <button id="btn-copiar-msg" onclick="copiarMensagemWpp()" style="display:flex;align-items:center;gap:7px;background:var(--green);color:white;border:none;padding:10px 20px;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;box-shadow:0 4px 16px rgba(16,185,129,0.3);transition:all .18s;width:100%;justify-content:center">
+            <svg width="14" height="14" viewBox="0 0 12 12" fill="none"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M1 8.5V2a1 1 0 0 1 1-1h6.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+            Copiar mensagem completa
           </button>
         </div>
       </div>
-    </div>
-    <div class="section-block">
-      <div class="section-block-header">
-        <div class="section-block-icon"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M3 4h14v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4Z" stroke="var(--accent)" stroke-width="1.6"/><path d="M7 8h6M7 11h4" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round"/></svg></div>
-        <div>
-          <div class="section-block-title">Mensagem pronta para copiar</div>
-          <div class="section-block-sub">Cole no WhatsApp Business como saudação automática</div>
+
+      <!-- Passo a passo -->
+      <div class="inner-card">
+        <div class="inner-card-header">
+          <div class="inner-card-icon blue">
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4 10h12M4 6h12M4 14h7" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round"/></svg>
+          </div>
+          <div>
+            <div class="inner-card-title">Como configurar</div>
+            <div class="inner-card-sub">Passo a passo no WhatsApp Business</div>
+          </div>
+        </div>
+        <div class="inner-card-body" style="padding-top:8px">
+          <div class="passo-mini">
+            <div class="passo-mini-num">1</div>
+            <div class="passo-mini-text">Copie a <strong>mensagem completa</strong> ao lado</div>
+          </div>
+          <div class="passo-mini">
+            <div class="passo-mini-num">2</div>
+            <div class="passo-mini-text">Abra o <strong>WhatsApp Business</strong> → 3 pontos ⋮</div>
+          </div>
+          <div class="passo-mini">
+            <div class="passo-mini-num">3</div>
+            <div class="passo-mini-text"><strong>Ferramentas comerciais</strong> → Mensagem de saudação</div>
+          </div>
+          <div class="passo-mini">
+            <div class="passo-mini-num">4</div>
+            <div class="passo-mini-text">Ative e <strong>cole</strong> a mensagem copiada → OK</div>
+          </div>
+          <div class="passo-mini" style="border-bottom:none">
+            <div class="passo-mini-num" style="background:var(--green);border-color:var(--green-border)">✓</div>
+            <div class="passo-mini-text" style="color:var(--green)"><strong>Pronto!</strong> Novos contatos recebem o link automaticamente</div>
+          </div>
+          <div style="margin-top:12px;padding:10px 12px;background:var(--accent-light);border:1px solid var(--accent-mid);border-radius:9px;font-size:11.5px;color:var(--accent);line-height:1.5">
+            ℹ️ Funciona apenas com o app <strong>WhatsApp Business</strong> (gratuito)
+          </div>
         </div>
       </div>
-      <div class="section-block-body">
-        <div style="background:rgba(255,255,255,0.02);border:1px solid var(--border2);border-radius:11px;padding:16px;margin-bottom:12px">
-          <div style="font-size:13px;color:var(--text);line-height:1.8;white-space:pre-wrap" id="wpp-mensagem-preview">Carregando...</div>
-        </div>
-        <button id="btn-copiar-msg" onclick="copiarMensagemWpp()" style="display:flex;align-items:center;gap:7px;background:var(--accent);color:white;border:none;padding:9px 18px;border-radius:8px;font-size:12.5px;font-weight:600;cursor:pointer;font-family:inherit;box-shadow:var(--shadow-accent);transition:all .18s">
-          <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M1 8.5V2a1 1 0 0 1 1-1h6.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
-          Copiar mensagem completa
-        </button>
-      </div>
-    </div>
-    <div class="section-block">
-      <div class="section-block-header">
-        <div class="section-block-icon"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M4 10h12M4 6h12M4 14h7" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round"/></svg></div>
-        <div>
-          <div class="section-block-title">Como configurar passo a passo</div>
-          <div class="section-block-sub">Siga as instruções abaixo no app WhatsApp Business</div>
-        </div>
-      </div>
-      <div class="section-block-body">
-        <div class="passo"><div class="passo-num">1</div><div style="flex:1"><div class="passo-titulo">Copie a mensagem acima</div><div class="passo-desc">Clique em <strong>"Copiar mensagem completa"</strong>. O link já está incluído.</div><div class="alerta-verde">✓ <strong>Dica:</strong> A mensagem já está com seu link personalizado.</div></div></div>
-        <div class="passo"><div class="passo-num">2</div><div style="flex:1"><div class="passo-titulo">Abra o WhatsApp Business → Ferramentas Comerciais</div><div class="passo-steps"><div class="passo-step"><div class="passo-step-num">1</div>Abra o <strong>WhatsApp Business</strong></div><div class="passo-step"><div class="passo-step-num">2</div>Toque nos <strong>3 pontos ⋮</strong></div><div class="passo-step"><div class="passo-step-num">3</div>Toque em <strong>Ferramentas comerciais</strong></div><div class="passo-step"><div class="passo-step-num">4</div>Toque em <strong>Mensagem de saudação</strong></div></div></div></div>
-        <div class="passo"><div class="passo-num">3</div><div style="flex:1"><div class="passo-titulo">Ative e cole a mensagem</div><div class="passo-steps"><div class="passo-step"><div class="passo-step-num">1</div>Ative <strong>"Enviar mensagem de saudação"</strong></div><div class="passo-step"><div class="passo-step-num">2</div>Toque em <strong>Editar mensagem</strong></div><div class="passo-step"><div class="passo-step-num">3</div>Cole a mensagem copiada</div><div class="passo-step"><div class="passo-step-num">4</div>Toque em <strong>OK</strong></div></div><div class="alerta-azul">ℹ️ Enviada automaticamente para quem mandar mensagem pela <strong>primeira vez</strong>.</div></div></div>
-        <div class="passo"><div class="passo-num verde">✓</div><div style="flex:1"><div class="passo-titulo">Pronto! Seu WhatsApp está configurado</div><div class="passo-desc">Qualquer cliente que mandar mensagem pela primeira vez vai receber o link.</div><div class="alerta-verde">💡 Isso funciona apenas no <strong>WhatsApp Business</strong> (app gratuito da Meta).</div></div></div>
-      </div>
+
     </div>
   </div><!-- /page-whatsapp -->
 
-  <!-- ── CONFIGURAÇÕES ── -->
+  <!-- ══════════════════════════════════════════════
+       PAGE: CONFIGURAÇÕES (redesenhado)
+  ══════════════════════════════════════════════ -->
   <div class="page" id="page-configuracoes">
-    <div class="main-topbar" style="position:relative;margin:0 -36px 28px;padding:0 32px">
-      <div class="main-topbar-left"><div><div class="main-topbar-title">Configurações</div><div class="main-topbar-sub">Personalize os serviços e a aparência do seu painel</div></div></div>
-    </div>
-    <div class="section-block">
-      <div class="section-block-header">
-        <div class="section-block-icon"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M2 5h16M2 10h10M2 15h12" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round"/></svg></div>
-        <div>
-          <div class="section-block-title">Serviços oferecidos</div>
-          <div class="section-block-sub">Adicione os serviços com seus respectivos preços</div>
-        </div>
+
+    <div class="inner-hero">
+      <div class="inner-hero-icon" style="background:linear-gradient(135deg,#374151,#6b7280)">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="12" r="3" stroke="white" stroke-width="1.8"/>
+          <path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
       </div>
-      <div class="section-block-body">
-        <div id="servicos-tags" style="margin-bottom:14px;min-height:34px"></div>
-        <div class="add-servico-wrap">
-          <div class="add-servico-row">
-            <div class="add-field-group add-field-nome">
-              <label>Nome do serviço</label>
-              <input type="text" id="novo-servico" placeholder="Ex: Corte + Barba, Consulta...">
-            </div>
-            <div class="add-field-group add-field-preco">
-              <label>Preço (R$) *</label>
-              <input type="number" id="novo-preco" placeholder="0,00" min="0.01" step="0.01">
-            </div>
-            <button class="btn-add" onclick="adicionarServico()">+ Adicionar</button>
-          </div>
-          <div class="add-servico-erro" id="servico-erro"></div>
-        </div>
-        <div style="display:flex;align-items:center">
-          <button class="btn-salvar" onclick="salvarServicos()">
-            <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            Salvar serviços
-          </button>
-          <span class="salvo-msg" id="salvo-msg">✓ Salvo!</span>
-        </div>
+      <div>
+        <h1 class="inner-hero-title">Configurações</h1>
+        <p class="inner-hero-sub">Gerencie seus serviços e personalize o painel</p>
       </div>
     </div>
-    <div class="section-block">
-      <div class="section-block-header">
-        <div class="section-block-icon"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="4" stroke="var(--accent)" stroke-width="1.6"/><path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.22 4.22l1.42 1.42M14.36 14.36l1.42 1.42M4.22 15.78l1.42-1.42M14.36 5.64l1.42-1.42" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round"/></svg></div>
-        <div>
-          <div class="section-block-title">Aparência</div>
-          <div class="section-block-sub">Escolha entre o modo claro e escuro para o painel</div>
-        </div>
-      </div>
-      <div class="section-block-body">
-        <div class="theme-selector-wrap">
-          <div class="theme-option" id="theme-opt-claro" onclick="definirTema('claro')">
-            <div class="theme-option-check"><svg width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5L8 3" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-            <div class="theme-preview claro"><div class="theme-preview-sidebar"></div><div class="theme-preview-content"><div class="theme-preview-bar"></div><div class="theme-preview-bar2"></div><div class="theme-preview-bar" style="width:70%"></div></div></div>
-            <div><div style="display:flex;align-items:center;gap:5px"><span class="theme-option-emoji">☀️</span><span class="theme-option-label">Modo Claro</span></div><div class="theme-option-desc">Interface clara e limpa</div></div>
+
+    <div class="inner-grid" style="grid-template-columns:1fr 320px">
+
+      <!-- Serviços -->
+      <div class="inner-card">
+        <div class="inner-card-header">
+          <div class="inner-card-icon blue">
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M2 5h16M2 10h10M2 15h12" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round"/></svg>
           </div>
-          <div class="theme-option" id="theme-opt-escuro" onclick="definirTema('escuro')">
-            <div class="theme-option-check"><svg width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5L8 3" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-            <div class="theme-preview escuro"><div class="theme-preview-sidebar"></div><div class="theme-preview-content"><div class="theme-preview-bar"></div><div class="theme-preview-bar2"></div><div class="theme-preview-bar" style="width:70%"></div></div></div>
-            <div><div style="display:flex;align-items:center;gap:5px"><span class="theme-option-emoji">🌙</span><span class="theme-option-label">Modo Escuro</span></div><div class="theme-option-desc">Confortável para uso noturno</div></div>
+          <div>
+            <div class="inner-card-title">Serviços oferecidos</div>
+            <div class="inner-card-sub">Adicione com nome e preço</div>
           </div>
         </div>
-        <div style="margin-top:14px;padding:11px 14px;background:var(--accent-light);border:1px solid var(--accent-mid);border-radius:9px;font-size:12px;color:var(--accent);font-weight:500;line-height:1.5">
-          💾 A preferência de tema é salva automaticamente no seu navegador.
+        <div class="inner-card-body">
+          <div id="servicos-tags" style="margin-bottom:16px;min-height:34px"></div>
+          <div class="add-servico-wrap">
+            <div class="add-servico-row">
+              <div class="add-field-group add-field-nome">
+                <label>Nome do serviço</label>
+                <input type="text" id="novo-servico" placeholder="Ex: Corte + Barba">
+              </div>
+              <div class="add-field-group add-field-preco">
+                <label>Preço (R$) *</label>
+                <input type="number" id="novo-preco" placeholder="0,00" min="0.01" step="0.01">
+              </div>
+              <button class="btn-add" onclick="adicionarServico()">+ Adicionar</button>
+            </div>
+            <div class="add-servico-erro" id="servico-erro"></div>
+          </div>
+          <div style="display:flex;align-items:center">
+            <button class="btn-salvar" onclick="salvarServicos()">
+              <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Salvar serviços
+            </button>
+            <span class="salvo-msg" id="salvo-msg">✓ Salvo!</span>
+          </div>
         </div>
       </div>
+
+      <!-- Aparência -->
+      <div>
+        <div class="inner-card">
+          <div class="inner-card-header">
+            <div class="inner-card-icon yellow">
+              <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="4" stroke="var(--yellow)" stroke-width="1.6"/><path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.22 4.22l1.42 1.42M14.36 14.36l1.42 1.42M4.22 15.78l1.42-1.42M14.36 5.64l1.42-1.42" stroke="var(--yellow)" stroke-width="1.5" stroke-linecap="round"/></svg>
+            </div>
+            <div>
+              <div class="inner-card-title">Aparência</div>
+              <div class="inner-card-sub">Modo claro ou escuro</div>
+            </div>
+          </div>
+          <div class="inner-card-body">
+            <div class="theme-selector-wrap">
+              <div class="theme-option" id="theme-opt-claro" onclick="definirTema('claro')">
+                <div class="theme-option-check"><svg width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5L8 3" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="theme-preview claro"><div class="theme-preview-sidebar"></div><div class="theme-preview-content"><div class="theme-preview-bar"></div><div class="theme-preview-bar2"></div><div class="theme-preview-bar" style="width:70%"></div></div></div>
+                <div><div style="display:flex;align-items:center;gap:5px"><span class="theme-option-emoji">☀️</span><span class="theme-option-label">Modo Claro</span></div><div class="theme-option-desc">Interface clara</div></div>
+              </div>
+              <div class="theme-option" id="theme-opt-escuro" onclick="definirTema('escuro')">
+                <div class="theme-option-check"><svg width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5L8 3" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="theme-preview escuro"><div class="theme-preview-sidebar"></div><div class="theme-preview-content"><div class="theme-preview-bar"></div><div class="theme-preview-bar2"></div><div class="theme-preview-bar" style="width:70%"></div></div></div>
+                <div><div style="display:flex;align-items:center;gap:5px"><span class="theme-option-emoji">🌙</span><span class="theme-option-label">Modo Escuro</span></div><div class="theme-option-desc">Uso noturno</div></div>
+              </div>
+            </div>
+            <div style="margin-top:12px;padding:10px 12px;background:var(--accent-light);border:1px solid var(--accent-mid);border-radius:9px;font-size:11.5px;color:var(--accent);line-height:1.5">
+              💾 Salvo automaticamente no navegador
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div><!-- /page-configuracoes -->
 
-  <!-- ── MINHA BIO ── -->
+  <!-- ══════════════════════════════════════════════
+       PAGE: MINHA BIO (redesenhado)
+  ══════════════════════════════════════════════ -->
   <div class="page" id="page-bio">
-    <div class="main-topbar" style="position:relative;margin:0 -36px 28px;padding:0 32px">
-      <div class="main-topbar-left"><div><div class="main-topbar-title">Minha Página Bio</div><div class="main-topbar-sub">Personalize sua página pública para o Instagram</div></div></div>
+
+    <div class="inner-hero">
+      <div class="inner-hero-icon" style="background:linear-gradient(135deg,#be185d,#ec4899)">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="8" r="4" stroke="white" stroke-width="1.8"/>
+          <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div>
+        <h1 class="inner-hero-title">Minha Página Bio</h1>
+        <p class="inner-hero-sub">Sua vitrine pública para o Instagram e redes sociais</p>
+      </div>
     </div>
-    <div class="link-card">
-      <div><div class="link-card-label">Link da sua bio</div><div class="link-card-url" id="link-bio"></div></div>
+
+    <!-- Link da bio destaque -->
+    <div class="link-card" style="margin-bottom:20px">
+      <div>
+        <div class="link-card-label">Link da sua bio</div>
+        <div class="link-card-url" id="link-bio">—</div>
+      </div>
       <button class="btn-copiar" id="btn-copiar-bio" onclick="copiarLinkBio()">
         <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M1 8.5V2a1 1 0 0 1 1-1h6.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
         Copiar link
       </button>
     </div>
-    <div class="section-block">
-      <div class="section-block-header">
-        <div class="section-block-icon"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="3.5" stroke="var(--accent)" stroke-width="1.6"/><path d="M3 18c0-3.9 3.1-7 7-7s7 3.1 7 7" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round"/></svg></div>
-        <div><div class="section-block-title">Informações da página</div><div class="section-block-sub">Foto, descrição e dados de contato da sua bio</div></div>
-      </div>
-      <div class="section-block-body">
-        <div class="foto-wrap">
-          <div id="foto-preview" class="foto-preview">👤</div>
-          <div class="foto-info">
-            <input type="file" id="foto-input" accept="image/*" onchange="uploadFoto(this)" style="display:none">
-            <button class="btn-foto" onclick="document.getElementById('foto-input').click()">Escolher foto</button>
-            <div class="foto-status" id="foto-status">Nenhuma foto selecionada</div>
+
+    <div class="inner-grid" style="grid-template-columns:1fr 300px">
+
+      <!-- Formulário -->
+      <div class="inner-card">
+        <div class="inner-card-header">
+          <div class="inner-card-icon pink">
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="3.5" stroke="#ec4899" stroke-width="1.6"/><path d="M3 18c0-3.9 3.1-7 7-7s7 3.1 7 7" stroke="#ec4899" stroke-width="1.6" stroke-linecap="round"/></svg>
           </div>
-          <input type="hidden" id="bio-foto">
+          <div>
+            <div class="inner-card-title">Informações da página</div>
+            <div class="inner-card-sub">Foto, bio e dados de contato</div>
+          </div>
         </div>
-        <div class="form-group"><label>Descrição / Bio</label><textarea id="bio-descricao" placeholder="Ex: Barbearia premium no centro." style="resize:vertical;min-height:75px"></textarea></div>
-        <div class="form-group"><label>Link do Google Maps</label><input type="text" id="bio-endereco" placeholder="Cole aqui o link do Google Maps"></div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:13px">
-          <div class="form-group" style="margin-bottom:0"><label>Instagram</label><input type="text" id="bio-instagram" placeholder="@seunegocio"></div>
-          <div class="form-group" style="margin-bottom:0"><label>WhatsApp</label><input type="text" id="bio-whatsapp" placeholder="(11) 99999-9999"></div>
-        </div>
-        <div style="display:flex;align-items:center">
-          <button class="btn-salvar" onclick="salvarBio()">
-            <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            Salvar bio
-          </button>
-          <span class="salvo-msg" id="salvo-bio">✓ Salvo!</span>
+        <div class="inner-card-body">
+          <div class="foto-wrap">
+            <div id="foto-preview" class="foto-preview">👤</div>
+            <div class="foto-info">
+              <input type="file" id="foto-input" accept="image/*" onchange="uploadFoto(this)" style="display:none">
+              <button class="btn-foto" onclick="document.getElementById('foto-input').click()">Escolher foto</button>
+              <div class="foto-status" id="foto-status">Nenhuma foto selecionada</div>
+            </div>
+            <input type="hidden" id="bio-foto">
+          </div>
+          <div class="form-group"><label>Descrição / Bio</label><textarea id="bio-descricao" placeholder="Ex: Barbearia premium no centro de SP. Atendemos com hora marcada." style="resize:vertical;min-height:80px"></textarea></div>
+          <div class="form-group"><label>Link do Google Maps</label><input type="text" id="bio-endereco" placeholder="Cole aqui o link do Google Maps"></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:13px;margin-bottom:16px">
+            <div class="form-group" style="margin-bottom:0"><label>Instagram</label><input type="text" id="bio-instagram" placeholder="@seunegocio"></div>
+            <div class="form-group" style="margin-bottom:0"><label>WhatsApp</label><input type="text" id="bio-whatsapp" placeholder="(11) 99999-9999"></div>
+          </div>
+          <div style="display:flex;align-items:center">
+            <button class="btn-salvar" onclick="salvarBio()">
+              <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Salvar bio
+            </button>
+            <span class="salvo-msg" id="salvo-bio">✓ Salvo!</span>
+          </div>
         </div>
       </div>
+
+      <!-- Dicas -->
+      <div>
+        <div class="inner-card">
+          <div class="inner-card-header">
+            <div class="inner-card-icon yellow">
+              <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7.5" stroke="var(--yellow)" stroke-width="1.6"/><path d="M10 6v4M10 13v.5" stroke="var(--yellow)" stroke-width="1.8" stroke-linecap="round"/></svg>
+            </div>
+            <div>
+              <div class="inner-card-title">Dicas para sua bio</div>
+            </div>
+          </div>
+          <div class="inner-card-body" style="padding-top:8px">
+            <div class="dica-item">
+              <div class="dica-icon">📸</div>
+              <div class="dica-text">Use uma <strong>foto profissional</strong> do seu espaço ou logo</div>
+            </div>
+            <div class="dica-item">
+              <div class="dica-icon">✍️</div>
+              <div class="dica-text">Escreva uma <strong>bio curta</strong> e direta sobre o que você faz</div>
+            </div>
+            <div class="dica-item">
+              <div class="dica-icon">📍</div>
+              <div class="dica-text">Adicione o <strong>Google Maps</strong> para facilitar como te encontrar</div>
+            </div>
+            <div class="dica-item" style="border-bottom:none">
+              <div class="dica-icon">🔗</div>
+              <div class="dica-text">Cole o <strong>link da bio</strong> no Instagram como link principal</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div><!-- /page-bio -->
 
-  <!-- ── PAGAMENTOS ── -->
+  <!-- ══════════════════════════════════════════════
+       PAGE: PAGAMENTOS (redesenhado)
+  ══════════════════════════════════════════════ -->
   <div class="page" id="page-pagamentos">
-    <div class="main-topbar" style="position:relative;margin:0 -36px 28px;padding:0 32px">
-      <div class="main-topbar-left"><div><div class="main-topbar-title">Pagamentos</div><div class="main-topbar-sub">Configure cobrança antecipada via Pix por serviço</div></div></div>
-    </div>
-    <div class="section-block">
-      <div class="section-block-header">
-        <div class="section-block-icon"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><rect x="2" y="5" width="16" height="13" rx="2.5" stroke="var(--accent)" stroke-width="1.6"/><path d="M2 9h16M6 13h4" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round"/></svg></div>
-        <div><div class="section-block-title">Cobrança via Pix</div><div class="section-block-sub">Receba antes do atendimento, automaticamente</div></div>
+
+    <div class="inner-hero">
+      <div class="inner-hero-icon" style="background:linear-gradient(135deg,#0369a1,#0ea5e9)">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+          <rect x="2" y="6" width="20" height="14" rx="3" stroke="white" stroke-width="1.8"/>
+          <path d="M2 10h20M6 15h4" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
       </div>
-      <div class="section-block-body">
-        <div style="text-align:center;padding:36px 0 26px">
-          <div class="pag-empty-icon"><svg width="32" height="32" viewBox="0 0 34 34" fill="none"><rect x="3" y="7" width="28" height="20" rx="3.5" stroke="var(--accent)" stroke-width="1.8"/><path d="M3 13h28M9 20h7" stroke="var(--accent)" stroke-width="1.8" stroke-linecap="round"/></svg></div>
-          <div style="font-size:19px;font-weight:700;color:var(--text);margin-bottom:9px">Pagamentos em breve</div>
-          <p style="font-size:13.5px;color:var(--text2);max-width:320px;margin:0 auto;line-height:1.7">Cobrança antecipada via Pix com repasse automático e reembolso em cancelamentos.</p>
+      <div>
+        <h1 class="inner-hero-title">Pagamentos</h1>
+        <p class="inner-hero-sub">Cobrança antecipada via Pix integrada ao agendamento</p>
+      </div>
+    </div>
+
+    <!-- Em breve card -->
+    <div class="inner-card" style="max-width:560px;margin:0 auto">
+      <div class="inner-card-body" style="text-align:center;padding:52px 32px">
+        <div style="width:72px;height:72px;border-radius:20px;background:var(--accent-light);border:1px solid var(--accent-mid);display:flex;align-items:center;justify-content:center;margin:0 auto 20px">
+          <svg width="32" height="32" viewBox="0 0 34 34" fill="none"><rect x="3" y="7" width="28" height="20" rx="3.5" stroke="var(--accent)" stroke-width="1.8"/><path d="M3 13h28M9 20h7" stroke="var(--accent)" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </div>
+        <div style="font-size:20px;font-weight:800;color:var(--text);margin-bottom:10px;letter-spacing:-0.02em">Pagamentos em breve</div>
+        <p style="font-size:13.5px;color:var(--text2);max-width:340px;margin:0 auto 28px;line-height:1.8">Cobrança antecipada via Pix com repasse automático. Reduza faltas e receba antes do atendimento.</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;text-align:left;max-width:360px;margin:0 auto">
+          <div style="padding:12px 14px;background:rgba(255,255,255,0.02);border:1px solid var(--border2);border-radius:10px">
+            <div style="font-size:18px;margin-bottom:5px">💸</div>
+            <div style="font-size:12.5px;font-weight:600;color:var(--text);margin-bottom:3px">Pix automático</div>
+            <div style="font-size:11.5px;color:var(--text2)">Cobrança no momento do agendamento</div>
+          </div>
+          <div style="padding:12px 14px;background:rgba(255,255,255,0.02);border:1px solid var(--border2);border-radius:10px">
+            <div style="font-size:18px;margin-bottom:5px">🔄</div>
+            <div style="font-size:12.5px;font-weight:600;color:var(--text);margin-bottom:3px">Reembolso fácil</div>
+            <div style="font-size:11.5px;color:var(--text2)">Devolução automática em cancelamentos</div>
+          </div>
+          <div style="padding:12px 14px;background:rgba(255,255,255,0.02);border:1px solid var(--border2);border-radius:10px">
+            <div style="font-size:18px;margin-bottom:5px">📊</div>
+            <div style="font-size:12.5px;font-weight:600;color:var(--text);margin-bottom:3px">Relatórios</div>
+            <div style="font-size:11.5px;color:var(--text2)">Histórico completo de recebimentos</div>
+          </div>
+          <div style="padding:12px 14px;background:rgba(255,255,255,0.02);border:1px solid var(--border2);border-radius:10px">
+            <div style="font-size:18px;margin-bottom:5px">🔒</div>
+            <div style="font-size:12.5px;font-weight:600;color:var(--text);margin-bottom:3px">100% seguro</div>
+            <div style="font-size:11.5px;color:var(--text2)">Processamento via Stripe certificado</div>
+          </div>
         </div>
       </div>
     </div>
   </div><!-- /page-pagamentos -->
 
-  <!-- ── SUPORTE ── -->
+  <!-- ══════════════════════════════════════════════
+       PAGE: SUPORTE (redesenhado)
+  ══════════════════════════════════════════════ -->
   <div class="page" id="page-suporte">
-    <div class="main-topbar" style="position:relative;margin:0 -36px 28px;padding:0 32px">
-      <div class="main-topbar-left"><div><div class="main-topbar-title">Suporte</div><div class="main-topbar-sub">Estamos aqui para ajudar você</div></div></div>
+
+    <div class="inner-hero">
+      <div class="inner-hero-icon" style="background:linear-gradient(135deg,#059669,#10b981)">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="12" r="9" stroke="white" stroke-width="1.8"/>
+          <path d="M12 8v4M12 15v.5" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div>
+        <h1 class="inner-hero-title">Suporte</h1>
+        <p class="inner-hero-sub">Nossa equipe está pronta para te ajudar</p>
+      </div>
     </div>
-    <div class="section-block">
-      <div class="suporte-hero">
-        <div class="suporte-avatar">
-          <svg width="34" height="34" viewBox="0 0 38 38" fill="none"><path d="M31 23c0 1.3-.5 2.5-1.3 3.3l-1.6 1.7c-1 .9-2.2 1.4-3.3 1.4-4.6 0-9-1.8-12.4-5.1C9.1 21 7.2 16.6 7.2 12c0-1.2.4-2.4 1.3-3.3l1.7-1.7c.9-.9 2.2-.9 3 0l3.6 3.6c.9.9.9 2.2 0 3l-1.3 1.3c-.2.3-.2.7 0 .9 1.3 1.8 2.9 3.4 4.7 4.7.3.2.6.2.9 0l1.3-1.3c.8-.9 2.1-.9 3 0l3.6 3.6c.7.8.7 2 0 2.8z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </div>
-        <div style="font-size:21px;font-weight:700;color:var(--text);margin-bottom:9px">Fale com o suporte</div>
-        <p style="font-size:13.5px;color:var(--text2);line-height:1.7;margin-bottom:26px;max-width:300px;margin-left:auto;margin-right:auto">Tem alguma dúvida ou problema? Nossa equipe está pronta para te ajudar pelo WhatsApp.</p>
-        <a href="https://wa.me/5500000000000?text=Olá%2C+preciso+de+ajuda+com+o+AgendoRapido!" target="_blank" class="btn-whatsapp-suporte">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.118 1.528 5.852L.057 23.885l6.204-1.628A11.945 11.945 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.808 9.808 0 0 1-5.001-1.366l-.359-.213-3.682.966.983-3.594-.234-.371A9.818 9.818 0 0 1 2.182 12C2.182 6.57 6.57 2.182 12 2.182S21.818 6.57 21.818 12 17.43 21.818 12 21.818z"/></svg>
-          Chamar no WhatsApp
-        </a>
-      </div>
-      <div class="suporte-divider"></div>
-      <div class="suporte-horarios">
-        <div class="suporte-horarios-title">Horário de atendimento</div>
-        <div class="horario-grid">
-          <div class="horario-item"><div class="horario-item-dia">Segunda a Sexta</div><div class="horario-item-hora">9h às 18h</div></div>
-          <div class="horario-item"><div class="horario-item-dia">Sábado</div><div class="horario-item-hora">9h às 13h</div></div>
+
+    <div class="inner-grid" style="grid-template-columns:1fr 1fr">
+
+      <!-- Contato -->
+      <div class="inner-card">
+        <div style="text-align:center;padding:32px 24px">
+          <div style="width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,#059669,#10b981);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;box-shadow:0 8px 28px rgba(16,185,129,0.35)">
+            <svg width="36" height="36" viewBox="0 0 38 38" fill="none"><path d="M31 23c0 1.3-.5 2.5-1.3 3.3l-1.6 1.7c-1 .9-2.2 1.4-3.3 1.4-4.6 0-9-1.8-12.4-5.1C9.1 21 7.2 16.6 7.2 12c0-1.2.4-2.4 1.3-3.3l1.7-1.7c.9-.9 2.2-.9 3 0l3.6 3.6c.9.9.9 2.2 0 3l-1.3 1.3c-.2.3-.2.7 0 .9 1.3 1.8 2.9 3.4 4.7 4.7.3.2.6.2.9 0l1.3-1.3c.8-.9 2.1-.9 3 0l3.6 3.6c.7.8.7 2 0 2.8z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div style="font-size:20px;font-weight:800;color:var(--text);margin-bottom:8px">Fale com a gente</div>
+          <p style="font-size:13.5px;color:var(--text2);line-height:1.7;margin-bottom:24px;max-width:280px;margin-left:auto;margin-right:auto">Resposta rápida pelo WhatsApp em horário comercial.</p>
+          <a href="https://wa.me/5500000000000?text=Olá%2C+preciso+de+ajuda+com+o+AgendoRapido!" target="_blank" class="btn-whatsapp-suporte" style="display:inline-flex">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.118 1.528 5.852L.057 23.885l6.204-1.628A11.945 11.945 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.808 9.808 0 0 1-5.001-1.366l-.359-.213-3.682.966.983-3.594-.234-.371A9.818 9.818 0 0 1 2.182 12C2.182 6.57 6.57 2.182 12 2.182S21.818 6.57 21.818 12 17.43 21.818 12 21.818z"/></svg>
+            Chamar no WhatsApp
+          </a>
         </div>
       </div>
+
+      <!-- Horários + FAQ -->
+      <div style="display:flex;flex-direction:column;gap:16px">
+        <div class="inner-card">
+          <div class="inner-card-header">
+            <div class="inner-card-icon blue">
+              <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7.5" stroke="var(--accent)" stroke-width="1.6"/><path d="M10 6v5l3 3" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round"/></svg>
+            </div>
+            <div><div class="inner-card-title">Horário de atendimento</div></div>
+          </div>
+          <div class="inner-card-body" style="padding-top:8px">
+            <div class="horario-grid">
+              <div class="horario-item"><div class="horario-item-dia">Segunda a Sexta</div><div class="horario-item-hora">9h às 18h</div></div>
+              <div class="horario-item"><div class="horario-item-dia">Sábado</div><div class="horario-item-hora">9h às 13h</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="inner-card">
+          <div class="inner-card-header">
+            <div class="inner-card-icon yellow">
+              <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7.5" stroke="var(--yellow)" stroke-width="1.6"/><path d="M10 6.5V10a2 2 0 1 0-2-2" stroke="var(--yellow)" stroke-width="1.5" stroke-linecap="round"/><circle cx="10" cy="13" r=".6" fill="var(--yellow)"/></svg>
+            </div>
+            <div><div class="inner-card-title">Dúvidas frequentes</div></div>
+          </div>
+          <div class="inner-card-body" style="padding-top:4px">
+            <div class="faq-item">
+              <div class="faq-q">Como meus clientes agendam?</div>
+              <div class="faq-a">Pelo link de agendamento — copie e cole no Instagram ou WhatsApp.</div>
+            </div>
+            <div class="faq-item">
+              <div class="faq-q">Posso ter mais de um negócio?</div>
+              <div class="faq-a">Sim, no plano Pro você pode criar múltiplos painéis.</div>
+            </div>
+            <div class="faq-item" style="border-bottom:none">
+              <div class="faq-q">Os dados ficam salvos na nuvem?</div>
+              <div class="faq-a">Sim, tudo é salvo em tempo real nos nossos servidores.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div><!-- /page-suporte -->
 
@@ -924,14 +1215,12 @@ function atualizarInsights() {
   const ags = window.todosAgendamentos || [];
   if (!ags.length) return;
 
-  /* Melhor horário */
   const freqHora = {};
   ags.forEach(a => { if (a.hora) freqHora[a.hora] = (freqHora[a.hora] || 0) + 1; });
   const topHora = Object.entries(freqHora).sort((a,b) => b[1]-a[1])[0];
   const elH = document.getElementById('insight-melhor-horario');
   if (elH) elH.textContent = topHora ? topHora[0] : 'Sem dados';
 
-  /* Serviço mais lucrativo */
   const freqServ = {};
   ags.forEach(a => {
     if (!a.servico) return;
@@ -949,7 +1238,6 @@ function atualizarInsights() {
       : `${topServ[1].qtd} agendamento${topServ[1].qtd > 1 ? 's' : ''}`;
   }
 
-  /* Clientes inativos */
   const cutoff = new Date(); cutoff.setDate(cutoff.getDate()-30);
   const cutStr = cutoff.toISOString().split('T')[0];
   const recentes = new Set(ags.filter(a => a.data >= cutStr).map(a => a.pacienteNome));
@@ -960,12 +1248,10 @@ function atualizarInsights() {
   if (elI)  elI.textContent  = inativos > 0 ? `${inativos} cliente${inativos > 1 ? 's' : ''}` : 'Nenhum';
   if (elIS) { elIS.textContent = inativos > 0 ? 'há mais de 30 dias' : 'todos ativos'; elIS.className = 'insight-item-sub' + (inativos > 0 ? ' warning' : ''); }
 
-  /* Banner */
   const banner = document.getElementById('alert-clientes-inativos');
   if (banner) banner.style.display = inativos >= 3 ? 'flex' : 'none';
   if (inativos >= 3) { const t = document.getElementById('alert-clientes-texto'); if (t) t.innerHTML = `<strong>${inativos} clientes estão inativos</strong>, mande uma promoção para reativá-los`; }
 
-  /* Lucro da semana */
   const hoje   = new Date().toISOString().split('T')[0];
   const semStart = new Date(); semStart.setDate(semStart.getDate()-7);
   const semStr = semStart.toISOString().split('T')[0];
@@ -975,7 +1261,6 @@ function atualizarInsights() {
   const elTotal = document.getElementById('stat-total');
   if (elTotal) elTotal.textContent = 'R$ ' + lucroSem.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
 
-  /* Finance card */
   const mes = new Date().toISOString().slice(0,7);
   const nid = window.negocioAtual?._id;
   const lucroMes = nid ? (parseFloat(localStorage.getItem(`lucro_val_${nid}_${mes}`))||0) : 0;
@@ -987,7 +1272,6 @@ function atualizarInsights() {
   if(fcl) fcl.textContent=`R$${Math.round(lucroMes)}`;
 }
 
-/* Renderiza mini-lista do dashboard (só hoje) */
 function renderDashboardHoje() {
   const ags  = window.todosAgendamentos || [];
   const hoje = new Date().toISOString().split('T')[0];
@@ -1036,7 +1320,6 @@ function renderDashboardHoje() {
 <script>
 (function() {
 
-  /* ── renderTabela: lista completa na page-agendamentos ── */
   window.renderTabela = function() {
     const wrap  = document.getElementById('tbody-rows');
     const cards = document.getElementById('ag-cards');
@@ -1097,11 +1380,9 @@ function renderDashboardHoje() {
       pag.style.display = total > 1 ? 'flex' : 'none';
     }
 
-    /* Após render da lista completa, também atualiza dashboard */
     setTimeout(() => { atualizarInsights(); renderDashboardHoje(); }, 100);
   };
 
-  /* ── Tema padrão escuro ── */
   window.carregarTema = function() { definirTema(localStorage.getItem('tema') || 'escuro'); };
 
   window.definirTema = function(tema) {
@@ -1114,7 +1395,6 @@ function renderDashboardHoje() {
     if (oe) oe.classList.toggle('ativo', tema==='escuro');
   };
 
-  /* ── Títulos da topbar por página ── */
   const titulos = {
     dashboard:      ['Dashboard',              'Painel de controle do seu negócio'],
     agendamentos:   ['Agendamentos',           'Lista completa de agendamentos'],
@@ -1137,14 +1417,12 @@ function renderDashboardHoje() {
       if (el)  el.textContent  = t[0];
       if (sub) sub.textContent = t[1];
     }
-    /* Ao entrar em agendamentos, remove filtro de data para mostrar tudo */
     if (pagina === 'agendamentos') {
       const fd = document.getElementById('filtro-data');
       if (fd) { fd.value = ''; if (window.filtrarData) window.filtrarData(); }
     }
   };
 
-  /* ── Avatar da topbar ── */
   const _aSidebar = window.atualizarSidebarNegocio;
   window.atualizarSidebarNegocio = function() {
     _aSidebar && _aSidebar();
@@ -1152,7 +1430,6 @@ function renderDashboardHoje() {
     if (av && window.negocioAtual) av.textContent = (window.negocioAtual.nome||'A')[0].toUpperCase();
   };
 
-  /* ── Após carregar agendamentos, renderiza dashboard ── */
   const _origCarregar = window.carregarAgendamentos;
   window.carregarAgendamentos = async function() {
     await _origCarregar.apply(this, arguments);
