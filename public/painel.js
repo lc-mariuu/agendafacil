@@ -2062,48 +2062,74 @@ function fecharBusca() {
 function executarBusca(q) {
   const res = document.getElementById('busca-resultados')
   if (!res) return
-  if (!q.trim()) {
-    res.innerHTML = '<div class="busca-empty">Digite para buscar por nome, serviço ou data</div>'
+
+  const ags = window.todosAgendamentos || todosAgendamentos || []
+
+  if (!q || !q.trim()) {
+    const hoje = new Date().toISOString().split('T')[0]
+    const deHoje = ags.filter(a => a.data === hoje).slice(0, 5)
+    if (!deHoje.length) {
+      res.innerHTML = '<div class="busca-empty" style="text-align:center;color:var(--text3);padding:24px;font-size:13px">Digite para buscar por nome, serviço ou data</div>'
+      return
+    }
+    res.innerHTML = '<div class="busca-secao-label" style="font-size:9.5px;font-weight:800;color:var(--text3);text-transform:uppercase;letter-spacing:.12em;padding:12px 16px 6px">Agendamentos de hoje</div>' + deHoje.map(buscaItemHTMLLocal).join('')
     return
   }
-  const termo = q.toLowerCase()
-  const encontrados = todosAgendamentos.filter(a =>
-    a.pacienteNome?.toLowerCase().includes(termo) ||
-    a.servico?.toLowerCase().includes(termo) ||
-    a.data?.includes(termo) ||
-    a.hora?.includes(termo) ||
-    a.pacienteTelefone?.includes(termo)
-  )
+
+  const termo = q.toLowerCase().trim()
+  const encontrados = ags.filter(a =>
+    (a.pacienteNome  || '').toLowerCase().includes(termo) ||
+    (a.servico       || '').toLowerCase().includes(termo) ||
+    (a.data          || '').includes(termo) ||
+    (a.hora          || '').includes(termo) ||
+    (a.pacienteTelefone || '').includes(termo)
+  ).slice(0, 12)
+
   if (!encontrados.length) {
-    res.innerHTML = '<div class="busca-empty">Nenhum resultado encontrado</div>'
+    res.innerHTML = `<div class="busca-empty" style="text-align:center;color:var(--text3);padding:24px;font-size:13px">Nenhum resultado para "<strong>${q}</strong>"</div>`
     return
   }
 
-  function avatarColorLocal(nome) {
-    const colors = [
-      ['#1d4ed8','#3b82f6'],['#7c3aed','#8b5cf6'],['#0e7490','#06b6d4'],
-      ['#15803d','#22c55e'],['#b45309','#f59e0b'],['#be185d','#ec4899'],
-    ]
-    let h = 0
-    for (let c of (nome || 'A')) h = ((h << 5) - h) + c.charCodeAt(0)
-    return colors[Math.abs(h) % colors.length]
-  }
+  res.innerHTML =
+    `<div class="busca-secao-label" style="font-size:9.5px;font-weight:800;color:var(--text3);text-transform:uppercase;letter-spacing:.12em;padding:12px 16px 6px">${encontrados.length} resultado${encontrados.length > 1 ? 's' : ''}</div>` +
+    encontrados.map(buscaItemHTMLLocal).join('')
+}
 
-  res.innerHTML = encontrados.slice(0, 12).map(a => {
-    const [c1, c2] = avatarColorLocal(a.pacienteNome)
-    const ini = (a.pacienteNome || 'C')[0].toUpperCase()
-    const dataFmt = a.data ? formatarData(a.data) : ''
-    const preco = a.preco ? `R$${Number(a.preco).toFixed(2).replace('.',',')}` : ''
-    return `<div class="busca-item" onclick="fecharBusca()">
-      <div class="busca-item-avatar" style="background:linear-gradient(135deg,${c1},${c2})">${ini}</div>
-      <div class="busca-item-info">
-        <div class="busca-item-nome">${a.pacienteNome}</div>
-        <div class="busca-item-sub">${a.servico} · ${dataFmt} ${a.hora}</div>
-      </div>
-      <span class="badge ${a.status}" style="font-size:10px">${a.status}</span>
-      ${preco ? `<span style="font-size:12px;font-weight:700;color:var(--text);margin-left:4px">${preco}</span>` : ''}
-    </div>`
-  }).join('')
+function buscaItemHTMLLocal(a) {
+  const cores = [
+    ['#1d4ed8','#3b82f6'],['#7c3aed','#8b5cf6'],['#0e7490','#06b6d4'],
+    ['#15803d','#22c55e'],['#b45309','#f59e0b'],['#be185d','#ec4899'],
+  ]
+  let h = 0
+  for (let c of (a.pacienteNome || 'A')) h = ((h << 5) - h) + c.charCodeAt(0)
+  const [c1, c2] = cores[Math.abs(h) % cores.length]
+  const ini     = (a.pacienteNome || 'C')[0].toUpperCase()
+  const dataFmt = a.data ? a.data.split('-').reverse().join('/') : ''
+  const preco   = a.preco ? ` · R$${Number(a.preco).toFixed(2).replace('.',',')}` : ''
+  const statusCor = { confirmado:'#10b981', concluido:'#8b5cf6', cancelado:'#ef4444', pendente:'#f59e0b' }[a.status] || '#8b9ab4'
+
+  return `<div class="busca-item" style="display:flex;align-items:center;gap:11px;padding:10px 16px;cursor:pointer;transition:background .12s"
+    onmouseover="this.style.background='rgba(255,255,255,0.05)'"
+    onmouseout="this.style.background=''"
+    onclick="buscaSelecionarAgendamento('${a._id}','${a.data || ''}')">
+    <div style="width:34px;height:34px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:white;background:linear-gradient(135deg,${c1},${c2})">${ini}</div>
+    <div style="flex:1;min-width:0">
+      <div style="font-size:13.5px;font-weight:600;color:var(--text)">${a.pacienteNome}</div>
+      <div style="font-size:11.5px;color:var(--text2);margin-top:1px">${a.servico} · ${dataFmt} às ${a.hora}${preco}</div>
+    </div>
+    <span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:100px;background:${statusCor}22;color:${statusCor};border:1px solid ${statusCor}44;white-space:nowrap">${a.status}</span>
+  </div>`
+}
+
+function buscaSelecionarAgendamento(id, data) {
+  fecharBusca()
+  const filtroEl = document.getElementById('filtro-data')
+  if (filtroEl && data) {
+    filtroEl.value = data
+    if (window.filtrarData) window.filtrarData()
+  }
+  const menuBtn = document.getElementById('menu-agendamentos')
+  if (window.irPara) window.irPara('agendamentos', menuBtn)
 }
 
 // Atalho teclado Ctrl+K ou /
