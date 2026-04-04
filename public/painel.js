@@ -114,11 +114,17 @@ function definirTema(tema) {
   document.body.classList.remove('dark-mode', 'light-mode')
   document.body.classList.add(tema === 'claro' ? 'light-mode' : 'dark-mode')
   localStorage.setItem('tema', tema)
-  document.getElementById('theme-opt-claro').classList.toggle('ativo', tema === 'claro')
-  document.getElementById('theme-opt-escuro').classList.toggle('ativo', tema === 'escuro')
+  const oc = document.getElementById('theme-opt-claro')
+  const oe = document.getElementById('theme-opt-escuro')
+  if (oc) oc.classList.toggle('ativo', tema === 'claro')
+  if (oe) oe.classList.toggle('ativo', tema === 'escuro')
 }
 function carregarTema() {
-  definirTema(localStorage.getItem('tema') || 'claro')
+  definirTema(localStorage.getItem('tema') || 'escuro')
+}
+function toggleTema() {
+  const atual = localStorage.getItem('tema') || 'escuro'
+  definirTema(atual === 'escuro' ? 'claro' : 'escuro')
 }
 
 /* ═══════════════════════════════════════════════════
@@ -135,9 +141,34 @@ function fecharSidebar() {
 function irPara(pagina, btn) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('ativo'))
   document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('ativo'))
-  document.getElementById(`page-${pagina}`).classList.add('ativo')
+  const page = document.getElementById(`page-${pagina}`)
+  if (page) page.classList.add('ativo')
   if (btn) btn.classList.add('ativo')
   fecharSidebar()
+  if (pagina === 'clientes') renderClientes('')
+  if (pagina === 'agendamentos') {
+    const fd = document.getElementById('filtro-data')
+    if (fd) { fd.value = ''; if (window.filtrarData) window.filtrarData() }
+  }
+  const titulos = {
+    dashboard:     ['Dashboard',           'Painel de controle do seu negócio'],
+    agendamentos:  ['Agendamentos',        'Lista completa de agendamentos'],
+    clientes:      ['Clientes',            'Todos os seus clientes'],
+    horarios:      ['Horários',            'Configure seus horários de atendimento'],
+    lembretes:     ['Automação',           'Lembretes automáticos via WhatsApp'],
+    whatsapp:      ['WhatsApp Auto',       'Configure o WhatsApp Business'],
+    bio:           ['Minha Bio',           'Sua página pública para o Instagram'],
+    configuracoes: ['Configurações',       'Serviços e aparência do painel'],
+    pagamentos:    ['Pagamentos',          'Cobrança antecipada via Pix'],
+    suporte:       ['Suporte',             'Estamos aqui para ajudar você'],
+  }
+  const t = titulos[pagina]
+  if (t) {
+    const el  = document.getElementById('topbar-page-title')
+    const sub = document.getElementById('topbar-page-sub')
+    if (el)  el.textContent  = t[0]
+    if (sub) sub.textContent = t[1]
+  }
 }
 
 /* ═══════════════════════════════════════════════════
@@ -180,14 +211,12 @@ function trocarNegocio(id) {
 function atualizarSidebarNegocio() {
   document.getElementById('neg-nome-sidebar').textContent = negocioAtual?.nome || ''
   document.getElementById('neg-avatar').textContent       = (negocioAtual?.nome || 'A')[0].toUpperCase()
-
   const link    = `https://agendorapido.com.br/agendar.html?id=${negocioAtual?._id}`
   const linkBio = `https://agendorapido.com.br/bio.html?id=${negocioAtual?._id}`
   const elLink  = document.getElementById('link-agendamento')
   const elBio   = document.getElementById('link-bio')
   if (elLink) elLink.textContent = link
   if (elBio)  elBio.textContent  = linkBio
-
   atualizarLinkWpp()
 }
 
@@ -196,7 +225,6 @@ function abrirModalNegocio() {
   document.getElementById('neg-dropdown').classList.remove('show')
   document.getElementById('neg-nome').value  = ''
   document.getElementById('neg-erro').textContent = ''
-
   const plano      = localStorage.getItem('plano') || 'trial'
   const assinatura = localStorage.getItem('assinaturaAtiva') === 'true'
   const badge      = document.getElementById('badge-plano')
@@ -209,7 +237,6 @@ function abrirModalNegocio() {
     badge.style.fontSize     = '12px'
     badge.style.fontWeight   = '600'
   }
-
   document.getElementById('modal-negocio').style.display = 'flex'
 }
 
@@ -222,19 +249,15 @@ async function criarNegocio() {
   const segmento = document.getElementById('neg-segmento').value
   const erro     = document.getElementById('neg-erro')
   if (!nome) { erro.textContent = 'Digite o nome do negócio'; return }
-
   const plano      = localStorage.getItem('plano') || 'trial'
   const assinatura = localStorage.getItem('assinaturaAtiva') === 'true'
-
   if (plano !== 'pro' || !assinatura) {
     erro.textContent = 'Faça upgrade para o plano Pro para criar mais painéis'
     return
   }
-
   const token    = localStorage.getItem('token')
   const servicos = (servicosPorSegmento[segmento] || servicosPorSegmento['Outro'])
     .map(s => ({ nome: s, preco: 0 }))
-
   const res  = await fetch(`${API}/auth/negocios`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
@@ -242,7 +265,6 @@ async function criarNegocio() {
   })
   const data = await res.json()
   if (!res.ok) { erro.textContent = data.erro || 'Erro ao criar painel'; return }
-
   todosNegocios.push({ _id: data._id, nome: data.nome, segmento: data.segmento })
   fecharModalNegocio()
   trocarNegocio(data._id)
@@ -255,15 +277,12 @@ async function mostrarPainel() {
   const token = localStorage.getItem('token')
   const res   = await fetch(`${API}/auth/negocios`, { headers: { 'Authorization': `Bearer ${token}` } })
   todosNegocios = await res.json()
-
   const savedId = localStorage.getItem('negocioId')
   negocioAtual  = todosNegocios.find(n => n._id === savedId) || todosNegocios[0]
-
   if (negocioAtual) {
     localStorage.setItem('negocioId', negocioAtual._id)
     localStorage.setItem('negocio',   negocioAtual.nome)
   }
-
   renderDropdown()
   atualizarSidebarNegocio()
   document.getElementById('filtro-data').value = new Date().toISOString().split('T')[0]
@@ -277,6 +296,7 @@ function carregarDadosNegocio() {
   carregarHorariosConfig()
   carregarBioConfig()
   carregarLembretes()
+  carregarInsights()
 }
 
 /* ═══════════════════════════════════════════════════
@@ -311,7 +331,6 @@ function copiarMensagemWpp() {
   navigator.clipboard.writeText(el.textContent)
   flashBtn('btn-copiar-msg', '✓ Mensagem copiada!')
 }
-
 function flashBtn(id, txt) {
   const btn = document.getElementById(id)
   if (btn) flash(btn, txt)
@@ -328,7 +347,6 @@ function flash(btn, txt) {
 async function carregarAgendamentos() {
   if (!negocioAtual) return
   const token = localStorage.getItem('token')
-
   const res = await fetch(`${API}/agendamentos?negocioId=${negocioAtual._id}`, {
     headers: { 'Authorization': `Bearer ${token}` },
   })
@@ -359,9 +377,8 @@ async function carregarAgendamentos() {
     })
   }
 
-  const hoje  = new Date().toISOString().split('T')[0]
+  const hoje   = new Date().toISOString().split('T')[0]
   const semana = new Date(Date.now() + 7 * 86400000).toISOString().split('T')[0]
-  // stat-total agora é lucro da semana — calculado pelo painel_extras.js
   document.getElementById('stat-hoje').textContent   = todosAgendamentos.filter(a => a.data === hoje).length
   document.getElementById('stat-semana').textContent = todosAgendamentos.filter(a => a.data >= hoje && a.data <= semana).length
 
@@ -369,11 +386,16 @@ async function carregarAgendamentos() {
   exibirLucro()
   renderHistorico()
   filtrarData()
+  atualizarInsights()
+
+  // Badge sino
+  const dot = document.getElementById('notif-dot')
+  if (dot) dot.style.display = todosAgendamentos.filter(a => a.data === hoje).length > 0 ? 'block' : 'none'
 }
 
 /* ── Tabela / paginação ── */
 const POR_PAGINA = 8
-let paginaAtual  = 1
+let paginaAtual   = 1
 let listaFiltrada = []
 
 function filtrarData() {
@@ -386,14 +408,14 @@ function filtrarData() {
 }
 
 function renderTabela() {
-  const tbody    = document.getElementById('tbody')
-  const agCards  = document.getElementById('ag-cards')
+  const wrap      = document.getElementById('tbody-rows')
+  const cards     = document.getElementById('ag-cards')
   const paginacao = document.getElementById('paginacao')
 
   if (!listaFiltrada.length) {
-    tbody.innerHTML   = '<tr><td colspan="6" class="vazio">Nenhum agendamento encontrado</td></tr>'
-    agCards.innerHTML = '<div class="vazio">Nenhum agendamento encontrado</div>'
-    paginacao.style.display = 'none'
+    if (wrap)  wrap.innerHTML  = '<div class="vazio">Nenhum agendamento encontrado</div>'
+    if (cards) cards.innerHTML = '<div class="vazio">Nenhum agendamento encontrado</div>'
+    if (paginacao) paginacao.style.display = 'none'
     return
   }
 
@@ -402,62 +424,50 @@ function renderTabela() {
   const fim    = inicio + POR_PAGINA
   const slice  = listaFiltrada.slice(inicio, fim)
 
-  tbody.innerHTML = slice.map(a => {
-    const acoes = a.status === 'confirmado'
-      ? `<button class="btn-acao concluir" onclick="atualizar('${a._id}','concluido')">Concluir</button>
-         <button class="btn-acao cancelar" onclick="cancelarComAviso('${a._id}','${a.pacienteNome}','${a.pacienteTelefone}','${a.data}','${a.hora}')">Cancelar</button>`
-      : ''
-    return `<tr>
-      <td>
-        <div class="paciente-nome">${a.pacienteNome}</div>
-        <div class="paciente-tel">${a.pacienteTelefone}</div>
-      </td>
-      <td style="color:var(--text2)">${a.servico}</td>
-      <td style="color:var(--text2)">${formatarData(a.data)}</td>
-      <td style="font-weight:600">${a.hora}</td>
-      <td><span class="badge ${a.status}">${a.status}</span></td>
-      <td><div class="acoes">${acoes}</div></td>
-    </tr>`
-  }).join('')
-
-  agCards.innerHTML = slice.map(a => {
-    const acoes = a.status === 'confirmado'
-      ? `<div class="ag-card-actions">
-           <button class="btn-acao concluir" onclick="atualizar('${a._id}','concluido')">Concluir</button>
-           <button class="btn-acao cancelar" onclick="cancelarComAviso('${a._id}','${a.pacienteNome}','${a.pacienteTelefone}','${a.data}','${a.hora}')">Cancelar</button>
-         </div>`
-      : ''
-    return `<div class="ag-card">
-      <div class="ag-card-top">
-        <div>
-          <div class="ag-card-nome">${a.pacienteNome}</div>
-          <div class="paciente-tel">${a.pacienteTelefone}</div>
+  if (wrap)  wrap.innerHTML  = renderizarLinhasComAvatar(slice)
+  if (cards) {
+    cards.innerHTML = slice.map(a => {
+      const [c1,c2] = avatarColor(a.pacienteNome)
+      const ini = (a.pacienteNome||'C')[0].toUpperCase()
+      const acoes = a.status === 'confirmado'
+        ? `<div class="ag-card-actions">
+             <button class="btn-acao concluir" onclick="atualizar('${a._id}','concluido')">Concluir</button>
+             <button class="btn-acao cancelar" onclick="cancelarComAviso('${a._id}','${a.pacienteNome}','${a.pacienteTelefone}','${a.data}','${a.hora}')">Cancelar</button>
+           </div>` : ''
+      return `<div class="ag-card">
+        <div class="ag-card-top">
+          <div style="display:flex;align-items:center;gap:10px">
+            <div class="ag-avatar" style="background:linear-gradient(135deg,${c1},${c2});width:32px;height:32px;font-size:11px;flex-shrink:0">${ini}</div>
+            <div><div class="ag-card-nome">${a.pacienteNome}</div><div class="paciente-tel">${a.pacienteTelefone||''}</div></div>
+          </div>
+          <span class="badge ${a.status}">${a.status}</span>
         </div>
-        <span class="badge ${a.status}">${a.status}</span>
-      </div>
-      <div class="ag-card-body">
-        <div class="ag-chip">${formatarData(a.data)}</div>
-        <div class="ag-chip">${a.hora}</div>
-        <div class="ag-chip">${a.servico}</div>
-      </div>
-      ${acoes}
-    </div>`
-  }).join('')
-
-  document.getElementById('pg-info').textContent =
-    `${inicio + 1}–${Math.min(fim, listaFiltrada.length)} de ${listaFiltrada.length}`
-
-  let btns = `<button class="pg-btn" onclick="irPagina(${paginaAtual - 1})" ${paginaAtual === 1 ? 'disabled' : ''}>‹</button>`
-  for (let i = 1; i <= total; i++) {
-    if (total <= 7 || i === 1 || i === total || Math.abs(i - paginaAtual) <= 1)
-      btns += `<button class="pg-btn ${i === paginaAtual ? 'ativo' : ''}" onclick="irPagina(${i})">${i}</button>`
-    else if (Math.abs(i - paginaAtual) === 2)
-      btns += `<span style="color:var(--text3);font-size:13px;padding:0 2px">…</span>`
+        <div class="ag-card-body">
+          <div class="ag-chip">${formatarData(a.data)}</div>
+          <div class="ag-chip">${a.hora}</div>
+          <div class="ag-chip">${a.servico}</div>
+        </div>
+        ${acoes}
+      </div>`
+    }).join('')
   }
-  btns += `<button class="pg-btn" onclick="irPagina(${paginaAtual + 1})" ${paginaAtual === total ? 'disabled' : ''}>›</button>`
-  document.getElementById('pg-btns').innerHTML = btns
 
-  paginacao.style.display = total > 1 ? 'flex' : 'none'
+  if (paginacao) {
+    document.getElementById('pg-info').textContent =
+      `${inicio+1}–${Math.min(fim,listaFiltrada.length)} de ${listaFiltrada.length}`
+    let btns = `<button class="pg-btn" onclick="irPagina(${paginaAtual-1})" ${paginaAtual===1?'disabled':''}>‹</button>`
+    for (let i=1;i<=total;i++) {
+      if (total<=7||i===1||i===total||Math.abs(i-paginaAtual)<=1)
+        btns += `<button class="pg-btn ${i===paginaAtual?'ativo':''}" onclick="irPagina(${i})">${i}</button>`
+      else if (Math.abs(i-paginaAtual)===2)
+        btns += `<span style="color:var(--text3);font-size:13px;padding:0 2px">…</span>`
+    }
+    btns += `<button class="pg-btn" onclick="irPagina(${paginaAtual+1})" ${paginaAtual===total?'disabled':''}>›</button>`
+    document.getElementById('pg-btns').innerHTML = btns
+    paginacao.style.display = total > 1 ? 'flex' : 'none'
+  }
+
+  setTimeout(() => { atualizarInsights(); renderDashboardHoje() }, 100)
 }
 
 function irPagina(n) {
@@ -465,7 +475,87 @@ function irPagina(n) {
   if (n < 1 || n > total) return
   paginaAtual = n
   renderTabela()
-  document.getElementById('page-agendamentos').scrollIntoView({ behavior: 'smooth', block: 'start' })
+}
+
+function avatarColor(nome) {
+  const colors = [
+    ['#1d4ed8','#3b82f6'],['#7c3aed','#8b5cf6'],['#0e7490','#06b6d4'],
+    ['#15803d','#22c55e'],['#b45309','#f59e0b'],['#be185d','#ec4899'],
+    ['#0369a1','#38bdf8'],['#6d28d9','#a78bfa'],
+  ]
+  let h = 0
+  for (let c of (nome || 'A')) h = ((h << 5) - h) + c.charCodeAt(0)
+  return colors[Math.abs(h) % colors.length]
+}
+
+function renderizarLinhasComAvatar(slice) {
+  return slice.map(a => {
+    const ini = (a.pacienteNome || 'C')[0].toUpperCase()
+    const [c1, c2] = avatarColor(a.pacienteNome)
+    const isOnline = a.status === 'confirmado'
+    const acoes = a.status === 'confirmado'
+      ? `<div class="acoes">
+           <button class="btn-acao concluir" onclick="atualizar('${a._id}','concluido')">Concluir</button>
+           <button class="btn-acao cancelar" onclick="cancelarComAviso('${a._id}','${a.pacienteNome}','${a.pacienteTelefone}','${a.data}','${a.hora}')">Cancelar</button>
+         </div>` : ''
+    const preco = a.preco ? `R$${Number(a.preco).toFixed(2).replace('.',',')}` : '—'
+    return `<div class="ag-row">
+      <div class="ag-avatar" style="background:linear-gradient(135deg,${c1},${c2})">
+        ${ini}${isOnline ? '<div class="ag-avatar-online"></div>' : ''}
+      </div>
+      <div class="ag-info">
+        <div class="ag-nome">${a.pacienteNome}</div>
+        <div class="ag-servico">${a.servico}</div>
+      </div>
+      <div class="ag-time">
+        <div class="ag-hora">às ${a.hora}</div>
+        <div class="ag-data">${a.data ? formatarData(a.data) : ''}</div>
+      </div>
+      <span class="badge ${a.status}">${a.status}</span>
+      <div class="ag-preco">${preco}</div>
+      ${acoes}
+    </div>`
+  }).join('')
+}
+
+function renderDashboardHoje() {
+  const ags   = todosAgendamentos || []
+  const hoje  = new Date().toISOString().split('T')[0]
+  const deHoje = ags.filter(a => a.data === hoje).sort((a,b) => a.hora.localeCompare(b.hora))
+  const wrap  = document.getElementById('tbody-rows-dash')
+  const cards = document.getElementById('ag-cards-dash')
+  if (!deHoje.length) {
+    if (wrap)  wrap.innerHTML  = '<div class="vazio">Nenhum agendamento hoje</div>'
+    if (cards) cards.innerHTML = '<div class="vazio">Nenhum agendamento hoje</div>'
+    return
+  }
+  if (wrap)  wrap.innerHTML = renderizarLinhasComAvatar(deHoje)
+  if (cards) {
+    cards.innerHTML = deHoje.map(a => {
+      const [c1,c2] = avatarColor(a.pacienteNome)
+      const ini = (a.pacienteNome||'C')[0].toUpperCase()
+      const acoes = a.status === 'confirmado'
+        ? `<div class="ag-card-actions">
+             <button class="btn-acao concluir" onclick="atualizar('${a._id}','concluido')">Concluir</button>
+             <button class="btn-acao cancelar" onclick="cancelarComAviso('${a._id}','${a.pacienteNome}','${a.pacienteTelefone}','${a.data}','${a.hora}')">Cancelar</button>
+           </div>` : ''
+      return `<div class="ag-card">
+        <div class="ag-card-top">
+          <div style="display:flex;align-items:center;gap:10px">
+            <div class="ag-avatar" style="background:linear-gradient(135deg,${c1},${c2});width:32px;height:32px;font-size:11px;flex-shrink:0">${ini}</div>
+            <div><div class="ag-card-nome">${a.pacienteNome}</div><div class="paciente-tel">${a.pacienteTelefone||''}</div></div>
+          </div>
+          <span class="badge ${a.status}">${a.status}</span>
+        </div>
+        <div class="ag-card-body">
+          <div class="ag-chip">${formatarData(a.data)}</div>
+          <div class="ag-chip">${a.hora}</div>
+          <div class="ag-chip">${a.servico}</div>
+        </div>
+        ${acoes}
+      </div>`
+    }).join('')
+  }
 }
 
 async function atualizar(id, status) {
@@ -483,6 +573,8 @@ async function atualizar(id, status) {
   exibirLucro()
   renderHistorico()
   filtrarData()
+  atualizarInsights()
+  renderDashboardHoje()
 }
 
 async function cancelarComAviso(id, nome, telefone, data, hora) {
@@ -512,41 +604,31 @@ function abrirModalNovoAgendamento() {
   document.getElementById('m-telefone').value   = ''
   document.getElementById('m-erro').textContent = ''
   document.getElementById('m-servico').innerHTML = servicosAtuais
-    .map(s => {
-      const n = typeof s === 'object' ? s.nome : s
-      return `<option value="${n}">${n}</option>`
-    }).join('')
+    .map(s => { const n = typeof s === 'object' ? s.nome : s; return `<option value="${n}">${n}</option>` }).join('')
   document.getElementById('modal-agendamento').style.display = 'flex'
   carregarHorariosModal()
 }
 function fecharModal() {
   document.getElementById('modal-agendamento').style.display = 'none'
 }
-
 async function carregarHorariosModal() {
   const data = document.getElementById('m-data').value
   if (!data || !negocioAtual) return
-
   const select = document.getElementById('m-hora')
   select.innerHTML = '<option>Carregando...</option>'
-
   const res      = await fetch(`${API}/agendamentos/horarios-ocupados?clinicaId=${negocioAtual._id}&data=${data}`)
   const resultado = await res.json()
-
   if (resultado.diaInativo || !resultado.horarios.length) {
     select.innerHTML = '<option value="">Sem horários disponíveis</option>'
     return
   }
-
   select.innerHTML = resultado.horarios.map(h => {
     const ocu = resultado.ocupados.includes(h)
     return `<option value="${h}" ${ocu ? 'disabled' : ''}>${h}${ocu ? ' (ocupado)' : ''}</option>`
   }).join('')
-
   const livre = resultado.horarios.find(h => !resultado.ocupados.includes(h))
   if (livre) select.value = livre
 }
-
 async function salvarAgendamentoManual() {
   const nome     = document.getElementById('m-nome').value.trim()
   const telefone = document.getElementById('m-telefone').value.trim()
@@ -554,14 +636,11 @@ async function salvarAgendamentoManual() {
   const data     = document.getElementById('m-data').value
   const hora     = document.getElementById('m-hora').value
   const erro     = document.getElementById('m-erro')
-
   if (!nome) { erro.textContent = 'Digite o nome do cliente'; return }
   if (!hora) { erro.textContent = 'Selecione um horário'; return }
   erro.textContent = ''
-
   const btn = document.querySelector('.btn-salvar-modal')
   btn.disabled = true; btn.textContent = 'Salvando...'
-
   const token = localStorage.getItem('token')
   const res   = await fetch(`${API}/agendamentos`, {
     method: 'POST',
@@ -570,7 +649,6 @@ async function salvarAgendamentoManual() {
   })
   const resposta = await res.json()
   btn.disabled = false; btn.textContent = 'Confirmar agendamento'
-
   if (res.ok) { fecharModal(); carregarAgendamentos() }
   else erro.textContent = resposta.erro || 'Erro ao criar agendamento'
 }
@@ -587,7 +665,6 @@ async function carregarServicos() {
   renderServicos()
   renderIntervalosServicos()
 }
-
 function renderServicos() {
   document.getElementById('servicos-tags').innerHTML = servicosAtuais.map((s, i) => {
     const nome  = typeof s === 'object' ? s.nome  : s
@@ -602,37 +679,23 @@ function renderServicos() {
     </div>`
   }).join('')
 }
-
 function adicionarServico() {
   const nomeInput  = document.getElementById('novo-servico')
   const precoInput = document.getElementById('novo-preco')
   const erroEl     = document.getElementById('servico-erro')
   const nome       = nomeInput.value.trim()
   const preco      = parseFloat(precoInput.value)
-
   erroEl.textContent = ''
   nomeInput.classList.remove('campo-erro')
   precoInput.classList.remove('campo-erro')
-
-  if (!nome) {
-    erroEl.textContent = '⚠ Digite o nome do serviço.'
-    nomeInput.classList.add('campo-erro'); nomeInput.focus(); return
-  }
-  if (!precoInput.value.trim() || isNaN(preco) || preco <= 0) {
-    erroEl.textContent = '⚠ O preço é obrigatório e deve ser maior que R$ 0,00.'
-    precoInput.classList.add('campo-erro'); precoInput.focus(); return
-  }
-  if (servicosAtuais.some(s => (typeof s === 'object' ? s.nome : s).toLowerCase() === nome.toLowerCase())) {
-    erroEl.textContent = '⚠ Já existe um serviço com esse nome.'
-    nomeInput.classList.add('campo-erro'); nomeInput.focus(); return
-  }
-
+  if (!nome) { erroEl.textContent = '⚠ Digite o nome do serviço.'; nomeInput.classList.add('campo-erro'); nomeInput.focus(); return }
+  if (!precoInput.value.trim() || isNaN(preco) || preco <= 0) { erroEl.textContent = '⚠ O preço é obrigatório e deve ser maior que R$ 0,00.'; precoInput.classList.add('campo-erro'); precoInput.focus(); return }
+  if (servicosAtuais.some(s => (typeof s === 'object' ? s.nome : s).toLowerCase() === nome.toLowerCase())) { erroEl.textContent = '⚠ Já existe um serviço com esse nome.'; nomeInput.classList.add('campo-erro'); nomeInput.focus(); return }
   servicosAtuais.push({ nome, preco })
   nomeInput.value = ''; precoInput.value = ''
   renderServicos()
   renderIntervalosServicos()
 }
-
 function removerServico(i) {
   const nome = typeof servicosAtuais[i] === 'object' ? servicosAtuais[i].nome : servicosAtuais[i]
   delete intervalosServicos[nome]
@@ -640,7 +703,6 @@ function removerServico(i) {
   renderServicos()
   renderIntervalosServicos()
 }
-
 async function salvarServicos() {
   if (!negocioAtual) return
   const token = localStorage.getItem('token')
@@ -651,7 +713,6 @@ async function salvarServicos() {
   })
   mostrarSalvo('salvo-msg')
 }
-
 document.addEventListener('DOMContentLoaded', () => {
   ['novo-servico', 'novo-preco'].forEach(id => {
     const el = document.getElementById(id)
@@ -669,7 +730,6 @@ function selecionarIntervalo(btn, valor) {
   intervaloCustomAtivo = false
   document.getElementById('intervalo-custom-wrap').classList.remove('visivel')
 }
-
 function selecionarIntervaloCustom(btn) {
   document.querySelectorAll('.intervalo-btn').forEach(b => b.classList.remove('selecionado'))
   btn.classList.add('selecionado')
@@ -681,20 +741,16 @@ function selecionarIntervaloCustom(btn) {
   input.value = preds.includes(intervaloAtual) ? '' : intervaloAtual
   input.focus()
 }
-
 function atualizarIntervaloCustom(val) {
   const n = parseInt(val)
   if (!isNaN(n) && n >= 5 && n <= 480) intervaloAtual = n
 }
-
 function aplicarSelecaoIntervalo(valor) {
   const preds   = OPCOES_INTERVALO.map(o => o.valor)
   const btns    = document.querySelectorAll('.intervalo-btn:not(.custom-btn)')
   btns.forEach((btn, i) => btn.classList.toggle('selecionado', OPCOES_INTERVALO[i].valor === valor))
-
   const customBtn  = document.getElementById('btn-custom-intervalo')
   const customWrap = document.getElementById('intervalo-custom-wrap')
-
   if (!preds.includes(valor)) {
     customBtn.classList.add('selecionado')
     customWrap.classList.add('visivel')
@@ -717,7 +773,6 @@ function renderIntervalosServicos() {
     grid.innerHTML = `<div class="servicos-vazio"><div class="servicos-vazio-icon">🛠️</div>Adicione serviços em <strong>Configurações → Serviços</strong> para configurar durações individuais.</div>`
     return
   }
-
   const opcoesHtml = [
     ['0','Usar padrão'],['5','5 min'],['10','10 min'],['15','15 min'],
     ['20','20 min'],['25','25 min'],['30','30 min'],['45','45 min'],
@@ -725,7 +780,6 @@ function renderIntervalosServicos() {
     ['120','2 horas'],['150','2h30'],['180','3 horas'],['240','4 horas'],
     ['300','5 horas'],['360','6 horas'],['custom','Personalizado...'],
   ].map(([v, l]) => `<option value="${v}">${l}</option>`).join('')
-
   grid.innerHTML = servicosAtuais.map(s => {
     const nome    = typeof s === 'object' ? s.nome  : s
     const preco   = typeof s === 'object' && s.preco ? Number(s.preco) : 0
@@ -733,7 +787,6 @@ function renderIntervalosServicos() {
     const precoLabel = preco > 0 ? `R$ ${preco.toFixed(2).replace('.', ',')}` : ''
     const badgeClass = duracao > 0 ? 'custom' : ''
     const badgeLabel = duracao > 0 ? formatarMinutos(duracao) : `Padrão (${formatarMinutos(intervaloAtual)})`
-
     return `<div class="servico-intervalo-card">
       <div class="servico-intervalo-info">
         <div class="servico-intervalo-nome">${nome}</div>
@@ -743,7 +796,6 @@ function renderIntervalosServicos() {
       <select class="servico-intervalo-select" data-servico="${nome}" onchange="alterarIntervaloServico(this)">${opcoesHtml}</select>
     </div>`
   }).join('')
-
   const preds = [0,5,10,15,20,25,30,45,60,75,90,105,120,150,180,240,300,360]
   servicosAtuais.forEach(s => {
     const nome    = typeof s === 'object' ? s.nome : s
@@ -760,11 +812,9 @@ function renderIntervalosServicos() {
     }
   })
 }
-
 function alterarIntervaloServico(select) {
   const nome = select.dataset.servico
   const val  = select.value
-
   if (val === 'custom') {
     const customVal = prompt(`Digite a duração em minutos para "${nome}":`, intervalosServicos[nome] || 60)
     if (customVal === null) { select.value = String(intervalosServicos[nome] || 0); return }
@@ -781,7 +831,6 @@ function alterarIntervaloServico(select) {
     const min = parseInt(val)
     if (min === 0) delete intervalosServicos[nome]; else intervalosServicos[nome] = min
   }
-
   const badge = document.getElementById(`badge-${nome.replace(/\s+/g, '-')}`)
   if (badge) {
     const d = intervalosServicos[nome] || 0
@@ -789,7 +838,6 @@ function alterarIntervaloServico(select) {
     badge.className   = `servico-intervalo-badge ${d > 0 ? 'custom' : ''}`
   }
 }
-
 async function salvarIntervalosServicos() {
   if (!negocioAtual) return
   await patchHorarios()
@@ -816,11 +864,9 @@ function renderDias() {
     </div>`
   }).join('')
 }
-
 function toggleDia(i) {
   document.getElementById(`dia-row-${i}`).classList.toggle('dia-inativo', !document.getElementById(`dia-${i}`).checked)
 }
-
 async function carregarHorariosConfig() {
   if (!negocioAtual) return
   const res  = await fetch(`${API}/auth/negocio/${negocioAtual._id}`)
@@ -834,7 +880,6 @@ async function carregarHorariosConfig() {
   renderDias()
   renderIntervalosServicos()
 }
-
 async function salvarHorarios() {
   if (!negocioAtual) return
   diasNomes.forEach((_, i) => {
@@ -847,7 +892,6 @@ async function salvarHorarios() {
   await patchHorarios()
   mostrarSalvo('salvo-horarios')
 }
-
 async function patchHorarios() {
   const token = localStorage.getItem('token')
   await fetch(`${API}/auth/horarios`, {
@@ -871,7 +915,6 @@ function mascaraHora(inp) {
   if (v.length >= 3) v = v.slice(0, 2) + ':' + v.slice(2)
   inp.value = v
 }
-
 function renderPausas() {
   const lista = document.getElementById('pausas-lista')
   if (!pausasAtuais.length) {
@@ -888,7 +931,6 @@ function renderPausas() {
         onmouseout="this.style.color='var(--text3)';this.style.background='none'">×</button>
     </div>`).join('')
 }
-
 function adicionarPausa() {
   const inicio = document.getElementById('pausa-inicio').value
   const fim    = document.getElementById('pausa-fim').value
@@ -901,9 +943,7 @@ function adicionarPausa() {
   document.getElementById('pausa-label').value  = ''
   renderPausas()
 }
-
 function removerPausa(i) { pausasAtuais.splice(i, 1); renderPausas() }
-
 async function salvarPausas() {
   if (!negocioAtual) return
   await patchHorarios()
@@ -926,7 +966,6 @@ async function carregarBioConfig() {
   const prev = document.getElementById('foto-preview')
   prev.innerHTML = bio.foto ? `<img src="${bio.foto}">` : '👤'
 }
-
 async function salvarBio() {
   if (!negocioAtual) return
   const token = localStorage.getItem('token')
@@ -944,7 +983,6 @@ async function salvarBio() {
   })
   mostrarSalvo('salvo-bio')
 }
-
 async function uploadFoto(input) {
   const file = input.files[0]
   if (!file) return
@@ -959,9 +997,9 @@ async function uploadFoto(input) {
     })
     const data = await res.json()
     if (res.ok) {
-      document.getElementById('bio-foto').value        = data.url
-      document.getElementById('foto-status').textContent = '✓ Foto enviada!'
-      document.getElementById('foto-preview').innerHTML  = `<img src="${data.url}">`
+      document.getElementById('bio-foto').value           = data.url
+      document.getElementById('foto-status').textContent  = '✓ Foto enviada!'
+      document.getElementById('foto-preview').innerHTML   = `<img src="${data.url}">`
     } else {
       document.getElementById('foto-status').textContent = 'Erro ao enviar foto'
     }
@@ -980,7 +1018,6 @@ function atualizarToggleVisual(ativo) {
   thumb.style.left       = ativo ? '24px' : '3px'
   document.getElementById('lembrete-info').style.display = ativo ? 'block' : 'none'
 }
-
 async function carregarLembretes() {
   if (!negocioAtual) return
   const res      = await fetch(`${API}/auth/negocio/${negocioAtual._id}`)
@@ -991,7 +1028,6 @@ async function carregarLembretes() {
   atualizarToggleVisual(!!lembrete.ativo)
   if (lembrete.mensagem) document.getElementById('lembrete-msg').value = lembrete.mensagem
 }
-
 async function salvarLembrete() {
   const ativo = document.getElementById('toggle-lembrete').checked
   atualizarToggleVisual(ativo)
@@ -1003,7 +1039,6 @@ async function salvarLembrete() {
     body: JSON.stringify({ negocioId: negocioAtual._id, ativo }),
   })
 }
-
 async function salvarConfLembrete() {
   if (!negocioAtual) return
   const token = localStorage.getItem('token')
@@ -1027,13 +1062,9 @@ async function verificarAcesso() {
   if (!token) return
   const res  = await fetch(`${API}/assinatura/status`, { headers: { 'Authorization': `Bearer ${token}` } })
   const data = await res.json()
-
-  // Salva plano e assinatura no localStorage para uso em outros lugares
   localStorage.setItem('plano', data.plano || 'trial')
   localStorage.setItem('assinaturaAtiva', data.assinaturaAtiva ? 'true' : 'false')
-
   if (!data.temAcesso) { document.getElementById('bloqueio').style.display = 'flex'; return }
-
   if (data.plano === 'trial' && data.diasRestantes <= 7) {
     const banner = document.createElement('div')
     banner.className = 'trial-banner'
@@ -1062,23 +1093,18 @@ function dadosMes(negocioId, chave) {
   const ids   = (() => { try { return JSON.parse(localStorage.getItem(`lucro_ids_${negocioId}_${chave}`) || '[]') } catch { return [] } })()
   return { lucro, atendimentos: ids.length }
 }
-
 function renderHistorico() {
   if (!negocioAtual) return
   const nid   = negocioAtual._id
   const chav  = chaveDoOffset(historicoMesOffset)
   const dados = dadosMes(nid, chav)
-
   document.getElementById('hist-mes-label').textContent = historicoMesOffset === 0 ? 'Este mês' : formatarMesLabel(chav)
   document.getElementById('hist-next').disabled         = historicoMesOffset >= 0
-
   const { lucro, atendimentos: atend } = dados
   const ticket = atend > 0 ? lucro / atend : 0
-
   document.getElementById('hist-lucro').textContent  = fmtBRL(lucro)
   document.getElementById('hist-atend').textContent  = atend
   document.getElementById('hist-ticket').textContent = fmtBRL(ticket)
-
   const meses = []
   for (let i = -5; i <= 0; i++) {
     const c = chaveDoOffset(i)
@@ -1086,7 +1112,6 @@ function renderHistorico() {
     meses.push({ chave: c, offset: i, lucro: d.lucro, atend: d.atendimentos })
   }
   const maxLucro = Math.max(...meses.map(m => m.lucro), 1)
-
   document.getElementById('hist-grafico').innerHTML = meses.map(m => {
     const pct   = Math.max((m.lucro / maxLucro) * 100, m.lucro > 0 ? 4 : 0)
     const ativo = m.chave === chav
@@ -1096,14 +1121,12 @@ function renderHistorico() {
       <div class="hist-barra ${ativo ? 'ativo' : ''} ${zero ? 'zero' : ''}" style="height:${pct}%"></div>
     </div>`
   }).join('')
-
   const nomesM = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez']
   document.getElementById('hist-grafico-labels').innerHTML = meses.map(m => {
     const mes = parseInt(m.chave.split('-')[1]) - 1
     return `<div class="hist-grafico-label ${m.chave === chav ? 'ativo' : ''}">${nomesM[mes]}</div>`
   }).join('')
 }
-
 function historicoPaginar(dir) {
   const novo = historicoMesOffset + dir
   if (novo > 0) return
@@ -1114,6 +1137,391 @@ function historicoIrPara(offset) {
   if (offset > 0) return
   historicoMesOffset = offset
   renderHistorico()
+}
+
+/* ═══════════════════════════════════════════════════
+   INSIGHTS
+═══════════════════════════════════════════════════ */
+function atualizarInsights() {
+  const ags = todosAgendamentos || []
+  if (!ags.length) return
+
+  const freqHora = {}
+  ags.forEach(a => { if (a.hora) freqHora[a.hora] = (freqHora[a.hora] || 0) + 1 })
+  const topHora = Object.entries(freqHora).sort((a,b) => b[1]-a[1])[0]
+  const elH = document.getElementById('insight-melhor-horario')
+  if (elH) elH.textContent = topHora ? topHora[0] : 'Sem dados'
+
+  const freqServ = {}
+  ags.forEach(a => {
+    if (!a.servico) return
+    if (!freqServ[a.servico]) freqServ[a.servico] = { total:0, qtd:0 }
+    freqServ[a.servico].total += Number(a.preco) || 0
+    freqServ[a.servico].qtd  += 1
+  })
+  const topServ = Object.entries(freqServ).sort((a,b) => b[1].total - a[1].total)[0]
+  const elST = document.getElementById('insight-servico-top')
+  const elSR = document.getElementById('insight-servico-receita')
+  if (elST && topServ) {
+    elST.textContent = topServ[0]
+    if (elSR) elSR.textContent = topServ[1].total > 0
+      ? `R$ ${topServ[1].total.toFixed(2).replace('.',',')} gerados`
+      : `${topServ[1].qtd} agendamento${topServ[1].qtd > 1 ? 's' : ''}`
+  }
+
+  const cutoff = new Date(); cutoff.setDate(cutoff.getDate()-30)
+  const cutStr = cutoff.toISOString().split('T')[0]
+  const recentes = new Set(ags.filter(a => a.data >= cutStr).map(a => a.pacienteNome))
+  const todos    = new Set(ags.map(a => a.pacienteNome))
+  const inativos = [...todos].filter(c => !recentes.has(c)).length
+  const elI  = document.getElementById('insight-inativos')
+  const elIS = document.getElementById('insight-inativos-sub')
+  if (elI)  elI.textContent  = inativos > 0 ? `${inativos} cliente${inativos > 1 ? 's' : ''}` : 'Nenhum'
+  if (elIS) { elIS.textContent = inativos > 0 ? 'há mais de 30 dias' : 'todos ativos'; elIS.className = 'insight-item-sub' + (inativos > 0 ? ' warning' : '') }
+
+  const banner = document.getElementById('alert-clientes-inativos')
+  if (banner) banner.style.display = inativos >= 3 ? 'flex' : 'none'
+  if (inativos >= 3) { const t = document.getElementById('alert-clientes-texto'); if (t) t.innerHTML = `<strong>${inativos} clientes estão inativos</strong>, mande uma promoção para reativá-los` }
+
+  const hoje   = new Date().toISOString().split('T')[0]
+  const semStr = (() => { const d = new Date(); d.setDate(d.getDate()-7); return d.toISOString().split('T')[0] })()
+  const lucroSem = ags.filter(a => a.status === 'concluido' && a.data >= semStr && a.data <= hoje)
+    .reduce((s,a) => s + (Number(a.preco)||0), 0)
+  const elTotal = document.getElementById('stat-total')
+  if (elTotal) elTotal.textContent = 'R$ ' + lucroSem.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})
+
+  const mes = new Date().toISOString().slice(0,7)
+  const nid = negocioAtual?._id
+  const lucroMes = nid ? (parseFloat(localStorage.getItem(`lucro_val_${nid}_${mes}`))||0) : 0
+  const atendMes = nid ? (()=>{ try{return JSON.parse(localStorage.getItem(`lucro_ids_${nid}_${mes}`)||'[]').length}catch{return 0} })() : 0
+  const fv=document.getElementById('finance-amount-val')
+  const fm=document.getElementById('finance-meta')
+  const fa=document.getElementById('finance-atend')
+  const fcl=document.getElementById('finance-chart-label')
+  if(fv) fv.textContent=lucroMes.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})
+  if(fm) fm.textContent=`Movidas: ${atendMes} agendamento${atendMes!==1?'s':''}`
+  if(fa) fa.textContent=atendMes
+  if(fcl) fcl.textContent=`R$${Math.round(lucroMes)}`
+}
+
+async function carregarInsights() {
+  if (!negocioAtual) return
+  const token = localStorage.getItem('token')
+  try {
+    const res  = await fetch(`${API}/agendamentos/insights?negocioId=${negocioAtual._id}`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    })
+    if (!res.ok) return
+    const data = await res.json()
+    const elMelhor = document.getElementById('insight-melhor-horario')
+    if (elMelhor) elMelhor.textContent = data.melhorAgendamento || '—'
+    const elServico = document.getElementById('insight-servico-top')
+    const elReceita = document.getElementById('insight-servico-receita')
+    if (data.topServico) {
+      if (elServico) elServico.textContent = data.topServico.nome
+      if (elReceita) elReceita.textContent = `+R$${data.topServico.receita.toFixed(0)} no mês`
+    }
+    const fin = data.finance || {}
+    const elAmount = document.getElementById('finance-amount-val')
+    const elMeta   = document.getElementById('finance-meta')
+    const elAtend  = document.getElementById('finance-atend')
+    const elChartL = document.getElementById('finance-chart-label')
+    const elTotal  = document.getElementById('stat-total')
+    if (elAmount) elAmount.textContent = (fin.lucroMes||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})
+    if (elMeta)   elMeta.textContent   = `Movidas: ${fin.atendMes||0} agendamentos`
+    if (elAtend)  elAtend.textContent  = fin.atendMes||0
+    if (elChartL) elChartL.textContent = `R$${Math.round(fin.lucroMes||0)}`
+    if (elTotal)  elTotal.textContent  = 'R$ ' + (fin.lucroSemana||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})
+    if (fin.historicoMeses?.length && negocioAtual) {
+      fin.historicoMeses.forEach(({ mes, lucro, atendimentos }) => {
+        localStorage.setItem(`lucro_val_${negocioAtual._id}_${mes}`, String(lucro))
+        if (mes !== mesAtualChave() || getLucroIds(negocioAtual._id).length === 0) {
+          const fakeIds = Array.from({ length: atendimentos }, (_, i) => `hist_${mes}_${i}`)
+          localStorage.setItem(`lucro_ids_${negocioAtual._id}_${mes}`, JSON.stringify(fakeIds))
+        }
+      })
+      renderHistorico()
+    }
+  } catch (err) {
+    console.error('Erro ao carregar insights:', err.message)
+  }
+}
+
+/* ═══════════════════════════════════════════════════
+   CLIENTES
+═══════════════════════════════════════════════════ */
+function renderClientes(filtro) {
+  const ags = todosAgendamentos || []
+  const mapa = {}
+  ags.forEach(a => {
+    const nome = a.pacienteNome
+    if (!nome) return
+    if (!mapa[nome]) mapa[nome] = { nome, telefone: a.pacienteTelefone || '', servicos: new Set(), total: 0, atendimentos: 0, ultimaVisita: a.data || '' }
+    mapa[nome].servicos.add(a.servico)
+    if (a.status === 'concluido') { mapa[nome].total += Number(a.preco) || 0; mapa[nome].atendimentos += 1 }
+    if (a.data > mapa[nome].ultimaVisita) mapa[nome].ultimaVisita = a.data
+  })
+  let lista = Object.values(mapa).sort((a,b) => b.ultimaVisita.localeCompare(a.ultimaVisita))
+  if (filtro && filtro.trim()) {
+    const t = filtro.toLowerCase()
+    lista = lista.filter(c => c.nome.toLowerCase().includes(t) || c.telefone.includes(t))
+  }
+  const container = document.getElementById('clientes-lista')
+  if (!container) return
+  if (!lista.length) { container.innerHTML = '<div class="vazio">Nenhum cliente encontrado</div>'; return }
+  container.innerHTML = lista.map(c => {
+    const [c1,c2] = avatarColor(c.nome)
+    const ini = c.nome[0].toUpperCase()
+    const dataFmt = c.ultimaVisita ? c.ultimaVisita.split('-').reverse().join('/') : '—'
+    const total = c.total > 0 ? `R$ ${c.total.toFixed(2).replace('.',',')}` : '—'
+    const tel = c.telefone
+    const wppLink = tel ? `https://wa.me/55${tel.replace(/\D/g,'')}?text=${encodeURIComponent(`Olá ${c.nome}! 😊`)}` : null
+    return `<div class="ag-row">
+      <div class="ag-avatar" style="background:linear-gradient(135deg,${c1},${c2})">${ini}</div>
+      <div class="ag-info">
+        <div class="ag-nome">${c.nome}</div>
+        <div class="ag-servico">${[...c.servicos].slice(0,2).join(', ')}</div>
+      </div>
+      <div class="ag-time">
+        <div class="ag-hora" style="font-size:11px;font-weight:500;color:var(--text2)">Última visita</div>
+        <div class="ag-data">${dataFmt}</div>
+      </div>
+      <div style="min-width:60px;text-align:right">
+        <div style="font-size:10px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.05em">Gasto total</div>
+        <div style="font-size:13px;font-weight:700;color:var(--green)">${total}</div>
+      </div>
+      <div style="min-width:50px;text-align:center">
+        <div style="font-size:10px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.05em">Visitas</div>
+        <div style="font-size:15px;font-weight:800;color:var(--text)">${c.atendimentos}</div>
+      </div>
+      ${wppLink ? `<a href="${wppLink}" target="_blank"
+        style="display:flex;align-items:center;gap:5px;background:var(--green-bg);color:var(--green);border:1px solid var(--green-border);border-radius:7px;padding:5px 10px;font-size:11.5px;font-weight:700;text-decoration:none;white-space:nowrap;transition:all .15s"
+        onmouseover="this.style.background='var(--green)';this.style.color='white'"
+        onmouseout="this.style.background='var(--green-bg)';this.style.color='var(--green)'">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.118 1.528 5.852L.057 23.885l6.204-1.628A11.945 11.945 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.808 9.808 0 0 1-5.001-1.366l-.359-.213-3.682.966.983-3.594-.234-.371A9.818 9.818 0 0 1 2.182 12C2.182 6.57 6.57 2.182 12 2.182S21.818 6.57 21.818 12 17.43 21.818 12 21.818z"/></svg>
+        WhatsApp
+      </a>` : '<div style="width:80px"></div>'}
+    </div>`
+  }).join('')
+}
+function filtrarClientes(v) { renderClientes(v) }
+
+/* ═══════════════════════════════════════════════════
+   BUSCA GLOBAL — implementação única
+═══════════════════════════════════════════════════ */
+let buscaAberta = false
+
+function abrirBusca() {
+  const overlay = document.getElementById('busca-overlay')
+  if (!overlay) return
+  overlay.classList.add('aberta')
+  buscaAberta = true
+  const inp = document.getElementById('busca-input')
+  if (inp) {
+    inp.value = ''
+    setTimeout(() => { inp.focus(); executarBusca('') }, 60)
+  }
+}
+
+function fecharBusca() {
+  const overlay = document.getElementById('busca-overlay')
+  if (overlay) overlay.classList.remove('aberta')
+  buscaAberta = false
+}
+
+function executarBusca(q) {
+  const res = document.getElementById('busca-resultados')
+  if (!res) return
+  const ags = todosAgendamentos || []
+
+  if (!q || !q.trim()) {
+    const hoje   = new Date().toISOString().split('T')[0]
+    const deHoje = ags.filter(a => a.data === hoje).slice(0, 6)
+    if (!deHoje.length) {
+      res.innerHTML = '<div style="text-align:center;color:var(--text3);padding:28px;font-size:13px">Digite para buscar por nome, serviço ou data</div>'
+      return
+    }
+    res.innerHTML = '<div class="busca-secao-label">Agendamentos de hoje</div>' + deHoje.map(buscaItemHTML).join('')
+    return
+  }
+
+  const termo = q.toLowerCase().trim()
+  const encontrados = ags.filter(a =>
+    (a.pacienteNome     || '').toLowerCase().includes(termo) ||
+    (a.servico          || '').toLowerCase().includes(termo) ||
+    (a.data             || '').includes(termo) ||
+    (a.hora             || '').includes(termo) ||
+    (a.pacienteTelefone || '').includes(termo)
+  ).slice(0, 12)
+
+  if (!encontrados.length) {
+    res.innerHTML = `<div style="text-align:center;color:var(--text3);padding:28px;font-size:13px">Nenhum resultado para "<strong>${q}</strong>"</div>`
+    return
+  }
+
+  res.innerHTML =
+    `<div class="busca-secao-label">${encontrados.length} resultado${encontrados.length > 1 ? 's' : ''}</div>` +
+    encontrados.map(buscaItemHTML).join('')
+}
+
+function buscaItemHTML(a) {
+  const [c1,c2]   = avatarColor(a.pacienteNome)
+  const ini       = (a.pacienteNome || 'C')[0].toUpperCase()
+  const dataFmt   = a.data ? a.data.split('-').reverse().join('/') : ''
+  const preco     = a.preco ? ` · R$${Number(a.preco).toFixed(2).replace('.',',')}` : ''
+  const statusCor = { confirmado:'#10b981', concluido:'#8b5cf6', cancelado:'#ef4444', pendente:'#f59e0b' }[a.status] || '#8b9ab4'
+  return `<div class="busca-item" onclick="buscaSelecionarAgendamento('${a._id}','${a.data||''}')">
+    <div class="busca-avatar-mini" style="background:linear-gradient(135deg,${c1},${c2})">${ini}</div>
+    <div class="busca-item-info">
+      <div class="busca-item-nome">${a.pacienteNome}</div>
+      <div class="busca-item-sub">${a.servico} · ${dataFmt} às ${a.hora}${preco}</div>
+    </div>
+    <span class="busca-item-badge" style="background:${statusCor}22;color:${statusCor};border:1px solid ${statusCor}44">${a.status}</span>
+  </div>`
+}
+
+function buscaSelecionarAgendamento(id, data) {
+  fecharBusca()
+  const filtroEl = document.getElementById('filtro-data')
+  if (filtroEl && data) { filtroEl.value = data; if (window.filtrarData) window.filtrarData() }
+  irPara('agendamentos', document.getElementById('menu-agendamentos'))
+}
+
+/* Atalhos de teclado da busca */
+document.addEventListener('keydown', e => {
+  if ((e.metaKey || e.ctrlKey) && e.key === 'k') { e.preventDefault(); buscaAberta ? fecharBusca() : abrirBusca() }
+  if (e.key === 'Escape' && buscaAberta) fecharBusca()
+})
+
+/* ═══════════════════════════════════════════════════
+   TOPBAR — notificações, mensagens, avatar
+═══════════════════════════════════════════════════ */
+function abrirNotificacoes() {
+  fecharTodosDropdowns()
+  const panel = document.getElementById('notif-panel')
+  if (!panel) return
+  renderNotificacoes()
+  panel.classList.add('aberto')
+}
+
+function renderNotificacoes() {
+  const panel = document.getElementById('notif-panel')
+  if (!panel) return
+  const ags     = todosAgendamentos || []
+  const hoje    = new Date().toISOString().split('T')[0]
+  const deHoje  = ags.filter(a => a.data === hoje).sort((a,b) => a.hora.localeCompare(b.hora))
+  const proximos = ags.filter(a => a.data > hoje && a.status === 'confirmado').slice(0, 3)
+  const total   = deHoje.length + proximos.length
+  let html = `<div class="notif-header"><span class="notif-title">Notificações</span>${total > 0 ? `<span class="notif-badge">${total}</span>` : ''}</div><div class="notif-body">`
+  if (!deHoje.length && !proximos.length) html += `<div class="notif-vazio">Sem agendamentos próximos</div>`
+  if (deHoje.length) {
+    html += `<div class="busca-secao-label" style="padding:12px 18px 6px">Hoje (${deHoje.length})</div>`
+    html += deHoje.slice(0,5).map(a => {
+      const cor = {confirmado:'blue',concluido:'green',cancelado:'red',pendente:'yellow'}[a.status]||'blue'
+      const svgMap = {
+        blue:  `<svg width="14" height="14" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="7.5" r="5.5" stroke="#3b82f6" stroke-width="1.4"/><path d="M7.5 4.5V8l2 2" stroke="#3b82f6" stroke-width="1.4" stroke-linecap="round"/></svg>`,
+        green: `<svg width="14" height="14" viewBox="0 0 15 15" fill="none"><path d="M2 7l4 4L13 4" stroke="#10b981" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+        red:   `<svg width="14" height="14" viewBox="0 0 15 15" fill="none"><path d="M4 4l7 7M11 4l-7 7" stroke="#ef4444" stroke-width="1.5" stroke-linecap="round"/></svg>`,
+        yellow:`<svg width="14" height="14" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="7.5" r="5.5" stroke="#f59e0b" stroke-width="1.4"/><path d="M7.5 5v3M7.5 10v.5" stroke="#f59e0b" stroke-width="1.5" stroke-linecap="round"/></svg>`,
+      }
+      return `<div class="notif-item"><div class="notif-icon ${cor}">${svgMap[cor]}</div><div class="notif-item-texto"><div class="notif-item-titulo">${a.pacienteNome}</div><div class="notif-item-sub">${a.servico}</div><div class="notif-item-hora">às ${a.hora}</div></div></div>`
+    }).join('')
+  }
+  if (proximos.length) {
+    html += `<div class="busca-secao-label" style="padding:12px 18px 6px">Próximos</div>`
+    html += proximos.map(a => {
+      const dt = a.data ? a.data.split('-').reverse().join('/') : ''
+      return `<div class="notif-item"><div class="notif-icon blue"><svg width="14" height="14" viewBox="0 0 15 15" fill="none"><rect x="1.5" y="2.5" width="12" height="11" rx="1.5" stroke="#3b82f6" stroke-width="1.3"/><path d="M5 1.5v2M10 1.5v2M1.5 5.5h12" stroke="#3b82f6" stroke-width="1.3" stroke-linecap="round"/></svg></div><div class="notif-item-texto"><div class="notif-item-titulo">${a.pacienteNome}</div><div class="notif-item-sub">${a.servico}</div><div class="notif-item-hora">${dt} às ${a.hora}</div></div></div>`
+    }).join('')
+  }
+  html += `</div><div class="notif-ver-todos" onclick="irPara('agendamentos',document.getElementById('menu-agendamentos'));fecharTodosDropdowns()">Ver todos os agendamentos</div>`
+  panel.innerHTML = html
+  const dot = document.getElementById('notif-dot')
+  if (dot) dot.style.display = deHoje.length > 0 ? 'block' : 'none'
+}
+
+function abrirMensagens() {
+  fecharTodosDropdowns()
+  const panel = document.getElementById('msg-panel')
+  if (!panel) return
+  const ags = todosAgendamentos || []
+  const vistos = {}
+  const cutoff = new Date(Date.now()-30*864e5).toISOString().split('T')[0]
+  ags.filter(a => a.pacienteTelefone && a.data >= cutoff)
+    .forEach(a => { if (!vistos[a.pacienteNome]) vistos[a.pacienteNome] = { nome: a.pacienteNome, tel: a.pacienteTelefone } })
+  const lista = Object.values(vistos).slice(0, 8)
+  const negNome = negocioAtual ? negocioAtual.nome : 'nosso negócio'
+  let html = `<div class="msg-header"><span class="msg-title">Enviar mensagem</span></div><div class="msg-sub">Clientes recentes — abre WhatsApp</div>`
+  if (!lista.length) {
+    html += `<div class="msg-vazio">Nenhum cliente com telefone cadastrado</div>`
+  } else {
+    html += lista.map(c => {
+      const [c1,c2] = avatarColor(c.nome)
+      const ini = c.nome[0].toUpperCase()
+      const tel = c.tel.replace(/\D/g,'')
+      const msg = encodeURIComponent(`Olá ${c.nome}! Tudo bem? Aqui é da ${negNome}. 😊`)
+      const link = `https://wa.me/55${tel}?text=${msg}`
+      return `<div class="msg-item" onclick="window.open('${link}','_blank');fecharTodosDropdowns()">
+        <div class="msg-avatar-mini" style="background:linear-gradient(135deg,${c1},${c2})">${ini}</div>
+        <div class="msg-item-info"><div class="msg-item-nome">${c.nome}</div><div class="msg-item-tel">${c.tel}</div></div>
+        <div class="msg-wpp-btn"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.118 1.528 5.852L.057 23.885l6.204-1.628A11.945 11.945 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.808 9.808 0 0 1-5.001-1.366l-.359-.213-3.682.966.983-3.594-.234-.371A9.818 9.818 0 0 1 2.182 12C2.182 6.57 6.57 2.182 12 2.182S21.818 6.57 21.818 12 17.43 21.818 12 21.818z"/></svg> WhatsApp</div>
+      </div>`
+    }).join('')
+  }
+  panel.innerHTML = html
+  panel.classList.add('aberto')
+}
+
+function abrirAvatarMenu() {
+  const menu = document.getElementById('avatar-menu')
+  if (!menu) return
+  const aberto = menu.classList.contains('aberto')
+  fecharTodosDropdowns()
+  if (!aberto) {
+    const elNeg = document.getElementById('avatar-menu-negocio')
+    const elAv  = document.getElementById('avatar-menu-avatar')
+    if (negocioAtual) {
+      if (elNeg) elNeg.textContent = negocioAtual.nome
+      if (elAv)  elAv.textContent  = negocioAtual.nome[0].toUpperCase()
+    }
+    const tema = localStorage.getItem('tema') || 'escuro'
+    const elTema = document.getElementById('avatar-menu-tema-label')
+    if (elTema) elTema.textContent = tema === 'escuro' ? 'Mudar para claro' : 'Mudar para escuro'
+    menu.classList.add('aberto')
+  }
+}
+
+function fecharTodosDropdowns() {
+  const notif  = document.getElementById('notif-panel')
+  const msg    = document.getElementById('msg-panel')
+  const avatar = document.getElementById('avatar-menu')
+  if (notif)  notif.classList.remove('aberto')
+  if (msg)    msg.classList.remove('aberto')
+  if (avatar) avatar.classList.remove('aberto')
+}
+window.fecharTodosDropdowns = fecharTodosDropdowns
+
+document.addEventListener('click', e => {
+  if (!e.target.closest('#notif-panel') &&
+      !e.target.closest('#msg-panel') &&
+      !e.target.closest('#avatar-menu') &&
+      !e.target.closest('.topbar-icon-btn') &&
+      !e.target.closest('#topbar-avatar-btn')) {
+    fecharTodosDropdowns()
+  }
+})
+
+/* ═══════════════════════════════════════════════════
+   PIX
+═══════════════════════════════════════════════════ */
+function atualizarPix() {
+  const elPix = document.getElementById('finance-pix')
+  if (!elPix) return
+  const mes   = mesAtualChave()
+  const doMes = todosAgendamentos.filter(a => a.data?.startsWith(mes))
+  const pagos  = doMes.filter(a => a.pagamento?.status === 'pago').length
+  const pct    = doMes.length > 0 ? Math.round((pagos / doMes.length) * 100) : 0
+  elPix.textContent = `${pct}%`
 }
 
 /* ═══════════════════════════════════════════════════
@@ -1130,1258 +1538,61 @@ function mostrarSalvo(id) {
    PWA — INSTALAR APP
 ═══════════════════════════════════════════════════ */
 let deferredPrompt = null
-
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/sw.js').catch(() => {})
-}
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(() => {})
 
 function isAppInstalled() {
-  return (
-    window.navigator.standalone === true ||
-    window.matchMedia('(display-mode: standalone)').matches
-  )
+  return window.navigator.standalone === true || window.matchMedia('(display-mode: standalone)').matches
 }
-
 function atualizarBotaoInstalar() {
   const btn = document.getElementById('btn-instalar-app')
-  if (!btn) return
-  if (isAppInstalled()) {
-    btn.style.display = 'none'
-  }
+  if (btn && isAppInstalled()) btn.style.display = 'none'
 }
-
 atualizarBotaoInstalar()
-
-document.addEventListener('visibilitychange', () => {
-  if (!document.hidden) atualizarBotaoInstalar()
-})
-
+document.addEventListener('visibilitychange', () => { if (!document.hidden) atualizarBotaoInstalar() })
 window.addEventListener('beforeinstallprompt', e => {
-  e.preventDefault()
-  deferredPrompt = e
+  e.preventDefault(); deferredPrompt = e
   const btn = document.getElementById('btn-instalar-app')
   if (btn) btn.style.display = ''
 })
-
 window.addEventListener('appinstalled', () => {
   deferredPrompt = null
   const btn = document.getElementById('btn-instalar-app')
   if (btn) btn.style.display = 'none'
 })
-
 document.getElementById('btn-instalar-app').onclick = function () {
   if (isAppInstalled()) { this.style.display = 'none'; return }
-  if (deferredPrompt) {
-    deferredPrompt.prompt()
-    deferredPrompt.userChoice.then(() => { deferredPrompt = null })
-    return
-  }
+  if (deferredPrompt) { deferredPrompt.prompt(); deferredPrompt.userChoice.then(() => { deferredPrompt = null }) }
 }
+
+/* ═══════════════════════════════════════════════════
+   LIGA BOTÕES DA TOPBAR após DOM pronto
+═══════════════════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded', () => {
+  const btnBusca  = document.querySelector('.main-topbar-search')
+  const sinoBtn   = document.querySelectorAll('.topbar-icon-btn')[1]
+  const envBtn    = document.querySelectorAll('.topbar-icon-btn')[2]
+  const avatarBtn = document.getElementById('topbar-avatar-btn')
+
+  if (btnBusca) btnBusca.addEventListener('click', abrirBusca)
+  if (sinoBtn) {
+    sinoBtn.onclick = abrirNotificacoes
+    const dot = document.createElement('div')
+    dot.id = 'notif-dot'
+    dot.className = 'notif-dot-badge'
+    dot.style.display = 'none'
+    sinoBtn.appendChild(dot)
+  }
+  if (envBtn)    envBtn.onclick    = abrirMensagens
+  if (avatarBtn) avatarBtn.onclick = e => { e.stopPropagation(); abrirAvatarMenu() }
+
+  const isMac = navigator.platform.toUpperCase().includes('MAC')
+  const searchSpan = document.querySelector('.main-topbar-search span')
+  if (searchSpan) searchSpan.textContent = `Buscar... (${isMac ? '⌘K' : 'Ctrl+K'})`
+})
 
 /* ═══════════════════════════════════════════════════
    INIT
 ═══════════════════════════════════════════════════ */
 carregarTema()
-
 const _token = localStorage.getItem('token')
 if (_token) { mostrarPainel() } else { window.location.href = '/auth.html' }
-
-/* ═══════════════════════════════════════════════════
-   TOPBAR PATCH — AgendoRapido
-   Cole este bloco inteiro antes do </body> no painel.html
-   (depois do <script src="/painel.js"> existente)
-═══════════════════════════════════════════════════ */
-
-(function () {
-
-/* ── ESTILOS ── */
-const css = `
-/* ── BUSCA MODAL ── */
-#busca-overlay {
-  position:fixed;inset:0;background:rgba(0,0,0,0.65);z-index:500;
-  display:none;align-items:flex-start;justify-content:center;padding-top:80px;
-  backdrop-filter:blur(8px);
-}
-#busca-overlay.aberta { display:flex; animation:fadeIn .18s ease; }
-@keyframes fadeIn { from{opacity:0} to{opacity:1} }
-
-#busca-box {
-  background:#111827;border:1px solid rgba(255,255,255,0.1);
-  border-radius:16px;width:100%;max-width:560px;
-  box-shadow:0 24px 60px rgba(0,0,0,0.7);overflow:hidden;
-  animation:slideDown .2s cubic-bezier(.4,0,.2,1);
-}
-@keyframes slideDown { from{transform:translateY(-16px);opacity:0} to{transform:translateY(0);opacity:1} }
-
-#busca-input-wrap {
-  display:flex;align-items:center;gap:12px;padding:16px 20px;
-  border-bottom:1px solid rgba(255,255,255,0.07);
-}
-#busca-input-wrap svg { color:#4a5568;flex-shrink:0; }
-#busca-input {
-  flex:1;background:none;border:none;outline:none;
-  font-size:15px;font-weight:500;color:#e2e8f0;font-family:inherit;
-}
-#busca-input::placeholder { color:#4a5568; }
-#busca-kbd {
-  font-size:11px;color:#4a5568;background:rgba(255,255,255,0.05);
-  border:1px solid rgba(255,255,255,0.1);border-radius:5px;padding:2px 7px;
-}
-#busca-resultados { max-height:360px;overflow-y:auto; }
-.busca-secao-label {
-  font-size:9.5px;font-weight:800;color:#4a5568;text-transform:uppercase;
-  letter-spacing:.12em;padding:12px 20px 6px;
-}
-.busca-item {
-  display:flex;align-items:center;gap:12px;padding:10px 20px;
-  cursor:pointer;transition:background .12s;
-}
-.busca-item:hover, .busca-item.ativo { background:rgba(59,130,246,0.1); }
-.busca-avatar-mini {
-  width:32px;height:32px;border-radius:50%;flex-shrink:0;
-  display:flex;align-items:center;justify-content:center;
-  font-size:12px;font-weight:700;color:white;
-}
-.busca-item-info { flex:1;min-width:0; }
-.busca-item-nome { font-size:13px;font-weight:600;color:#e2e8f0; }
-.busca-item-sub  { font-size:11px;color:#8b9ab4;margin-top:1px; }
-.busca-item-badge {
-  font-size:10px;font-weight:700;padding:2px 8px;border-radius:100px;white-space:nowrap;
-}
-.busca-vazio { text-align:center;padding:32px;color:#4a5568;font-size:13px; }
-.busca-hint  { padding:10px 20px 14px;text-align:center;font-size:11px;color:#4a5568; }
-
-/* ── NOTIFICAÇÕES DROPDOWN ── */
-#notif-panel {
-  position:fixed;top:60px;right:16px;width:340px;max-height:480px;
-  background:#111827;border:1px solid rgba(255,255,255,0.1);border-radius:14px;
-  box-shadow:0 20px 50px rgba(0,0,0,0.7);z-index:400;overflow:hidden;
-  display:none;animation:slideDown .18s ease;
-}
-#notif-panel.aberto { display:flex;flex-direction:column; }
-.notif-header {
-  display:flex;align-items:center;justify-content:space-between;
-  padding:14px 18px;border-bottom:1px solid rgba(255,255,255,0.07);flex-shrink:0;
-}
-.notif-title { font-size:13px;font-weight:700;color:#e2e8f0; }
-.notif-badge {
-  background:#3b82f6;color:white;font-size:10px;font-weight:800;
-  padding:2px 7px;border-radius:100px;
-}
-.notif-body { overflow-y:auto;flex:1; }
-.notif-item {
-  display:flex;align-items:flex-start;gap:11px;padding:12px 18px;
-  border-bottom:1px solid rgba(255,255,255,0.05);transition:background .12s;cursor:default;
-}
-.notif-item:last-child { border:none; }
-.notif-item:hover { background:rgba(255,255,255,0.03); }
-.notif-icon {
-  width:34px;height:34px;border-radius:9px;flex-shrink:0;
-  display:flex;align-items:center;justify-content:center;
-}
-.notif-icon.blue   { background:rgba(59,130,246,0.15);  }
-.notif-icon.green  { background:rgba(16,185,129,0.15);  }
-.notif-icon.yellow { background:rgba(245,158,11,0.15);  }
-.notif-icon.red    { background:rgba(239,68,68,0.15);   }
-.notif-item-texto  { flex:1;min-width:0; }
-.notif-item-titulo { font-size:12.5px;font-weight:600;color:#e2e8f0;line-height:1.4; }
-.notif-item-sub    { font-size:11px;color:#8b9ab4;margin-top:2px; }
-.notif-item-hora   { font-size:10.5px;color:#4a5568;margin-top:3px; }
-.notif-vazio { text-align:center;padding:36px 20px;color:#4a5568;font-size:13px; }
-.notif-ver-todos {
-  padding:12px;text-align:center;border-top:1px solid rgba(255,255,255,0.07);
-  font-size:12px;color:#3b82f6;cursor:pointer;font-weight:600;flex-shrink:0;
-  transition:background .12s;
-}
-.notif-ver-todos:hover { background:rgba(59,130,246,0.08); }
-.notif-dot-badge {
-  position:absolute;top:5px;right:5px;width:7px;height:7px;
-  background:#3b82f6;border-radius:50%;border:1.5px solid #111827;
-}
-
-/* ── MENSAGENS DROPDOWN ── */
-#msg-panel {
-  position:fixed;top:60px;right:16px;width:320px;
-  background:#111827;border:1px solid rgba(255,255,255,0.1);border-radius:14px;
-  box-shadow:0 20px 50px rgba(0,0,0,0.7);z-index:400;overflow:hidden;
-  display:none;animation:slideDown .18s ease;
-}
-#msg-panel.aberto { display:block; }
-.msg-header {
-  display:flex;align-items:center;justify-content:space-between;
-  padding:14px 18px;border-bottom:1px solid rgba(255,255,255,0.07);
-}
-.msg-title { font-size:13px;font-weight:700;color:#e2e8f0; }
-.msg-sub   { font-size:11.5px;color:#8b9ab4;padding:10px 18px 4px; }
-.msg-item {
-  display:flex;align-items:center;gap:11px;padding:10px 18px;
-  border-bottom:1px solid rgba(255,255,255,0.05);cursor:pointer;transition:background .12s;
-}
-.msg-item:last-child { border:none; }
-.msg-item:hover { background:rgba(16,185,129,0.08); }
-.msg-avatar-mini {
-  width:34px;height:34px;border-radius:50%;flex-shrink:0;
-  display:flex;align-items:center;justify-content:center;
-  font-size:13px;font-weight:700;color:white;
-}
-.msg-item-info { flex:1;min-width:0; }
-.msg-item-nome { font-size:12.5px;font-weight:600;color:#e2e8f0; }
-.msg-item-tel  { font-size:11px;color:#8b9ab4;margin-top:1px; }
-.msg-wpp-btn {
-  display:flex;align-items:center;gap:5px;background:rgba(16,185,129,0.15);
-  color:#10b981;border:1px solid rgba(16,185,129,0.25);
-  border-radius:7px;padding:5px 10px;font-size:11.5px;font-weight:700;white-space:nowrap;
-}
-.msg-vazio { text-align:center;padding:28px;color:#4a5568;font-size:13px; }
-
-/* ── AVATAR MENU ── */
-#avatar-menu {
-  position:fixed;top:60px;right:16px;width:230px;
-  background:#111827;border:1px solid rgba(255,255,255,0.1);border-radius:14px;
-  box-shadow:0 20px 50px rgba(0,0,0,0.7);z-index:400;overflow:hidden;
-  display:none;animation:slideDown .18s ease;
-}
-#avatar-menu.aberto { display:block; }
-.avatar-menu-header {
-  padding:16px 18px;border-bottom:1px solid rgba(255,255,255,0.07);
-  display:flex;align-items:center;gap:11px;
-}
-.avatar-menu-circle {
-  width:38px;height:38px;border-radius:50%;flex-shrink:0;
-  background:linear-gradient(135deg,#2563eb,#7c3aed);
-  display:flex;align-items:center;justify-content:center;
-  font-size:14px;font-weight:700;color:white;
-}
-.avatar-menu-nome   { font-size:13px;font-weight:700;color:#e2e8f0; }
-.avatar-menu-email  { font-size:11px;color:#8b9ab4;margin-top:1px; }
-.avatar-menu-neg    { font-size:11px;color:#60a5fa;margin-top:2px;font-weight:600; }
-.avatar-menu-item {
-  display:flex;align-items:center;gap:10px;padding:10px 18px;
-  cursor:pointer;transition:background .12s;font-size:12.5px;color:#8b9ab4;
-}
-.avatar-menu-item:hover { background:rgba(255,255,255,0.04);color:#e2e8f0; }
-.avatar-menu-divider { height:1px;background:rgba(255,255,255,0.07);margin:4px 0; }
-.avatar-menu-item.danger:hover { background:rgba(239,68,68,0.1);color:#f87171; }
-
-/* ── BADGE DE NOTIF NO SINO ── */
-.topbar-icon-btn { position:relative; }
-
-/* ── SEARCH INPUT ATIVO ── */
-.main-topbar-search.ativa {
-  border-color:rgba(59,130,246,0.4);
-  box-shadow:0 0 0 3px rgba(59,130,246,0.1);
-}
-
-/* ── LIGHT MODE OVERRIDES ── */
-body.light-mode #busca-box,
-body.light-mode #notif-panel,
-body.light-mode #msg-panel,
-body.light-mode #avatar-menu {
-  background:#fff;border-color:rgba(15,23,42,0.1);box-shadow:0 20px 50px rgba(0,0,0,0.15);
-}
-body.light-mode #busca-input { color:#0f172a; }
-body.light-mode .busca-item-nome,
-body.light-mode .notif-item-titulo,
-body.light-mode .msg-item-nome,
-body.light-mode .avatar-menu-nome { color:#0f172a; }
-body.light-mode .busca-item:hover,
-body.light-mode .busca-item.ativo { background:rgba(37,99,235,0.07); }
-body.light-mode .notif-item:hover,
-body.light-mode .msg-item:hover { background:rgba(15,23,42,0.04); }
-body.light-mode .avatar-menu-item:hover { background:rgba(15,23,42,0.05);color:#0f172a; }
-body.light-mode .avatar-menu-item.danger:hover { background:rgba(220,38,38,0.07);color:#dc2626; }
-body.light-mode .busca-secao-label,
-body.light-mode .busca-vazio,
-body.light-mode .notif-vazio,
-body.light-mode .msg-vazio,
-body.light-mode .notif-item-sub,
-body.light-mode .notif-item-hora,
-body.light-mode .msg-item-tel,
-body.light-mode .avatar-menu-email { color:#94a3b8; }
-body.light-mode .notif-dot-badge { border-color:#fff; }
-`;
-
-const style = document.createElement('style');
-style.textContent = css;
-document.head.appendChild(style);
-
-/* ══════════════════════════════════════════════
-   HELPERS DE COR DE AVATAR
-══════════════════════════════════════════════ */
-function avatarColorPatch(nome) {
-  const colors = [
-    ['#1d4ed8','#3b82f6'],['#7c3aed','#8b5cf6'],['#0e7490','#06b6d4'],
-    ['#15803d','#22c55e'],['#b45309','#f59e0b'],['#be185d','#ec4899'],
-    ['#0369a1','#38bdf8'],['#6d28d9','#a78bfa'],
-  ];
-  let h = 0;
-  for (let c of (nome || 'A')) h = ((h << 5) - h) + c.charCodeAt(0);
-  return colors[Math.abs(h) % colors.length];
-}
-
-function mkAvatarStyle(nome, w, h, fs) {
-  const [c1, c2] = avatarColorPatch(nome);
-  return `background:linear-gradient(135deg,${c1},${c2});width:${w||32}px;height:${h||32}px;font-size:${fs||12}px`;
-}
-
-/* ══════════════════════════════════════════════
-   1. BUSCA
-══════════════════════════════════════════════ */
-const buscaOverlay = document.createElement('div');
-buscaOverlay.id = 'busca-overlay';
-buscaOverlay.innerHTML = `
-  <div id="busca-box">
-    <div id="busca-input-wrap">
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-        <circle cx="7" cy="7" r="5" stroke="currentColor" stroke-width="1.5"/>
-        <path d="M11 11l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-      </svg>
-      <input id="busca-input" placeholder="Buscar clientes, agendamentos..." autocomplete="off" spellcheck="false">
-      <span id="busca-kbd">ESC</span>
-    </div>
-    <div id="busca-resultados">
-      <div class="busca-hint">Digite para buscar por nome, serviço ou data</div>
-    </div>
-  </div>`;
-document.body.appendChild(buscaOverlay);
-
-buscaOverlay.addEventListener('click', function(e) {
-  if (e.target === buscaOverlay) fecharBusca();
-});
-
-document.addEventListener('keydown', function(e) {
-  if ((e.metaKey || e.ctrlKey) && e.key === 'k') { e.preventDefault(); abrirBusca(); }
-  if (e.key === 'Escape') { fecharBusca(); fecharTodosDropdowns(); }
-});
-
-function abrirBusca() {
-  buscaOverlay.classList.add('aberta');
-  setTimeout(() => document.getElementById('busca-input').focus(), 50);
-  const wrap = document.querySelector('.main-topbar-search');
-  if (wrap) wrap.classList.add('ativa');
-}
-function fecharBusca() {
-  buscaOverlay.classList.remove('aberta');
-  const wrap = document.querySelector('.main-topbar-search');
-  if (wrap) wrap.classList.remove('ativa');
-}
-
-// Clique no campo de busca da topbar
-const searchWrap = document.querySelector('.main-topbar-search');
-if (searchWrap) searchWrap.addEventListener('click', abrirBusca);
-
-const buscaInput = document.getElementById('busca-input');
-buscaInput.addEventListener('input', function() { renderBusca(this.value.trim()); });
-
-function renderBusca(q) {
-  const res = document.getElementById('busca-resultados');
-  const ags = window.todosAgendamentos || [];
-
-  if (!q) {
-    // Mostra agendamentos de hoje como sugestão
-    const hoje = new Date().toISOString().split('T')[0];
-    const deHoje = ags.filter(a => a.data === hoje).slice(0, 5);
-    if (!deHoje.length) {
-      res.innerHTML = '<div class="busca-hint">Digite para buscar por nome, serviço ou data</div>';
-      return;
-    }
-    res.innerHTML = `<div class="busca-secao-label">Agendamentos de hoje</div>` + deHoje.map(buscaItemHTML).join('');
-    return;
-  }
-
-  const ql = q.toLowerCase();
-  const filtrado = ags.filter(a =>
-    (a.pacienteNome || '').toLowerCase().includes(ql) ||
-    (a.servico || '').toLowerCase().includes(ql) ||
-    (a.data || '').includes(ql) ||
-    (a.hora || '').includes(ql)
-  ).slice(0, 10);
-
-  if (!filtrado.length) {
-    res.innerHTML = `<div class="busca-vazio">Nenhum resultado para "<strong>${q}</strong>"</div>`;
-    return;
-  }
-
-  const porNome = {};
-  filtrado.forEach(a => {
-    if (!porNome[a.pacienteNome]) porNome[a.pacienteNome] = [];
-    porNome[a.pacienteNome].push(a);
-  });
-
-  let html = `<div class="busca-secao-label">${filtrado.length} resultado${filtrado.length > 1 ? 's' : ''} encontrado${filtrado.length > 1 ? 's' : ''}</div>`;
-  html += filtrado.map(buscaItemHTML).join('');
-  res.innerHTML = html;
-}
-
-function buscaItemHTML(a) {
-  const ini = (a.pacienteNome || 'C')[0].toUpperCase();
-  const style = mkAvatarStyle(a.pacienteNome, 32, 32, 12);
-  const statusCor = {confirmado:'#10b981',concluido:'#8b5cf6',cancelado:'#ef4444',pendente:'#f59e0b'}[a.status] || '#8b9ab4';
-  const preco = a.preco ? ` • R$${Number(a.preco).toFixed(2).replace('.',',')}` : '';
-  return `<div class="busca-item" onclick="buscaAbrirAgendamento('${a._id}')">
-    <div class="busca-avatar-mini" style="${style}">${ini}</div>
-    <div class="busca-item-info">
-      <div class="busca-item-nome">${a.pacienteNome}</div>
-      <div class="busca-item-sub">${a.servico} • ${a.data ? a.data.split('-').reverse().join('/') : ''} às ${a.hora}${preco}</div>
-    </div>
-    <span class="busca-item-badge" style="background:${statusCor}22;color:${statusCor};border:1px solid ${statusCor}44">${a.status}</span>
-  </div>`;
-}
-
-function buscaAbrirAgendamento(id) {
-  fecharBusca();
-  // Filtra o painel para mostrar o agendamento
-  const ag = (window.todosAgendamentos || []).find(a => a._id === id);
-  if (ag && ag.data) {
-    const filtroEl = document.getElementById('filtro-data');
-    if (filtroEl) { filtroEl.value = ag.data; if (window.filtrarData) window.filtrarData(); }
-    const paginaBtn = document.querySelector('.menu-item.ativo') || document.querySelector('[onclick*="agendamentos"]');
-    if (paginaBtn && window.irPara) window.irPara('agendamentos', paginaBtn);
-  }
-}
-
-/* ══════════════════════════════════════════════
-   2. NOTIFICAÇÕES
-══════════════════════════════════════════════ */
-const notifPanel = document.createElement('div');
-notifPanel.id = 'notif-panel';
-document.body.appendChild(notifPanel);
-
-function abrirNotificacoes() {
-  fecharTodosDropdowns();
-  renderNotificacoes();
-  notifPanel.classList.add('aberto');
-}
-
-function renderNotificacoes() {
-  const ags = window.todosAgendamentos || [];
-  const hoje = new Date().toISOString().split('T')[0];
-
-  const deHoje = ags.filter(a => a.data === hoje).sort((a,b) => a.hora.localeCompare(b.hora));
-  const proximos = ags.filter(a => a.data > hoje && a.status === 'confirmado').slice(0, 3);
-  const cancelados = ags.filter(a => a.status === 'cancelado').slice(0, 2);
-
-  const total = deHoje.length + proximos.length;
-
-  let html = `<div class="notif-header">
-    <span class="notif-title">Notificações</span>
-    ${total > 0 ? `<span class="notif-badge">${total}</span>` : ''}
-  </div><div class="notif-body">`;
-
-  if (!deHoje.length && !proximos.length) {
-    html += `<div class="notif-vazio">Sem agendamentos próximos</div>`;
-  }
-
-  if (deHoje.length) {
-    html += `<div class="busca-secao-label" style="padding:12px 18px 6px">Hoje (${deHoje.length})</div>`;
-    html += deHoje.slice(0,5).map(a => {
-      const cor = {confirmado:'blue',concluido:'green',cancelado:'red',pendente:'yellow'}[a.status] || 'blue';
-      const svgMap = {
-        blue:   `<svg width="14" height="14" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="7.5" r="5.5" stroke="#3b82f6" stroke-width="1.4"/><path d="M7.5 4.5V8l2 2" stroke="#3b82f6" stroke-width="1.4" stroke-linecap="round"/></svg>`,
-        green:  `<svg width="14" height="14" viewBox="0 0 15 15" fill="none"><path d="M2 7l4 4L13 4" stroke="#10b981" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
-        red:    `<svg width="14" height="14" viewBox="0 0 15 15" fill="none"><path d="M4 4l7 7M11 4l-7 7" stroke="#ef4444" stroke-width="1.5" stroke-linecap="round"/></svg>`,
-        yellow: `<svg width="14" height="14" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="7.5" r="5.5" stroke="#f59e0b" stroke-width="1.4"/><path d="M7.5 5v3M7.5 10v.5" stroke="#f59e0b" stroke-width="1.5" stroke-linecap="round"/></svg>`,
-      };
-      return `<div class="notif-item">
-        <div class="notif-icon ${cor}">${svgMap[cor]}</div>
-        <div class="notif-item-texto">
-          <div class="notif-item-titulo">${a.pacienteNome}</div>
-          <div class="notif-item-sub">${a.servico}</div>
-          <div class="notif-item-hora">às ${a.hora}</div>
-        </div>
-      </div>`;
-    }).join('');
-  }
-
-  if (proximos.length) {
-    html += `<div class="busca-secao-label" style="padding:12px 18px 6px">Próximos</div>`;
-    html += proximos.map(a => {
-      const dt = a.data ? a.data.split('-').reverse().join('/') : '';
-      return `<div class="notif-item">
-        <div class="notif-icon blue">
-          <svg width="14" height="14" viewBox="0 0 15 15" fill="none"><rect x="1.5" y="2.5" width="12" height="11" rx="1.5" stroke="#3b82f6" stroke-width="1.3"/><path d="M5 1.5v2M10 1.5v2M1.5 5.5h12" stroke="#3b82f6" stroke-width="1.3" stroke-linecap="round"/></svg>
-        </div>
-        <div class="notif-item-texto">
-          <div class="notif-item-titulo">${a.pacienteNome}</div>
-          <div class="notif-item-sub">${a.servico}</div>
-          <div class="notif-item-hora">${dt} às ${a.hora}</div>
-        </div>
-      </div>`;
-    }).join('');
-  }
-
-  html += `</div>
-    <div class="notif-ver-todos" onclick="irParaAgendamentos()">Ver todos os agendamentos</div>`;
-
-  notifPanel.innerHTML = html;
-
-  // Atualiza badge do sino
-  const badge = document.getElementById('notif-dot');
-  if (badge) badge.style.display = deHoje.length > 0 ? 'block' : 'none';
-}
-
-function irParaAgendamentos() {
-  fecharTodosDropdowns();
-  const btn = document.querySelector('.menu-item');
-  if (window.irPara) window.irPara('agendamentos', btn);
-}
-
-// Injeta badge no botão sino
-const sinoBtn = document.querySelectorAll('.topbar-icon-btn')[1];
-if (sinoBtn) {
-  sinoBtn.setAttribute('title', 'Notificações');
-  sinoBtn.onclick = abrirNotificacoes;
-  const dot = document.createElement('div');
-  dot.id = 'notif-dot';
-  dot.className = 'notif-dot-badge';
-  dot.style.display = 'none';
-  sinoBtn.appendChild(dot);
-}
-
-/* ══════════════════════════════════════════════
-   3. MENSAGENS (WhatsApp rápido)
-══════════════════════════════════════════════ */
-const msgPanel = document.createElement('div');
-msgPanel.id = 'msg-panel';
-document.body.appendChild(msgPanel);
-
-function abrirMensagens() {
-  fecharTodosDropdowns();
-  renderMensagens();
-  msgPanel.classList.add('aberto');
-}
-
-function renderMensagens() {
-  const ags = window.todosAgendamentos || [];
-  const hoje = new Date().toISOString().split('T')[0];
-
-  // Clientes com tel dos últimos 30 dias
-  const vistos = {};
-  ags.filter(a => a.pacienteTelefone && a.data >= new Date(Date.now()-30*864e5).toISOString().split('T')[0])
-    .forEach(a => {
-      if (!vistos[a.pacienteNome]) vistos[a.pacienteNome] = { nome: a.pacienteNome, tel: a.pacienteTelefone, data: a.data };
-    });
-
-  const lista = Object.values(vistos).slice(0, 8);
-  const negNome = window.negocioAtual ? window.negocioAtual.nome : 'nosso negócio';
-
-  let html = `<div class="msg-header">
-    <span class="msg-title">Enviar mensagem</span>
-  </div>
-  <div class="msg-sub">Clientes recentes — abre WhatsApp</div>`;
-
-  if (!lista.length) {
-    html += `<div class="msg-vazio">Nenhum cliente com telefone cadastrado</div>`;
-  } else {
-    html += lista.map(c => {
-      const ini = c.nome[0].toUpperCase();
-      const style = mkAvatarStyle(c.nome, 34, 34, 13);
-      const tel = c.tel.replace(/\D/g,'');
-      const msg = encodeURIComponent(`Olá ${c.nome}! Tudo bem? Aqui é da ${negNome}. 😊`);
-      const link = `https://wa.me/55${tel}?text=${msg}`;
-      return `<div class="msg-item" onclick="window.open('${link}','_blank');fecharTodosDropdowns()">
-        <div class="msg-avatar-mini" style="${style}">${ini}</div>
-        <div class="msg-item-info">
-          <div class="msg-item-nome">${c.nome}</div>
-          <div class="msg-item-tel">${c.tel}</div>
-        </div>
-        <div class="msg-wpp-btn">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.118 1.528 5.852L.057 23.885l6.204-1.628A11.945 11.945 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.808 9.808 0 0 1-5.001-1.366l-.359-.213-3.682.966.983-3.594-.234-.371A9.818 9.818 0 0 1 2.182 12C2.182 6.57 6.57 2.182 12 2.182S21.818 6.57 21.818 12 17.43 21.818 12 21.818z"/></svg>
-          WhatsApp
-        </div>
-      </div>`;
-    }).join('');
-  }
-
-  msgPanel.innerHTML = html;
-}
-
-// Clique no envelope
-const envelopeBtn = document.querySelectorAll('.topbar-icon-btn')[2];
-if (envelopeBtn) {
-  envelopeBtn.setAttribute('title', 'Mensagens rápidas');
-  envelopeBtn.onclick = abrirMensagens;
-}
-
-/* ══════════════════════════════════════════════
-   4. AVATAR MENU
-══════════════════════════════════════════════ */
-const avatarMenu = document.createElement('div');
-avatarMenu.id = 'avatar-menu';
-document.body.appendChild(avatarMenu);
-
-function abrirAvatarMenu() {
-  fecharTodosDropdowns();
-  renderAvatarMenu();
-  avatarMenu.classList.add('aberto');
-}
-
-function renderAvatarMenu() {
-  const neg = window.negocioAtual;
-  const nome = neg ? neg.nome : 'Meu Negócio';
-  const ini  = nome[0].toUpperCase();
-  const tema = localStorage.getItem('tema') || 'escuro';
-  const temaLabel = tema === 'escuro' ? '☀ Mudar para claro' : '🌙 Mudar para escuro';
-
-  avatarMenu.innerHTML = `
-    <div class="avatar-menu-header">
-      <div class="avatar-menu-circle">${ini}</div>
-      <div>
-        <div class="avatar-menu-nome">${nome}</div>
-        <div class="avatar-menu-neg">Painel ativo</div>
-      </div>
-    </div>
-    <div style="padding:6px 0">
-      <div class="avatar-menu-item" onclick="irParaConfig()">
-        <svg width="14" height="14" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="7.5" r="2" stroke="currentColor" stroke-width="1.3"/><path d="M7.5 1v1.5M7.5 12.5V14M1 7.5h1.5M12.5 7.5H14M3 3l1 1M11 11l1 1M3 12l1-1M11 4l1-1" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
-        Configurações
-      </div>
-      <div class="avatar-menu-item" onclick="irParaPlanos()">
-        <svg width="14" height="14" viewBox="0 0 15 15" fill="none"><rect x="1.5" y="3.5" width="12" height="9" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M1.5 6.5h12" stroke="currentColor" stroke-width="1.3"/></svg>
-        Meu plano
-      </div>
-      <div class="avatar-menu-item" onclick="toggleTemaMenu()">
-        <svg width="14" height="14" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="7.5" r="2.5" stroke="currentColor" stroke-width="1.3"/><path d="M7.5 1v1.5M7.5 12.5V14M1 7.5h1.5M12.5 7.5H14" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
-        ${temaLabel}
-      </div>
-      <div class="avatar-menu-divider"></div>
-      <div class="avatar-menu-item danger" onclick="sair()">
-        <svg width="14" height="14" viewBox="0 0 13 13" fill="none"><path d="M5 6.5h6M8.5 4.5L11 6.5l-2.5 2M7.5 2H3a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h4.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        Sair da conta
-      </div>
-    </div>`;
-}
-
-function irParaConfig() {
-  fecharTodosDropdowns();
-  const btn = document.querySelector('[onclick*="configuracoes"]');
-  if (window.irPara) window.irPara('configuracoes', btn);
-}
-function irParaPlanos() { fecharTodosDropdowns(); window.location.href = '/planos.html'; }
-function toggleTemaMenu() { fecharTodosDropdowns(); if (window.toggleTema) window.toggleTema(); }
-
-// Clique no avatar
-const avatarBtn = document.getElementById('topbar-avatar-btn');
-if (avatarBtn) avatarBtn.onclick = abrirAvatarMenu;
-
-/* ══════════════════════════════════════════════
-   FECHAR TODOS AO CLICAR FORA
-══════════════════════════════════════════════ */
-function fecharTodosDropdowns() {
-  notifPanel.classList.remove('aberto');
-  msgPanel.classList.remove('aberto');
-  avatarMenu.classList.remove('aberto');
-}
-window.fecharTodosDropdowns = fecharTodosDropdowns;
-
-document.addEventListener('click', function(e) {
-  const dentroDeDropdown =
-    e.target.closest('#notif-panel') ||
-    e.target.closest('#msg-panel') ||
-    e.target.closest('#avatar-menu') ||
-    e.target.closest('#topbar-avatar-btn') ||
-    e.target.closest('.topbar-icon-btn');
-  if (!dentroDeDropdown) fecharTodosDropdowns();
-});
-
-/* ══════════════════════════════════════════════
-   ATUALIZA BADGE DO SINO APÓS CARREGAR DADOS
-══════════════════════════════════════════════ */
-// Patch no carregarAgendamentos para atualizar o badge após carregamento
-const _origCarregar = window.carregarAgendamentos;
-if (_origCarregar) {
-  window.carregarAgendamentos = async function() {
-    await _origCarregar.apply(this, arguments);
-    // Atualiza badge do sino
-    const ags = window.todosAgendamentos || [];
-    const hoje = new Date().toISOString().split('T')[0];
-    const deHoje = ags.filter(a => a.data === hoje);
-    const dot = document.getElementById('notif-dot');
-    if (dot) dot.style.display = deHoje.length > 0 ? 'block' : 'none';
-  };
-}
-
-/* ══════════════════════════════════════════════
-   ATALHO DE TECLADO VISÍVEL NA BUSCA
-══════════════════════════════════════════════ */
-const searchSpan = document.querySelector('.main-topbar-search span');
-if (searchSpan) {
-  const isMac = navigator.platform.toUpperCase().includes('MAC');
-  searchSpan.textContent = `Buscar... (${isMac ? '⌘K' : 'Ctrl+K'})`;
-}
-
-})();
-/* ── FIM DO PATCH ── */
-
-/* ══ CORREÇÃO: Insights + Lucro da Semana ══ */
-function atualizarInsights() {
-  const ags = window.todosAgendamentos || [];
-  if (!ags.length) return;
-
-  /* ── Melhor horário (mais agendado) ── */
-  const freqHora = {};
-  ags.forEach(a => {
-    if (!a.hora) return;
-    const h = a.hora;
-    freqHora[h] = (freqHora[h] || 0) + 1;
-  });
-  const topHora = Object.entries(freqHora).sort((a,b) => b[1]-a[1])[0];
-  const elHorario = document.getElementById('insight-melhor-horario');
-  if (elHorario && topHora) {
-    elHorario.textContent = topHora[0];
-  } else if (elHorario) {
-    elHorario.textContent = 'Sem dados ainda';
-  }
-
-  /* ── Serviço mais lucrativo (por preço × quantidade) ── */
-  const freqServico = {};
-  ags.forEach(a => {
-    if (!a.servico) return;
-    if (!freqServico[a.servico]) freqServico[a.servico] = { total: 0, qtd: 0 };
-    freqServico[a.servico].total += Number(a.preco) || 0;
-    freqServico[a.servico].qtd  += 1;
-  });
-  const topServico = Object.entries(freqServico).sort((a,b) => b[1].total - a[1].total)[0];
-  const elServicoTop = document.getElementById('insight-servico-top');
-  const elServicoRec = document.getElementById('insight-servico-receita');
-  if (elServicoTop && topServico) {
-    elServicoTop.textContent = topServico[0];
-    const rec = topServico[1].total;
-    if (elServicoRec) {
-      elServicoRec.textContent = rec > 0
-        ? `R$ ${rec.toFixed(2).replace('.',',')} gerados`
-        : `${topServico[1].qtd} agendamento${topServico[1].qtd > 1 ? 's' : ''}`;
-    }
-  } else if (elServicoTop) {
-    elServicoTop.textContent = 'Sem dados ainda';
-  }
-
-  /* ── Clientes inativos (sem agendar há +30 dias) ── */
-  const hoje = new Date().toISOString().split('T')[0];
-  const cutoff = new Date(); cutoff.setDate(cutoff.getDate() - 30);
-  const cutStr = cutoff.toISOString().split('T')[0];
-
-  const clientesRecentes = new Set(
-    ags.filter(a => a.data && a.data >= cutStr).map(a => a.pacienteNome)
-  );
-  const todosClientes = new Set(ags.map(a => a.pacienteNome));
-  const inativos = [...todosClientes].filter(c => !clientesRecentes.has(c)).length;
-
-  const elInativos    = document.getElementById('insight-inativos');
-  const elInativosSub = document.getElementById('insight-inativos-sub');
-  if (elInativos) {
-    elInativos.textContent = inativos > 0 ? `${inativos} cliente${inativos > 1 ? 's' : ''}` : 'Nenhum';
-  }
-  if (elInativosSub) {
-    elInativosSub.textContent = inativos > 0 ? 'há mais de 30 dias' : 'todos ativos';
-    elInativosSub.className = 'insight-item-sub' + (inativos > 0 ? ' warning' : '');
-  }
-
-  /* ── Banner de clientes inativos ── */
-  const banner = document.getElementById('alert-clientes-inativos');
-  if (banner) {
-    banner.style.display = inativos >= 3 ? 'flex' : 'none';
-    const t = document.getElementById('alert-clientes-texto');
-    if (t && inativos >= 3) {
-      t.innerHTML = `<strong>${inativos} clientes estão inativos</strong>, mande uma promoção para reativá-los`;
-    }
-  }
-
-  /* ── Lucro da semana (todos com preço, últimos 7 dias) ── */
-const semStart = new Date(); semStart.setDate(semStart.getDate() - 7);
-const semStr   = semStart.toISOString().split('T')[0];
-const lucroSem = ags
-  .filter(a => a.status === 'concluido' && a.data >= semStr && a.data <= hoje)
-  .reduce((acc, a) => acc + (Number(a.preco) || 0), 0);
-
-  const elTotal = document.getElementById('stat-total');
-  if (elTotal) {
-    elTotal.textContent = 'R$ ' + lucroSem.toLocaleString('pt-BR', {
-      minimumFractionDigits: 2, maximumFractionDigits: 2
-    });
-  }
-
-  /* ── Finance card ── */
-  const mes     = new Date().toISOString().slice(0, 7);
-  const nid     = window.negocioAtual?._id;
-  const lucroMes = nid ? (parseFloat(localStorage.getItem(`lucro_val_${nid}_${mes}`)) || 0) : 0;
-  const atendMes = nid ? (() => {
-    try { return JSON.parse(localStorage.getItem(`lucro_ids_${nid}_${mes}`) || '[]').length; }
-    catch { return 0; }
-  })() : 0;
-
-  const fv  = document.getElementById('finance-amount-val');
-  const fm  = document.getElementById('finance-meta');
-  const fa  = document.getElementById('finance-atend');
-  const fcl = document.getElementById('finance-chart-label');
-
-  if (fv)  fv.textContent  = lucroMes.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2});
-  if (fm)  fm.textContent  = `Movidas: ${atendMes} agendamento${atendMes !== 1 ? 's' : ''}`;
-  if (fa)  fa.textContent  = atendMes;
-  if (fcl) fcl.textContent = `R$${Math.round(lucroMes)}`;
-}
-
-/* Garante que roda após carregar agendamentos */
-const _origFiltrar = window.filtrarData;
-window.filtrarData = function() {
-  if (_origFiltrar) _origFiltrar.apply(this, arguments);
-  setTimeout(atualizarInsights, 150);
-};
-
-/* ── Garante chamada após carregamento ── */
-const _origCarregarAgs = window.carregarAgendamentos;
-window.carregarAgendamentos = async function() {
-  await _origCarregarAgs.apply(this, arguments);
-  setTimeout(atualizarInsights, 200);
-};
-
-/* ═══════════════════════════════════════════════════
-   INSIGHTS — consome GET /api/agendamentos/insights
-   Adicione este bloco no FINAL do seu painel.js
-═══════════════════════════════════════════════════ */
-
-async function carregarInsights() {
-  if (!negocioAtual) return
-  const token = localStorage.getItem('token')
-
-  try {
-    const res  = await fetch(`${API}/agendamentos/insights?negocioId=${negocioAtual._id}`, {
-      headers: { 'Authorization': `Bearer ${token}` }
-    })
-    if (!res.ok) return
-    const data = await res.json()
-
-    // ── Melhor agendamento ──
-    const elMelhor = document.getElementById('insight-melhor-horario')
-    if (elMelhor) elMelhor.textContent = data.melhorAgendamento || '—'
-
-    // ── Serviço mais lucrativo ──
-    const elServico  = document.getElementById('insight-servico-top')
-    const elReceita  = document.getElementById('insight-servico-receita')
-    if (data.topServico) {
-      if (elServico) elServico.textContent = data.topServico.nome
-      if (elReceita) elReceita.textContent =
-        `+R$${data.topServico.receita.toFixed(0)} no mês`
-    } else {
-      if (elServico) elServico.textContent = '—'
-      if (elReceita) elReceita.textContent = 'Sem dados este mês'
-    }
-
-    // ── Clientes inativos ──
-    const elInativos = document.getElementById('insight-inativos')
-    const elInativosSub = document.getElementById('insight-inativos-sub')
-    const qtdInativos = data.inativos?.total || 0
-    if (elInativos) elInativos.textContent = `${qtdInativos} cliente${qtdInativos !== 1 ? 's' : ''}`
-    if (elInativosSub) elInativosSub.textContent = 'há mais de 30 dias'
-
-    // ── Alert banner de clientes inativos ──
-    const banner = document.getElementById('alert-clientes-inativos')
-    const bannerTxt = document.getElementById('alert-clientes-texto')
-    if (banner) {
-      if (qtdInativos >= 3) {
-        banner.style.display = 'flex'
-        if (bannerTxt) bannerTxt.innerHTML =
-          `<strong>${qtdInativos} clientes estão inativos</strong>, mande uma promoção para reativá-los`
-      } else {
-        banner.style.display = 'none'
-      }
-    }
-
-    // ── Finance card ──
-    const fin = data.finance || {}
-
-    const elAmount = document.getElementById('finance-amount-val')
-    const elMeta   = document.getElementById('finance-meta')
-    const elAtend  = document.getElementById('finance-atend')
-    const elChartL = document.getElementById('finance-chart-label')
-
-    if (elAmount) elAmount.textContent =
-      (fin.lucroMes || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-    if (elMeta)   elMeta.textContent   = `Movidas: ${fin.atendMes || 0} agendamentos`
-    if (elAtend)  elAtend.textContent  = fin.atendMes || 0
-    if (elChartL) elChartL.textContent = `R$${Math.round(fin.lucroMes || 0)}`
-
-    // ── Lucro da semana (4º stat card) ──
-    const elTotal = document.getElementById('stat-total')
-    if (elTotal) elTotal.textContent =
-      'R$ ' + (fin.lucroSemana || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-
-    // ── Histórico mensal via API (sobrescreve localStorage) ──
-    if (fin.historicoMeses?.length && negocioAtual) {
-      fin.historicoMeses.forEach(({ mes, lucro, atendimentos }) => {
-        localStorage.setItem(`lucro_val_${negocioAtual._id}_${mes}`, String(lucro))
-        // Cria um array fake de IDs com o tamanho correto para manter compatibilidade
-        const idsExistentes = getLucroIds(negocioAtual._id) // evita sobrescrever ids reais do mês atual
-        if (mes !== mesAtualChave() || idsExistentes.length === 0) {
-          // Para meses antigos, gera IDs placeholder
-          const fakeIds = Array.from({ length: atendimentos }, (_, i) => `hist_${mes}_${i}`)
-          localStorage.setItem(`lucro_ids_${negocioAtual._id}_${mes}`, JSON.stringify(fakeIds))
-        }
-      })
-      renderHistorico()
-    }
-
-  } catch (err) {
-    console.error('Erro ao carregar insights:', err.message)
-  }
-}
-
-// ── Chama insights junto com o carregamento dos dados ──
-const _carregarDadosNegocioOriginal = carregarDadosNegocio
-carregarDadosNegocio = function () {
-  _carregarDadosNegocioOriginal()
-  carregarInsights()
-}
-
-/* ═══════════════════════════════════════════════════════════
-   PAINEL EXTRAS — cole este conteúdo no FINAL do painel.js
-   Implementa: busca, menu avatar, finance card, horários
-═══════════════════════════════════════════════════════════ */
-
-/* ──────────────────────────────────────────────────────────
-   1. BUSCA GLOBAL
-────────────────────────────────────────────────────────── */
-let buscaAberta = false
-
-function abrirBusca() {
-  const overlay = document.getElementById('busca-overlay')
-  if (overlay) { overlay.style.display = 'flex'; setTimeout(() => document.getElementById('busca-input')?.focus(), 50) }
-  buscaAberta = true
-}
-
-function fecharBusca() {
-  const overlay = document.getElementById('busca-overlay')
-  if (overlay) overlay.style.display = 'none'
-  buscaAberta = false
-  const inp = document.getElementById('busca-input')
-  if (inp) inp.value = ''
-  document.getElementById('busca-resultados').innerHTML =
-    '<div class="busca-empty">Digite para buscar por nome, serviço ou data</div>'
-}
-
-function executarBusca(q) {
-  const res = document.getElementById('busca-resultados')
-  if (!res) return
-
-  const ags = window.todosAgendamentos || todosAgendamentos || []
-
-  if (!q || !q.trim()) {
-    const hoje = new Date().toISOString().split('T')[0]
-    const deHoje = ags.filter(a => a.data === hoje).slice(0, 5)
-    if (!deHoje.length) {
-      res.innerHTML = '<div class="busca-empty" style="text-align:center;color:var(--text3);padding:24px;font-size:13px">Digite para buscar por nome, serviço ou data</div>'
-      return
-    }
-    res.innerHTML = '<div class="busca-secao-label" style="font-size:9.5px;font-weight:800;color:var(--text3);text-transform:uppercase;letter-spacing:.12em;padding:12px 16px 6px">Agendamentos de hoje</div>' + deHoje.map(buscaItemHTMLLocal).join('')
-    return
-  }
-
-  const termo = q.toLowerCase().trim()
-  const encontrados = ags.filter(a =>
-    (a.pacienteNome  || '').toLowerCase().includes(termo) ||
-    (a.servico       || '').toLowerCase().includes(termo) ||
-    (a.data          || '').includes(termo) ||
-    (a.hora          || '').includes(termo) ||
-    (a.pacienteTelefone || '').includes(termo)
-  ).slice(0, 12)
-
-  if (!encontrados.length) {
-    res.innerHTML = `<div class="busca-empty" style="text-align:center;color:var(--text3);padding:24px;font-size:13px">Nenhum resultado para "<strong>${q}</strong>"</div>`
-    return
-  }
-
-  res.innerHTML =
-    `<div class="busca-secao-label" style="font-size:9.5px;font-weight:800;color:var(--text3);text-transform:uppercase;letter-spacing:.12em;padding:12px 16px 6px">${encontrados.length} resultado${encontrados.length > 1 ? 's' : ''}</div>` +
-    encontrados.map(buscaItemHTMLLocal).join('')
-}
-
-function buscaItemHTMLLocal(a) {
-  const cores = [
-    ['#1d4ed8','#3b82f6'],['#7c3aed','#8b5cf6'],['#0e7490','#06b6d4'],
-    ['#15803d','#22c55e'],['#b45309','#f59e0b'],['#be185d','#ec4899'],
-  ]
-  let h = 0
-  for (let c of (a.pacienteNome || 'A')) h = ((h << 5) - h) + c.charCodeAt(0)
-  const [c1, c2] = cores[Math.abs(h) % cores.length]
-  const ini     = (a.pacienteNome || 'C')[0].toUpperCase()
-  const dataFmt = a.data ? a.data.split('-').reverse().join('/') : ''
-  const preco   = a.preco ? ` · R$${Number(a.preco).toFixed(2).replace('.',',')}` : ''
-  const statusCor = { confirmado:'#10b981', concluido:'#8b5cf6', cancelado:'#ef4444', pendente:'#f59e0b' }[a.status] || '#8b9ab4'
-
-  return `<div class="busca-item" style="display:flex;align-items:center;gap:11px;padding:10px 16px;cursor:pointer;transition:background .12s"
-    onmouseover="this.style.background='rgba(255,255,255,0.05)'"
-    onmouseout="this.style.background=''"
-    onclick="buscaSelecionarAgendamento('${a._id}','${a.data || ''}')">
-    <div style="width:34px;height:34px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:white;background:linear-gradient(135deg,${c1},${c2})">${ini}</div>
-    <div style="flex:1;min-width:0">
-      <div style="font-size:13.5px;font-weight:600;color:var(--text)">${a.pacienteNome}</div>
-      <div style="font-size:11.5px;color:var(--text2);margin-top:1px">${a.servico} · ${dataFmt} às ${a.hora}${preco}</div>
-    </div>
-    <span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:100px;background:${statusCor}22;color:${statusCor};border:1px solid ${statusCor}44;white-space:nowrap">${a.status}</span>
-  </div>`
-}
-
-function buscaSelecionarAgendamento(id, data) {
-  fecharBusca()
-  const filtroEl = document.getElementById('filtro-data')
-  if (filtroEl && data) {
-    filtroEl.value = data
-    if (window.filtrarData) window.filtrarData()
-  }
-  const menuBtn = document.getElementById('menu-agendamentos')
-  if (window.irPara) window.irPara('agendamentos', menuBtn)
-}
-
-// Atalho teclado Ctrl+K ou /
-document.addEventListener('keydown', e => {
-  if ((e.ctrlKey && e.key === 'k') || (e.key === '/' && !['INPUT','TEXTAREA','SELECT'].includes(document.activeElement.tagName))) {
-    e.preventDefault()
-    buscaAberta ? fecharBusca() : abrirBusca()
-  }
-  if (e.key === 'Escape' && buscaAberta) fecharBusca()
-})
-
-// Injeta o overlay de busca no DOM
-;(function injetarBusca() {
-  if (document.getElementById('busca-overlay')) return
-  const overlay = document.createElement('div')
-  overlay.id = 'busca-overlay'
-  overlay.style.cssText = `
-    display:none;position:fixed;inset:0;z-index:500;
-    background:rgba(0,0,0,0.7);backdrop-filter:blur(8px);
-    align-items:flex-start;justify-content:center;padding-top:80px;
-  `
-  overlay.innerHTML = `
-    <div style="width:100%;max-width:520px;background:var(--bg-card);border:1px solid var(--border2);
-                border-radius:16px;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,0.6);">
-      <div style="display:flex;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid var(--border);">
-        <svg width="16" height="16" viewBox="0 0 14 14" fill="none">
-          <circle cx="6" cy="6" r="4.5" stroke="var(--text3)" stroke-width="1.4"/>
-          <path d="M9.5 9.5L12 12" stroke="var(--text3)" stroke-width="1.4" stroke-linecap="round"/>
-        </svg>
-        <input id="busca-input" type="text" placeholder="Buscar clientes, agendamentos..."
-          style="flex:1;background:none;border:none;outline:none;font-size:14px;color:var(--text);font-family:inherit;"
-          oninput="executarBusca(this.value)">
-        <kbd style="background:rgba(255,255,255,0.06);border:1px solid var(--border2);border-radius:5px;
-                    padding:2px 7px;font-size:11px;color:var(--text3);font-family:inherit;">ESC</kbd>
-      </div>
-      <div id="busca-resultados" style="max-height:360px;overflow-y:auto;padding:8px;">
-        <div class="busca-empty">Digite para buscar por nome, serviço ou data</div>
-      </div>
-    </div>
-  `
-  overlay.addEventListener('click', e => { if (e.target === overlay) fecharBusca() })
-  document.body.appendChild(overlay)
-
-  // Estilos da busca
-  const style = document.createElement('style')
-  style.textContent = `
-    .busca-empty { text-align:center;color:var(--text3);padding:24px;font-size:13px; }
-    .busca-item {
-      display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:10px;
-      cursor:pointer;transition:background .12s;
-    }
-    .busca-item:hover { background:rgba(255,255,255,0.05); }
-    .busca-item-avatar {
-      width:34px;height:34px;border-radius:50%;flex-shrink:0;
-      display:flex;align-items:center;justify-content:center;
-      font-size:13px;font-weight:700;color:white;
-    }
-    .busca-item-info { flex:1;min-width:0; }
-    .busca-item-nome { font-size:13.5px;font-weight:600;color:var(--text); }
-    .busca-item-sub  { font-size:11.5px;color:var(--text2);margin-top:1px; }
-  `
-  document.head.appendChild(style)
-})()
-
-// Liga o botão de busca da topbar
-document.addEventListener('DOMContentLoaded', () => {
-  const btnBusca = document.querySelector('.main-topbar-search')
-  if (btnBusca) btnBusca.addEventListener('click', abrirBusca)
-})
-
-/* ──────────────────────────────────────────────────────────
-   2. MENU DO AVATAR (topbar direita)
-────────────────────────────────────────────────────────── */
-;(function injetarMenuAvatar() {
-  if (document.getElementById('avatar-menu')) return
-
-  const menu = document.createElement('div')
-  menu.id = 'avatar-menu'
-  menu.style.cssText = `
-    display:none;position:fixed;top:60px;right:16px;z-index:400;
-    background:var(--bg-card);border:1px solid var(--border2);border-radius:14px;
-    box-shadow:0 16px 40px rgba(0,0,0,0.5);min-width:210px;overflow:hidden;
-    animation:dropIn .18s ease;
-  `
-  menu.innerHTML = `
-    <div style="padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;">
-      <div id="avatar-menu-avatar"
-           style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#2563eb,#7c3aed);
-                  display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:white;flex-shrink:0;">
-        A
-      </div>
-      <div>
-        <div id="avatar-menu-negocio" style="font-size:13px;font-weight:700;color:var(--text);">Meu Negócio</div>
-        <div style="font-size:11px;color:var(--green);font-weight:600;">Painel ativo</div>
-      </div>
-    </div>
-    <div style="padding:6px;">
-      <div class="avatar-menu-item" onclick="irPara('configuracoes', null);fecharMenuAvatar()">
-        <svg width="14" height="14" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="7.5" r="2" stroke="currentColor" stroke-width="1.3"/><path d="M7.5 1v1.5M7.5 12.5V14M1 7.5h1.5M12.5 7.5H14M3 3l1 1M11 11l1 1M3 12l1-1M11 4l1-1" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
-        Configurações
-      </div>
-      <div class="avatar-menu-item" onclick="window.location.href='planos.html';fecharMenuAvatar()">
-        <svg width="14" height="14" viewBox="0 0 15 15" fill="none"><rect x="1.5" y="3.5" width="12" height="9" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M1.5 6.5h12" stroke="currentColor" stroke-width="1.3"/></svg>
-        Meu plano
-      </div>
-      <div class="avatar-menu-item" onclick="toggleTema();fecharMenuAvatar()">
-        <svg width="14" height="14" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="7.5" r="2.5" stroke="currentColor" stroke-width="1.3"/><path d="M7.5 1v1.5M7.5 12.5V14M1 7.5h1.5M12.5 7.5H14" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
-        <span id="avatar-menu-tema-label">Mudar para claro</span>
-      </div>
-      <div style="height:1px;background:var(--border);margin:4px 0;"></div>
-      <div class="avatar-menu-item" style="color:var(--red)!important" onclick="sair()">
-        <svg width="14" height="14" viewBox="0 0 13 13" fill="none"><path d="M5 6.5h6M8.5 4.5L11 6.5l-2.5 2M7.5 2H3a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h4.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        Sair da conta
-      </div>
-    </div>
-  `
-  document.body.appendChild(menu)
-
-  // Estilos do menu
-  const style = document.createElement('style')
-  style.textContent = `
-    .avatar-menu-item {
-      display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;
-      font-size:13px;font-weight:500;color:var(--text2);cursor:pointer;transition:all .12s;
-    }
-    .avatar-menu-item:hover { background:rgba(255,255,255,0.06);color:var(--text); }
-  `
-  document.head.appendChild(style)
-
-  // Fecha ao clicar fora
-  document.addEventListener('click', e => {
-    const btn = document.getElementById('topbar-avatar-btn')
-    if (!menu.contains(e.target) && e.target !== btn) fecharMenuAvatar()
-  })
-})()
-
-function abrirMenuAvatar() {
-  const menu = document.getElementById('avatar-menu')
-  if (!menu) return
-  const aberto = menu.style.display === 'block'
-  menu.style.display = aberto ? 'none' : 'block'
-
-  // Atualiza nome do negócio
-  const elNeg = document.getElementById('avatar-menu-negocio')
-  const elAv  = document.getElementById('avatar-menu-avatar')
-  if (negocioAtual) {
-    if (elNeg) elNeg.textContent = negocioAtual.nome
-    if (elAv)  elAv.textContent  = negocioAtual.nome[0].toUpperCase()
-  }
-
-  // Atualiza label do tema
-  const tema = localStorage.getItem('tema') || 'escuro'
-  const elTema = document.getElementById('avatar-menu-tema-label')
-  if (elTema) elTema.textContent = tema === 'escuro' ? 'Mudar para claro' : 'Mudar para escuro'
-}
-
-function fecharMenuAvatar() {
-  const menu = document.getElementById('avatar-menu')
-  if (menu) menu.style.display = 'none'
-}
-
-// Liga o botão do avatar
-document.addEventListener('DOMContentLoaded', () => {
-  const btn = document.getElementById('topbar-avatar-btn')
-  if (btn) btn.addEventListener('click', e => { e.stopPropagation(); abrirMenuAvatar() })
-})
-
-/* ──────────────────────────────────────────────────────────
-   3. FINANCE CARD — valor do mês em tempo real
-   (complementa o carregarInsights do painel_insights_patch.js)
-────────────────────────────────────────────────────────── */
-function atualizarFinanceCard() {
-  if (!negocioAtual) return
-  const nid = negocioAtual._id
-  const mes = mesAtualChave()
-
-  const lucro  = getLucroMes(nid) || 0
-  const ids    = getLucroIds(nid)
-  const atend  = ids.length
-
-  const elAmount = document.getElementById('finance-amount-val')
-  const elMeta   = document.getElementById('finance-meta')
-  const elAtend  = document.getElementById('finance-atend')
-  const elChartL = document.getElementById('finance-chart-label')
-  const elTotal  = document.getElementById('stat-total')
-
-  if (elAmount) elAmount.textContent =
-    lucro.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-  if (elMeta)   elMeta.textContent   = `Movidas: ${atend} agendamentos`
-  if (elAtend)  elAtend.textContent  = atend
-  if (elChartL) elChartL.textContent = `R$${Math.round(lucro)}`
-
-  // Lucro da semana (últimos 7 dias a partir dos agendamentos em memória)
-  if (window.todosAgendamentos) {
-    const hoje    = new Date().toISOString().split('T')[0]
-    const semStr  = (() => { const d = new Date(); d.setDate(d.getDate()-7); return d.toISOString().split('T')[0] })()
-    const lucroSem = todosAgendamentos
-      .filter(a => a.status === 'concluido' && a.data >= semStr && a.data <= hoje)
-      .reduce((acc, a) => acc + (Number(a.preco) || 0), 0)
-    if (elTotal) elTotal.textContent =
-      'R$ ' + lucroSem.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-  }
-}
-
-// Chama após cada atualização de lucro
-const _exibirLucroOrig = exibirLucro
-exibirLucro = function () {
-  _exibirLucroOrig()
-  atualizarFinanceCard()
-}
-
-/* ──────────────────────────────────────────────────────────
-   4. PÁGINA DE HORÁRIOS — garante que o menu item navegue
-────────────────────────────────────────────────────────── */
-document.addEventListener('DOMContentLoaded', () => {
-  // Corrige todos os botões do menu que chamam 'horarios'
-  document.querySelectorAll('.menu-item').forEach(btn => {
-    const onclick = btn.getAttribute('onclick') || ''
-    if (onclick.includes("'horarios'")) {
-      btn.onclick = function () { irPara('horarios', this) }
-    }
-  })
-
-  // Liga busca da topbar
-  const btnBusca = document.querySelector('.main-topbar-search')
-  if (btnBusca) btnBusca.onclick = abrirBusca
-
-  // Liga avatar
-  const btnAvatar = document.getElementById('topbar-avatar-btn')
-  if (btnAvatar) btnAvatar.onclick = e => { e.stopPropagation(); abrirMenuAvatar() }
-
-  // Atualiza finance card quando dados já estiverem disponíveis
-  setTimeout(atualizarFinanceCard, 1500)
-})
-
-/* ──────────────────────────────────────────────────────────
-   5. PIX RECEBIDOS — percentual de agendamentos com pagamento
-────────────────────────────────────────────────────────── */
-function atualizarPix() {
-  const elPix = document.getElementById('finance-pix')
-  if (!elPix || !window.todosAgendamentos) return
-  const mes = mesAtualChave()
-  const doMes = todosAgendamentos.filter(a => a.data?.startsWith(mes))
-  const pagos  = doMes.filter(a => a.pagamento?.status === 'pago').length
-  const pct    = doMes.length > 0 ? Math.round((pagos / doMes.length) * 100) : 0
-  elPix.textContent = `${pct}%`
-}
-
-// Chama junto com renderTabela
-const _filtrarDataOrig = filtrarData
-filtrarData = function () {
-  _filtrarDataOrig()
-  atualizarFinanceCard()
-  atualizarPix()
-}
