@@ -457,301 +457,28 @@
   </div>
 
   <!-- PAGE: AGENDAMENTOS -->
-  <!-- ── AGENDAMENTOS — IDÊNTICO À FOTO ── -->
-<!-- ══════════════════════════════════════════
-   PAGE: AGENDAMENTOS — IDÊNTICO À FOTO
-══════════════════════════════════════════ -->
-<div class="page" id="page-agendamentos">
-
-  <!-- HERO BANNER -->
-  <div class="agp-hero">
-    <div class="agp-hero-left">
-      <h1 class="agp-hero-title">Agendamentos</h1>
-      <p class="agp-hero-sub">Lista completa de agendamentos do seu negócio</p>
-    </div>
-    <div class="agp-hero-right">
-      <span class="agp-star agp-s1">✦</span>
-      <span class="agp-star agp-s2">✦</span>
-      <span class="agp-star agp-s3">✦</span>
-      <svg class="agp-hero-svg" width="260" height="170" viewBox="0 0 260 170" fill="none">
-        <rect x="30" y="32" width="128" height="116" rx="20" fill="rgba(0,0,0,0.38)"/>
-        <rect x="24" y="24" width="128" height="116" rx="20" fill="#1e3a8a" stroke="rgba(59,130,246,0.4)" stroke-width="1.5"/>
-        <rect x="24" y="24" width="128" height="44" rx="20" fill="#2563eb"/>
-        <rect x="24" y="50" width="128" height="18" fill="#2563eb"/>
-        <rect x="56" y="14" width="10" height="20" rx="5" fill="#93c5fd"/>
-        <rect x="100" y="14" width="10" height="20" rx="5" fill="#93c5fd"/>
-        <rect x="122" y="14" width="10" height="20" rx="5" fill="#93c5fd"/>
-        <circle cx="54"  cy="92"  r="7" fill="rgba(147,197,253,0.35)"/>
-        <circle cx="80"  cy="92"  r="7" fill="rgba(147,197,253,0.35)"/>
-        <circle cx="106" cy="92"  r="8" fill="rgba(255,255,255,0.82)"/>
-        <circle cx="132" cy="92"  r="7" fill="rgba(147,197,253,0.35)"/>
-        <circle cx="54"  cy="118" r="7" fill="#3b82f6"/>
-        <circle cx="80"  cy="118" r="7" fill="rgba(147,197,253,0.35)"/>
-        <circle cx="106" cy="118" r="7" fill="rgba(147,197,253,0.25)"/>
-        <circle cx="132" cy="118" r="7" fill="rgba(147,197,253,0.2)"/>
-        <circle cx="196" cy="122" r="46" fill="rgba(0,0,0,0.32)"/>
-        <circle cx="192" cy="116" r="46" fill="#1d4ed8" stroke="rgba(96,165,250,0.3)" stroke-width="2"/>
-        <circle cx="192" cy="116" r="37" fill="#2563eb"/>
-        <path d="M175 116l12 12 24-24" stroke="white" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-    </div>
-  </div>
-
-  <!-- STAT CARDS -->
-  <div class="agp-stats">
-    <div class="agp-stat-card">
-      <div class="agp-stat-icon agp-icon-blue">
-        <svg width="20" height="20" viewBox="0 0 22 22" fill="none">
-          <rect x="2.5" y="3.5" width="17" height="15" rx="3" stroke="#60a5fa" stroke-width="1.7"/>
-          <path d="M2.5 8.5h17M7.5 2v3M14.5 2v3" stroke="#60a5fa" stroke-width="1.7" stroke-linecap="round"/>
-        </svg>
-      </div>
-      <div class="agp-stat-body">
-        <div class="agp-stat-top">
-          <span class="agp-stat-num" id="agp-total">0</span>
-          <span class="agp-pill agp-pill-blue">este mês</span>
+  <div class="page" id="page-agendamentos">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Todos os agendamentos</div>
+        <div class="card-actions">
+          <input type="date" class="filtro-data" id="filtro-data" onchange="filtrarData()">
+          <button class="btn-novo" onclick="abrirModalNovoAgendamento()">
+            <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+            Novo
+          </button>
         </div>
-        <div class="agp-stat-label">Agendamentos</div>
       </div>
-    </div>
-    <div class="agp-stat-card">
-      <div class="agp-stat-icon agp-icon-green">
-        <svg width="20" height="20" viewBox="0 0 22 22" fill="none">
-          <circle cx="11" cy="11" r="8" stroke="#34d399" stroke-width="1.7"/>
-          <path d="M7 11l3 3 5-5" stroke="#34d399" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
+      <div class="tabela-scroll" id="tabela-desktop">
+        <div id="tbody-rows"></div>
       </div>
-      <div class="agp-stat-body">
-        <div class="agp-stat-top">
-          <span class="agp-stat-num" id="agp-concluidos">0</span>
-          <span class="agp-pill agp-pill-green" id="agp-pct-conc">0%</span>
-        </div>
-        <div class="agp-stat-label">Concluídos</div>
-      </div>
-    </div>
-    <div class="agp-stat-card">
-      <div class="agp-stat-icon agp-icon-purple">
-        <svg width="20" height="20" viewBox="0 0 22 22" fill="none">
-          <circle cx="11" cy="8.5" r="3.5" stroke="#a78bfa" stroke-width="1.7"/>
-          <path d="M4 20c0-3.9 3.1-7 7-7s7 3.1 7 7" stroke="#a78bfa" stroke-width="1.7" stroke-linecap="round"/>
-        </svg>
-      </div>
-      <div class="agp-stat-body">
-        <div class="agp-stat-top">
-          <span class="agp-stat-num" id="agp-cancelados">0</span>
-          <span class="agp-pill agp-pill-purple" id="agp-pct-canc">0%</span>
-        </div>
-        <div class="agp-stat-label">Cancelados</div>
+      <div class="ag-cards" id="ag-cards"></div>
+      <div class="paginacao" id="paginacao" style="display:none">
+        <span class="paginacao-info" id="pg-info"></span>
+        <div class="paginacao-btns" id="pg-btns"></div>
       </div>
     </div>
   </div>
-
-  <!-- CARD PRINCIPAL -->
-  <div class="card" style="overflow:visible">
-
-    <!-- TOOLBAR: tabs + controles -->
-    <div class="agp-toolbar">
-      <div class="agp-tabs">
-        <button class="agp-tab ativo" onclick="agpFiltrar('todos',this)">Todos</button>
-        <button class="agp-tab" onclick="agpFiltrar('hoje',this)">Hoje</button>
-        <button class="agp-tab" onclick="agpFiltrar('semana',this)">Esta semana</button>
-        <button class="agp-tab" onclick="agpFiltrar('mes',this)">Este mês</button>
-        <button class="agp-tab" onclick="agpFiltrar('concluido',this)">Concluídos</button>
-        <button class="agp-tab" onclick="agpFiltrar('cancelado',this)">Cancelados</button>
-      </div>
-      <div class="agp-ctrl">
-        <input type="date" id="filtro-data" class="agp-date-input" onchange="agpFiltrarData()">
-        <button class="agp-btn-outline" onclick="agpToggleFiltros()">
-          <svg width="13" height="13" viewBox="0 0 15 15" fill="none">
-            <path d="M1.5 3.5h12M4 7.5h7M6.5 11.5h2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-          </svg>
-          Filtros
-        </button>
-        <button class="agp-btn-primary" onclick="abrirModalNovoAgendamento()">
-          <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-            <path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-          </svg>
-          Novo
-        </button>
-      </div>
-    </div>
-
-    <!-- BANNER INFO AZUL -->
-    <div class="agp-info-banner" id="agp-info-banner">
-      <svg width="15" height="15" viewBox="0 0 15 15" fill="none" style="flex-shrink:0">
-        <circle cx="7.5" cy="7.5" r="5.5" stroke="#60a5fa" stroke-width="1.4"/>
-        <path d="M7.5 5.5v3M7.5 10.5v.1" stroke="#60a5fa" stroke-width="1.5" stroke-linecap="round"/>
-      </svg>
-      <span>Organize sua agenda a acompanhe todos os agendamentos em um só lugar.</span>
-      <button onclick="document.getElementById('agp-info-banner').style.display='none'"
-        style="background:none;border:none;color:rgba(148,163,184,0.55);cursor:pointer;font-size:20px;line-height:1;padding:0;margin-left:auto;flex-shrink:0;transition:color .15s"
-        onmouseover="this.style.color='#e2e8f0'" onmouseout="this.style.color='rgba(148,163,184,0.55)'">×</button>
-    </div>
-
-    <!-- THEAD (desktop) -->
-    <div class="agp-thead">
-      <span class="agp-th" style="flex:1.8">CLIENTE</span>
-      <span class="agp-th" style="flex:1.3">SERVIÇO</span>
-      <span class="agp-th" style="flex:1.3">DATA E HORA</span>
-      <span class="agp-th" style="flex:1">STATUS</span>
-      <span class="agp-th" style="flex:.9;text-align:right">AÇÕES</span>
-    </div>
-
-    <!-- TBODY -->
-    <div id="agp-tbody"></div>
-
-    <!-- MOBILE CARDS -->
-    <div class="ag-cards" id="ag-cards"></div>
-
-    <!-- FOOTER PAGINAÇÃO -->
-    <div class="agp-footer" id="agp-footer" style="display:none">
-      <span class="agp-footer-info" id="agp-footer-info">Mostrando 1 a 5 de 0 agendamentos</span>
-      <div style="display:flex;align-items:center;gap:8px">
-        <div id="agp-pg-btns" style="display:flex;gap:4px"></div>
-        <div style="position:relative">
-          <select id="agp-perpage" onchange="agpMudarPorPagina(this.value)" class="agp-perpage-sel">
-            <option value="5">5 por página</option>
-            <option value="10" selected>10 por página</option>
-            <option value="20">20 por página</option>
-            <option value="50">50 por página</option>
-          </select>
-          <svg width="11" height="11" viewBox="0 0 11 11" fill="none"
-            style="position:absolute;right:9px;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--text3)">
-            <path d="M2 4l3.5 3.5L9 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </div>
-      </div>
-    </div>
-
-  </div>
-</div>
-
-  <!-- STAT CARDS -->
-  <div class="ag-stats-row">
-    <!-- Total agendamentos -->
-    <div class="ag-stat-card">
-      <div class="ag-stat-icon" style="background:rgba(59,130,246,0.12);border:1px solid rgba(59,130,246,0.25)">
-        <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
-          <rect x="2.5" y="3.5" width="15" height="13.5" rx="2.5" stroke="#60a5fa" stroke-width="1.6"/>
-          <path d="M2.5 7.5h15M7 2v3M13 2v3" stroke="#60a5fa" stroke-width="1.6" stroke-linecap="round"/>
-        </svg>
-      </div>
-      <div class="ag-stat-body">
-        <div style="display:flex;align-items:baseline;gap:10px">
-          <div class="ag-stat-num" id="ag-stat-total">0</div>
-          <span class="ag-stat-badge-blue">este mês</span>
-        </div>
-        <div class="ag-stat-label">Agendamentos</div>
-      </div>
-    </div>
-
-    <!-- Concluídos -->
-    <div class="ag-stat-card">
-      <div class="ag-stat-icon" style="background:rgba(16,185,129,0.12);border:1px solid rgba(16,185,129,0.25)">
-        <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
-          <circle cx="10" cy="10" r="7.5" stroke="#34d399" stroke-width="1.6"/>
-          <path d="M6.5 10l2.5 2.5 5-5" stroke="#34d399" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </div>
-      <div class="ag-stat-body">
-        <div style="display:flex;align-items:baseline;gap:10px">
-          <div class="ag-stat-num" id="ag-stat-concluidos">0</div>
-          <span class="ag-stat-badge-green" id="ag-stat-pct-concluidos">0%</span>
-        </div>
-        <div class="ag-stat-label">Concluídos</div>
-      </div>
-    </div>
-
-    <!-- Cancelados -->
-    <div class="ag-stat-card">
-      <div class="ag-stat-icon" style="background:rgba(139,92,246,0.12);border:1px solid rgba(139,92,246,0.25)">
-        <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
-          <circle cx="10" cy="8" r="3.5" stroke="#a78bfa" stroke-width="1.6"/>
-          <path d="M3 18c0-3.9 3.1-7 7-7s7 3.1 7 7" stroke="#a78bfa" stroke-width="1.6" stroke-linecap="round"/>
-        </svg>
-      </div>
-      <div class="ag-stat-body">
-        <div style="display:flex;align-items:baseline;gap:10px">
-          <div class="ag-stat-num" id="ag-stat-cancelados">0</div>
-          <span class="ag-stat-badge-purple" id="ag-stat-pct-cancelados">0%</span>
-        </div>
-        <div class="ag-stat-label">Cancelados</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- CARD PRINCIPAL -->
-  <div class="card" style="overflow:visible">
-    <!-- FILTROS / TABS -->
-    <div class="ag-filtros-wrap">
-      <div class="ag-tabs" id="ag-tabs">
-        <button class="ag-tab ativo" onclick="agFiltrar('todos',this)">Todos</button>
-        <button class="ag-tab" onclick="agFiltrar('hoje',this)">Hoje</button>
-        <button class="ag-tab" onclick="agFiltrar('semana',this)">Esta semana</button>
-        <button class="ag-tab" onclick="agFiltrar('mes',this)">Este mês</button>
-        <button class="ag-tab" onclick="agFiltrar('concluido',this)">Concluídos</button>
-        <button class="ag-tab" onclick="agFiltrar('cancelado',this)">Cancelados</button>
-      </div>
-      <div class="ag-filtros-right">
-        <div style="position:relative">
-          <input type="date" class="ag-date-input" id="filtro-data" onchange="agFiltrarData()">
-        </div>
-        <button class="ag-btn-filtros" onclick="agToggleFiltros()">
-          <svg width="13" height="13" viewBox="0 0 15 15" fill="none">
-            <path d="M1.5 3.5h12M4 7.5h7M6.5 11.5h2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-          </svg>
-          Filtros
-        </button>
-        <button class="ag-btn-novo" onclick="abrirModalNovoAgendamento()">
-          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
-          Novo
-        </button>
-      </div>
-    </div>
-
-    <!-- INFO BANNER -->
-    <div class="ag-info-banner" id="ag-info-banner">
-      <svg width="15" height="15" viewBox="0 0 15 15" fill="none" style="flex-shrink:0">
-        <circle cx="7.5" cy="7.5" r="5.5" stroke="#60a5fa" stroke-width="1.4"/>
-        <path d="M7.5 5v3M7.5 10.5v.1" stroke="#60a5fa" stroke-width="1.5" stroke-linecap="round"/>
-      </svg>
-      <span>Organize sua agenda a acompanhe todos os agendamentos em um só lugar.</span>
-      <button onclick="document.getElementById('ag-info-banner').style.display='none'" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:18px;line-height:1;padding:0;margin-left:auto;flex-shrink:0">×</button>
-    </div>
-
-    <!-- TABELA DESKTOP -->
-    <div class="ag-table-wrap" id="ag-table-wrap">
-      <div class="ag-table-head">
-        <span style="min-width:220px">CLIENTE</span>
-        <span style="min-width:160px">SERVIÇO</span>
-        <span style="min-width:160px">DATA E HORA</span>
-        <span style="min-width:130px">STATUS</span>
-        <span style="min-width:120px;text-align:right">AÇÕES</span>
-      </div>
-      <div id="ag-tbody"></div>
-    </div>
-
-    <!-- MOBILE CARDS -->
-    <div class="ag-cards" id="ag-cards"></div>
-
-    <!-- RODAPÉ PAGINAÇÃO -->
-    <div class="ag-paginacao" id="ag-paginacao" style="display:none">
-      <span class="ag-pg-info" id="ag-pg-info"></span>
-      <div style="display:flex;align-items:center;gap:6px">
-        <div class="ag-pg-btns" id="ag-pg-btns"></div>
-        <div class="ag-pg-perpage">
-          <select id="ag-per-page" onchange="agMudarPorPagina(this.value)" style="background:var(--bg-input);color:var(--text);border:1px solid var(--border2);border-radius:8px;padding:5px 10px;font-size:12px;font-family:inherit;outline:none;cursor:pointer">
-            <option value="5">5 por página</option>
-            <option value="10" selected>10 por página</option>
-            <option value="20">20 por página</option>
-            <option value="50">50 por página</option>
-          </select>
-        </div>
-      </div>
-    </div>
-  </div>
-
-</div>
 
   <!-- ══════════════════════════════════════════════════
        PAGE: HORÁRIOS — NOVO LAYOUT IGUAL À IMAGEM
@@ -1095,216 +822,70 @@
   </div>
 
   <!-- ── CONFIGURAÇÕES ── -->
-<div class="page" id="page-configuracoes">
-  <div class="main-topbar" style="position:relative;margin:0 -36px 28px;padding:0 32px">
-    <div class="main-topbar-left">
-      <div>
-        <div class="main-topbar-title">Configurações</div>
-        <div class="main-topbar-sub">Personalize os serviços e a aparência do seu painel</div>
-      </div>
+  <div class="page" id="page-configuracoes">
+    <div class="main-topbar" style="position:relative;margin:0 -36px 28px;padding:0 32px">
+      <div class="main-topbar-left"><div><div class="main-topbar-title">Configurações</div><div class="main-topbar-sub">Personalize os serviços e a aparência do seu painel</div></div></div>
     </div>
-    <div class="main-topbar-right">
-      <a id="btn-ver-minha-pagina" href="#" target="_blank"
-        style="display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);color:var(--text);padding:8px 16px;border-radius:9px;font-size:12.5px;font-weight:600;text-decoration:none;transition:all .18s;font-family:inherit"
-        onmouseover="this.style.background='rgba(255,255,255,0.1)'"
-        onmouseout="this.style.background='rgba(255,255,255,0.06)'">
-        Ver minha página
-        <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
-          <path d="M3 11L11 3M11 3H6M11 3V8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </a>
-    </div>
-  </div>
-
-  <!-- SERVIÇOS OFERECIDOS -->
-  <div class="section-block" style="margin-bottom:18px">
-    <div class="section-block-header" style="justify-content:space-between;flex-wrap:wrap;gap:10px">
-      <div style="display:flex;align-items:center;gap:13px">
-        <div class="section-block-icon" style="background:var(--accent-light);border-color:var(--accent-mid)">
-          <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
-            <path d="M2 5h16M2 10h10M2 15h12" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round"/>
-          </svg>
-        </div>
+    <div class="section-block">
+      <div class="section-block-header">
+        <div class="section-block-icon"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M2 5h16M2 10h10M2 15h12" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round"/></svg></div>
         <div>
           <div class="section-block-title">Serviços oferecidos</div>
-          <div class="section-block-sub">Adicione os serviços que você oferece e defina seus preços.</div>
+          <div class="section-block-sub">Adicione os serviços com seus respectivos preços</div>
         </div>
       </div>
-      <div id="cfg-servicos-count-badge" style="display:none;align-items:center;gap:6px;background:var(--green-bg);border:1px solid var(--green-border);color:var(--green);padding:5px 12px;border-radius:100px;font-size:11.5px;font-weight:700">
-        <span style="width:7px;height:7px;border-radius:50%;background:var(--green);display:inline-block"></span>
-        <span id="cfg-servicos-count-text">0 serviços cadastrados</span>
+      <div class="section-block-body">
+        <div id="servicos-tags" style="margin-bottom:14px;min-height:34px"></div>
+        <div class="add-servico-wrap">
+          <div class="add-servico-row">
+            <div class="add-field-group add-field-nome">
+              <label>Nome do serviço</label>
+              <input type="text" id="novo-servico" placeholder="Ex: Corte + Barba, Consulta...">
+            </div>
+            <div class="add-field-group add-field-preco">
+              <label>Preço (R$) *</label>
+              <input type="number" id="novo-preco" placeholder="0,00" min="0.01" step="0.01">
+            </div>
+            <button class="btn-add" onclick="adicionarServico()">+ Adicionar</button>
+          </div>
+          <div class="add-servico-erro" id="servico-erro"></div>
+        </div>
+        <div style="display:flex;align-items:center">
+          <button class="btn-salvar" onclick="salvarServicos()">
+            <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Salvar serviços
+          </button>
+          <span class="salvo-msg" id="salvo-msg">✓ Salvo!</span>
+        </div>
       </div>
     </div>
-
-    <div class="section-block-body" style="padding-bottom:0">
-      <!-- CHIPS DOS SERVIÇOS -->
-      <div id="cfg-servicos-chips" style="display:flex;flex-wrap:wrap;gap:7px;margin-bottom:16px;min-height:34px"></div>
-
-      <!-- LINHA ADICIONAR EXISTENTE -->
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap">
-        <button id="cfg-btn-adicionar-existente" onclick="cfgAbrirSugestoes()"
-          style="display:inline-flex;align-items:center;gap:6px;background:none;border:1px dashed var(--border3);color:var(--text2);padding:5px 14px;border-radius:100px;font-size:12.5px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .18s"
-          onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'"
-          onmouseout="this.style.borderColor='var(--border3)';this.style.color='var(--text2)'">
-          <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
-          Adicionar existente
-        </button>
-        <!-- dropdown sugestoes -->
-        <div id="cfg-sugestoes-dropdown" style="display:none;position:absolute;z-index:50;background:var(--bg-card);border:1px solid var(--border2);border-radius:11px;box-shadow:var(--shadow-md);padding:6px 0;min-width:200px;margin-top:36px"></div>
+    <div class="section-block">
+      <div class="section-block-header">
+        <div class="section-block-icon"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="4" stroke="var(--accent)" stroke-width="1.6"/><path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.22 4.22l1.42 1.42M14.36 14.36l1.42 1.42M4.22 15.78l1.42-1.42M14.36 5.64l1.42-1.42" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+        <div>
+          <div class="section-block-title">Aparência</div>
+          <div class="section-block-sub">Escolha entre o modo claro e escuro para o painel</div>
+        </div>
       </div>
-
-      <!-- FORMULÁRIO ADICIONAR -->
-      <div style="display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap;padding:14px;background:rgba(255,255,255,0.02);border:1px solid var(--border2);border-radius:12px;margin-bottom:0">
-        <div style="flex:2;min-width:150px">
-          <div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.09em;margin-bottom:6px">NOME DO SERVIÇO</div>
-          <div style="position:relative">
-            <span style="position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--text3)">
-              <svg width="13" height="13" viewBox="0 0 15 15" fill="none"><path d="M3 4h9M3 8h6M3 12h7" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
-            </span>
-            <input type="text" id="novo-servico" placeholder="Ex: Corte + Barba, Consulta..."
-              style="width:100%;padding:9px 12px 9px 32px;border:1px solid var(--border2);border-radius:9px;font-size:13px;outline:none;font-family:inherit;background:var(--bg-input);color:var(--text);transition:all .18s"
-              onfocus="this.style.borderColor='var(--accent)';this.style.boxShadow='0 0 0 3px var(--accent-light)'"
-              onblur="this.style.borderColor='var(--border2)';this.style.boxShadow='none'">
+      <div class="section-block-body">
+        <div class="theme-selector-wrap">
+          <div class="theme-option" id="theme-opt-claro" onclick="definirTema('claro')">
+            <div class="theme-option-check"><svg width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5L8 3" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div class="theme-preview claro"><div class="theme-preview-sidebar"></div><div class="theme-preview-content"><div class="theme-preview-bar"></div><div class="theme-preview-bar2"></div><div class="theme-preview-bar" style="width:70%"></div></div></div>
+            <div><div style="display:flex;align-items:center;gap:5px"><span class="theme-option-emoji">☀️</span><span class="theme-option-label">Modo Claro</span></div><div class="theme-option-desc">Interface clara e limpa</div></div>
+          </div>
+          <div class="theme-option" id="theme-opt-escuro" onclick="definirTema('escuro')">
+            <div class="theme-option-check"><svg width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5L8 3" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div class="theme-preview escuro"><div class="theme-preview-sidebar"></div><div class="theme-preview-content"><div class="theme-preview-bar"></div><div class="theme-preview-bar2"></div><div class="theme-preview-bar" style="width:70%"></div></div></div>
+            <div><div style="display:flex;align-items:center;gap:5px"><span class="theme-option-emoji">🌙</span><span class="theme-option-label">Modo Escuro</span></div><div class="theme-option-desc">Confortável para uso noturno</div></div>
           </div>
         </div>
-        <div style="flex:1;min-width:110px;max-width:160px">
-          <div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.09em;margin-bottom:6px">PREÇO (R$)</div>
-          <div style="position:relative">
-            <span style="position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:12px;font-weight:600">R$</span>
-            <input type="number" id="novo-preco" placeholder="0,00" min="0.01" step="0.01"
-              style="width:100%;padding:9px 12px 9px 32px;border:1px solid var(--border2);border-radius:9px;font-size:13px;outline:none;font-family:inherit;background:var(--bg-input);color:var(--text);transition:all .18s"
-              onfocus="this.style.borderColor='var(--accent)';this.style.boxShadow='0 0 0 3px var(--accent-light)'"
-              onblur="this.style.borderColor='var(--border2)';this.style.boxShadow='none'">
-          </div>
+        <div style="margin-top:14px;padding:11px 14px;background:var(--accent-light);border:1px solid var(--accent-mid);border-radius:9px;font-size:12px;color:var(--accent);font-weight:500;line-height:1.5">
+          💾 A preferência de tema é salva automaticamente no seu navegador.
         </div>
-        <button onclick="adicionarServico()"
-          style="display:inline-flex;align-items:center;gap:7px;background:var(--accent);color:white;border:none;padding:9px 20px;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;font-family:inherit;box-shadow:var(--shadow-accent);transition:all .2s;align-self:flex-end;margin-bottom:0;height:38px"
-          onmouseover="this.style.background='var(--accent-hover)';this.style.transform='translateY(-1px)'"
-          onmouseout="this.style.background='var(--accent)';this.style.transform='none'">
-          <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
-          Adicionar
-        </button>
-      </div>
-      <div class="add-servico-erro" id="servico-erro" style="padding:0 0 4px"></div>
-
-      <!-- LISTA DE SERVIÇOS (tabela) -->
-      <div id="cfg-servicos-lista" style="margin-top:4px"></div>
-
-      <!-- RODAPÉ SALVAR -->
-      <div style="display:flex;align-items:center;justify-content:flex-end;padding:14px 0 4px;gap:10px;border-top:1px solid var(--border);margin-top:4px">
-        <span class="salvo-msg" id="salvo-msg">✓ Salvo!</span>
-        <button onclick="salvarServicos()"
-          style="display:inline-flex;align-items:center;gap:7px;background:#16a34a;color:white;border:none;padding:9px 22px;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;box-shadow:0 2px 10px rgba(22,163,74,0.25);transition:all .2s"
-          onmouseover="this.style.background='#15803d';this.style.transform='translateY(-1px)'"
-          onmouseout="this.style.background='#16a34a';this.style.transform='none'">
-          <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          Salvar alterações
-        </button>
       </div>
     </div>
   </div>
-
-  <!-- APARÊNCIA -->
-  <div class="section-block">
-    <div class="section-block-header">
-      <div class="section-block-icon">
-        <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
-          <circle cx="10" cy="10" r="4" stroke="var(--accent)" stroke-width="1.6"/>
-          <path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.22 4.22l1.42 1.42M14.36 14.36l1.42 1.42M4.22 15.78l1.42-1.42M14.36 5.64l1.42-1.42" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round"/>
-        </svg>
-      </div>
-      <div>
-        <div class="section-block-title">Aparência</div>
-        <div class="section-block-sub">Escolha entre o modo claro e escuro para o painel</div>
-      </div>
-    </div>
-    <div class="section-block-body">
-      <!-- SELETOR DE TEMA — 2 opções + coluna de benefícios -->
-      <div style="display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap">
-        <!-- Modo Claro -->
-        <div class="theme-option" id="theme-opt-claro" onclick="definirTema('claro')" style="flex:1;min-width:140px;max-width:220px">
-          <div class="theme-option-check">
-            <svg width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5L8 3" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </div>
-          <div class="theme-preview claro">
-            <div class="theme-preview-sidebar"></div>
-            <div class="theme-preview-content">
-              <div class="theme-preview-bar"></div>
-              <div class="theme-preview-bar2"></div>
-              <div class="theme-preview-bar" style="width:70%"></div>
-            </div>
-          </div>
-          <div>
-            <div style="display:flex;align-items:center;gap:5px">
-              <span class="theme-option-emoji">☀️</span>
-              <span class="theme-option-label">Modo Claro</span>
-            </div>
-            <div class="theme-option-desc">Interface clara e limpa.</div>
-          </div>
-        </div>
-
-        <!-- Modo Escuro -->
-        <div class="theme-option" id="theme-opt-escuro" onclick="definirTema('escuro')" style="flex:1;min-width:140px;max-width:220px">
-          <div class="theme-option-check">
-            <svg width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5L8 3" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </div>
-          <div class="theme-preview escuro">
-            <div class="theme-preview-sidebar"></div>
-            <div class="theme-preview-content">
-              <div class="theme-preview-bar"></div>
-              <div class="theme-preview-bar2"></div>
-              <div class="theme-preview-bar" style="width:70%"></div>
-            </div>
-          </div>
-          <div>
-            <div style="display:flex;align-items:center;gap:5px">
-              <span class="theme-option-emoji">🌙</span>
-              <span class="theme-option-label">Modo Escuro</span>
-            </div>
-            <div class="theme-option-desc">Confortável para uso noturno</div>
-          </div>
-        </div>
-
-        <!-- Coluna de benefícios (como na foto) -->
-        <div style="flex:1;min-width:180px;display:flex;flex-direction:column;gap:10px;justify-content:center;padding-top:4px">
-          <div style="display:flex;align-items:center;gap:12px;padding:11px 14px;background:rgba(255,255,255,0.03);border:1px solid var(--border2);border-radius:11px">
-            <div style="width:30px;height:30px;border-radius:8px;background:rgba(59,130,246,0.12);border:1px solid rgba(59,130,246,0.22);display:flex;align-items:center;justify-content:center;flex-shrink:0">
-              <svg width="14" height="14" viewBox="0 0 15 15" fill="none"><path d="M7.5 1.5a6 6 0 0 1 0 12 6 6 0 0 1 0-12Z" stroke="#60a5fa" stroke-width="1.3"/><path d="M7.5 5v3M7.5 10.5v.1" stroke="#60a5fa" stroke-width="1.5" stroke-linecap="round"/></svg>
-            </div>
-            <div>
-              <div style="font-size:12.5px;font-weight:700;color:var(--text)">Conforto visual</div>
-              <div style="font-size:11px;color:var(--text2);margin-top:1px">Reduz o cansaço dos olhos.</div>
-            </div>
-          </div>
-          <div style="display:flex;align-items:center;gap:12px;padding:11px 14px;background:rgba(255,255,255,0.03);border:1px solid var(--border2);border-radius:11px">
-            <div style="width:30px;height:30px;border-radius:8px;background:rgba(139,92,246,0.12);border:1px solid rgba(139,92,246,0.22);display:flex;align-items:center;justify-content:center;flex-shrink:0">
-              <svg width="14" height="14" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="7.5" r="5.5" stroke="#a78bfa" stroke-width="1.3"/><path d="M5 7.5h5M7.5 5v5" stroke="#a78bfa" stroke-width="1.3" stroke-linecap="round"/></svg>
-            </div>
-            <div>
-              <div style="font-size:12.5px;font-weight:700;color:var(--text)">Mais foco</div>
-              <div style="font-size:11px;color:var(--text2);margin-top:1px">Destaque no que importa.</div>
-            </div>
-          </div>
-          <div style="display:flex;align-items:center;gap:12px;padding:11px 14px;background:rgba(255,255,255,0.03);border:1px solid var(--border2);border-radius:11px">
-            <div style="width:30px;height:30px;border-radius:8px;background:rgba(16,185,129,0.12);border:1px solid rgba(16,185,129,0.22);display:flex;align-items:center;justify-content:center;flex-shrink:0">
-              <svg width="14" height="14" viewBox="0 0 15 15" fill="none"><path d="M2 7l4 4L13 4" stroke="#34d399" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </div>
-            <div>
-              <div style="font-size:12.5px;font-weight:700;color:var(--text)">Personalização</div>
-              <div style="font-size:11px;color:var(--text2);margin-top:1px">Altere quando quiser.</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- INFO BOX -->
-      <div style="margin-top:16px;padding:11px 14px;background:var(--accent-light);border:1px solid var(--accent-mid);border-radius:9px;font-size:12px;color:var(--accent);font-weight:500;line-height:1.5;display:flex;align-items:center;gap:8px">
-        <svg width="14" height="14" viewBox="0 0 15 15" fill="none" style="flex-shrink:0"><circle cx="7.5" cy="7.5" r="5.5" stroke="currentColor" stroke-width="1.3"/><path d="M7.5 5v3M7.5 10.5v.1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-        A preferência de tema é salva automaticamente no seu navegador.
-      </div>
-    </div>
-  </div>
-</div>
 
   <!-- ── MINHA BIO ── -->
   <div class="page" id="page-bio">
@@ -1705,479 +1286,6 @@ function renderHorariosDiasLateral() {
     setTimeout(() => renderHorariosDiasLateral(), 100);
   };
 
-})();
-
-/* ══════════════════════════════════════════════════
-   CONFIGURAÇÕES — NOVO RENDERIZADOR DE SERVIÇOS
-   Substitui renderServicos() e adicionarServico() existentes
-══════════════════════════════════════════════════ */
-
-// Paleta de ícones/cores para serviços (cicla automaticamente)
-const CFG_CORES = [
-  { bg: 'rgba(59,130,246,0.15)',  border: 'rgba(59,130,246,0.3)',  emoji: '✂️' },
-  { bg: 'rgba(16,185,129,0.15)', border: 'rgba(16,185,129,0.3)',  emoji: '💈' },
-  { bg: 'rgba(245,158,11,0.15)', border: 'rgba(245,158,11,0.3)',  emoji: '🪒' },
-  { bg: 'rgba(139,92,246,0.15)', border: 'rgba(139,92,246,0.3)',  emoji: '💇' },
-  { bg: 'rgba(239,68,68,0.15)',  border: 'rgba(239,68,68,0.3)',   emoji: '💅' },
-  { bg: 'rgba(6,182,212,0.15)',  border: 'rgba(6,182,212,0.3)',   emoji: '🌟' },
-];
-
-function cfgCor(i) {
-  return CFG_CORES[i % CFG_CORES.length];
-}
-
-// Renderiza os chips (topo) e a lista (tabela)
-function renderServicos() {
-  const chips = document.getElementById('cfg-servicos-chips');
-  const lista = document.getElementById('cfg-servicos-lista');
-  const badge = document.getElementById('cfg-servicos-count-badge');
-  const badgeTxt = document.getElementById('cfg-servicos-count-text');
-
-  if (!chips || !lista) return;
-
-  // Badge contador
-  if (badge) {
-    if (servicosAtuais.length > 0) {
-      badge.style.display = 'flex';
-      if (badgeTxt) badgeTxt.textContent = `${servicosAtuais.length} serviço${servicosAtuais.length !== 1 ? 's' : ''} cadastrado${servicosAtuais.length !== 1 ? 's' : ''}`;
-    } else {
-      badge.style.display = 'none';
-    }
-  }
-
-  // CHIPS
-  chips.innerHTML = servicosAtuais.map((s, i) => {
-    const nome  = typeof s === 'object' ? s.nome  : s;
-    const preco = typeof s === 'object' && s.preco ? Number(s.preco) : 0;
-    const cor   = cfgCor(i);
-    const precoLabel = preco > 0 ? `R$ ${preco.toFixed(2).replace('.', ',')}` : '';
-    return `<span class="cfg-chip">
-      <span class="cfg-chip-icon" style="background:${cor.bg};border:1px solid ${cor.border}">${cor.emoji}</span>
-      ${nome}
-      ${precoLabel ? `<span class="cfg-chip-preco">${precoLabel}</span>` : ''}
-      <button class="cfg-chip-remove" onclick="removerServico(${i})" title="Remover">×</button>
-    </span>`;
-  }).join('');
-
-  // LISTA
-  if (!servicosAtuais.length) {
-    lista.innerHTML = `<div style="text-align:center;padding:28px 20px;color:var(--text3);font-size:13px">
-      <div style="font-size:28px;margin-bottom:8px">🛠️</div>
-      Nenhum serviço cadastrado ainda. Adicione o primeiro acima!
-    </div>`;
-    return;
-  }
-
-  lista.innerHTML = servicosAtuais.map((s, i) => {
-    const nome  = typeof s === 'object' ? s.nome  : s;
-    const preco = typeof s === 'object' && s.preco ? Number(s.preco) : 0;
-    const cor   = cfgCor(i);
-    const precoLabel = preco > 0 ? `R$ ${preco.toFixed(2).replace('.', ',')}` : 'Grátis';
-    return `<div class="cfg-servico-row">
-      <div class="cfg-servico-avatar" style="background:${cor.bg};border:1px solid ${cor.border}">${cor.emoji}</div>
-      <div class="cfg-servico-info">
-        <div class="cfg-servico-nome">${nome}</div>
-        <div class="cfg-servico-preco-label">${precoLabel}</div>
-      </div>
-      <button class="cfg-servico-act" title="Editar" onclick="cfgEditarServico(${i})">
-        <svg width="13" height="13" viewBox="0 0 15 15" fill="none"><path d="M10.5 2.5l2 2-8 8H2.5v-2l8-8Z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>
-      </button>
-      <button class="cfg-servico-act del" title="Remover" onclick="removerServico(${i})">
-        <svg width="13" height="13" viewBox="0 0 15 15" fill="none"><path d="M2.5 4h10M5 4V3a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v1M6 7v4M9 7v4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M3.5 4l.5 8a1 1 0 0 0 1 1h5a1 1 0 0 0 1-1l.5-8" stroke="currentColor" stroke-width="1.3"/></svg>
-      </button>
-    </div>`;
-  }).join('');
-}
-
-// Editar serviço inline
-function cfgEditarServico(i) {
-  const s = servicosAtuais[i];
-  const nome  = typeof s === 'object' ? s.nome  : s;
-  const preco = typeof s === 'object' && s.preco ? Number(s.preco) : 0;
-  const novoNome  = prompt('Nome do serviço:', nome);
-  if (novoNome === null) return;
-  const novoPreco = prompt('Preço (R$):', preco.toFixed(2));
-  if (novoPreco === null) return;
-  const p = parseFloat(novoPreco);
-  if (isNaN(p) || p < 0) { alert('Preço inválido'); return; }
-  servicosAtuais[i] = { nome: novoNome.trim() || nome, preco: p };
-  renderServicos();
-  renderIntervalosServicos && renderIntervalosServicos();
-}
-
-// Link "ver minha página"
-function cfgAtualizarLinkPagina() {
-  const btn = document.getElementById('btn-ver-minha-pagina');
-  if (btn && window.negocioAtual) {
-    btn.href = `https://agendorapido.com.br/agendar.html?id=${window.negocioAtual._id}`;
-  }
-}
-
-// Sugestões (placeholder – abre lista dos serviços pré-definidos do segmento)
-function cfgAbrirSugestoes() {
-  const segmento = window.negocioAtual?.segmento || 'Outro';
-  const sugestoes = (window.servicosPorSegmento?.[segmento] || ['Serviço 1','Serviço 2','Serviço 3']);
-  const dropdown = document.getElementById('cfg-sugestoes-dropdown');
-  if (!dropdown) return;
-  const atuais = servicosAtuais.map(s => typeof s === 'object' ? s.nome.toLowerCase() : s.toLowerCase());
-  const disponiveis = sugestoes.filter(s => !atuais.includes(s.toLowerCase()));
-  if (!disponiveis.length) {
-    dropdown.style.display = 'none';
-    return;
-  }
-  dropdown.innerHTML = disponiveis.map(s =>
-    `<div onclick="cfgAdicionarSugestao('${s}')" style="padding:9px 16px;font-size:13px;color:var(--text);cursor:pointer;transition:background .12s"
-      onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='none'">${s}</div>`
-  ).join('');
-  dropdown.style.display = 'block';
-  setTimeout(() => {
-    document.addEventListener('click', function fechar(e) {
-      if (!e.target.closest('#cfg-sugestoes-dropdown') && !e.target.closest('#cfg-btn-adicionar-existente')) {
-        dropdown.style.display = 'none';
-        document.removeEventListener('click', fechar);
-      }
-    });
-  }, 10);
-}
-
-function cfgAdicionarSugestao(nome) {
-  const dropdown = document.getElementById('cfg-sugestoes-dropdown');
-  if (dropdown) dropdown.style.display = 'none';
-  document.getElementById('novo-servico').value = nome;
-  document.getElementById('novo-preco').focus();
-}
-
-// Hook: atualizar link quando negocio mudar
-(function() {
-  const _orig = window.atualizarSidebarNegocio;
-  window.atualizarSidebarNegocio = function() {
-    _orig && _orig.apply(this, arguments);
-    cfgAtualizarLinkPagina();
-  };
-})();
-
-/* ══════════════════════════════════════════════════
-   AGENDAMENTOS — NOVO RENDERIZADOR
-   Cole dentro de <script> no final do painel.html,
-   DEPOIS do <script src="/painel.js">
-══════════════════════════════════════════════════ */
-
-/* Estado do novo módulo */
-let agFiltroAtivo  = 'todos';
-let agPaginaAtual  = 1;
-let agPorPagina    = 10;
-let agListaFiltrada = [];
-
-/* Duração dos serviços (usa intervalosServicos se disponível) */
-function agGetDuracao(servico) {
-  if (window.intervalosServicos && intervalosServicos[servico]) {
-    return formatarMinutos(intervalosServicos[servico]);
-  }
-  if (window.intervaloAtual) return formatarMinutos(intervaloAtual);
-  return '';
-}
-
-/* Cor do ponto de duração por status */
-function agDotColor(status) {
-  const map = {
-    confirmado: '#34d399',
-    concluido:  '#a78bfa',
-    cancelado:  '#94a3b8',
-    pendente:   '#fbbf24',
-    agendado:   '#60a5fa',
-  };
-  return map[status] || '#60a5fa';
-}
-
-/* Filtra a lista global por aba + data */
-function agAplicarFiltros() {
-  const ags  = window.todosAgendamentos || [];
-  const hoje = new Date().toISOString().split('T')[0];
-  const semFim = (() => { const d = new Date(); d.setDate(d.getDate()+7); return d.toISOString().split('T')[0]; })();
-  const mes  = new Date().toISOString().slice(0,7);
-  const dataFiltro = document.getElementById('filtro-data')?.value || '';
-
-  let lista = [...ags];
-
-  // Filtro de aba
-  if (agFiltroAtivo === 'hoje')      lista = lista.filter(a => a.data === hoje);
-  else if (agFiltroAtivo === 'semana') lista = lista.filter(a => a.data >= hoje && a.data <= semFim);
-  else if (agFiltroAtivo === 'mes')  lista = lista.filter(a => a.data?.startsWith(mes));
-  else if (agFiltroAtivo === 'concluido') lista = lista.filter(a => a.status === 'concluido');
-  else if (agFiltroAtivo === 'cancelado') lista = lista.filter(a => a.status === 'cancelado');
-
-  // Filtro de data
-  if (dataFiltro) lista = lista.filter(a => a.data === dataFiltro);
-
-  // Ordena por data + hora
-  lista.sort((a, b) => {
-    const da = (a.data || '') + (a.hora || '');
-    const db = (b.data || '') + (b.hora || '');
-    return da.localeCompare(db);
-  });
-
-  agListaFiltrada = lista;
-  agPaginaAtual = 1;
-}
-
-/* Atualiza os stat cards */
-function agAtualizarStats() {
-  const ags = window.todosAgendamentos || [];
-  const mes = new Date().toISOString().slice(0,7);
-  const doMes = ags.filter(a => a.data?.startsWith(mes));
-  const total     = doMes.length;
-  const concluidos = doMes.filter(a => a.status === 'concluido').length;
-  const cancelados = doMes.filter(a => a.status === 'cancelado').length;
-  const pctC = total > 0 ? Math.round((concluidos/total)*100) : 0;
-  const pctX = total > 0 ? Math.round((cancelados/total)*100) : 0;
-
-  const elT = document.getElementById('ag-stat-total');
-  const elC = document.getElementById('ag-stat-concluidos');
-  const elX = document.getElementById('ag-stat-cancelados');
-  const elPC = document.getElementById('ag-stat-pct-concluidos');
-  const elPX = document.getElementById('ag-stat-pct-cancelados');
-
-  if (elT) elT.textContent  = total;
-  if (elC) elC.textContent  = concluidos;
-  if (elX) elX.textContent  = cancelados;
-  if (elPC) elPC.textContent = `${pctC}%`;
-  if (elPX) elPX.textContent = `${pctX}%`;
-}
-
-/* Renderiza a tabela principal */
-function agRenderTabela() {
-  agAtualizarStats();
-
-  const tbody  = document.getElementById('ag-tbody');
-  const cards  = document.getElementById('ag-cards');
-  const pag    = document.getElementById('ag-paginacao');
-
-  if (!tbody) return;
-
-  if (!agListaFiltrada.length) {
-    tbody.innerHTML  = '<div class="vazio">Nenhum agendamento encontrado</div>';
-    if (cards) cards.innerHTML = '<div class="vazio">Nenhum agendamento encontrado</div>';
-    if (pag) pag.style.display = 'none';
-    return;
-  }
-
-  const total  = Math.ceil(agListaFiltrada.length / agPorPagina);
-  const ini    = (agPaginaAtual - 1) * agPorPagina;
-  const fim    = ini + agPorPagina;
-  const slice  = agListaFiltrada.slice(ini, fim);
-
-  /* ── TABELA DESKTOP ── */
-  tbody.innerHTML = slice.map(a => {
-    const [c1, c2] = avatarColor(a.pacienteNome);
-    const ini2 = (a.pacienteNome || 'C')[0].toUpperCase();
-    const dataFmt = a.data ? a.data.split('-').reverse().join('/') : '—';
-    const duracao = agGetDuracao(a.servico);
-    const dotColor = agDotColor(a.status);
-    const statusLabel = a.status === 'concluido' ? 'concluído' : a.status;
-
-    return `<div class="ag2-row">
-      <!-- Cliente -->
-      <div class="ag2-col-cliente">
-        <div class="ag2-avatar" style="background:linear-gradient(135deg,${c1},${c2})">${ini2}</div>
-        <div>
-          <div class="ag2-cliente-nome">${a.pacienteNome}</div>
-          <div class="ag2-cliente-tel">
-            <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M10 8.5c0 .2-.1.5-.2.7-.1.2-.3.4-.5.5-.3.2-.7.3-1 .3-1.8 0-3.6-.8-4.9-2.1C2.1 6.6 1.3 4.8 1.3 3c0-.4.1-.7.3-1 .2-.2.4-.4.7-.5.1-.1.2-.1.3-.1.2 0 .3.1.4.2l1.4 2c.1.2.1.3 0 .5L3.9 5c0 .1 0 .2.1.3.3.5.6.9 1 1.3.4.4.8.7 1.3 1 .1 0 .2.1.3.1l.9-.5c.1-.1.3-.1.5 0l2 1.4c.1.1.2.2.2.4z" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            ${a.pacienteTelefone || '—'}
-          </div>
-        </div>
-      </div>
-
-      <!-- Serviço -->
-      <div class="ag2-col-servico">
-        <div class="ag2-servico-nome">${a.servico}</div>
-        <div class="ag2-servico-dur">
-          ${duracao ? `<span class="ag2-dur-dot" style="background:${dotColor}"></span>${duracao}` : ''}
-        </div>
-      </div>
-
-      <!-- Data e hora -->
-      <div class="ag2-col-data">
-        <div class="ag2-data-linha">
-          <svg width="12" height="12" viewBox="0 0 13 13" fill="none"><rect x="1" y="2" width="11" height="10" rx="2" stroke="currentColor" stroke-width="1.2"/><path d="M1 5h11M4.5 1v2M8.5 1v2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
-          ${dataFmt}
-        </div>
-        <div class="ag2-data-linha" style="color:var(--text2)">
-          <svg width="12" height="12" viewBox="0 0 13 13" fill="none"><circle cx="6.5" cy="6.5" r="5" stroke="currentColor" stroke-width="1.2"/><path d="M6.5 3.5V7l2 2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
-          às ${a.hora}
-        </div>
-      </div>
-
-      <!-- Status -->
-      <div class="ag2-col-status">
-        <span class="ag2-badge ${a.status}">${statusLabel}</span>
-      </div>
-
-      <!-- Ações -->
-      <div class="ag2-col-acoes">
-        <button class="ag2-btn-ver" onclick="agVerDetalhes('${a._id}')">
-          <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="currentColor" stroke-width="1.3"/><circle cx="7" cy="7" r="2" fill="currentColor"/></svg>
-          Ver
-        </button>
-        <div style="position:relative">
-          <button class="ag2-btn-menu" onclick="agToggleMenu(event,'${a._id}','${a.pacienteNome}','${a.pacienteTelefone || ''}','${a.data}','${a.hora}','${a.status}')">
-            <svg width="14" height="14" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="3.5" r="1" fill="currentColor"/><circle cx="7.5" cy="7.5" r="1" fill="currentColor"/><circle cx="7.5" cy="11.5" r="1" fill="currentColor"/></svg>
-          </button>
-          <div class="ag2-dropdown" id="menu-${a._id}">
-            ${a.status === 'confirmado' ? `
-            <div class="ag2-dropdown-item" onclick="atualizar('${a._id}','concluido');agFecharMenus()">
-              <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              Concluir
-            </div>
-            <div class="ag2-dropdown-item danger" onclick="cancelarComAviso('${a._id}','${a.pacienteNome}','${a.pacienteTelefone || ''}','${a.data}','${a.hora}');agFecharMenus()">
-              <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M3 3l8 8M11 3l-8 8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
-              Cancelar
-            </div>
-            <div class="ag2-dropdown-sep"></div>
-            ` : ''}
-            <div class="ag2-dropdown-item" onclick="agEnviarWpp('${a.pacienteNome}','${a.pacienteTelefone || ''}');agFecharMenus()">
-              <svg width="13" height="13" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="7.5" r="5.5" stroke="currentColor" stroke-width="1.3"/><path d="M5.5 6.5s.4 1.5 2 1.5 2-1.5 2-1.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
-              WhatsApp
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>`;
-  }).join('');
-
-  /* ── MOBILE CARDS ── */
-  if (cards) {
-    cards.innerHTML = slice.map(a => {
-      const [c1,c2] = avatarColor(a.pacienteNome);
-      const ini2 = (a.pacienteNome||'C')[0].toUpperCase();
-      const dataFmt = a.data ? a.data.split('-').reverse().join('/') : '—';
-      const statusLabel = a.status === 'concluido' ? 'concluído' : a.status;
-      const acoes = a.status === 'confirmado'
-        ? `<div class="ag-card-actions">
-             <button class="btn-acao concluir" onclick="atualizar('${a._id}','concluido')">Concluir</button>
-             <button class="btn-acao cancelar" onclick="cancelarComAviso('${a._id}','${a.pacienteNome}','${a.pacienteTelefone}','${a.data}','${a.hora}')">Cancelar</button>
-           </div>` : '';
-      return `<div class="ag-card">
-        <div class="ag-card-top">
-          <div style="display:flex;align-items:center;gap:10px">
-            <div class="ag2-avatar" style="background:linear-gradient(135deg,${c1},${c2});width:32px;height:32px;font-size:11px">${ini2}</div>
-            <div><div class="ag-card-nome">${a.pacienteNome}</div><div class="paciente-tel">${a.pacienteTelefone||''}</div></div>
-          </div>
-          <span class="ag2-badge ${a.status}">${statusLabel}</span>
-        </div>
-        <div class="ag-card-body">
-          <div class="ag-chip">${dataFmt}</div>
-          <div class="ag-chip">às ${a.hora}</div>
-          <div class="ag-chip">${a.servico}</div>
-        </div>
-        ${acoes}
-      </div>`;
-    }).join('');
-  }
-
-  /* ── PAGINAÇÃO ── */
-  if (pag) {
-    const pgInfo = document.getElementById('ag-pg-info');
-    if (pgInfo) pgInfo.textContent = `Mostrando ${ini+1} a ${Math.min(fim,agListaFiltrada.length)} de ${agListaFiltrada.length} agendamentos`;
-
-    let btns = `<button class="ag-pg-btn" onclick="agIrPagina(${agPaginaAtual-1})" ${agPaginaAtual===1?'disabled':''}>‹</button>`;
-    for (let i=1;i<=total;i++) {
-      if (total<=7 || i===1 || i===total || Math.abs(i-agPaginaAtual)<=1)
-        btns += `<button class="ag-pg-btn ${i===agPaginaAtual?'ativo':''}" onclick="agIrPagina(${i})">${i}</button>`;
-      else if (Math.abs(i-agPaginaAtual)===2)
-        btns += `<span style="color:var(--text3);font-size:13px;padding:0 2px">…</span>`;
-    }
-    btns += `<button class="ag-pg-btn" onclick="agIrPagina(${agPaginaAtual+1})" ${agPaginaAtual===total?'disabled':''}>›</button>`;
-    const pgBtns = document.getElementById('ag-pg-btns');
-    if (pgBtns) pgBtns.innerHTML = btns;
-    pag.style.display = 'flex';
-  }
-}
-
-/* Navegação */
-function agIrPagina(n) {
-  const total = Math.ceil(agListaFiltrada.length / agPorPagina);
-  if (n < 1 || n > total) return;
-  agPaginaAtual = n;
-  agRenderTabela();
-}
-function agMudarPorPagina(v) {
-  agPorPagina = parseInt(v);
-  agPaginaAtual = 1;
-  agRenderTabela();
-}
-
-/* Troca de aba */
-function agFiltrar(tipo, btn) {
-  agFiltroAtivo = tipo;
-  document.querySelectorAll('.ag-tab').forEach(t => t.classList.remove('ativo'));
-  if (btn) btn.classList.add('ativo');
-  // Limpa data
-  const fd = document.getElementById('filtro-data');
-  if (fd) fd.value = '';
-  agAplicarFiltros();
-  agRenderTabela();
-}
-
-/* Filtro de data */
-function agFiltrarData() {
-  agAplicarFiltros();
-  agRenderTabela();
-}
-
-/* Compatibilidade: filtrarData() original agora chama o novo */
-window.filtrarData = function() {
-  agAplicarFiltros();
-  agRenderTabela();
-};
-
-/* Compatibilidade: renderTabela() original agora chama o novo */
-window.renderTabela = function() {
-  agAplicarFiltros();
-  agRenderTabela();
-};
-
-/* Menu de 3 pontos */
-function agToggleMenu(e, id, nome, tel, data, hora, status) {
-  e.stopPropagation();
-  const menu = document.getElementById(`menu-${id}`);
-  const jaAberto = menu?.classList.contains('show');
-  agFecharMenus();
-  if (!jaAberto && menu) menu.classList.add('show');
-}
-function agFecharMenus() {
-  document.querySelectorAll('.ag2-dropdown.show').forEach(d => d.classList.remove('show'));
-}
-document.addEventListener('click', agFecharMenus);
-
-/* Ver detalhes */
-function agVerDetalhes(id) {
-  const a = (window.todosAgendamentos || []).find(x => x._id === id);
-  if (!a) return;
-  const dataFmt = a.data ? a.data.split('-').reverse().join('/') : '—';
-  alert(`Cliente: ${a.pacienteNome}\nTelefone: ${a.pacienteTelefone || '—'}\nServiço: ${a.servico}\nData: ${dataFmt} às ${a.hora}\nStatus: ${a.status}\nValor: ${a.preco ? 'R$ '+Number(a.preco).toFixed(2).replace('.',',') : '—'}`);
-}
-
-/* Abrir WhatsApp */
-function agEnviarWpp(nome, tel) {
-  if (!tel) return alert('Sem telefone cadastrado');
-  const msg = encodeURIComponent(`Olá ${nome}! 😊`);
-  window.open(`https://wa.me/55${tel.replace(/\D/g,'')}?text=${msg}`, '_blank');
-}
-
-/* Botão filtros toggle (placeholder) */
-function agToggleFiltros() {
-  /* futuro: abrir painel de filtros avançados */
-}
-
-/* Hook no carregarAgendamentos para atualizar stats e tabela nova */
-(function() {
-  const _orig = window.carregarAgendamentos;
-  window.carregarAgendamentos = async function() {
-    await _orig.apply(this, arguments);
-    agAplicarFiltros();
-    agRenderTabela();
-  };
 })();
 </script>
 </body>
