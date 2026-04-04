@@ -144,7 +144,7 @@
   <div class="sidebar-menu">
   <div class="menu-section">Painel</div>
 
-  <button class="menu-item ativo" id="menu-dashboard" onclick="irPara('dashboard',this)">
+  <button class="menu-item" id="menu-dashboard" onclick="irPara('dashboard',this)">
     <svg width="14" height="14" viewBox="0 0 15 15" fill="none"><rect x="1.5" y="2.5" width="12" height="11" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M5 1.5v2M10 1.5v2M1.5 5.5h12" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><path d="M4.5 9h2.5M4.5 11h4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
     Dashboard
   </button>
@@ -159,7 +159,7 @@
   Clientes
   </button>
 
-  <button class="menu-item" onclick="irPara('horarios',this)">
+  <button class="menu-item" id="menu-horarios" onclick="irPara('horarios',this)">
     <svg width="14" height="14" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="7.5" r="5.5" stroke="currentColor" stroke-width="1.3"/><path d="M7.5 4.5V8l2 2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
     Horários
   </button>
@@ -256,11 +256,8 @@
     </div>
   </div>
 
-  <!-- ══════════════════════════════════════════════════
-       PAGE: DASHBOARD (stats + insights + gráfico)
-  ══════════════════════════════════════════════════ -->
+  <!-- PAGE: DASHBOARD -->
   <div class="page ativo" id="page-dashboard">
-
     <div class="link-card">
       <div>
         <div class="link-card-label">Link de agendamento</div>
@@ -271,8 +268,6 @@
         Copiar link
       </button>
     </div>
-
-    <!-- Stats -->
     <div class="stats">
       <div class="stat-card">
         <div class="stat-card-inner">
@@ -292,7 +287,6 @@
           <div class="stat-label">Esta semana</div>
         </div>
       </div>
-      
       <div class="stat-card card-lucro-semana">
         <div class="stat-card-inner">
           <div class="stat-icon green-icon">
@@ -315,8 +309,6 @@
         </div>
       </div>
     </div>
-
-    <!-- Alert banner -->
     <div class="alert-banner" id="alert-clientes-inativos" style="display:none">
       <span class="alert-banner-icon">⚠</span>
       <div class="alert-banner-text" id="alert-clientes-texto">
@@ -324,11 +316,8 @@
       </div>
       <button class="alert-banner-btn">Enviar mensagem</button>
     </div>
-
-    <!-- Grid: agendamentos do dia + Insights -->
     <div class="dashboard-grid">
       <div>
-        <!-- Mini lista de hoje no dashboard -->
         <div class="card">
           <div class="card-header">
             <div class="card-title">Agendamentos de hoje</div>
@@ -348,8 +337,6 @@
           </div>
           <div class="ag-cards" id="ag-cards-dash"></div>
         </div>
-
-        <!-- Histórico mensal -->
         <div class="section-block">
           <div class="section-block-header">
             <div class="section-block-icon">
@@ -388,8 +375,6 @@
           </div>
         </div>
       </div>
-
-      <!-- Coluna direita — Insights + Finance -->
       <div class="insights-panel">
         <div class="insight-card">
           <div class="insight-header">
@@ -431,7 +416,6 @@
             </div>
           </div>
         </div>
-
         <div class="finance-card">
           <div class="finance-header">
             <div class="finance-title">Este mês</div>
@@ -470,11 +454,9 @@
         </div>
       </div>
     </div>
-  </div><!-- /page-dashboard -->
+  </div>
 
-  <!-- ══════════════════════════════════════════════════
-       PAGE: AGENDAMENTOS (lista completa)
-  ══════════════════════════════════════════════════ -->
+  <!-- PAGE: AGENDAMENTOS -->
   <div class="page" id="page-agendamentos">
     <div class="card">
       <div class="card-header">
@@ -496,81 +478,231 @@
         <div class="paginacao-btns" id="pg-btns"></div>
       </div>
     </div>
-  </div><!-- /page-agendamentos -->
+  </div>
 
-  <!-- ── HORÁRIOS ── -->
+  <!-- ══════════════════════════════════════════════════
+       PAGE: HORÁRIOS — NOVO LAYOUT IGUAL À IMAGEM
+  ══════════════════════════════════════════════════ -->
   <div class="page" id="page-horarios">
-    <div class="main-topbar" style="position:relative;margin:0 -36px 28px;padding:0 32px">
-      <div class="main-topbar-left">
-        <div><div class="main-topbar-title">Horários de Atendimento</div><div class="main-topbar-sub">Configure dias e horários que seu negócio atende</div></div>
+
+    <!-- HERO BANNER -->
+    <div class="horarios-hero">
+      <div class="horarios-hero-left">
+        <div class="horarios-hero-icon-row">
+          <div class="horarios-hero-icon-bg">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7.5" stroke="#60a5fa" stroke-width="1.8"/><path d="M10 6v5l3 3" stroke="#60a5fa" stroke-width="1.8" stroke-linecap="round"/></svg>
+          </div>
+        </div>
+        <h1 class="horarios-hero-title">Horários</h1>
+        <p class="horarios-hero-sub">Configure dias e horários que seu negócio atende</p>
+        <p class="horarios-hero-sub2">Defina sua disponibilidade para receber mais agendamentos.</p>
+      </div>
+      <div class="horarios-hero-right">
+        <div class="horarios-hero-illustration">
+          <svg width="190" height="130" viewBox="0 0 190 130" fill="none">
+            <!-- Calendar body shadow -->
+            <rect x="22" y="24" width="95" height="85" rx="13" fill="rgba(0,0,0,0.3)"/>
+            <!-- Calendar body -->
+            <rect x="18" y="20" width="95" height="85" rx="13" fill="#1e3a8a" stroke="rgba(59,130,246,0.4)" stroke-width="1.5"/>
+            <!-- Calendar header -->
+            <rect x="18" y="20" width="95" height="32" rx="13" fill="#2563eb"/>
+            <rect x="18" y="38" width="95" height="14" fill="#2563eb"/>
+            <!-- Calendar rings -->
+            <rect x="42" y="13" width="7" height="15" rx="3.5" fill="#93c5fd"/>
+            <rect x="79" y="13" width="7" height="15" rx="3.5" fill="#93c5fd"/>
+            <!-- Grid dots row 1 -->
+            <circle cx="40" cy="70" r="4.5" fill="rgba(147,197,253,0.45)"/>
+            <circle cx="57" cy="70" r="4.5" fill="rgba(147,197,253,0.45)"/>
+            <circle cx="74" cy="70" r="6" fill="rgba(255,255,255,0.85)"/>
+            <circle cx="91" cy="70" r="4.5" fill="rgba(147,197,253,0.45)"/>
+            <!-- Grid dots row 2 -->
+            <circle cx="40" cy="86" r="4.5" fill="rgba(147,197,253,0.45)"/>
+            <circle cx="57" cy="86" r="5" fill="#3b82f6"/>
+            <circle cx="74" cy="86" r="4.5" fill="rgba(147,197,253,0.45)"/>
+            <circle cx="91" cy="86" r="4.5" fill="rgba(147,197,253,0.3)"/>
+            <!-- Clock circle shadow -->
+            <circle cx="148" cy="80" r="33" fill="rgba(0,0,0,0.3)"/>
+            <!-- Clock circle -->
+            <circle cx="144" cy="76" r="33" fill="#1d4ed8" stroke="rgba(96,165,250,0.35)" stroke-width="2"/>
+            <circle cx="144" cy="76" r="27" fill="#1e40af"/>
+            <!-- Clock ticks -->
+            <path d="M144 52v4M144 96v4M120 76h4M164 76h4" stroke="rgba(147,197,253,0.4)" stroke-width="1.5" stroke-linecap="round"/>
+            <!-- Clock hands -->
+            <path d="M144 60v17" stroke="#93c5fd" stroke-width="2.5" stroke-linecap="round"/>
+            <path d="M144 76l10 10" stroke="#60a5fa" stroke-width="2.5" stroke-linecap="round"/>
+            <circle cx="144" cy="76" r="3.5" fill="#60a5fa"/>
+            <!-- Stars decoration -->
+            <text x="8" y="22" fill="#60a5fa" font-size="14" opacity="0.8">✦</text>
+            <text x="172" y="36" fill="#93c5fd" font-size="10" opacity="0.6">✦</text>
+            <text x="4" y="100" fill="rgba(96,165,250,0.4)" font-size="9">✦</text>
+            <text x="160" y="118" fill="rgba(96,165,250,0.3)" font-size="8">✦</text>
+          </svg>
+        </div>
+        <div class="horarios-tip-card">
+          <div class="horarios-tip-icon">
+            <svg width="13" height="13" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="7.5" r="5.5" stroke="#60a5fa" stroke-width="1.4"/><path d="M7.5 5v3M7.5 10v.5" stroke="#60a5fa" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </div>
+          <div>
+            <div class="horarios-tip-title">Dica rápida</div>
+            <div class="horarios-tip-text">Horários bem definidos geram até 35% mais agendamentos!</div>
+          </div>
+        </div>
       </div>
     </div>
-    <div class="section-block">
-      <div class="section-block-header">
-        <div class="section-block-icon"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7.5" stroke="var(--accent)" stroke-width="1.6"/><path d="M10 6v5l3 3" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round"/></svg></div>
-        <div>
-          <div class="section-block-title">Intervalo padrão entre atendimentos</div>
-          <div class="section-block-sub">Tempo reservado quando o serviço não tem intervalo próprio</div>
+
+    <!-- CONTENT GRID: esquerda (seções) + direita (painel de dias) -->
+    <div class="horarios-content-grid">
+
+      <!-- COLUNA ESQUERDA -->
+      <div class="horarios-col-left">
+
+        <!-- INTERVALO PADRÃO -->
+        <div class="section-block">
+          <div class="section-block-header">
+            <div class="section-block-icon">
+              <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7.5" stroke="var(--accent)" stroke-width="1.6"/><path d="M10 6v5l3 3" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round"/></svg>
+            </div>
+            <div>
+              <div class="section-block-title">Intervalo padrão entre atendimentos</div>
+              <div class="section-block-sub">Tempo reservado quando o serviço não tem intervalo próprio.</div>
+            </div>
+          </div>
+          <div class="section-block-body">
+            <div class="intervalo-grid">
+              <button class="intervalo-btn" onclick="selecionarIntervalo(this,15)">15 min</button>
+              <button class="intervalo-btn" onclick="selecionarIntervalo(this,20)">20 min</button>
+              <button class="intervalo-btn" onclick="selecionarIntervalo(this,30)">30 min</button>
+              <button class="intervalo-btn" onclick="selecionarIntervalo(this,45)">45 min</button>
+              <button class="intervalo-btn" onclick="selecionarIntervalo(this,60)">1 hora</button>
+              <button class="intervalo-btn" onclick="selecionarIntervalo(this,90)">1h30</button>
+              <button class="intervalo-btn" onclick="selecionarIntervalo(this,120)">2 horas</button>
+              <button class="intervalo-btn custom-btn" id="btn-custom-intervalo" onclick="selecionarIntervaloCustom(this)">
+                <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+                Personalizado
+              </button>
+            </div>
+            <div class="intervalo-custom-wrap" id="intervalo-custom-wrap">
+              <span class="intervalo-custom-label">Duração:</span>
+              <input type="number" id="intervalo-custom" min="5" max="480" step="5" placeholder="60" oninput="atualizarIntervaloCustom(this.value)">
+              <span class="intervalo-custom-suffix">minutos</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- INTERVALO POR SERVIÇO -->
+        <div class="section-block">
+          <div class="section-block-header" style="justify-content:space-between">
+            <div style="display:flex;align-items:center;gap:13px">
+              <div class="section-block-icon">
+                <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M3 5h14M3 10h8M3 15h10" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round"/><circle cx="16" cy="13" r="3" stroke="var(--accent)" stroke-width="1.4"/><path d="M16 11.5V13l1 1" stroke="var(--accent)" stroke-width="1.3" stroke-linecap="round"/></svg>
+              </div>
+              <div>
+                <div class="section-block-title">Intervalo por serviço</div>
+                <div class="section-block-sub">Configure durações específicas para cada serviço (opcional).</div>
+              </div>
+            </div>
+            <button class="horarios-add-servico-btn" onclick="irPara('configuracoes',null)">
+              <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+              Adicionar serviço
+            </button>
+          </div>
+
+          <!-- TABELA DE SERVIÇOS -->
+          <div class="horarios-servico-table-head">
+            <span>Serviço</span>
+            <span>Duração</span>
+            <span>Ação</span>
+          </div>
+          <div class="servicos-intervalos-grid" id="servicos-intervalos-grid">
+            <div class="servicos-vazio"><div class="servicos-vazio-icon">🛠️</div>Adicione serviços em <strong>Configurações → Serviços</strong>.</div>
+          </div>
+
+          <div class="section-block-body" style="padding-top:14px;padding-bottom:14px">
+            <div class="intervalo-info-box">
+              <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.4"/><path d="M8 7v4M8 5.5v.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+              <span>Quando um serviço tem duração própria, ele substitui o <strong>intervalo padrão</strong>.</span>
+            </div>
+          </div>
+
+          <!-- SAVE ROW -->
+          <div class="horarios-save-row">
+            <button class="btn-salvar horarios-btn-salvar-verde" onclick="salvarIntervalosServicos()">
+              <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Salvar alterações
+            </button>
+            <div class="horarios-autosave">
+              Alterações salvas automaticamente
+              <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="rgba(16,185,129,0.4)" stroke-width="1.5"/><path d="M6 10l3 3 5-5" stroke="#10b981" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- PAUSAS (mantido do original, oculto do layout mas funcional) -->
+        <div class="section-block" style="display:none" id="section-pausas-oculto">
+          <div class="section-block-header">
+            <div class="section-block-icon"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7.5" stroke="var(--accent)" stroke-width="1.6"/><path d="M10 6.5v4M10 13v.5" stroke="var(--accent)" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+            <div>
+              <div class="section-block-title">Pausas e intervalos</div>
+              <div class="section-block-sub">Bloqueie horários para almoço, café ou qualquer pausa</div>
+            </div>
+          </div>
+          <div class="section-block-body">
+            <div id="pausas-lista"></div>
+            <div style="margin-top:12px;display:flex;flex-direction:column;gap:7px">
+              <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:13px;background:rgba(255,255,255,0.02);border-radius:12px;border:1px dashed var(--border3)">
+                <input type="text" id="pausa-inicio" placeholder="12:00" maxlength="5" inputmode="numeric" oninput="mascaraHora(this)" style="flex:1;min-width:75px;">
+                <span style="font-size:11px;color:var(--text3);font-weight:700">às</span>
+                <input type="text" id="pausa-fim" placeholder="13:00" maxlength="5" inputmode="numeric" oninput="mascaraHora(this)" style="flex:1;min-width:75px;">
+                <input type="text" id="pausa-label" placeholder="Nome da pausa" style="flex:1.5;min-width:95px;text-align:left;">
+              </div>
+              <button class="btn-add" style="width:100%" onclick="adicionarPausa()">+ Adicionar pausa</button>
+            </div>
+            <div style="display:flex;align-items:center;margin-top:4px">
+              <button class="btn-salvar" onclick="salvarPausas()">
+                <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Salvar pausas
+              </button>
+              <span class="salvo-msg" id="salvo-pausas">✓ Salvo!</span>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /horarios-col-left -->
+
+      <!-- COLUNA DIREITA — Painel de dias -->
+      <div class="horarios-col-right">
+        <div class="horarios-dias-card">
+          <div class="horarios-dias-card-header">
+            <div class="horarios-dias-card-icon">
+              <svg width="17" height="17" viewBox="0 0 20 20" fill="none"><rect x="2.5" y="3.5" width="15" height="13.5" rx="2.5" stroke="var(--green)" stroke-width="1.6"/><path d="M2.5 7.5h15M7 2v3M13 2v3" stroke="var(--green)" stroke-width="1.6" stroke-linecap="round"/></svg>
+            </div>
+            <div>
+              <div class="horarios-dias-card-title">Seu horário de funcionamento</div>
+              <div class="horarios-dias-card-sub">Configure os dias em que você atende.</div>
+            </div>
+          </div>
+          <div id="horarios-dias-lista"></div>
+          <div style="padding:0 18px 16px">
+            <button class="horarios-gerenciar-btn" onclick="abrirGerenciarDias()">
+              <svg width="13" height="13" viewBox="0 0 15 15" fill="none"><rect x="1.5" y="2.5" width="12" height="11" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M5 1.5v2M10 1.5v2M1.5 5.5h12" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+              Gerenciar dias e horários
+            </button>
+          </div>
         </div>
       </div>
-      <div class="section-block-body">
-        <div class="intervalo-grid">
-          <button class="intervalo-btn" onclick="selecionarIntervalo(this,15)">15 min</button>
-          <button class="intervalo-btn" onclick="selecionarIntervalo(this,20)">20 min</button>
-          <button class="intervalo-btn" onclick="selecionarIntervalo(this,30)">30 min</button>
-          <button class="intervalo-btn" onclick="selecionarIntervalo(this,45)">45 min</button>
-          <button class="intervalo-btn" onclick="selecionarIntervalo(this,60)">1 hora</button>
-          <button class="intervalo-btn" onclick="selecionarIntervalo(this,90)">1h30</button>
-          <button class="intervalo-btn" onclick="selecionarIntervalo(this,120)">2 horas</button>
-          <button class="intervalo-btn custom-btn" id="btn-custom-intervalo" onclick="selecionarIntervaloCustom(this)">
-            <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
-            Personalizado
-          </button>
+
+    </div><!-- /horarios-content-grid -->
+
+    <!-- MODAL: GERENCIAR DIAS (substitui o antigo section de dias) -->
+    <div class="modal-overlay" id="modal-gerenciar-dias" style="display:none">
+      <div class="modal" style="max-width:520px">
+        <div class="modal-header">
+          <h2>Dias e horários de atendimento</h2>
+          <button class="modal-close" onclick="fecharGerenciarDias()">×</button>
         </div>
-        <div class="intervalo-custom-wrap" id="intervalo-custom-wrap">
-          <span class="intervalo-custom-label">Duração:</span>
-          <input type="number" id="intervalo-custom" min="5" max="480" step="5" placeholder="60" oninput="atualizarIntervaloCustom(this.value)">
-          <span class="intervalo-custom-suffix">minutos</span>
-        </div>
-      </div>
-    </div>
-    <div class="section-block">
-      <div class="section-block-header">
-        <div class="section-block-icon"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M3 5h14M3 10h8M3 15h10" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round"/><circle cx="16" cy="13" r="3" stroke="var(--accent)" stroke-width="1.4"/><path d="M16 11.5V13l1 1" stroke="var(--accent)" stroke-width="1.3" stroke-linecap="round"/></svg></div>
-        <div>
-          <div class="section-block-title">Intervalo por serviço</div>
-          <div class="section-block-sub">Configure durações específicas para cada serviço</div>
-        </div>
-      </div>
-      <div class="section-block-body">
-        <div class="intervalo-info-box">
-          <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.4"/><path d="M8 7v4M8 5.5v.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-          <span>Quando um serviço tem duração própria configurada, ela substitui o <strong>intervalo padrão</strong>.</span>
-        </div>
-        <div class="servicos-intervalos-grid" id="servicos-intervalos-grid">
-          <div class="servicos-vazio"><div class="servicos-vazio-icon">🛠️</div>Adicione serviços em <strong>Configurações → Serviços</strong>.</div>
-        </div>
-        <div style="display:flex;align-items:center;margin-top:4px">
-          <button class="btn-salvar" onclick="salvarIntervalosServicos()">
-            <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            Salvar durações
-          </button>
-          <span class="salvo-msg" id="salvo-intervalos-servicos">✓ Salvo!</span>
-        </div>
-      </div>
-    </div>
-    <div class="section-block">
-      <div class="section-block-header">
-        <div class="section-block-icon"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><rect x="2.5" y="3.5" width="15" height="13.5" rx="2.5" stroke="var(--accent)" stroke-width="1.6"/><path d="M2.5 7.5h15M7 2v3M13 2v3" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round"/></svg></div>
-        <div>
-          <div class="section-block-title">Dias e horários de atendimento</div>
-          <div class="section-block-sub">Defina em quais dias e horários você recebe clientes</div>
-        </div>
-      </div>
-      <div class="section-block-body">
-        <div id="dias-container"></div>
-        <div style="display:flex;align-items:center;margin-top:8px">
-          <button class="btn-salvar" onclick="salvarHorarios()">
+        <div id="dias-container" style="margin-bottom:16px"></div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <button class="btn-salvar-modal" onclick="salvarHorarios();fecharGerenciarDias()">
             <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
             Salvar horários
           </button>
@@ -578,34 +710,7 @@
         </div>
       </div>
     </div>
-    <div class="section-block">
-      <div class="section-block-header">
-        <div class="section-block-icon"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7.5" stroke="var(--accent)" stroke-width="1.6"/><path d="M10 6.5v4M10 13v.5" stroke="var(--accent)" stroke-width="1.8" stroke-linecap="round"/></svg></div>
-        <div>
-          <div class="section-block-title">Pausas e intervalos</div>
-          <div class="section-block-sub">Bloqueie horários para almoço, café ou qualquer pausa</div>
-        </div>
-      </div>
-      <div class="section-block-body">
-        <div id="pausas-lista"></div>
-        <div style="margin-top:12px;display:flex;flex-direction:column;gap:7px">
-          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:13px;background:rgba(255,255,255,0.02);border-radius:12px;border:1px dashed var(--border3)">
-            <input type="text" id="pausa-inicio" placeholder="12:00" maxlength="5" inputmode="numeric" oninput="mascaraHora(this)" style="flex:1;min-width:75px;">
-            <span style="font-size:11px;color:var(--text3);font-weight:700">às</span>
-            <input type="text" id="pausa-fim" placeholder="13:00" maxlength="5" inputmode="numeric" oninput="mascaraHora(this)" style="flex:1;min-width:75px;">
-            <input type="text" id="pausa-label" placeholder="Nome da pausa" style="flex:1.5;min-width:95px;text-align:left;">
-          </div>
-          <button class="btn-add" style="width:100%" onclick="adicionarPausa()">+ Adicionar pausa</button>
-        </div>
-        <div style="display:flex;align-items:center;margin-top:4px">
-          <button class="btn-salvar" onclick="salvarPausas()">
-            <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            Salvar pausas
-          </button>
-          <span class="salvo-msg" id="salvo-pausas">✓ Salvo!</span>
-        </div>
-      </div>
-    </div>
+
   </div><!-- /page-horarios -->
 
   <!-- ── LEMBRETES ── -->
@@ -653,7 +758,7 @@
         </div>
       </div>
     </div>
-  </div><!-- /page-lembretes -->
+  </div>
 
   <!-- ── WHATSAPP AUTO ── -->
   <div class="page" id="page-whatsapp">
@@ -714,7 +819,7 @@
         <div class="passo"><div class="passo-num verde">✓</div><div style="flex:1"><div class="passo-titulo">Pronto! Seu WhatsApp está configurado</div><div class="passo-desc">Qualquer cliente que mandar mensagem pela primeira vez vai receber o link.</div><div class="alerta-verde">💡 Isso funciona apenas no <strong>WhatsApp Business</strong> (app gratuito da Meta).</div></div></div>
       </div>
     </div>
-  </div><!-- /page-whatsapp -->
+  </div>
 
   <!-- ── CONFIGURAÇÕES ── -->
   <div class="page" id="page-configuracoes">
@@ -780,7 +885,7 @@
         </div>
       </div>
     </div>
-  </div><!-- /page-configuracoes -->
+  </div>
 
   <!-- ── MINHA BIO ── -->
   <div class="page" id="page-bio">
@@ -824,7 +929,7 @@
         </div>
       </div>
     </div>
-  </div><!-- /page-bio -->
+  </div>
 
   <!-- ── PAGAMENTOS ── -->
   <div class="page" id="page-pagamentos">
@@ -844,7 +949,7 @@
         </div>
       </div>
     </div>
-  </div><!-- /page-pagamentos -->
+  </div>
 
   <!-- ── SUPORTE ── -->
   <div class="page" id="page-suporte">
@@ -872,14 +977,11 @@
         </div>
       </div>
     </div>
-  </div><!-- /page-suporte -->
+  </div>
 
 </div><!-- /main -->
 
 <script>
-/* ═══════════════════════════════════
-   PATCH INLINE
-═══════════════════════════════════ */
 function toggleTema() {
   const atual = localStorage.getItem('tema') || 'escuro';
   definirTema(atual === 'escuro' ? 'claro' : 'escuro');
@@ -929,15 +1031,11 @@ function renderizarLinhasComAvatar(slice) {
 function atualizarInsights() {
   const ags = window.todosAgendamentos || [];
   if (!ags.length) return;
-
-  /* Melhor horário */
   const freqHora = {};
   ags.forEach(a => { if (a.hora) freqHora[a.hora] = (freqHora[a.hora] || 0) + 1; });
   const topHora = Object.entries(freqHora).sort((a,b) => b[1]-a[1])[0];
   const elH = document.getElementById('insight-melhor-horario');
   if (elH) elH.textContent = topHora ? topHora[0] : 'Sem dados';
-
-  /* Serviço mais lucrativo */
   const freqServ = {};
   ags.forEach(a => {
     if (!a.servico) return;
@@ -954,8 +1052,6 @@ function atualizarInsights() {
       ? `R$ ${topServ[1].total.toFixed(2).replace('.',',')} gerados`
       : `${topServ[1].qtd} agendamento${topServ[1].qtd > 1 ? 's' : ''}`;
   }
-
-  /* Clientes inativos */
   const cutoff = new Date(); cutoff.setDate(cutoff.getDate()-30);
   const cutStr = cutoff.toISOString().split('T')[0];
   const recentes = new Set(ags.filter(a => a.data >= cutStr).map(a => a.pacienteNome));
@@ -965,23 +1061,15 @@ function atualizarInsights() {
   const elIS = document.getElementById('insight-inativos-sub');
   if (elI)  elI.textContent  = inativos > 0 ? `${inativos} cliente${inativos > 1 ? 's' : ''}` : 'Nenhum';
   if (elIS) { elIS.textContent = inativos > 0 ? 'há mais de 30 dias' : 'todos ativos'; elIS.className = 'insight-item-sub' + (inativos > 0 ? ' warning' : ''); }
-
-  /* Banner */
   const banner = document.getElementById('alert-clientes-inativos');
   if (banner) banner.style.display = inativos >= 3 ? 'flex' : 'none';
   if (inativos >= 3) { const t = document.getElementById('alert-clientes-texto'); if (t) t.innerHTML = `<strong>${inativos} clientes estão inativos</strong>, mande uma promoção para reativá-los`; }
-
-  /* Lucro da semana */
   const hoje   = new Date().toISOString().split('T')[0];
   const semStart = new Date(); semStart.setDate(semStart.getDate()-7);
   const semStr = semStart.toISOString().split('T')[0];
-  const lucroSem = ags
-    .filter(a => a.status === 'concluido' && a.data >= semStr && a.data <= hoje)
-    .reduce((s,a) => s + (Number(a.preco)||0), 0);
+  const lucroSem = ags.filter(a => a.status === 'concluido' && a.data >= semStr && a.data <= hoje).reduce((s,a) => s + (Number(a.preco)||0), 0);
   const elTotal = document.getElementById('stat-total');
   if (elTotal) elTotal.textContent = 'R$ ' + lucroSem.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
-
-  /* Finance card */
   const mes = new Date().toISOString().slice(0,7);
   const nid = window.negocioAtual?._id;
   const lucroMes = nid ? (parseFloat(localStorage.getItem(`lucro_val_${nid}_${mes}`))||0) : 0;
@@ -993,15 +1081,12 @@ function atualizarInsights() {
   if(fcl) fcl.textContent=`R$${Math.round(lucroMes)}`;
 }
 
-/* Renderiza mini-lista do dashboard (só hoje) */
 function renderDashboardHoje() {
   const ags  = window.todosAgendamentos || [];
   const hoje = new Date().toISOString().split('T')[0];
   const deHoje = ags.filter(a => a.data === hoje).sort((a,b) => a.hora.localeCompare(b.hora));
-
   const wrap  = document.getElementById('tbody-rows-dash');
   const cards = document.getElementById('ag-cards-dash');
-
   if (!deHoje.length) {
     if (wrap)  wrap.innerHTML  = '<div class="vazio">Nenhum agendamento hoje</div>';
     if (cards) cards.innerHTML = '<div class="vazio">Nenhum agendamento hoje</div>';
@@ -1035,6 +1120,39 @@ function renderDashboardHoje() {
     }).join('');
   }
 }
+
+/* Funções para o modal de gerenciar dias */
+function abrirGerenciarDias() {
+  renderDias();
+  document.getElementById('modal-gerenciar-dias').style.display = 'flex';
+}
+function fecharGerenciarDias() {
+  document.getElementById('modal-gerenciar-dias').style.display = 'none';
+}
+
+/* Render do painel lateral de dias (somente leitura, resumido) */
+function renderHorariosDiasLateral() {
+  const diasNomesLateral = ['Segunda','Terça','Quarta','Quinta','Sexta','Sábado','Domingo'];
+  const diasIndices = [1,2,3,4,5,6,0];
+  const container = document.getElementById('horarios-dias-lista');
+  if (!container) return;
+  container.innerHTML = diasIndices.map((idx, i) => {
+    const cfg = horariosConfig[idx] || { ativo: false, inicio: '09:00', fim: '18:00' };
+    const ativo = cfg.ativo;
+    return `<div class="horarios-dia-row">
+      <span class="horarios-dia-nome">${diasNomesLateral[i]}</span>
+      <div class="horarios-dia-right">
+        ${ativo
+          ? `<span class="horarios-dia-horas">${cfg.inicio} - ${cfg.fim}</span>`
+          : `<span class="horarios-dia-fechado">Fechado</span>`
+        }
+        <div class="horarios-dia-toggle ${ativo ? 'on' : 'off'}">
+          <div class="horarios-dia-toggle-thumb"></div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
 </script>
 
 <script src="/painel.js"></script>
@@ -1042,7 +1160,6 @@ function renderDashboardHoje() {
 <script>
 (function() {
 
-  /* ── renderTabela: lista completa na page-agendamentos ── */
   window.renderTabela = function() {
     const wrap  = document.getElementById('tbody-rows');
     const cards = document.getElementById('ag-cards');
@@ -1103,11 +1220,9 @@ function renderDashboardHoje() {
       pag.style.display = total > 1 ? 'flex' : 'none';
     }
 
-    /* Após render da lista completa, também atualiza dashboard */
     setTimeout(() => { atualizarInsights(); renderDashboardHoje(); }, 100);
   };
 
-  /* ── Tema padrão escuro ── */
   window.carregarTema = function() { definirTema(localStorage.getItem('tema') || 'escuro'); };
 
   window.definirTema = function(tema) {
@@ -1120,7 +1235,6 @@ function renderDashboardHoje() {
     if (oe) oe.classList.toggle('ativo', tema==='escuro');
   };
 
-  /* ── Títulos da topbar por página ── */
   const titulos = {
     dashboard:      ['Dashboard',              'Painel de controle do seu negócio'],
     agendamentos:   ['Agendamentos',           'Lista completa de agendamentos'],
@@ -1143,14 +1257,15 @@ function renderDashboardHoje() {
       if (el)  el.textContent  = t[0];
       if (sub) sub.textContent = t[1];
     }
-    /* Ao entrar em agendamentos, remove filtro de data para mostrar tudo */
     if (pagina === 'agendamentos') {
       const fd = document.getElementById('filtro-data');
       if (fd) { fd.value = ''; if (window.filtrarData) window.filtrarData(); }
     }
+    if (pagina === 'horarios') {
+      setTimeout(() => renderHorariosDiasLateral(), 100);
+    }
   };
 
-  /* ── Avatar da topbar ── */
   const _aSidebar = window.atualizarSidebarNegocio;
   window.atualizarSidebarNegocio = function() {
     _aSidebar && _aSidebar();
@@ -1158,11 +1273,17 @@ function renderDashboardHoje() {
     if (av && window.negocioAtual) av.textContent = (window.negocioAtual.nome||'A')[0].toUpperCase();
   };
 
-  /* ── Após carregar agendamentos, renderiza dashboard ── */
   const _origCarregar = window.carregarAgendamentos;
   window.carregarAgendamentos = async function() {
     await _origCarregar.apply(this, arguments);
     setTimeout(() => { atualizarInsights(); renderDashboardHoje(); }, 200);
+  };
+
+  /* Hook no carregarHorariosConfig para atualizar painel lateral */
+  const _origCarregarHorarios = window.carregarHorariosConfig;
+  window.carregarHorariosConfig = async function() {
+    await _origCarregarHorarios.apply(this, arguments);
+    setTimeout(() => renderHorariosDiasLateral(), 100);
   };
 
 })();

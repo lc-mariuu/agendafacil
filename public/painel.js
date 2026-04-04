@@ -773,6 +773,7 @@ function renderIntervalosServicos() {
     grid.innerHTML = `<div class="servicos-vazio"><div class="servicos-vazio-icon">🛠️</div>Adicione serviços em <strong>Configurações → Serviços</strong> para configurar durações individuais.</div>`
     return
   }
+ 
   const opcoesHtml = [
     ['0','Usar padrão'],['5','5 min'],['10','10 min'],['15','15 min'],
     ['20','20 min'],['25','25 min'],['30','30 min'],['45','45 min'],
@@ -780,22 +781,30 @@ function renderIntervalosServicos() {
     ['120','2 horas'],['150','2h30'],['180','3 horas'],['240','4 horas'],
     ['300','5 horas'],['360','6 horas'],['custom','Personalizado...'],
   ].map(([v, l]) => `<option value="${v}">${l}</option>`).join('')
+ 
   grid.innerHTML = servicosAtuais.map(s => {
     const nome    = typeof s === 'object' ? s.nome  : s
     const preco   = typeof s === 'object' && s.preco ? Number(s.preco) : 0
     const duracao = intervalosServicos[nome] || 0
     const precoLabel = preco > 0 ? `R$ ${preco.toFixed(2).replace('.', ',')}` : ''
-    const badgeClass = duracao > 0 ? 'custom' : ''
-    const badgeLabel = duracao > 0 ? formatarMinutos(duracao) : `Padrão (${formatarMinutos(intervaloAtual)})`
+ 
     return `<div class="servico-intervalo-card">
       <div class="servico-intervalo-info">
         <div class="servico-intervalo-nome">${nome}</div>
         ${precoLabel ? `<div class="servico-intervalo-preco">${precoLabel}</div>` : ''}
       </div>
-      <span class="servico-intervalo-badge ${badgeClass}" id="badge-${nome.replace(/\s+/g, '-')}">${badgeLabel}</span>
       <select class="servico-intervalo-select" data-servico="${nome}" onchange="alterarIntervaloServico(this)">${opcoesHtml}</select>
+      <div class="servico-intervalo-actions">
+        <div class="servico-intervalo-act-btn edit" title="Editar" onclick="alert('Para editar o serviço, vá em Configurações.')">
+          <svg width="12" height="12" viewBox="0 0 15 15" fill="none"><path d="M10.5 2.5l2 2-8 8H2.5v-2l8-8Z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="servico-intervalo-act-btn" title="Remover" onclick="removerServico(${servicosAtuais.indexOf(s)})">
+          <svg width="12" height="12" viewBox="0 0 15 15" fill="none"><path d="M2.5 4h10M5 4V3a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v1M6 7v4M9 7v4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M3.5 4l.5 8a1 1 0 0 0 1 1h5a1 1 0 0 0 1-1l.5-8" stroke="currentColor" stroke-width="1.3"/></svg>
+        </div>
+      </div>
     </div>`
   }).join('')
+ 
   const preds = [0,5,10,15,20,25,30,45,60,75,90,105,120,150,180,240,300,360]
   servicosAtuais.forEach(s => {
     const nome    = typeof s === 'object' ? s.nome : s
@@ -812,6 +821,31 @@ function renderIntervalosServicos() {
     }
   })
 }
+ 
+/* ── ADICIONE esta função (nova, não existe no original) ── */
+function renderHorariosDiasLateral() {
+  const diasNomesLateral = ['Segunda','Terça','Quarta','Quinta','Sexta','Sábado','Domingo']
+  const diasIndices = [1,2,3,4,5,6,0]
+  const container = document.getElementById('horarios-dias-lista')
+  if (!container) return
+  container.innerHTML = diasIndices.map((idx, i) => {
+    const cfg = horariosConfig[idx] || { ativo: false, inicio: '09:00', fim: '18:00' }
+    const ativo = cfg.ativo
+    return `<div class="horarios-dia-row">
+      <span class="horarios-dia-nome">${diasNomesLateral[i]}</span>
+      <div class="horarios-dia-right">
+        ${ativo
+          ? `<span class="horarios-dia-horas">${cfg.inicio} - ${cfg.fim}</span>`
+          : `<span class="horarios-dia-fechado">Fechado</span>`
+        }
+        <div class="horarios-dia-toggle ${ativo ? 'on' : 'off'}" onclick="toggleDiaLateral(${idx}, this)">
+          <div class="horarios-dia-toggle-thumb"></div>
+        </div>
+      </div>
+    </div>`
+  }).join('')
+}
+
 function alterarIntervaloServico(select) {
   const nome = select.dataset.servico
   const val  = select.value
@@ -1589,6 +1623,48 @@ document.addEventListener('DOMContentLoaded', () => {
   const searchSpan = document.querySelector('.main-topbar-search span')
   if (searchSpan) searchSpan.textContent = `Buscar... (${isMac ? '⌘K' : 'Ctrl+K'})`
 })
+
+function renderHorariosDiasLateral() {
+  const diasNomesLateral = ['Segunda','Terça','Quarta','Quinta','Sexta','Sábado','Domingo']
+  const diasIndices = [1,2,3,4,5,6,0]
+  const container = document.getElementById('horarios-dias-lista')
+  if (!container) return
+  container.innerHTML = diasIndices.map((idx, i) => {
+    const cfg = horariosConfig[idx] || { ativo: false, inicio: '09:00', fim: '18:00' }
+    const ativo = cfg.ativo
+    return `<div class="horarios-dia-row">
+      <span class="horarios-dia-nome">${diasNomesLateral[i]}</span>
+      <div class="horarios-dia-right">
+        ${ativo
+          ? `<span class="horarios-dia-horas">${cfg.inicio} - ${cfg.fim}</span>`
+          : `<span class="horarios-dia-fechado">Fechado</span>`
+        }
+        <div class="horarios-dia-toggle ${ativo ? 'on' : 'off'}" onclick="toggleDiaLateral(${idx}, this)">
+          <div class="horarios-dia-toggle-thumb"></div>
+        </div>
+      </div>
+    </div>`
+  }).join('')
+}
+ 
+/* ── ADICIONE esta função auxiliar ── */
+function toggleDiaLateral(idx, toggleEl) {
+  const cfg = horariosConfig[idx] || { ativo: false, inicio: '09:00', fim: '18:00' }
+  cfg.ativo = !cfg.ativo
+  horariosConfig[idx] = cfg
+  renderHorariosDiasLateral()
+  /* Abre modal de gerenciar para o usuário salvar */
+  abrirGerenciarDias()
+}
+ 
+/* ── ADICIONE estas funções do modal de dias ── */
+function abrirGerenciarDias() {
+  renderDias()
+  document.getElementById('modal-gerenciar-dias').style.display = 'flex'
+}
+function fecharGerenciarDias() {
+  document.getElementById('modal-gerenciar-dias').style.display = 'none'
+}
 
 /* ═══════════════════════════════════════════════════
    INIT
