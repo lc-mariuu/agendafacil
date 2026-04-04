@@ -142,59 +142,65 @@
   </div>
 
   <div class="sidebar-menu">
-    <div class="menu-section">Painel</div>
+  <div class="menu-section">Painel</div>
 
-    <!-- DASHBOARD — aponta para page-dashboard -->
-    <button class="menu-item ativo" id="menu-dashboard" onclick="irPara('dashboard',this)">
-      <svg width="14" height="14" viewBox="0 0 15 15" fill="none"><rect x="1.5" y="2.5" width="12" height="11" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M5 1.5v2M10 1.5v2M1.5 5.5h12" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><path d="M4.5 9h2.5M4.5 11h4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
-      Dashboard
-    </button>
+  <button class="menu-item ativo" id="menu-dashboard" onclick="irPara('dashboard',this)">
+    <svg width="14" height="14" viewBox="0 0 15 15" fill="none"><rect x="1.5" y="2.5" width="12" height="11" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M5 1.5v2M10 1.5v2M1.5 5.5h12" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><path d="M4.5 9h2.5M4.5 11h4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+    Dashboard
+  </button>
 
-    <!-- AGENDAMENTOS — aponta para page-agendamentos -->
-    <button class="menu-item" id="menu-agendamentos" onclick="irPara('agendamentos',this)">
-      <svg width="14" height="14" viewBox="0 0 15 15" fill="none"><rect x="1.5" y="2.5" width="12" height="11" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M5 1.5v2M10 1.5v2M1.5 5.5h12" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
-      Agendamentos
-    </button>
+  <button class="menu-item" id="menu-agendamentos" onclick="irPara('agendamentos',this)">
+    <svg width="14" height="14" viewBox="0 0 15 15" fill="none"><rect x="1.5" y="2.5" width="12" height="11" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M5 1.5v2M10 1.5v2M1.5 5.5h12" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+    Agendamentos
+  </button>
 
-    <button class="menu-item" onclick="irPara('bio',this)">
-      <svg width="14" height="14" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="5" r="2.5" stroke="currentColor" stroke-width="1.3"/><path d="M2 13c0-2.8 2.5-5 5.5-5s5.5 2.2 5.5 5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
-      Clientes
-    </button>
-    <button class="menu-item" onclick="irPara('pagamentos',this)">
-      <svg width="14" height="14" viewBox="0 0 15 15" fill="none"><path d="M2 4h11v8a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V4Z" stroke="currentColor" stroke-width="1.3"/><path d="M2 4V3a1 1 0 0 1 1-1h9a1 1 0 0 1 1 1v1" stroke="currentColor" stroke-width="1.3"/><path d="M5 8h5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
-      Financeiro
-    </button>
-    <button class="menu-item" onclick="irPara('lembretes',this)">
-      <svg width="14" height="14" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="7.5" r="5.5" stroke="currentColor" stroke-width="1.3"/><path d="M5 8s.5 1.5 2.5 1.5S10 8 10 8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><path d="M5.5 5.5h.01M9.5 5.5h.01" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
-      Automação
-    </button>
-    <button class="menu-item" onclick="irPara('whatsapp',this)">
-      <svg width="14" height="14" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="7.5" r="5.5" stroke="currentColor" stroke-width="1.3"/><path d="M5 8s.5 1.5 2.5 1.5S10 8 10 8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><path d="M5.5 5.5h.01M9.5 5.5h.01" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
-      WhatsApp Auto
-    </button>
-    <button class="menu-item" onclick="irPara('bio',this)">
-      <svg width="14" height="14" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="5" r="2.5" stroke="currentColor" stroke-width="1.3"/><path d="M2 13c0-2.8 2.5-5 5.5-5s5.5 2.2 5.5 5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
-      Minha Bio
-    </button>
-    <button class="menu-item" onclick="irPara('configuracoes',this)">
-      <svg width="14" height="14" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="7.5" r="2" stroke="currentColor" stroke-width="1.3"/><path d="M7.5 1v1.5M7.5 12.5V14M1 7.5h1.5M12.5 7.5H14M3 3l1 1M11 11l1 1M3 12l1-1M11 4l1-1" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
-      Configurações
-    </button>
+  <button class="menu-item" onclick="irPara('bio',this)">
+    <svg width="14" height="14" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="5" r="2.5" stroke="currentColor" stroke-width="1.3"/><path d="M2 13c0-2.8 2.5-5 5.5-5s5.5 2.2 5.5 5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+    Clientes
+  </button>
 
-    <div class="menu-section">Conta</div>
-    <button class="menu-item" onclick="irPara('pagamentos',this)">
-      <svg width="14" height="14" viewBox="0 0 15 15" fill="none"><path d="M2 4h11v8a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V4Z" stroke="currentColor" stroke-width="1.3"/><path d="M2 4V3a1 1 0 0 1 1-1h9a1 1 0 0 1 1 1v1" stroke="currentColor" stroke-width="1.3"/><path d="M5 8h5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
-      Pagamentos
-    </button>
-    <button class="menu-item" onclick="window.location.href='planos.html'">
-      <svg width="14" height="14" viewBox="0 0 15 15" fill="none"><rect x="1.5" y="3.5" width="12" height="9" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M1.5 6.5h12" stroke="currentColor" stroke-width="1.3"/></svg>
-      Planos
-    </button>
-    <button class="menu-item" onclick="irPara('suporte',this)">
-      <svg width="14" height="14" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="7.5" r="5.5" stroke="currentColor" stroke-width="1.3"/><path d="M7.5 8.5V8a2 2 0 1 0-2-2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><circle cx="7.5" cy="10.5" r=".5" fill="currentColor"/></svg>
-      Suporte
-    </button>
-  </div>
+  <button class="menu-item" onclick="irPara('horarios',this)">
+    <svg width="14" height="14" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="7.5" r="5.5" stroke="currentColor" stroke-width="1.3"/><path d="M7.5 4.5V8l2 2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+    Horários
+  </button>
+
+  <button class="menu-item" onclick="irPara('lembretes',this)">
+    <svg width="14" height="14" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="7.5" r="5.5" stroke="currentColor" stroke-width="1.3"/><path d="M5 8s.5 1.5 2.5 1.5S10 8 10 8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><path d="M5.5 5.5h.01M9.5 5.5h.01" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+    Automação
+  </button>
+
+  <button class="menu-item" onclick="irPara('whatsapp',this)">
+    <svg width="14" height="14" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="7.5" r="5.5" stroke="currentColor" stroke-width="1.3"/><path d="M5 8s.5 1.5 2.5 1.5S10 8 10 8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><path d="M5.5 5.5h.01M9.5 5.5h.01" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+    WhatsApp Auto
+  </button>
+
+  <button class="menu-item" onclick="irPara('bio',this)">
+    <svg width="14" height="14" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="5" r="2.5" stroke="currentColor" stroke-width="1.3"/><path d="M2 13c0-2.8 2.5-5 5.5-5s5.5 2.2 5.5 5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+    Minha Bio
+  </button>
+
+  <button class="menu-item" onclick="irPara('configuracoes',this)">
+    <svg width="14" height="14" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="7.5" r="2" stroke="currentColor" stroke-width="1.3"/><path d="M7.5 1v1.5M7.5 12.5V14M1 7.5h1.5M12.5 7.5H14M3 3l1 1M11 11l1 1M3 12l1-1M11 4l1-1" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+    Configurações
+  </button>
+
+  <div class="menu-section">Conta</div>
+
+  <button class="menu-item" onclick="irPara('pagamentos',this)">
+    <svg width="14" height="14" viewBox="0 0 15 15" fill="none"><path d="M2 4h11v8a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V4Z" stroke="currentColor" stroke-width="1.3"/><path d="M2 4V3a1 1 0 0 1 1-1h9a1 1 0 0 1 1 1v1" stroke="currentColor" stroke-width="1.3"/><path d="M5 8h5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+    Pagamentos
+  </button>
+
+  <button class="menu-item" onclick="window.location.href='planos.html'">
+    <svg width="14" height="14" viewBox="0 0 15 15" fill="none"><rect x="1.5" y="3.5" width="12" height="9" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M1.5 6.5h12" stroke="currentColor" stroke-width="1.3"/></svg>
+    Planos
+  </button>
+
+  <button class="menu-item" onclick="irPara('suporte',this)">
+    <svg width="14" height="14" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="7.5" r="5.5" stroke="currentColor" stroke-width="1.3"/><path d="M7.5 8.5V8a2 2 0 1 0-2-2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><circle cx="7.5" cy="10.5" r=".5" fill="currentColor"/></svg>
+    Suporte
+  </button>
+ </div>
 
   <div class="sidebar-footer">
     <button id="btn-instalar-app" class="btn-instalar">
