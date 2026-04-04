@@ -1934,3 +1934,101 @@ window.carregarAgendamentos = async function() {
   await _origCarregarAgs.apply(this, arguments);
   setTimeout(atualizarInsights, 200);
 };
+
+/* ═══════════════════════════════════════════════════
+   INSIGHTS — consome GET /api/agendamentos/insights
+   Adicione este bloco no FINAL do seu painel.js
+═══════════════════════════════════════════════════ */
+
+async function carregarInsights() {
+  if (!negocioAtual) return
+  const token = localStorage.getItem('token')
+
+  try {
+    const res  = await fetch(`${API}/agendamentos/insights?negocioId=${negocioAtual._id}`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    })
+    if (!res.ok) return
+    const data = await res.json()
+
+    // ── Melhor agendamento ──
+    const elMelhor = document.getElementById('insight-melhor-horario')
+    if (elMelhor) elMelhor.textContent = data.melhorAgendamento || '—'
+
+    // ── Serviço mais lucrativo ──
+    const elServico  = document.getElementById('insight-servico-top')
+    const elReceita  = document.getElementById('insight-servico-receita')
+    if (data.topServico) {
+      if (elServico) elServico.textContent = data.topServico.nome
+      if (elReceita) elReceita.textContent =
+        `+R$${data.topServico.receita.toFixed(0)} no mês`
+    } else {
+      if (elServico) elServico.textContent = '—'
+      if (elReceita) elReceita.textContent = 'Sem dados este mês'
+    }
+
+    // ── Clientes inativos ──
+    const elInativos = document.getElementById('insight-inativos')
+    const elInativosSub = document.getElementById('insight-inativos-sub')
+    const qtdInativos = data.inativos?.total || 0
+    if (elInativos) elInativos.textContent = `${qtdInativos} cliente${qtdInativos !== 1 ? 's' : ''}`
+    if (elInativosSub) elInativosSub.textContent = 'há mais de 30 dias'
+
+    // ── Alert banner de clientes inativos ──
+    const banner = document.getElementById('alert-clientes-inativos')
+    const bannerTxt = document.getElementById('alert-clientes-texto')
+    if (banner) {
+      if (qtdInativos >= 3) {
+        banner.style.display = 'flex'
+        if (bannerTxt) bannerTxt.innerHTML =
+          `<strong>${qtdInativos} clientes estão inativos</strong>, mande uma promoção para reativá-los`
+      } else {
+        banner.style.display = 'none'
+      }
+    }
+
+    // ── Finance card ──
+    const fin = data.finance || {}
+
+    const elAmount = document.getElementById('finance-amount-val')
+    const elMeta   = document.getElementById('finance-meta')
+    const elAtend  = document.getElementById('finance-atend')
+    const elChartL = document.getElementById('finance-chart-label')
+
+    if (elAmount) elAmount.textContent =
+      (fin.lucroMes || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+    if (elMeta)   elMeta.textContent   = `Movidas: ${fin.atendMes || 0} agendamentos`
+    if (elAtend)  elAtend.textContent  = fin.atendMes || 0
+    if (elChartL) elChartL.textContent = `R$${Math.round(fin.lucroMes || 0)}`
+
+    // ── Lucro da semana (4º stat card) ──
+    const elTotal = document.getElementById('stat-total')
+    if (elTotal) elTotal.textContent =
+      'R$ ' + (fin.lucroSemana || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+
+    // ── Histórico mensal via API (sobrescreve localStorage) ──
+    if (fin.historicoMeses?.length && negocioAtual) {
+      fin.historicoMeses.forEach(({ mes, lucro, atendimentos }) => {
+        localStorage.setItem(`lucro_val_${negocioAtual._id}_${mes}`, String(lucro))
+        // Cria um array fake de IDs com o tamanho correto para manter compatibilidade
+        const idsExistentes = getLucroIds(negocioAtual._id) // evita sobrescrever ids reais do mês atual
+        if (mes !== mesAtualChave() || idsExistentes.length === 0) {
+          // Para meses antigos, gera IDs placeholder
+          const fakeIds = Array.from({ length: atendimentos }, (_, i) => `hist_${mes}_${i}`)
+          localStorage.setItem(`lucro_ids_${negocioAtual._id}_${mes}`, JSON.stringify(fakeIds))
+        }
+      })
+      renderHistorico()
+    }
+
+  } catch (err) {
+    console.error('Erro ao carregar insights:', err.message)
+  }
+}
+
+// ── Chama insights junto com o carregamento dos dados ──
+const _carregarDadosNegocioOriginal = carregarDadosNegocio
+carregarDadosNegocio = function () {
+  _carregarDadosNegocioOriginal()
+  carregarInsights()
+}

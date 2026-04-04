@@ -16,7 +16,7 @@ const autenticar = (req, res, next) => {
   }
 }
 
-// ── LISTAR agendamentos de um negócio ─────────────────
+// ── LISTAR agendamentos de um negócio ─────────────────────
 router.get('/', autenticar, async (req, res) => {
   try {
     const { negocioId } = req.query
@@ -29,7 +29,7 @@ router.get('/', autenticar, async (req, res) => {
   }
 })
 
-// ── HORÁRIOS OCUPADOS (rota pública) ──────────────────
+// ── HORÁRIOS OCUPADOS (rota pública) ──────────────────────
 router.get('/horarios-ocupados', async (req, res) => {
   try {
     const { clinicaId, data } = req.query
@@ -55,7 +55,6 @@ router.get('/horarios-ocupados', async (req, res) => {
       return res.json({ horarios: [], ocupados: [], diaInativo: true })
     }
 
-    // Gera todos os horários do dia
     const horariosDisponiveis = []
     const [hIni, mIni] = configDia.inicio.split(':').map(Number)
     const [hFim, mFim] = configDia.fim.split(':').map(Number)
@@ -68,7 +67,6 @@ router.get('/horarios-ocupados', async (req, res) => {
       atual += intervalo
     }
 
-    // ✅ Filtra horários que já passaram se for hoje (fuso de Brasília)
     const agora = new Date()
     const agoraBrasilia = new Date(agora.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }))
     const dataHoje = (() => {
@@ -86,7 +84,6 @@ router.get('/horarios-ocupados', async (req, res) => {
         })
       : horariosDisponiveis
 
-    // Filtra pausas
     const pausas = (neg ? neg.pausas : []) || []
     const horariosComPausa = horariosValidos.filter(h => {
       const [hh, mm] = h.split(':').map(Number)
@@ -112,7 +109,139 @@ router.get('/horarios-ocupados', async (req, res) => {
   }
 })
 
-// ── CRIAR agendamento (público) ───────────────────────
+// ══════════════════════════════════════════════════════════
+//  INSIGHTS — dados para o painel direito do dashboard
+//  GET /api/agendamentos/insights?negocioId=xxx
+// ══════════════════════════════════════════════════════════
+router.get('/insights', autenticar, async (req, res) => {
+  try {
+    const { negocioId } = req.query
+    const neg = await Negocio.findOne({ _id: negocioId, userId: req.userId })
+    if (!neg) return res.status(404).json({ erro: 'Negócio não encontrado' })
+
+    const todos = await Appointment.find({ clinicaId: negocioId }).lean()
+
+    // ── 1. Melhor horário (slot mais agendado entre confirmados + concluídos) ──
+    const freqHora = {}
+    todos
+      .filter(a => a.status !== 'cancelado' && a.hora)
+      .forEach(a => {
+        freqHora[a.hora] = (freqHora[a.hora] || 0) + 1
+      })
+    const melhorHora = Object.entries(freqHora).sort((a, b) => b[1] - a[1])[0]?.[0] || null
+
+    // Melhor dia da semana
+    const freqDia = {}
+    const diasNomes = ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado']
+    todos
+      .filter(a => a.status !== 'cancelado' && a.data)
+      .forEach(a => {
+        const [ano, mes, dia] = a.data.split('-').map(Number)
+        const d = new Date(ano, mes - 1, dia).getDay()
+        freqDia[d] = (freqDia[d] || 0) + 1
+      })
+    const melhorDiaIdx = Object.entries(freqDia).sort((a, b) => b[1] - a[1])[0]?.[0]
+    const melhorDia = melhorDiaIdx !== undefined ? diasNomes[melhorDiaIdx] : null
+
+    const melhorAgendamento = melhorDia && melhorHora
+      ? `${melhorDia}s ${melhorHora}`
+      : melhorHora || '—'
+
+    // ── 2. Serviço mais lucrativo (mês atual) ──
+    const mesAtual = new Date().toISOString().slice(0, 7) // "2025-04"
+    const lucroServico = {}
+    todos
+      .filter(a => a.status === 'concluido' && a.data?.startsWith(mesAtual) && a.servico)
+      .forEach(a => {
+        lucroServico[a.servico] = (lucroServico[a.servico] || 0) + (Number(a.preco) || 0)
+      })
+    const topServicoEntry = Object.entries(lucroServico).sort((a, b) => b[1] - a[1])[0]
+    const topServico = topServicoEntry
+      ? { nome: topServicoEntry[0], receita: topServicoEntry[1] }
+      : null
+
+    // ── 3. Clientes inativos (sem agendar nos últimos 30 dias) ──
+    const hoje = new Date()
+    const cutoff = new Date(hoje)
+    cutoff.setDate(cutoff.getDate() - 30)
+    const cutoffStr = cutoff.toISOString().split('T')[0]
+
+    // Clientes que agendaram antes do cutoff
+    const clientesAntigos = new Set(
+      todos
+        .filter(a => a.data < cutoffStr)
+        .map(a => a.pacienteNome?.toLowerCase().trim())
+        .filter(Boolean)
+    )
+    // Clientes que agendaram nos últimos 30 dias
+    const clientesRecentes = new Set(
+      todos
+        .filter(a => a.data >= cutoffStr)
+        .map(a => a.pacienteNome?.toLowerCase().trim())
+        .filter(Boolean)
+    )
+    // Inativos = antigos que não aparecem nos recentes
+    const inativos = [...clientesAntigos].filter(c => !clientesRecentes.has(c))
+
+    // ── 4. Finance — lucro e atendimentos do mês atual ──
+    const lucroMes = todos
+      .filter(a => a.status === 'concluido' && a.data?.startsWith(mesAtual))
+      .reduce((acc, a) => acc + (Number(a.preco) || 0), 0)
+
+    const atendMes = todos.filter(
+      a => a.status === 'concluido' && a.data?.startsWith(mesAtual)
+    ).length
+
+    // Ticket médio do mês
+    const ticketMedio = atendMes > 0 ? lucroMes / atendMes : 0
+
+    // ── 5. Lucro dos últimos 6 meses (para o gráfico) ──
+    const historicoMeses = []
+    for (let i = 5; i >= 0; i--) {
+      const d = new Date()
+      d.setDate(1)
+      d.setMonth(d.getMonth() - i)
+      const chave = d.toISOString().slice(0, 7)
+      const lucro = todos
+        .filter(a => a.status === 'concluido' && a.data?.startsWith(chave))
+        .reduce((acc, a) => acc + (Number(a.preco) || 0), 0)
+      const atend = todos.filter(
+        a => a.status === 'concluido' && a.data?.startsWith(chave)
+      ).length
+      historicoMeses.push({ mes: chave, lucro, atendimentos: atend })
+    }
+
+    // ── 6. Lucro da semana ──
+    const semStart = new Date()
+    semStart.setDate(semStart.getDate() - 7)
+    const semStr = semStart.toISOString().split('T')[0]
+    const hojeStr = hoje.toISOString().split('T')[0]
+    const lucroSemana = todos
+      .filter(a => a.status === 'concluido' && a.data >= semStr && a.data <= hojeStr)
+      .reduce((acc, a) => acc + (Number(a.preco) || 0), 0)
+
+    res.json({
+      melhorAgendamento,
+      topServico,
+      inativos: {
+        total: inativos.length,
+        nomes: inativos.slice(0, 10) // máx 10 nomes
+      },
+      finance: {
+        lucroMes,
+        atendMes,
+        ticketMedio,
+        lucroSemana,
+        historicoMeses
+      }
+    })
+  } catch (err) {
+    console.error('ERRO insights:', err.message)
+    res.status(500).json({ erro: 'Erro ao buscar insights' })
+  }
+})
+
+// ── CRIAR agendamento (público) ───────────────────────────
 router.post('/', async (req, res) => {
   try {
     const { clinicaId, pacienteNome, pacienteTelefone, servico, data, hora } = req.body
@@ -120,7 +249,6 @@ router.post('/', async (req, res) => {
     const jaExiste = await Appointment.findOne({ clinicaId, data, hora, status: { $ne: 'cancelado' } })
     if (jaExiste) return res.status(400).json({ erro: 'Horário já ocupado' })
 
-    // ✅ Busca e salva o preço do serviço no momento da criação
     let preco = 0
     const neg = await Negocio.findById(clinicaId).lean()
     if (neg && neg.servicos) {
@@ -143,7 +271,7 @@ router.post('/', async (req, res) => {
   }
 })
 
-// ── BUSCAR agendamento público (para página de cancelamento) ──
+// ── BUSCAR agendamento público ────────────────────────────
 router.get('/:id/publico', async (req, res) => {
   try {
     const ag = await Appointment.findById(req.params.id)
@@ -161,7 +289,7 @@ router.get('/:id/publico', async (req, res) => {
   }
 })
 
-// ── CANCELAR agendamento pelo cliente (público) ───────
+// ── CANCELAR agendamento pelo cliente (público) ───────────
 router.patch('/:id/cancelar-publico', async (req, res) => {
   try {
     const ag = await Appointment.findById(req.params.id)
@@ -176,7 +304,7 @@ router.patch('/:id/cancelar-publico', async (req, res) => {
   }
 })
 
-// ── ATUALIZAR status ──────────────────────────────────
+// ── ATUALIZAR status ──────────────────────────────────────
 router.patch('/:id', autenticar, async (req, res) => {
   try {
     const agendamento = await Appointment.findByIdAndUpdate(
