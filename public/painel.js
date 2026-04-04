@@ -1185,3 +1185,752 @@ carregarTema()
 
 const _token = localStorage.getItem('token')
 if (_token) { mostrarPainel() } else { window.location.href = '/auth.html' }
+
+/* ═══════════════════════════════════════════════════
+   TOPBAR PATCH — AgendoRapido
+   Cole este bloco inteiro antes do </body> no painel.html
+   (depois do <script src="/painel.js"> existente)
+═══════════════════════════════════════════════════ */
+
+(function () {
+
+/* ── ESTILOS ── */
+const css = `
+/* ── BUSCA MODAL ── */
+#busca-overlay {
+  position:fixed;inset:0;background:rgba(0,0,0,0.65);z-index:500;
+  display:none;align-items:flex-start;justify-content:center;padding-top:80px;
+  backdrop-filter:blur(8px);
+}
+#busca-overlay.aberta { display:flex; animation:fadeIn .18s ease; }
+@keyframes fadeIn { from{opacity:0} to{opacity:1} }
+
+#busca-box {
+  background:#111827;border:1px solid rgba(255,255,255,0.1);
+  border-radius:16px;width:100%;max-width:560px;
+  box-shadow:0 24px 60px rgba(0,0,0,0.7);overflow:hidden;
+  animation:slideDown .2s cubic-bezier(.4,0,.2,1);
+}
+@keyframes slideDown { from{transform:translateY(-16px);opacity:0} to{transform:translateY(0);opacity:1} }
+
+#busca-input-wrap {
+  display:flex;align-items:center;gap:12px;padding:16px 20px;
+  border-bottom:1px solid rgba(255,255,255,0.07);
+}
+#busca-input-wrap svg { color:#4a5568;flex-shrink:0; }
+#busca-input {
+  flex:1;background:none;border:none;outline:none;
+  font-size:15px;font-weight:500;color:#e2e8f0;font-family:inherit;
+}
+#busca-input::placeholder { color:#4a5568; }
+#busca-kbd {
+  font-size:11px;color:#4a5568;background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.1);border-radius:5px;padding:2px 7px;
+}
+#busca-resultados { max-height:360px;overflow-y:auto; }
+.busca-secao-label {
+  font-size:9.5px;font-weight:800;color:#4a5568;text-transform:uppercase;
+  letter-spacing:.12em;padding:12px 20px 6px;
+}
+.busca-item {
+  display:flex;align-items:center;gap:12px;padding:10px 20px;
+  cursor:pointer;transition:background .12s;
+}
+.busca-item:hover, .busca-item.ativo { background:rgba(59,130,246,0.1); }
+.busca-avatar-mini {
+  width:32px;height:32px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:700;color:white;
+}
+.busca-item-info { flex:1;min-width:0; }
+.busca-item-nome { font-size:13px;font-weight:600;color:#e2e8f0; }
+.busca-item-sub  { font-size:11px;color:#8b9ab4;margin-top:1px; }
+.busca-item-badge {
+  font-size:10px;font-weight:700;padding:2px 8px;border-radius:100px;white-space:nowrap;
+}
+.busca-vazio { text-align:center;padding:32px;color:#4a5568;font-size:13px; }
+.busca-hint  { padding:10px 20px 14px;text-align:center;font-size:11px;color:#4a5568; }
+
+/* ── NOTIFICAÇÕES DROPDOWN ── */
+#notif-panel {
+  position:fixed;top:60px;right:16px;width:340px;max-height:480px;
+  background:#111827;border:1px solid rgba(255,255,255,0.1);border-radius:14px;
+  box-shadow:0 20px 50px rgba(0,0,0,0.7);z-index:400;overflow:hidden;
+  display:none;animation:slideDown .18s ease;
+}
+#notif-panel.aberto { display:flex;flex-direction:column; }
+.notif-header {
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 18px;border-bottom:1px solid rgba(255,255,255,0.07);flex-shrink:0;
+}
+.notif-title { font-size:13px;font-weight:700;color:#e2e8f0; }
+.notif-badge {
+  background:#3b82f6;color:white;font-size:10px;font-weight:800;
+  padding:2px 7px;border-radius:100px;
+}
+.notif-body { overflow-y:auto;flex:1; }
+.notif-item {
+  display:flex;align-items:flex-start;gap:11px;padding:12px 18px;
+  border-bottom:1px solid rgba(255,255,255,0.05);transition:background .12s;cursor:default;
+}
+.notif-item:last-child { border:none; }
+.notif-item:hover { background:rgba(255,255,255,0.03); }
+.notif-icon {
+  width:34px;height:34px;border-radius:9px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+}
+.notif-icon.blue   { background:rgba(59,130,246,0.15);  }
+.notif-icon.green  { background:rgba(16,185,129,0.15);  }
+.notif-icon.yellow { background:rgba(245,158,11,0.15);  }
+.notif-icon.red    { background:rgba(239,68,68,0.15);   }
+.notif-item-texto  { flex:1;min-width:0; }
+.notif-item-titulo { font-size:12.5px;font-weight:600;color:#e2e8f0;line-height:1.4; }
+.notif-item-sub    { font-size:11px;color:#8b9ab4;margin-top:2px; }
+.notif-item-hora   { font-size:10.5px;color:#4a5568;margin-top:3px; }
+.notif-vazio { text-align:center;padding:36px 20px;color:#4a5568;font-size:13px; }
+.notif-ver-todos {
+  padding:12px;text-align:center;border-top:1px solid rgba(255,255,255,0.07);
+  font-size:12px;color:#3b82f6;cursor:pointer;font-weight:600;flex-shrink:0;
+  transition:background .12s;
+}
+.notif-ver-todos:hover { background:rgba(59,130,246,0.08); }
+.notif-dot-badge {
+  position:absolute;top:5px;right:5px;width:7px;height:7px;
+  background:#3b82f6;border-radius:50%;border:1.5px solid #111827;
+}
+
+/* ── MENSAGENS DROPDOWN ── */
+#msg-panel {
+  position:fixed;top:60px;right:16px;width:320px;
+  background:#111827;border:1px solid rgba(255,255,255,0.1);border-radius:14px;
+  box-shadow:0 20px 50px rgba(0,0,0,0.7);z-index:400;overflow:hidden;
+  display:none;animation:slideDown .18s ease;
+}
+#msg-panel.aberto { display:block; }
+.msg-header {
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 18px;border-bottom:1px solid rgba(255,255,255,0.07);
+}
+.msg-title { font-size:13px;font-weight:700;color:#e2e8f0; }
+.msg-sub   { font-size:11.5px;color:#8b9ab4;padding:10px 18px 4px; }
+.msg-item {
+  display:flex;align-items:center;gap:11px;padding:10px 18px;
+  border-bottom:1px solid rgba(255,255,255,0.05);cursor:pointer;transition:background .12s;
+}
+.msg-item:last-child { border:none; }
+.msg-item:hover { background:rgba(16,185,129,0.08); }
+.msg-avatar-mini {
+  width:34px;height:34px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:700;color:white;
+}
+.msg-item-info { flex:1;min-width:0; }
+.msg-item-nome { font-size:12.5px;font-weight:600;color:#e2e8f0; }
+.msg-item-tel  { font-size:11px;color:#8b9ab4;margin-top:1px; }
+.msg-wpp-btn {
+  display:flex;align-items:center;gap:5px;background:rgba(16,185,129,0.15);
+  color:#10b981;border:1px solid rgba(16,185,129,0.25);
+  border-radius:7px;padding:5px 10px;font-size:11.5px;font-weight:700;white-space:nowrap;
+}
+.msg-vazio { text-align:center;padding:28px;color:#4a5568;font-size:13px; }
+
+/* ── AVATAR MENU ── */
+#avatar-menu {
+  position:fixed;top:60px;right:16px;width:230px;
+  background:#111827;border:1px solid rgba(255,255,255,0.1);border-radius:14px;
+  box-shadow:0 20px 50px rgba(0,0,0,0.7);z-index:400;overflow:hidden;
+  display:none;animation:slideDown .18s ease;
+}
+#avatar-menu.aberto { display:block; }
+.avatar-menu-header {
+  padding:16px 18px;border-bottom:1px solid rgba(255,255,255,0.07);
+  display:flex;align-items:center;gap:11px;
+}
+.avatar-menu-circle {
+  width:38px;height:38px;border-radius:50%;flex-shrink:0;
+  background:linear-gradient(135deg,#2563eb,#7c3aed);
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;font-weight:700;color:white;
+}
+.avatar-menu-nome   { font-size:13px;font-weight:700;color:#e2e8f0; }
+.avatar-menu-email  { font-size:11px;color:#8b9ab4;margin-top:1px; }
+.avatar-menu-neg    { font-size:11px;color:#60a5fa;margin-top:2px;font-weight:600; }
+.avatar-menu-item {
+  display:flex;align-items:center;gap:10px;padding:10px 18px;
+  cursor:pointer;transition:background .12s;font-size:12.5px;color:#8b9ab4;
+}
+.avatar-menu-item:hover { background:rgba(255,255,255,0.04);color:#e2e8f0; }
+.avatar-menu-divider { height:1px;background:rgba(255,255,255,0.07);margin:4px 0; }
+.avatar-menu-item.danger:hover { background:rgba(239,68,68,0.1);color:#f87171; }
+
+/* ── BADGE DE NOTIF NO SINO ── */
+.topbar-icon-btn { position:relative; }
+
+/* ── SEARCH INPUT ATIVO ── */
+.main-topbar-search.ativa {
+  border-color:rgba(59,130,246,0.4);
+  box-shadow:0 0 0 3px rgba(59,130,246,0.1);
+}
+
+/* ── LIGHT MODE OVERRIDES ── */
+body.light-mode #busca-box,
+body.light-mode #notif-panel,
+body.light-mode #msg-panel,
+body.light-mode #avatar-menu {
+  background:#fff;border-color:rgba(15,23,42,0.1);box-shadow:0 20px 50px rgba(0,0,0,0.15);
+}
+body.light-mode #busca-input { color:#0f172a; }
+body.light-mode .busca-item-nome,
+body.light-mode .notif-item-titulo,
+body.light-mode .msg-item-nome,
+body.light-mode .avatar-menu-nome { color:#0f172a; }
+body.light-mode .busca-item:hover,
+body.light-mode .busca-item.ativo { background:rgba(37,99,235,0.07); }
+body.light-mode .notif-item:hover,
+body.light-mode .msg-item:hover { background:rgba(15,23,42,0.04); }
+body.light-mode .avatar-menu-item:hover { background:rgba(15,23,42,0.05);color:#0f172a; }
+body.light-mode .avatar-menu-item.danger:hover { background:rgba(220,38,38,0.07);color:#dc2626; }
+body.light-mode .busca-secao-label,
+body.light-mode .busca-vazio,
+body.light-mode .notif-vazio,
+body.light-mode .msg-vazio,
+body.light-mode .notif-item-sub,
+body.light-mode .notif-item-hora,
+body.light-mode .msg-item-tel,
+body.light-mode .avatar-menu-email { color:#94a3b8; }
+body.light-mode .notif-dot-badge { border-color:#fff; }
+`;
+
+const style = document.createElement('style');
+style.textContent = css;
+document.head.appendChild(style);
+
+/* ══════════════════════════════════════════════
+   HELPERS DE COR DE AVATAR
+══════════════════════════════════════════════ */
+function avatarColorPatch(nome) {
+  const colors = [
+    ['#1d4ed8','#3b82f6'],['#7c3aed','#8b5cf6'],['#0e7490','#06b6d4'],
+    ['#15803d','#22c55e'],['#b45309','#f59e0b'],['#be185d','#ec4899'],
+    ['#0369a1','#38bdf8'],['#6d28d9','#a78bfa'],
+  ];
+  let h = 0;
+  for (let c of (nome || 'A')) h = ((h << 5) - h) + c.charCodeAt(0);
+  return colors[Math.abs(h) % colors.length];
+}
+
+function mkAvatarStyle(nome, w, h, fs) {
+  const [c1, c2] = avatarColorPatch(nome);
+  return `background:linear-gradient(135deg,${c1},${c2});width:${w||32}px;height:${h||32}px;font-size:${fs||12}px`;
+}
+
+/* ══════════════════════════════════════════════
+   1. BUSCA
+══════════════════════════════════════════════ */
+const buscaOverlay = document.createElement('div');
+buscaOverlay.id = 'busca-overlay';
+buscaOverlay.innerHTML = `
+  <div id="busca-box">
+    <div id="busca-input-wrap">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <circle cx="7" cy="7" r="5" stroke="currentColor" stroke-width="1.5"/>
+        <path d="M11 11l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      <input id="busca-input" placeholder="Buscar clientes, agendamentos..." autocomplete="off" spellcheck="false">
+      <span id="busca-kbd">ESC</span>
+    </div>
+    <div id="busca-resultados">
+      <div class="busca-hint">Digite para buscar por nome, serviço ou data</div>
+    </div>
+  </div>`;
+document.body.appendChild(buscaOverlay);
+
+buscaOverlay.addEventListener('click', function(e) {
+  if (e.target === buscaOverlay) fecharBusca();
+});
+
+document.addEventListener('keydown', function(e) {
+  if ((e.metaKey || e.ctrlKey) && e.key === 'k') { e.preventDefault(); abrirBusca(); }
+  if (e.key === 'Escape') { fecharBusca(); fecharTodosDropdowns(); }
+});
+
+function abrirBusca() {
+  buscaOverlay.classList.add('aberta');
+  setTimeout(() => document.getElementById('busca-input').focus(), 50);
+  const wrap = document.querySelector('.main-topbar-search');
+  if (wrap) wrap.classList.add('ativa');
+}
+function fecharBusca() {
+  buscaOverlay.classList.remove('aberta');
+  const wrap = document.querySelector('.main-topbar-search');
+  if (wrap) wrap.classList.remove('ativa');
+}
+
+// Clique no campo de busca da topbar
+const searchWrap = document.querySelector('.main-topbar-search');
+if (searchWrap) searchWrap.addEventListener('click', abrirBusca);
+
+const buscaInput = document.getElementById('busca-input');
+buscaInput.addEventListener('input', function() { renderBusca(this.value.trim()); });
+
+function renderBusca(q) {
+  const res = document.getElementById('busca-resultados');
+  const ags = window.todosAgendamentos || [];
+
+  if (!q) {
+    // Mostra agendamentos de hoje como sugestão
+    const hoje = new Date().toISOString().split('T')[0];
+    const deHoje = ags.filter(a => a.data === hoje).slice(0, 5);
+    if (!deHoje.length) {
+      res.innerHTML = '<div class="busca-hint">Digite para buscar por nome, serviço ou data</div>';
+      return;
+    }
+    res.innerHTML = `<div class="busca-secao-label">Agendamentos de hoje</div>` + deHoje.map(buscaItemHTML).join('');
+    return;
+  }
+
+  const ql = q.toLowerCase();
+  const filtrado = ags.filter(a =>
+    (a.pacienteNome || '').toLowerCase().includes(ql) ||
+    (a.servico || '').toLowerCase().includes(ql) ||
+    (a.data || '').includes(ql) ||
+    (a.hora || '').includes(ql)
+  ).slice(0, 10);
+
+  if (!filtrado.length) {
+    res.innerHTML = `<div class="busca-vazio">Nenhum resultado para "<strong>${q}</strong>"</div>`;
+    return;
+  }
+
+  const porNome = {};
+  filtrado.forEach(a => {
+    if (!porNome[a.pacienteNome]) porNome[a.pacienteNome] = [];
+    porNome[a.pacienteNome].push(a);
+  });
+
+  let html = `<div class="busca-secao-label">${filtrado.length} resultado${filtrado.length > 1 ? 's' : ''} encontrado${filtrado.length > 1 ? 's' : ''}</div>`;
+  html += filtrado.map(buscaItemHTML).join('');
+  res.innerHTML = html;
+}
+
+function buscaItemHTML(a) {
+  const ini = (a.pacienteNome || 'C')[0].toUpperCase();
+  const style = mkAvatarStyle(a.pacienteNome, 32, 32, 12);
+  const statusCor = {confirmado:'#10b981',concluido:'#8b5cf6',cancelado:'#ef4444',pendente:'#f59e0b'}[a.status] || '#8b9ab4';
+  const preco = a.preco ? ` • R$${Number(a.preco).toFixed(2).replace('.',',')}` : '';
+  return `<div class="busca-item" onclick="buscaAbrirAgendamento('${a._id}')">
+    <div class="busca-avatar-mini" style="${style}">${ini}</div>
+    <div class="busca-item-info">
+      <div class="busca-item-nome">${a.pacienteNome}</div>
+      <div class="busca-item-sub">${a.servico} • ${a.data ? a.data.split('-').reverse().join('/') : ''} às ${a.hora}${preco}</div>
+    </div>
+    <span class="busca-item-badge" style="background:${statusCor}22;color:${statusCor};border:1px solid ${statusCor}44">${a.status}</span>
+  </div>`;
+}
+
+function buscaAbrirAgendamento(id) {
+  fecharBusca();
+  // Filtra o painel para mostrar o agendamento
+  const ag = (window.todosAgendamentos || []).find(a => a._id === id);
+  if (ag && ag.data) {
+    const filtroEl = document.getElementById('filtro-data');
+    if (filtroEl) { filtroEl.value = ag.data; if (window.filtrarData) window.filtrarData(); }
+    const paginaBtn = document.querySelector('.menu-item.ativo') || document.querySelector('[onclick*="agendamentos"]');
+    if (paginaBtn && window.irPara) window.irPara('agendamentos', paginaBtn);
+  }
+}
+
+/* ══════════════════════════════════════════════
+   2. NOTIFICAÇÕES
+══════════════════════════════════════════════ */
+const notifPanel = document.createElement('div');
+notifPanel.id = 'notif-panel';
+document.body.appendChild(notifPanel);
+
+function abrirNotificacoes() {
+  fecharTodosDropdowns();
+  renderNotificacoes();
+  notifPanel.classList.add('aberto');
+}
+
+function renderNotificacoes() {
+  const ags = window.todosAgendamentos || [];
+  const hoje = new Date().toISOString().split('T')[0];
+
+  const deHoje = ags.filter(a => a.data === hoje).sort((a,b) => a.hora.localeCompare(b.hora));
+  const proximos = ags.filter(a => a.data > hoje && a.status === 'confirmado').slice(0, 3);
+  const cancelados = ags.filter(a => a.status === 'cancelado').slice(0, 2);
+
+  const total = deHoje.length + proximos.length;
+
+  let html = `<div class="notif-header">
+    <span class="notif-title">Notificações</span>
+    ${total > 0 ? `<span class="notif-badge">${total}</span>` : ''}
+  </div><div class="notif-body">`;
+
+  if (!deHoje.length && !proximos.length) {
+    html += `<div class="notif-vazio">Sem agendamentos próximos</div>`;
+  }
+
+  if (deHoje.length) {
+    html += `<div class="busca-secao-label" style="padding:12px 18px 6px">Hoje (${deHoje.length})</div>`;
+    html += deHoje.slice(0,5).map(a => {
+      const cor = {confirmado:'blue',concluido:'green',cancelado:'red',pendente:'yellow'}[a.status] || 'blue';
+      const svgMap = {
+        blue:   `<svg width="14" height="14" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="7.5" r="5.5" stroke="#3b82f6" stroke-width="1.4"/><path d="M7.5 4.5V8l2 2" stroke="#3b82f6" stroke-width="1.4" stroke-linecap="round"/></svg>`,
+        green:  `<svg width="14" height="14" viewBox="0 0 15 15" fill="none"><path d="M2 7l4 4L13 4" stroke="#10b981" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+        red:    `<svg width="14" height="14" viewBox="0 0 15 15" fill="none"><path d="M4 4l7 7M11 4l-7 7" stroke="#ef4444" stroke-width="1.5" stroke-linecap="round"/></svg>`,
+        yellow: `<svg width="14" height="14" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="7.5" r="5.5" stroke="#f59e0b" stroke-width="1.4"/><path d="M7.5 5v3M7.5 10v.5" stroke="#f59e0b" stroke-width="1.5" stroke-linecap="round"/></svg>`,
+      };
+      return `<div class="notif-item">
+        <div class="notif-icon ${cor}">${svgMap[cor]}</div>
+        <div class="notif-item-texto">
+          <div class="notif-item-titulo">${a.pacienteNome}</div>
+          <div class="notif-item-sub">${a.servico}</div>
+          <div class="notif-item-hora">às ${a.hora}</div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  if (proximos.length) {
+    html += `<div class="busca-secao-label" style="padding:12px 18px 6px">Próximos</div>`;
+    html += proximos.map(a => {
+      const dt = a.data ? a.data.split('-').reverse().join('/') : '';
+      return `<div class="notif-item">
+        <div class="notif-icon blue">
+          <svg width="14" height="14" viewBox="0 0 15 15" fill="none"><rect x="1.5" y="2.5" width="12" height="11" rx="1.5" stroke="#3b82f6" stroke-width="1.3"/><path d="M5 1.5v2M10 1.5v2M1.5 5.5h12" stroke="#3b82f6" stroke-width="1.3" stroke-linecap="round"/></svg>
+        </div>
+        <div class="notif-item-texto">
+          <div class="notif-item-titulo">${a.pacienteNome}</div>
+          <div class="notif-item-sub">${a.servico}</div>
+          <div class="notif-item-hora">${dt} às ${a.hora}</div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  html += `</div>
+    <div class="notif-ver-todos" onclick="irParaAgendamentos()">Ver todos os agendamentos</div>`;
+
+  notifPanel.innerHTML = html;
+
+  // Atualiza badge do sino
+  const badge = document.getElementById('notif-dot');
+  if (badge) badge.style.display = deHoje.length > 0 ? 'block' : 'none';
+}
+
+function irParaAgendamentos() {
+  fecharTodosDropdowns();
+  const btn = document.querySelector('.menu-item');
+  if (window.irPara) window.irPara('agendamentos', btn);
+}
+
+// Injeta badge no botão sino
+const sinoBtn = document.querySelectorAll('.topbar-icon-btn')[1];
+if (sinoBtn) {
+  sinoBtn.setAttribute('title', 'Notificações');
+  sinoBtn.onclick = abrirNotificacoes;
+  const dot = document.createElement('div');
+  dot.id = 'notif-dot';
+  dot.className = 'notif-dot-badge';
+  dot.style.display = 'none';
+  sinoBtn.appendChild(dot);
+}
+
+/* ══════════════════════════════════════════════
+   3. MENSAGENS (WhatsApp rápido)
+══════════════════════════════════════════════ */
+const msgPanel = document.createElement('div');
+msgPanel.id = 'msg-panel';
+document.body.appendChild(msgPanel);
+
+function abrirMensagens() {
+  fecharTodosDropdowns();
+  renderMensagens();
+  msgPanel.classList.add('aberto');
+}
+
+function renderMensagens() {
+  const ags = window.todosAgendamentos || [];
+  const hoje = new Date().toISOString().split('T')[0];
+
+  // Clientes com tel dos últimos 30 dias
+  const vistos = {};
+  ags.filter(a => a.pacienteTelefone && a.data >= new Date(Date.now()-30*864e5).toISOString().split('T')[0])
+    .forEach(a => {
+      if (!vistos[a.pacienteNome]) vistos[a.pacienteNome] = { nome: a.pacienteNome, tel: a.pacienteTelefone, data: a.data };
+    });
+
+  const lista = Object.values(vistos).slice(0, 8);
+  const negNome = window.negocioAtual ? window.negocioAtual.nome : 'nosso negócio';
+
+  let html = `<div class="msg-header">
+    <span class="msg-title">Enviar mensagem</span>
+  </div>
+  <div class="msg-sub">Clientes recentes — abre WhatsApp</div>`;
+
+  if (!lista.length) {
+    html += `<div class="msg-vazio">Nenhum cliente com telefone cadastrado</div>`;
+  } else {
+    html += lista.map(c => {
+      const ini = c.nome[0].toUpperCase();
+      const style = mkAvatarStyle(c.nome, 34, 34, 13);
+      const tel = c.tel.replace(/\D/g,'');
+      const msg = encodeURIComponent(`Olá ${c.nome}! Tudo bem? Aqui é da ${negNome}. 😊`);
+      const link = `https://wa.me/55${tel}?text=${msg}`;
+      return `<div class="msg-item" onclick="window.open('${link}','_blank');fecharTodosDropdowns()">
+        <div class="msg-avatar-mini" style="${style}">${ini}</div>
+        <div class="msg-item-info">
+          <div class="msg-item-nome">${c.nome}</div>
+          <div class="msg-item-tel">${c.tel}</div>
+        </div>
+        <div class="msg-wpp-btn">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.118 1.528 5.852L.057 23.885l6.204-1.628A11.945 11.945 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.808 9.808 0 0 1-5.001-1.366l-.359-.213-3.682.966.983-3.594-.234-.371A9.818 9.818 0 0 1 2.182 12C2.182 6.57 6.57 2.182 12 2.182S21.818 6.57 21.818 12 17.43 21.818 12 21.818z"/></svg>
+          WhatsApp
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  msgPanel.innerHTML = html;
+}
+
+// Clique no envelope
+const envelopeBtn = document.querySelectorAll('.topbar-icon-btn')[2];
+if (envelopeBtn) {
+  envelopeBtn.setAttribute('title', 'Mensagens rápidas');
+  envelopeBtn.onclick = abrirMensagens;
+}
+
+/* ══════════════════════════════════════════════
+   4. AVATAR MENU
+══════════════════════════════════════════════ */
+const avatarMenu = document.createElement('div');
+avatarMenu.id = 'avatar-menu';
+document.body.appendChild(avatarMenu);
+
+function abrirAvatarMenu() {
+  fecharTodosDropdowns();
+  renderAvatarMenu();
+  avatarMenu.classList.add('aberto');
+}
+
+function renderAvatarMenu() {
+  const neg = window.negocioAtual;
+  const nome = neg ? neg.nome : 'Meu Negócio';
+  const ini  = nome[0].toUpperCase();
+  const tema = localStorage.getItem('tema') || 'escuro';
+  const temaLabel = tema === 'escuro' ? '☀ Mudar para claro' : '🌙 Mudar para escuro';
+
+  avatarMenu.innerHTML = `
+    <div class="avatar-menu-header">
+      <div class="avatar-menu-circle">${ini}</div>
+      <div>
+        <div class="avatar-menu-nome">${nome}</div>
+        <div class="avatar-menu-neg">Painel ativo</div>
+      </div>
+    </div>
+    <div style="padding:6px 0">
+      <div class="avatar-menu-item" onclick="irParaConfig()">
+        <svg width="14" height="14" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="7.5" r="2" stroke="currentColor" stroke-width="1.3"/><path d="M7.5 1v1.5M7.5 12.5V14M1 7.5h1.5M12.5 7.5H14M3 3l1 1M11 11l1 1M3 12l1-1M11 4l1-1" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+        Configurações
+      </div>
+      <div class="avatar-menu-item" onclick="irParaPlanos()">
+        <svg width="14" height="14" viewBox="0 0 15 15" fill="none"><rect x="1.5" y="3.5" width="12" height="9" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M1.5 6.5h12" stroke="currentColor" stroke-width="1.3"/></svg>
+        Meu plano
+      </div>
+      <div class="avatar-menu-item" onclick="toggleTemaMenu()">
+        <svg width="14" height="14" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="7.5" r="2.5" stroke="currentColor" stroke-width="1.3"/><path d="M7.5 1v1.5M7.5 12.5V14M1 7.5h1.5M12.5 7.5H14" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+        ${temaLabel}
+      </div>
+      <div class="avatar-menu-divider"></div>
+      <div class="avatar-menu-item danger" onclick="sair()">
+        <svg width="14" height="14" viewBox="0 0 13 13" fill="none"><path d="M5 6.5h6M8.5 4.5L11 6.5l-2.5 2M7.5 2H3a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h4.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Sair da conta
+      </div>
+    </div>`;
+}
+
+function irParaConfig() {
+  fecharTodosDropdowns();
+  const btn = document.querySelector('[onclick*="configuracoes"]');
+  if (window.irPara) window.irPara('configuracoes', btn);
+}
+function irParaPlanos() { fecharTodosDropdowns(); window.location.href = '/planos.html'; }
+function toggleTemaMenu() { fecharTodosDropdowns(); if (window.toggleTema) window.toggleTema(); }
+
+// Clique no avatar
+const avatarBtn = document.getElementById('topbar-avatar-btn');
+if (avatarBtn) avatarBtn.onclick = abrirAvatarMenu;
+
+/* ══════════════════════════════════════════════
+   FECHAR TODOS AO CLICAR FORA
+══════════════════════════════════════════════ */
+function fecharTodosDropdowns() {
+  notifPanel.classList.remove('aberto');
+  msgPanel.classList.remove('aberto');
+  avatarMenu.classList.remove('aberto');
+}
+window.fecharTodosDropdowns = fecharTodosDropdowns;
+
+document.addEventListener('click', function(e) {
+  const dentroDeDropdown =
+    e.target.closest('#notif-panel') ||
+    e.target.closest('#msg-panel') ||
+    e.target.closest('#avatar-menu') ||
+    e.target.closest('#topbar-avatar-btn') ||
+    e.target.closest('.topbar-icon-btn');
+  if (!dentroDeDropdown) fecharTodosDropdowns();
+});
+
+/* ══════════════════════════════════════════════
+   ATUALIZA BADGE DO SINO APÓS CARREGAR DADOS
+══════════════════════════════════════════════ */
+// Patch no carregarAgendamentos para atualizar o badge após carregamento
+const _origCarregar = window.carregarAgendamentos;
+if (_origCarregar) {
+  window.carregarAgendamentos = async function() {
+    await _origCarregar.apply(this, arguments);
+    // Atualiza badge do sino
+    const ags = window.todosAgendamentos || [];
+    const hoje = new Date().toISOString().split('T')[0];
+    const deHoje = ags.filter(a => a.data === hoje);
+    const dot = document.getElementById('notif-dot');
+    if (dot) dot.style.display = deHoje.length > 0 ? 'block' : 'none';
+  };
+}
+
+/* ══════════════════════════════════════════════
+   ATALHO DE TECLADO VISÍVEL NA BUSCA
+══════════════════════════════════════════════ */
+const searchSpan = document.querySelector('.main-topbar-search span');
+if (searchSpan) {
+  const isMac = navigator.platform.toUpperCase().includes('MAC');
+  searchSpan.textContent = `Buscar... (${isMac ? '⌘K' : 'Ctrl+K'})`;
+}
+
+})();
+/* ── FIM DO PATCH ── */
+
+/* ══ CORREÇÃO: Insights + Lucro da Semana ══ */
+function atualizarInsights() {
+  const ags = window.todosAgendamentos || [];
+  if (!ags.length) return;
+
+  /* ── Melhor horário (mais agendado) ── */
+  const freqHora = {};
+  ags.forEach(a => {
+    if (!a.hora) return;
+    const h = a.hora;
+    freqHora[h] = (freqHora[h] || 0) + 1;
+  });
+  const topHora = Object.entries(freqHora).sort((a,b) => b[1]-a[1])[0];
+  const elHorario = document.getElementById('insight-melhor-horario');
+  if (elHorario && topHora) {
+    elHorario.textContent = topHora[0];
+  } else if (elHorario) {
+    elHorario.textContent = 'Sem dados ainda';
+  }
+
+  /* ── Serviço mais lucrativo (por preço × quantidade) ── */
+  const freqServico = {};
+  ags.forEach(a => {
+    if (!a.servico) return;
+    if (!freqServico[a.servico]) freqServico[a.servico] = { total: 0, qtd: 0 };
+    freqServico[a.servico].total += Number(a.preco) || 0;
+    freqServico[a.servico].qtd  += 1;
+  });
+  const topServico = Object.entries(freqServico).sort((a,b) => b[1].total - a[1].total)[0];
+  const elServicoTop = document.getElementById('insight-servico-top');
+  const elServicoRec = document.getElementById('insight-servico-receita');
+  if (elServicoTop && topServico) {
+    elServicoTop.textContent = topServico[0];
+    const rec = topServico[1].total;
+    if (elServicoRec) {
+      elServicoRec.textContent = rec > 0
+        ? `R$ ${rec.toFixed(2).replace('.',',')} gerados`
+        : `${topServico[1].qtd} agendamento${topServico[1].qtd > 1 ? 's' : ''}`;
+    }
+  } else if (elServicoTop) {
+    elServicoTop.textContent = 'Sem dados ainda';
+  }
+
+  /* ── Clientes inativos (sem agendar há +30 dias) ── */
+  const hoje = new Date().toISOString().split('T')[0];
+  const cutoff = new Date(); cutoff.setDate(cutoff.getDate() - 30);
+  const cutStr = cutoff.toISOString().split('T')[0];
+
+  const clientesRecentes = new Set(
+    ags.filter(a => a.data && a.data >= cutStr).map(a => a.pacienteNome)
+  );
+  const todosClientes = new Set(ags.map(a => a.pacienteNome));
+  const inativos = [...todosClientes].filter(c => !clientesRecentes.has(c)).length;
+
+  const elInativos    = document.getElementById('insight-inativos');
+  const elInativosSub = document.getElementById('insight-inativos-sub');
+  if (elInativos) {
+    elInativos.textContent = inativos > 0 ? `${inativos} cliente${inativos > 1 ? 's' : ''}` : 'Nenhum';
+  }
+  if (elInativosSub) {
+    elInativosSub.textContent = inativos > 0 ? 'há mais de 30 dias' : 'todos ativos';
+    elInativosSub.className = 'insight-item-sub' + (inativos > 0 ? ' warning' : '');
+  }
+
+  /* ── Banner de clientes inativos ── */
+  const banner = document.getElementById('alert-clientes-inativos');
+  if (banner) {
+    banner.style.display = inativos >= 3 ? 'flex' : 'none';
+    const t = document.getElementById('alert-clientes-texto');
+    if (t && inativos >= 3) {
+      t.innerHTML = `<strong>${inativos} clientes estão inativos</strong>, mande uma promoção para reativá-los`;
+    }
+  }
+
+  /* ── Lucro da semana (todos com preço, últimos 7 dias) ── */
+const semStart = new Date(); semStart.setDate(semStart.getDate() - 7);
+const semStr   = semStart.toISOString().split('T')[0];
+const lucroSem = ags
+  .filter(a => a.status === 'concluido' && a.data >= semStr && a.data <= hoje)
+  .reduce((acc, a) => acc + (Number(a.preco) || 0), 0);
+
+  const elTotal = document.getElementById('stat-total');
+  if (elTotal) {
+    elTotal.textContent = 'R$ ' + lucroSem.toLocaleString('pt-BR', {
+      minimumFractionDigits: 2, maximumFractionDigits: 2
+    });
+  }
+
+  /* ── Finance card ── */
+  const mes     = new Date().toISOString().slice(0, 7);
+  const nid     = window.negocioAtual?._id;
+  const lucroMes = nid ? (parseFloat(localStorage.getItem(`lucro_val_${nid}_${mes}`)) || 0) : 0;
+  const atendMes = nid ? (() => {
+    try { return JSON.parse(localStorage.getItem(`lucro_ids_${nid}_${mes}`) || '[]').length; }
+    catch { return 0; }
+  })() : 0;
+
+  const fv  = document.getElementById('finance-amount-val');
+  const fm  = document.getElementById('finance-meta');
+  const fa  = document.getElementById('finance-atend');
+  const fcl = document.getElementById('finance-chart-label');
+
+  if (fv)  fv.textContent  = lucroMes.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2});
+  if (fm)  fm.textContent  = `Movidas: ${atendMes} agendamento${atendMes !== 1 ? 's' : ''}`;
+  if (fa)  fa.textContent  = atendMes;
+  if (fcl) fcl.textContent = `R$${Math.round(lucroMes)}`;
+}
+
+/* Garante que roda após carregar agendamentos */
+const _origFiltrar = window.filtrarData;
+window.filtrarData = function() {
+  if (_origFiltrar) _origFiltrar.apply(this, arguments);
+  setTimeout(atualizarInsights, 150);
+};
+
+/* ── Garante chamada após carregamento ── */
+const _origCarregarAgs = window.carregarAgendamentos;
+window.carregarAgendamentos = async function() {
+  await _origCarregarAgs.apply(this, arguments);
+  setTimeout(atualizarInsights, 200);
+};

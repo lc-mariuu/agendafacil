@@ -15,9 +15,6 @@
 </head>
 <body>
 
-<!-- ══════════════════════════════════════════════════
-     TOPBAR MOBILE
-══════════════════════════════════════════════════ -->
 <div class="topbar-mobile">
   <button class="btn-hamburger" onclick="toggleSidebar()">
     <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
@@ -30,9 +27,7 @@
 
 <div class="sidebar-overlay" id="sidebar-overlay" onclick="fecharSidebar()"></div>
 
-<!-- ══════════════════════════════════════════════════
-     MODAL — NOVO AGENDAMENTO
-══════════════════════════════════════════════════ -->
+<!-- MODAL NOVO AGENDAMENTO -->
 <div class="modal-overlay" id="modal-agendamento" style="display:none">
   <div class="modal">
     <div class="modal-header">
@@ -67,9 +62,7 @@
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════════════
-     MODAL — NOVO NEGÓCIO
-══════════════════════════════════════════════════ -->
+<!-- MODAL NOVO NEGÓCIO -->
 <div class="modal-overlay" id="modal-negocio" style="display:none">
   <div class="modal-neg">
     <div class="modal-header">
@@ -101,9 +94,7 @@
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════════════
-     BLOQUEIO (trial expirado)
-══════════════════════════════════════════════════ -->
+<!-- BLOQUEIO -->
 <div id="bloqueio" class="bloqueio" style="display:none">
   <div class="bloqueio-card">
     <div style="font-size:44px;margin-bottom:14px">⏰</div>
@@ -116,9 +107,7 @@
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════════════
-     SIDEBAR
-══════════════════════════════════════════════════ -->
+<!-- SIDEBAR -->
 <div class="sidebar" id="sidebar">
   <div class="sidebar-top">
     <div class="sidebar-brand">
@@ -153,15 +142,20 @@
   </div>
 
   <div class="sidebar-menu">
-    <div class="menu-section">Pasnipal</div>
-    <button class="menu-item ativo" onclick="irPara('agendamentos',this)">
+    <div class="menu-section">Painel</div>
+
+    <!-- DASHBOARD — aponta para page-dashboard -->
+    <button class="menu-item ativo" id="menu-dashboard" onclick="irPara('dashboard',this)">
       <svg width="14" height="14" viewBox="0 0 15 15" fill="none"><rect x="1.5" y="2.5" width="12" height="11" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M5 1.5v2M10 1.5v2M1.5 5.5h12" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><path d="M4.5 9h2.5M4.5 11h4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
       Dashboard
     </button>
-    <button class="menu-item" onclick="irPara('agendamentos',this)">
+
+    <!-- AGENDAMENTOS — aponta para page-agendamentos -->
+    <button class="menu-item" id="menu-agendamentos" onclick="irPara('agendamentos',this)">
       <svg width="14" height="14" viewBox="0 0 15 15" fill="none"><rect x="1.5" y="2.5" width="12" height="11" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M5 1.5v2M10 1.5v2M1.5 5.5h12" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
       Agendamentos
     </button>
+
     <button class="menu-item" onclick="irPara('bio',this)">
       <svg width="14" height="14" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="5" r="2.5" stroke="currentColor" stroke-width="1.3"/><path d="M2 13c0-2.8 2.5-5 5.5-5s5.5 2.2 5.5 5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
       Clientes
@@ -219,9 +213,7 @@
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════════════
-     MAIN
-══════════════════════════════════════════════════ -->
+<!-- MAIN -->
 <div class="main">
 
   <!-- TOPBAR DESKTOP -->
@@ -236,11 +228,10 @@
       </div>
       <div>
         <div class="main-topbar-title" id="topbar-page-title">Dashboard</div>
-        <div class="main-topbar-sub">Painel de controle do seu negócio</div>
+        <div class="main-topbar-sub" id="topbar-page-sub">Painel de controle do seu negócio</div>
       </div>
     </div>
     <div class="main-topbar-right">
-      <!-- Ícone modo claro/escuro -->
       <button class="topbar-icon-btn" title="Modo" onclick="toggleTema()">
         <svg width="15" height="15" viewBox="0 0 15 15" fill="none" id="topbar-tema-icon">
           <path d="M7.5 1v1.5M7.5 12.5V14M1 7.5h1.5M12.5 7.5H14M3 3l1 1M11 11l1 1M3 12l1-1M11 4l1-1" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
@@ -260,8 +251,10 @@
     </div>
   </div>
 
-  <!-- ── AGENDAMENTOS / DASHBOARD ── -->
-  <div class="page ativo" id="page-agendamentos">
+  <!-- ══════════════════════════════════════════════════
+       PAGE: DASHBOARD (stats + insights + gráfico)
+  ══════════════════════════════════════════════════ -->
+  <div class="page ativo" id="page-dashboard">
 
     <div class="link-card">
       <div>
@@ -311,7 +304,6 @@
           <div class="stat-label" style="margin-bottom:6px">Lucro da semana</div>
           <div class="stat-valor" id="stat-total" style="font-size:20px;color:#34d399">R$ 0,00</div>
         </div>
-        <!-- Mini chart decorativo -->
         <div class="stat-mini-chart">
           <svg viewBox="0 0 200 60" preserveAspectRatio="none">
             <defs>
@@ -336,34 +328,28 @@
       <button class="alert-banner-btn">Enviar mensagem</button>
     </div>
 
-    <!-- Grid: Lista agendamentos + Insights -->
+    <!-- Grid: agendamentos do dia + Insights -->
     <div class="dashboard-grid">
-      <!-- Coluna principal -->
       <div>
+        <!-- Mini lista de hoje no dashboard -->
         <div class="card">
           <div class="card-header">
-            <div class="card-title">Próximos agendamentos</div>
+            <div class="card-title">Agendamentos de hoje</div>
             <div class="card-actions">
-              <input type="date" class="filtro-data" id="filtro-data" onchange="filtrarData()">
+              <button class="btn-novo" onclick="irPara('agendamentos', document.getElementById('menu-agendamentos'))">
+                <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+                Ver todos
+              </button>
               <button class="btn-novo" onclick="abrirModalNovoAgendamento()">
                 <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
                 Novo
               </button>
             </div>
           </div>
-
-          <!-- Tabela desktop com avatares -->
-          <div class="tabela-scroll" id="tabela-desktop">
-            <div id="tbody-rows"></div>
+          <div class="tabela-scroll" id="tabela-desktop-dash">
+            <div id="tbody-rows-dash"></div>
           </div>
-
-          <!-- Cards mobile -->
-          <div class="ag-cards" id="ag-cards"></div>
-
-          <div class="paginacao" id="paginacao" style="display:none">
-            <span class="paginacao-info" id="pg-info"></span>
-            <div class="paginacao-btns" id="pg-btns"></div>
-          </div>
+          <div class="ag-cards" id="ag-cards-dash"></div>
         </div>
 
         <!-- Histórico mensal -->
@@ -408,8 +394,6 @@
 
       <!-- Coluna direita — Insights + Finance -->
       <div class="insights-panel">
-
-        <!-- Insights Inteligentes -->
         <div class="insight-card">
           <div class="insight-header">
             <div class="insight-title">Insights Inteligentes</div>
@@ -425,7 +409,7 @@
             </div>
             <div class="insight-item-body">
               <div class="insight-item-label">Melhor agendamento</div>
-              <div class="insight-item-value" id="insight-melhor-horario">Sábados 10:00 – 11:00</div>
+              <div class="insight-item-value" id="insight-melhor-horario">—</div>
               <div class="insight-item-sub">Horário mais reservado</div>
             </div>
           </div>
@@ -451,7 +435,6 @@
           </div>
         </div>
 
-        <!-- Finance mini card -->
         <div class="finance-card">
           <div class="finance-header">
             <div class="finance-title">Este mês</div>
@@ -463,7 +446,6 @@
           <div class="finance-body">
             <div class="finance-amount"><span>R$</span> <span id="finance-amount-val">0,00</span></div>
             <div class="finance-meta" id="finance-meta">Movidas: 0 agendamentos</div>
-            <!-- Mini chart -->
             <div class="finance-mini-chart">
               <svg viewBox="0 0 280 70" preserveAspectRatio="none">
                 <defs>
@@ -474,7 +456,6 @@
                 </defs>
                 <path d="M0 60 L40 52 L80 48 L120 35 L160 28 L200 20 L240 12 L280 8 L280 70 L0 70 Z" fill="url(#finGrad)"/>
                 <path d="M0 60 L40 52 L80 48 L120 35 L160 28 L200 20 L240 12 L280 8" stroke="#3b82f6" stroke-width="2" fill="none" stroke-linejoin="round"/>
-                <!-- Valor máximo label -->
                 <text x="260" y="12" font-size="9" fill="#3b82f6" text-anchor="middle" font-family="Inter" font-weight="700" id="finance-chart-label">R$0</text>
               </svg>
             </div>
@@ -490,7 +471,32 @@
             </div>
           </div>
         </div>
+      </div>
+    </div>
+  </div><!-- /page-dashboard -->
 
+  <!-- ══════════════════════════════════════════════════
+       PAGE: AGENDAMENTOS (lista completa)
+  ══════════════════════════════════════════════════ -->
+  <div class="page" id="page-agendamentos">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Todos os agendamentos</div>
+        <div class="card-actions">
+          <input type="date" class="filtro-data" id="filtro-data" onchange="filtrarData()">
+          <button class="btn-novo" onclick="abrirModalNovoAgendamento()">
+            <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+            Novo
+          </button>
+        </div>
+      </div>
+      <div class="tabela-scroll" id="tabela-desktop">
+        <div id="tbody-rows"></div>
+      </div>
+      <div class="ag-cards" id="ag-cards"></div>
+      <div class="paginacao" id="paginacao" style="display:none">
+        <span class="paginacao-info" id="pg-info"></span>
+        <div class="paginacao-btns" id="pg-btns"></div>
       </div>
     </div>
   </div><!-- /page-agendamentos -->
@@ -502,8 +508,6 @@
         <div><div class="main-topbar-title">Horários de Atendimento</div><div class="main-topbar-sub">Configure dias e horários que seu negócio atende</div></div>
       </div>
     </div>
-
-    <!-- Intervalo padrão -->
     <div class="section-block">
       <div class="section-block-header">
         <div class="section-block-icon"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7.5" stroke="var(--accent)" stroke-width="1.6"/><path d="M10 6v5l3 3" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round"/></svg></div>
@@ -533,8 +537,6 @@
         </div>
       </div>
     </div>
-
-    <!-- Intervalo por serviço -->
     <div class="section-block">
       <div class="section-block-header">
         <div class="section-block-icon"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M3 5h14M3 10h8M3 15h10" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round"/><circle cx="16" cy="13" r="3" stroke="var(--accent)" stroke-width="1.4"/><path d="M16 11.5V13l1 1" stroke="var(--accent)" stroke-width="1.3" stroke-linecap="round"/></svg></div>
@@ -560,8 +562,6 @@
         </div>
       </div>
     </div>
-
-    <!-- Dias e horários -->
     <div class="section-block">
       <div class="section-block-header">
         <div class="section-block-icon"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><rect x="2.5" y="3.5" width="15" height="13.5" rx="2.5" stroke="var(--accent)" stroke-width="1.6"/><path d="M2.5 7.5h15M7 2v3M13 2v3" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round"/></svg></div>
@@ -581,8 +581,6 @@
         </div>
       </div>
     </div>
-
-    <!-- Pausas -->
     <div class="section-block">
       <div class="section-block-header">
         <div class="section-block-icon"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7.5" stroke="var(--accent)" stroke-width="1.6"/><path d="M10 6.5v4M10 13v.5" stroke="var(--accent)" stroke-width="1.8" stroke-linecap="round"/></svg></div>
@@ -713,47 +711,10 @@
         </div>
       </div>
       <div class="section-block-body">
-        <div class="passo">
-          <div class="passo-num">1</div>
-          <div style="flex:1">
-            <div class="passo-titulo">Copie a mensagem acima</div>
-            <div class="passo-desc">Clique em <strong>"Copiar mensagem completa"</strong>. O link já está incluído.</div>
-            <div class="alerta-verde">✓ <strong>Dica:</strong> A mensagem já está com seu link personalizado.</div>
-          </div>
-        </div>
-        <div class="passo">
-          <div class="passo-num">2</div>
-          <div style="flex:1">
-            <div class="passo-titulo">Abra o WhatsApp Business → Ferramentas Comerciais</div>
-            <div class="passo-steps">
-              <div class="passo-step"><div class="passo-step-num">1</div>Abra o <strong>WhatsApp Business</strong></div>
-              <div class="passo-step"><div class="passo-step-num">2</div>Toque nos <strong>3 pontos ⋮</strong></div>
-              <div class="passo-step"><div class="passo-step-num">3</div>Toque em <strong>Ferramentas comerciais</strong></div>
-              <div class="passo-step"><div class="passo-step-num">4</div>Toque em <strong>Mensagem de saudação</strong></div>
-            </div>
-          </div>
-        </div>
-        <div class="passo">
-          <div class="passo-num">3</div>
-          <div style="flex:1">
-            <div class="passo-titulo">Ative e cole a mensagem</div>
-            <div class="passo-steps">
-              <div class="passo-step"><div class="passo-step-num">1</div>Ative <strong>"Enviar mensagem de saudação"</strong></div>
-              <div class="passo-step"><div class="passo-step-num">2</div>Toque em <strong>Editar mensagem</strong></div>
-              <div class="passo-step"><div class="passo-step-num">3</div>Cole a mensagem copiada</div>
-              <div class="passo-step"><div class="passo-step-num">4</div>Toque em <strong>OK</strong></div>
-            </div>
-            <div class="alerta-azul">ℹ️ Enviada automaticamente para quem mandar mensagem pela <strong>primeira vez</strong>.</div>
-          </div>
-        </div>
-        <div class="passo">
-          <div class="passo-num verde">✓</div>
-          <div style="flex:1">
-            <div class="passo-titulo">Pronto! Seu WhatsApp está configurado</div>
-            <div class="passo-desc">Qualquer cliente que mandar mensagem pela primeira vez vai receber o link.</div>
-            <div class="alerta-verde">💡 Isso funciona apenas no <strong>WhatsApp Business</strong> (app gratuito da Meta).</div>
-          </div>
-        </div>
+        <div class="passo"><div class="passo-num">1</div><div style="flex:1"><div class="passo-titulo">Copie a mensagem acima</div><div class="passo-desc">Clique em <strong>"Copiar mensagem completa"</strong>. O link já está incluído.</div><div class="alerta-verde">✓ <strong>Dica:</strong> A mensagem já está com seu link personalizado.</div></div></div>
+        <div class="passo"><div class="passo-num">2</div><div style="flex:1"><div class="passo-titulo">Abra o WhatsApp Business → Ferramentas Comerciais</div><div class="passo-steps"><div class="passo-step"><div class="passo-step-num">1</div>Abra o <strong>WhatsApp Business</strong></div><div class="passo-step"><div class="passo-step-num">2</div>Toque nos <strong>3 pontos ⋮</strong></div><div class="passo-step"><div class="passo-step-num">3</div>Toque em <strong>Ferramentas comerciais</strong></div><div class="passo-step"><div class="passo-step-num">4</div>Toque em <strong>Mensagem de saudação</strong></div></div></div></div>
+        <div class="passo"><div class="passo-num">3</div><div style="flex:1"><div class="passo-titulo">Ative e cole a mensagem</div><div class="passo-steps"><div class="passo-step"><div class="passo-step-num">1</div>Ative <strong>"Enviar mensagem de saudação"</strong></div><div class="passo-step"><div class="passo-step-num">2</div>Toque em <strong>Editar mensagem</strong></div><div class="passo-step"><div class="passo-step-num">3</div>Cole a mensagem copiada</div><div class="passo-step"><div class="passo-step-num">4</div>Toque em <strong>OK</strong></div></div><div class="alerta-azul">ℹ️ Enviada automaticamente para quem mandar mensagem pela <strong>primeira vez</strong>.</div></div></div>
+        <div class="passo"><div class="passo-num verde">✓</div><div style="flex:1"><div class="passo-titulo">Pronto! Seu WhatsApp está configurado</div><div class="passo-desc">Qualquer cliente que mandar mensagem pela primeira vez vai receber o link.</div><div class="alerta-verde">💡 Isso funciona apenas no <strong>WhatsApp Business</strong> (app gratuito da Meta).</div></div></div>
       </div>
     </div>
   </div><!-- /page-whatsapp -->
@@ -808,25 +769,13 @@
         <div class="theme-selector-wrap">
           <div class="theme-option" id="theme-opt-claro" onclick="definirTema('claro')">
             <div class="theme-option-check"><svg width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5L8 3" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-            <div class="theme-preview claro">
-              <div class="theme-preview-sidebar"></div>
-              <div class="theme-preview-content"><div class="theme-preview-bar"></div><div class="theme-preview-bar2"></div><div class="theme-preview-bar" style="width:70%"></div></div>
-            </div>
-            <div>
-              <div style="display:flex;align-items:center;gap:5px"><span class="theme-option-emoji">☀️</span><span class="theme-option-label">Modo Claro</span></div>
-              <div class="theme-option-desc">Interface clara e limpa</div>
-            </div>
+            <div class="theme-preview claro"><div class="theme-preview-sidebar"></div><div class="theme-preview-content"><div class="theme-preview-bar"></div><div class="theme-preview-bar2"></div><div class="theme-preview-bar" style="width:70%"></div></div></div>
+            <div><div style="display:flex;align-items:center;gap:5px"><span class="theme-option-emoji">☀️</span><span class="theme-option-label">Modo Claro</span></div><div class="theme-option-desc">Interface clara e limpa</div></div>
           </div>
           <div class="theme-option" id="theme-opt-escuro" onclick="definirTema('escuro')">
             <div class="theme-option-check"><svg width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5L8 3" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-            <div class="theme-preview escuro">
-              <div class="theme-preview-sidebar"></div>
-              <div class="theme-preview-content"><div class="theme-preview-bar"></div><div class="theme-preview-bar2"></div><div class="theme-preview-bar" style="width:70%"></div></div>
-            </div>
-            <div>
-              <div style="display:flex;align-items:center;gap:5px"><span class="theme-option-emoji">🌙</span><span class="theme-option-label">Modo Escuro</span></div>
-              <div class="theme-option-desc">Confortável para uso noturno</div>
-            </div>
+            <div class="theme-preview escuro"><div class="theme-preview-sidebar"></div><div class="theme-preview-content"><div class="theme-preview-bar"></div><div class="theme-preview-bar2"></div><div class="theme-preview-bar" style="width:70%"></div></div></div>
+            <div><div style="display:flex;align-items:center;gap:5px"><span class="theme-option-emoji">🌙</span><span class="theme-option-label">Modo Escuro</span></div><div class="theme-option-desc">Confortável para uso noturno</div></div>
           </div>
         </div>
         <div style="margin-top:14px;padding:11px 14px;background:var(--accent-light);border:1px solid var(--accent-mid);border-radius:9px;font-size:12px;color:var(--accent);font-weight:500;line-height:1.5">
@@ -842,10 +791,7 @@
       <div class="main-topbar-left"><div><div class="main-topbar-title">Minha Página Bio</div><div class="main-topbar-sub">Personalize sua página pública para o Instagram</div></div></div>
     </div>
     <div class="link-card">
-      <div>
-        <div class="link-card-label">Link da sua bio</div>
-        <div class="link-card-url" id="link-bio"></div>
-      </div>
+      <div><div class="link-card-label">Link da sua bio</div><div class="link-card-url" id="link-bio"></div></div>
       <button class="btn-copiar" id="btn-copiar-bio" onclick="copiarLinkBio()">
         <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M1 8.5V2a1 1 0 0 1 1-1h6.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
         Copiar link
@@ -854,10 +800,7 @@
     <div class="section-block">
       <div class="section-block-header">
         <div class="section-block-icon"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="3.5" stroke="var(--accent)" stroke-width="1.6"/><path d="M3 18c0-3.9 3.1-7 7-7s7 3.1 7 7" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round"/></svg></div>
-        <div>
-          <div class="section-block-title">Informações da página</div>
-          <div class="section-block-sub">Foto, descrição e dados de contato da sua bio</div>
-        </div>
+        <div><div class="section-block-title">Informações da página</div><div class="section-block-sub">Foto, descrição e dados de contato da sua bio</div></div>
       </div>
       <div class="section-block-body">
         <div class="foto-wrap">
@@ -894,10 +837,7 @@
     <div class="section-block">
       <div class="section-block-header">
         <div class="section-block-icon"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><rect x="2" y="5" width="16" height="13" rx="2.5" stroke="var(--accent)" stroke-width="1.6"/><path d="M2 9h16M6 13h4" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round"/></svg></div>
-        <div>
-          <div class="section-block-title">Cobrança via Pix</div>
-          <div class="section-block-sub">Receba antes do atendimento, automaticamente</div>
-        </div>
+        <div><div class="section-block-title">Cobrança via Pix</div><div class="section-block-sub">Receba antes do atendimento, automaticamente</div></div>
       </div>
       <div class="section-block-body">
         <div style="text-align:center;padding:36px 0 26px">
@@ -941,20 +881,13 @@
 
 <script>
 /* ═══════════════════════════════════
-   FUNÇÕES ADICIONADAS/MODIFICADAS
-   para o novo layout
+   PATCH INLINE
 ═══════════════════════════════════ */
-
-// Toggle tema rápido pelo botão da topbar
 function toggleTema() {
   const atual = localStorage.getItem('tema') || 'escuro';
   definirTema(atual === 'escuro' ? 'claro' : 'escuro');
 }
 
-// Sobrescreve a função definirTema para incluir o default dark
-const _definirTema = window.definirTema;
-
-// Cores para avatares (gera cor consistente por nome)
 function avatarColor(nome) {
   const colors = [
     ['#1d4ed8','#3b82f6'],['#7c3aed','#8b5cf6'],['#0e7490','#06b6d4'],
@@ -963,123 +896,165 @@ function avatarColor(nome) {
   ];
   let h = 0;
   for (let c of (nome || 'A')) h = ((h << 5) - h) + c.charCodeAt(0);
-  const idx = Math.abs(h) % colors.length;
-  return colors[idx];
+  return colors[Math.abs(h) % colors.length];
 }
 
-// Renderiza as linhas com avatares
 function renderizarLinhasComAvatar(slice) {
   return slice.map(a => {
     const ini = (a.pacienteNome || 'C')[0].toUpperCase();
     const [c1, c2] = avatarColor(a.pacienteNome);
     const isOnline = a.status === 'confirmado';
-
     const acoes = a.status === 'confirmado'
       ? `<div class="acoes">
            <button class="btn-acao concluir" onclick="atualizar('${a._id}','concluido')">Concluir</button>
            <button class="btn-acao cancelar" onclick="cancelarComAviso('${a._id}','${a.pacienteNome}','${a.pacienteTelefone}','${a.data}','${a.hora}')">Cancelar</button>
-         </div>`
-      : '';
-
+         </div>` : '';
     const preco = a.preco ? `R$${Number(a.preco).toFixed(2).replace('.',',')}` : '—';
-
-    return `<div style="display:contents">
-      <div class="ag-row">
-        <div class="ag-avatar" style="background:linear-gradient(135deg,${c1},${c2})">
-          ${ini}
-          ${isOnline ? '<div class="ag-avatar-online"></div>' : ''}
-        </div>
-        <div class="ag-info">
-          <div class="ag-nome">${a.pacienteNome}</div>
-          <div class="ag-servico">${a.servico}</div>
-        </div>
-        <div class="ag-time">
-          <div class="ag-hora">às ${a.hora}</div>
-          <div class="ag-data">${a.data ? formatarData(a.data) : ''}</div>
-        </div>
-        <span class="badge ${a.status}">${a.status}</span>
-        <div class="ag-preco">${preco}</div>
-        ${acoes}
+    return `<div class="ag-row">
+      <div class="ag-avatar" style="background:linear-gradient(135deg,${c1},${c2})">
+        ${ini}${isOnline ? '<div class="ag-avatar-online"></div>' : ''}
       </div>
+      <div class="ag-info">
+        <div class="ag-nome">${a.pacienteNome}</div>
+        <div class="ag-servico">${a.servico}</div>
+      </div>
+      <div class="ag-time">
+        <div class="ag-hora">às ${a.hora}</div>
+        <div class="ag-data">${a.data ? formatarData(a.data) : ''}</div>
+      </div>
+      <span class="badge ${a.status}">${a.status}</span>
+      <div class="ag-preco">${preco}</div>
+      ${acoes}
     </div>`;
   }).join('');
 }
 
-// Atualiza o painel de insights com os dados reais
 function atualizarInsights() {
-  if (!window.todosAgendamentos) return;
-  const ags = window.todosAgendamentos;
+  const ags = window.todosAgendamentos || [];
+  if (!ags.length) return;
 
-  // Serviço mais frequente
-  const servFreq = {};
-  ags.filter(a => a.status === 'concluido').forEach(a => {
-    if (a.servico) servFreq[a.servico] = (servFreq[a.servico] || 0) + (Number(a.preco) || 0);
+  /* Melhor horário */
+  const freqHora = {};
+  ags.forEach(a => { if (a.hora) freqHora[a.hora] = (freqHora[a.hora] || 0) + 1; });
+  const topHora = Object.entries(freqHora).sort((a,b) => b[1]-a[1])[0];
+  const elH = document.getElementById('insight-melhor-horario');
+  if (elH) elH.textContent = topHora ? topHora[0] : 'Sem dados';
+
+  /* Serviço mais lucrativo */
+  const freqServ = {};
+  ags.forEach(a => {
+    if (!a.servico) return;
+    if (!freqServ[a.servico]) freqServ[a.servico] = { total:0, qtd:0 };
+    freqServ[a.servico].total += Number(a.preco) || 0;
+    freqServ[a.servico].qtd  += 1;
   });
-  const topServico = Object.entries(servFreq).sort((a,b) => b[1]-a[1])[0];
-  if (topServico) {
-    document.getElementById('insight-servico-top').textContent = topServico[0];
-    document.getElementById('insight-servico-receita').textContent =
-      `+R$${topServico[1].toFixed(0).replace('.',',')} no mês`;
+  const topServ = Object.entries(freqServ).sort((a,b) => b[1].total - a[1].total)[0];
+  const elST = document.getElementById('insight-servico-top');
+  const elSR = document.getElementById('insight-servico-receita');
+  if (elST && topServ) {
+    elST.textContent = topServ[0];
+    if (elSR) elSR.textContent = topServ[1].total > 0
+      ? `R$ ${topServ[1].total.toFixed(2).replace('.',',')} gerados`
+      : `${topServ[1].qtd} agendamento${topServ[1].qtd > 1 ? 's' : ''}`;
   }
 
-  // Clientes inativos (simplificado: sem agendamentos nas últimas 4 semanas)
-  const cutoff = new Date(); cutoff.setDate(cutoff.getDate() - 30);
+  /* Clientes inativos */
+  const cutoff = new Date(); cutoff.setDate(cutoff.getDate()-30);
   const cutStr = cutoff.toISOString().split('T')[0];
-  const clientesRecentes = new Set(ags.filter(a => a.data >= cutStr).map(a => a.pacienteNome));
-  const todosClientes = new Set(ags.map(a => a.pacienteNome));
-  const inativos = [...todosClientes].filter(c => !clientesRecentes.has(c)).length;
-  document.getElementById('insight-inativos').textContent = `${inativos} clientes`;
+  const recentes = new Set(ags.filter(a => a.data >= cutStr).map(a => a.pacienteNome));
+  const todos    = new Set(ags.map(a => a.pacienteNome));
+  const inativos = [...todos].filter(c => !recentes.has(c)).length;
+  const elI = document.getElementById('insight-inativos');
+  const elIS = document.getElementById('insight-inativos-sub');
+  if (elI)  elI.textContent  = inativos > 0 ? `${inativos} cliente${inativos > 1 ? 's' : ''}` : 'Nenhum';
+  if (elIS) { elIS.textContent = inativos > 0 ? 'há mais de 30 dias' : 'todos ativos'; elIS.className = 'insight-item-sub' + (inativos > 0 ? ' warning' : ''); }
 
-  // Alert banner
+  /* Banner */
   const banner = document.getElementById('alert-clientes-inativos');
-  if (inativos >= 3 && banner) {
-    banner.style.display = 'flex';
-    const t = document.getElementById('alert-clientes-texto');
-    if (t) t.innerHTML = `<strong>${inativos} clientes estão inativos</strong>, mande uma promoção para reativá-los`;
-  }
+  if (banner) banner.style.display = inativos >= 3 ? 'flex' : 'none';
+  if (inativos >= 3) { const t = document.getElementById('alert-clientes-texto'); if (t) t.innerHTML = `<strong>${inativos} clientes estão inativos</strong>, mande uma promoção para reativá-los`; }
 
-  // Finance card
-  const mes = new Date().toISOString().slice(0,7);
-  const lucroMes = parseFloat(localStorage.getItem(`lucro_val_${window.negocioAtual?._id}_${mes}`)) || 0;
-  const atendMes = (() => { try { return JSON.parse(localStorage.getItem(`lucro_ids_${window.negocioAtual?._id}_${mes}`) || '[]').length } catch { return 0 }})();
-
-  const fv = document.getElementById('finance-amount-val');
-  const fm = document.getElementById('finance-meta');
-  const fa = document.getElementById('finance-atend');
-  const fcl = document.getElementById('finance-chart-label');
-
-  if (fv) fv.textContent = lucroMes.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2});
-  if (fm) fm.textContent = `Movidas: ${atendMes} agendamentos`;
-  if (fa) fa.textContent = atendMes;
-  if (fcl) fcl.textContent = `R$${Math.round(lucroMes)}`;
-
-  // stat-total = lucro da semana (últimos 7 dias)
-  const hoje = new Date().toISOString().split('T')[0];
+  /* Lucro da semana */
+  const hoje   = new Date().toISOString().split('T')[0];
   const semStart = new Date(); semStart.setDate(semStart.getDate()-7);
   const semStr = semStart.toISOString().split('T')[0];
   const lucroSem = ags
     .filter(a => a.status === 'concluido' && a.data >= semStr && a.data <= hoje)
-    .reduce((acc, a) => acc + (Number(a.preco) || 0), 0);
-  const stTotal = document.getElementById('stat-total');
-  if (stTotal) stTotal.textContent = 'R$ ' + lucroSem.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2});
+    .reduce((s,a) => s + (Number(a.preco)||0), 0);
+  const elTotal = document.getElementById('stat-total');
+  if (elTotal) elTotal.textContent = 'R$ ' + lucroSem.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+
+  /* Finance card */
+  const mes = new Date().toISOString().slice(0,7);
+  const nid = window.negocioAtual?._id;
+  const lucroMes = nid ? (parseFloat(localStorage.getItem(`lucro_val_${nid}_${mes}`))||0) : 0;
+  const atendMes = nid ? (()=>{ try{return JSON.parse(localStorage.getItem(`lucro_ids_${nid}_${mes}`)||'[]').length}catch{return 0} })() : 0;
+  const fv=document.getElementById('finance-amount-val'), fm=document.getElementById('finance-meta'), fa=document.getElementById('finance-atend'), fcl=document.getElementById('finance-chart-label');
+  if(fv) fv.textContent=lucroMes.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+  if(fm) fm.textContent=`Movidas: ${atendMes} agendamento${atendMes!==1?'s':''}`;
+  if(fa) fa.textContent=atendMes;
+  if(fcl) fcl.textContent=`R$${Math.round(lucroMes)}`;
+}
+
+/* Renderiza mini-lista do dashboard (só hoje) */
+function renderDashboardHoje() {
+  const ags  = window.todosAgendamentos || [];
+  const hoje = new Date().toISOString().split('T')[0];
+  const deHoje = ags.filter(a => a.data === hoje).sort((a,b) => a.hora.localeCompare(b.hora));
+
+  const wrap  = document.getElementById('tbody-rows-dash');
+  const cards = document.getElementById('ag-cards-dash');
+
+  if (!deHoje.length) {
+    if (wrap)  wrap.innerHTML  = '<div class="vazio">Nenhum agendamento hoje</div>';
+    if (cards) cards.innerHTML = '<div class="vazio">Nenhum agendamento hoje</div>';
+    return;
+  }
+  if (wrap)  wrap.innerHTML  = renderizarLinhasComAvatar(deHoje);
+  if (cards) {
+    cards.innerHTML = deHoje.map(a => {
+      const [c1,c2] = avatarColor(a.pacienteNome);
+      const ini = (a.pacienteNome||'C')[0].toUpperCase();
+      const acoes = a.status === 'confirmado'
+        ? `<div class="ag-card-actions">
+             <button class="btn-acao concluir" onclick="atualizar('${a._id}','concluido')">Concluir</button>
+             <button class="btn-acao cancelar" onclick="cancelarComAviso('${a._id}','${a.pacienteNome}','${a.pacienteTelefone}','${a.data}','${a.hora}')">Cancelar</button>
+           </div>` : '';
+      return `<div class="ag-card">
+        <div class="ag-card-top">
+          <div style="display:flex;align-items:center;gap:10px">
+            <div class="ag-avatar" style="background:linear-gradient(135deg,${c1},${c2});width:32px;height:32px;font-size:11px;flex-shrink:0">${ini}</div>
+            <div><div class="ag-card-nome">${a.pacienteNome}</div><div class="paciente-tel">${a.pacienteTelefone||''}</div></div>
+          </div>
+          <span class="badge ${a.status}">${a.status}</span>
+        </div>
+        <div class="ag-card-body">
+          <div class="ag-chip">${formatarData(a.data)}</div>
+          <div class="ag-chip">${a.hora}</div>
+          <div class="ag-chip">${a.servico}</div>
+        </div>
+        ${acoes}
+      </div>`;
+    }).join('');
+  }
 }
 </script>
 
 <script src="/painel.js"></script>
 
 <script>
-/* ── PATCH: sobrescreve renderTabela para usar o novo layout com avatares ── */
 (function() {
-  const _orig = window.renderTabela;
+
+  /* ── renderTabela: lista completa na page-agendamentos ── */
   window.renderTabela = function() {
-    const desktopWrap = document.getElementById('tbody-rows');
-    const agCards = document.getElementById('ag-cards');
-    const paginacao = document.getElementById('paginacao');
+    const wrap  = document.getElementById('tbody-rows');
+    const cards = document.getElementById('ag-cards');
+    const pag   = document.getElementById('paginacao');
 
     if (!listaFiltrada.length) {
-      if (desktopWrap) desktopWrap.innerHTML = '<div class="vazio">Nenhum agendamento encontrado</div>';
-      if (agCards)     agCards.innerHTML    = '<div class="vazio">Nenhum agendamento encontrado</div>';
-      if (paginacao)   paginacao.style.display = 'none';
+      if (wrap)  wrap.innerHTML  = '<div class="vazio">Nenhum agendamento encontrado</div>';
+      if (cards) cards.innerHTML = '<div class="vazio">Nenhum agendamento encontrado</div>';
+      if (pag)   pag.style.display = 'none';
       return;
     }
 
@@ -1088,13 +1063,12 @@ function atualizarInsights() {
     const fim    = inicio + POR_PAGINA;
     const slice  = listaFiltrada.slice(inicio, fim);
 
-    if (desktopWrap) desktopWrap.innerHTML = renderizarLinhasComAvatar(slice);
+    if (wrap)  wrap.innerHTML = renderizarLinhasComAvatar(slice);
 
-    // Mobile cards
-    if (agCards) {
-      agCards.innerHTML = slice.map(a => {
-        const [c1, c2] = avatarColor(a.pacienteNome);
-        const ini = (a.pacienteNome || 'C')[0].toUpperCase();
+    if (cards) {
+      cards.innerHTML = slice.map(a => {
+        const [c1,c2] = avatarColor(a.pacienteNome);
+        const ini = (a.pacienteNome||'C')[0].toUpperCase();
         const acoes = a.status === 'confirmado'
           ? `<div class="ag-card-actions">
                <button class="btn-acao concluir" onclick="atualizar('${a._id}','concluido')">Concluir</button>
@@ -1104,10 +1078,7 @@ function atualizarInsights() {
           <div class="ag-card-top">
             <div style="display:flex;align-items:center;gap:10px">
               <div class="ag-avatar" style="background:linear-gradient(135deg,${c1},${c2});width:32px;height:32px;font-size:11px;flex-shrink:0">${ini}</div>
-              <div>
-                <div class="ag-card-nome">${a.pacienteNome}</div>
-                <div class="paciente-tel">${a.pacienteTelefone || ''}</div>
-              </div>
+              <div><div class="ag-card-nome">${a.pacienteNome}</div><div class="paciente-tel">${a.pacienteTelefone||''}</div></div>
             </div>
             <span class="badge ${a.status}">${a.status}</span>
           </div>
@@ -1121,58 +1092,82 @@ function atualizarInsights() {
       }).join('');
     }
 
-    if (paginacao) {
-      document.getElementById('pg-info').textContent =
-        `${inicio + 1}–${Math.min(fim, listaFiltrada.length)} de ${listaFiltrada.length}`;
-      let btns = `<button class="pg-btn" onclick="irPagina(${paginaAtual - 1})" ${paginaAtual === 1 ? 'disabled' : ''}>‹</button>`;
-      for (let i = 1; i <= total; i++) {
-        if (total <= 7 || i === 1 || i === total || Math.abs(i - paginaAtual) <= 1)
-          btns += `<button class="pg-btn ${i === paginaAtual ? 'ativo' : ''}" onclick="irPagina(${i})">${i}</button>`;
-        else if (Math.abs(i - paginaAtual) === 2)
+    if (pag) {
+      document.getElementById('pg-info').textContent = `${inicio+1}–${Math.min(fim,listaFiltrada.length)} de ${listaFiltrada.length}`;
+      let btns = `<button class="pg-btn" onclick="irPagina(${paginaAtual-1})" ${paginaAtual===1?'disabled':''}>‹</button>`;
+      for (let i=1;i<=total;i++) {
+        if (total<=7||i===1||i===total||Math.abs(i-paginaAtual)<=1)
+          btns += `<button class="pg-btn ${i===paginaAtual?'ativo':''}" onclick="irPagina(${i})">${i}</button>`;
+        else if (Math.abs(i-paginaAtual)===2)
           btns += `<span style="color:var(--text3);font-size:12px;padding:0 2px">…</span>`;
       }
-      btns += `<button class="pg-btn" onclick="irPagina(${paginaAtual + 1})" ${paginaAtual === total ? 'disabled' : ''}>›</button>`;
+      btns += `<button class="pg-btn" onclick="irPagina(${paginaAtual+1})" ${paginaAtual===total?'disabled':''}>›</button>`;
       document.getElementById('pg-btns').innerHTML = btns;
-      paginacao.style.display = total > 1 ? 'flex' : 'none';
+      pag.style.display = total > 1 ? 'flex' : 'none';
     }
 
-    // Atualiza insights sempre que a tabela renderiza
-    setTimeout(atualizarInsights, 100);
+    /* Após render da lista completa, também atualiza dashboard */
+    setTimeout(() => { atualizarInsights(); renderDashboardHoje(); }, 100);
   };
 
-  // Patch: carregarTema para default dark
-  const _ctema = window.carregarTema;
-  window.carregarTema = function() {
-    const tema = localStorage.getItem('tema') || 'escuro';
-    definirTema(tema);
-  };
+  /* ── Tema padrão escuro ── */
+  window.carregarTema = function() { definirTema(localStorage.getItem('tema') || 'escuro'); };
 
-  // Patch: definirTema para não usar dark/light-mode mas apenas body class
   window.definirTema = function(tema) {
-    document.body.classList.remove('dark-mode', 'light-mode');
+    document.body.classList.remove('dark-mode','light-mode');
     if (tema === 'claro') document.body.classList.add('light-mode');
-    // 'escuro' = default, sem class (usa :root vars que já são dark)
     localStorage.setItem('tema', tema);
-    const optClaro  = document.getElementById('theme-opt-claro');
-    const optEscuro = document.getElementById('theme-opt-escuro');
-    if (optClaro)  optClaro.classList.toggle('ativo',  tema === 'claro');
-    if (optEscuro) optEscuro.classList.toggle('ativo',  tema === 'escuro');
+    const oc = document.getElementById('theme-opt-claro');
+    const oe = document.getElementById('theme-opt-escuro');
+    if (oc) oc.classList.toggle('ativo', tema==='claro');
+    if (oe) oe.classList.toggle('ativo', tema==='escuro');
   };
 
-  // Atualiza o topbar ao navegar
+  /* ── Títulos da topbar por página ── */
+  const titulos = {
+    dashboard:      ['Dashboard',              'Painel de controle do seu negócio'],
+    agendamentos:   ['Agendamentos',           'Lista completa de agendamentos'],
+    horarios:       ['Horários',               'Configure seus horários de atendimento'],
+    lembretes:      ['Automação',              'Lembretes automáticos via WhatsApp'],
+    whatsapp:       ['WhatsApp Auto',          'Configure o WhatsApp Business'],
+    bio:            ['Minha Bio',              'Sua página pública para o Instagram'],
+    configuracoes:  ['Configurações',          'Serviços e aparência do painel'],
+    pagamentos:     ['Pagamentos',             'Cobrança antecipada via Pix'],
+    suporte:        ['Suporte',                'Estamos aqui para ajudar você'],
+  };
+
   const _irPara = window.irPara;
   window.irPara = function(pagina, btn) {
     _irPara && _irPara(pagina, btn);
-    // Não há mais topbar dinâmico separado por página no main header
+    const t = titulos[pagina];
+    if (t) {
+      const el  = document.getElementById('topbar-page-title');
+      const sub = document.getElementById('topbar-page-sub');
+      if (el)  el.textContent  = t[0];
+      if (sub) sub.textContent = t[1];
+    }
+    /* Ao entrar em agendamentos, remove filtro de data para mostrar tudo */
+    if (pagina === 'agendamentos') {
+      const fd = document.getElementById('filtro-data');
+      if (fd) { fd.value = ''; if (window.filtrarData) window.filtrarData(); }
+    }
   };
 
-  // Avatar da topbar = inicial do negócio
+  /* ── Avatar da topbar ── */
   const _aSidebar = window.atualizarSidebarNegocio;
   window.atualizarSidebarNegocio = function() {
     _aSidebar && _aSidebar();
     const av = document.getElementById('topbar-avatar-btn');
-    if (av && window.negocioAtual) av.textContent = (window.negocioAtual.nome || 'A')[0].toUpperCase();
+    if (av && window.negocioAtual) av.textContent = (window.negocioAtual.nome||'A')[0].toUpperCase();
   };
+
+  /* ── Após carregar agendamentos, renderiza dashboard ── */
+  const _origCarregar = window.carregarAgendamentos;
+  window.carregarAgendamentos = async function() {
+    await _origCarregar.apply(this, arguments);
+    setTimeout(() => { atualizarInsights(); renderDashboardHoje(); }, 200);
+  };
+
 })();
 </script>
 </body>
