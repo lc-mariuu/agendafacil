@@ -2032,3 +2032,330 @@ carregarDadosNegocio = function () {
   _carregarDadosNegocioOriginal()
   carregarInsights()
 }
+
+/* ═══════════════════════════════════════════════════════════
+   PAINEL EXTRAS — cole este conteúdo no FINAL do painel.js
+   Implementa: busca, menu avatar, finance card, horários
+═══════════════════════════════════════════════════════════ */
+
+/* ──────────────────────────────────────────────────────────
+   1. BUSCA GLOBAL
+────────────────────────────────────────────────────────── */
+let buscaAberta = false
+
+function abrirBusca() {
+  const overlay = document.getElementById('busca-overlay')
+  if (overlay) { overlay.style.display = 'flex'; setTimeout(() => document.getElementById('busca-input')?.focus(), 50) }
+  buscaAberta = true
+}
+
+function fecharBusca() {
+  const overlay = document.getElementById('busca-overlay')
+  if (overlay) overlay.style.display = 'none'
+  buscaAberta = false
+  const inp = document.getElementById('busca-input')
+  if (inp) inp.value = ''
+  document.getElementById('busca-resultados').innerHTML =
+    '<div class="busca-empty">Digite para buscar por nome, serviço ou data</div>'
+}
+
+function executarBusca(q) {
+  const res = document.getElementById('busca-resultados')
+  if (!res) return
+  if (!q.trim()) {
+    res.innerHTML = '<div class="busca-empty">Digite para buscar por nome, serviço ou data</div>'
+    return
+  }
+  const termo = q.toLowerCase()
+  const encontrados = todosAgendamentos.filter(a =>
+    a.pacienteNome?.toLowerCase().includes(termo) ||
+    a.servico?.toLowerCase().includes(termo) ||
+    a.data?.includes(termo) ||
+    a.hora?.includes(termo) ||
+    a.pacienteTelefone?.includes(termo)
+  )
+  if (!encontrados.length) {
+    res.innerHTML = '<div class="busca-empty">Nenhum resultado encontrado</div>'
+    return
+  }
+
+  function avatarColorLocal(nome) {
+    const colors = [
+      ['#1d4ed8','#3b82f6'],['#7c3aed','#8b5cf6'],['#0e7490','#06b6d4'],
+      ['#15803d','#22c55e'],['#b45309','#f59e0b'],['#be185d','#ec4899'],
+    ]
+    let h = 0
+    for (let c of (nome || 'A')) h = ((h << 5) - h) + c.charCodeAt(0)
+    return colors[Math.abs(h) % colors.length]
+  }
+
+  res.innerHTML = encontrados.slice(0, 12).map(a => {
+    const [c1, c2] = avatarColorLocal(a.pacienteNome)
+    const ini = (a.pacienteNome || 'C')[0].toUpperCase()
+    const dataFmt = a.data ? formatarData(a.data) : ''
+    const preco = a.preco ? `R$${Number(a.preco).toFixed(2).replace('.',',')}` : ''
+    return `<div class="busca-item" onclick="fecharBusca()">
+      <div class="busca-item-avatar" style="background:linear-gradient(135deg,${c1},${c2})">${ini}</div>
+      <div class="busca-item-info">
+        <div class="busca-item-nome">${a.pacienteNome}</div>
+        <div class="busca-item-sub">${a.servico} · ${dataFmt} ${a.hora}</div>
+      </div>
+      <span class="badge ${a.status}" style="font-size:10px">${a.status}</span>
+      ${preco ? `<span style="font-size:12px;font-weight:700;color:var(--text);margin-left:4px">${preco}</span>` : ''}
+    </div>`
+  }).join('')
+}
+
+// Atalho teclado Ctrl+K ou /
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey && e.key === 'k') || (e.key === '/' && !['INPUT','TEXTAREA','SELECT'].includes(document.activeElement.tagName))) {
+    e.preventDefault()
+    buscaAberta ? fecharBusca() : abrirBusca()
+  }
+  if (e.key === 'Escape' && buscaAberta) fecharBusca()
+})
+
+// Injeta o overlay de busca no DOM
+;(function injetarBusca() {
+  if (document.getElementById('busca-overlay')) return
+  const overlay = document.createElement('div')
+  overlay.id = 'busca-overlay'
+  overlay.style.cssText = `
+    display:none;position:fixed;inset:0;z-index:500;
+    background:rgba(0,0,0,0.7);backdrop-filter:blur(8px);
+    align-items:flex-start;justify-content:center;padding-top:80px;
+  `
+  overlay.innerHTML = `
+    <div style="width:100%;max-width:520px;background:var(--bg-card);border:1px solid var(--border2);
+                border-radius:16px;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,0.6);">
+      <div style="display:flex;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid var(--border);">
+        <svg width="16" height="16" viewBox="0 0 14 14" fill="none">
+          <circle cx="6" cy="6" r="4.5" stroke="var(--text3)" stroke-width="1.4"/>
+          <path d="M9.5 9.5L12 12" stroke="var(--text3)" stroke-width="1.4" stroke-linecap="round"/>
+        </svg>
+        <input id="busca-input" type="text" placeholder="Buscar clientes, agendamentos..."
+          style="flex:1;background:none;border:none;outline:none;font-size:14px;color:var(--text);font-family:inherit;"
+          oninput="executarBusca(this.value)">
+        <kbd style="background:rgba(255,255,255,0.06);border:1px solid var(--border2);border-radius:5px;
+                    padding:2px 7px;font-size:11px;color:var(--text3);font-family:inherit;">ESC</kbd>
+      </div>
+      <div id="busca-resultados" style="max-height:360px;overflow-y:auto;padding:8px;">
+        <div class="busca-empty">Digite para buscar por nome, serviço ou data</div>
+      </div>
+    </div>
+  `
+  overlay.addEventListener('click', e => { if (e.target === overlay) fecharBusca() })
+  document.body.appendChild(overlay)
+
+  // Estilos da busca
+  const style = document.createElement('style')
+  style.textContent = `
+    .busca-empty { text-align:center;color:var(--text3);padding:24px;font-size:13px; }
+    .busca-item {
+      display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:10px;
+      cursor:pointer;transition:background .12s;
+    }
+    .busca-item:hover { background:rgba(255,255,255,0.05); }
+    .busca-item-avatar {
+      width:34px;height:34px;border-radius:50%;flex-shrink:0;
+      display:flex;align-items:center;justify-content:center;
+      font-size:13px;font-weight:700;color:white;
+    }
+    .busca-item-info { flex:1;min-width:0; }
+    .busca-item-nome { font-size:13.5px;font-weight:600;color:var(--text); }
+    .busca-item-sub  { font-size:11.5px;color:var(--text2);margin-top:1px; }
+  `
+  document.head.appendChild(style)
+})()
+
+// Liga o botão de busca da topbar
+document.addEventListener('DOMContentLoaded', () => {
+  const btnBusca = document.querySelector('.main-topbar-search')
+  if (btnBusca) btnBusca.addEventListener('click', abrirBusca)
+})
+
+/* ──────────────────────────────────────────────────────────
+   2. MENU DO AVATAR (topbar direita)
+────────────────────────────────────────────────────────── */
+;(function injetarMenuAvatar() {
+  if (document.getElementById('avatar-menu')) return
+
+  const menu = document.createElement('div')
+  menu.id = 'avatar-menu'
+  menu.style.cssText = `
+    display:none;position:fixed;top:60px;right:16px;z-index:400;
+    background:var(--bg-card);border:1px solid var(--border2);border-radius:14px;
+    box-shadow:0 16px 40px rgba(0,0,0,0.5);min-width:210px;overflow:hidden;
+    animation:dropIn .18s ease;
+  `
+  menu.innerHTML = `
+    <div style="padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;">
+      <div id="avatar-menu-avatar"
+           style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#2563eb,#7c3aed);
+                  display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:white;flex-shrink:0;">
+        A
+      </div>
+      <div>
+        <div id="avatar-menu-negocio" style="font-size:13px;font-weight:700;color:var(--text);">Meu Negócio</div>
+        <div style="font-size:11px;color:var(--green);font-weight:600;">Painel ativo</div>
+      </div>
+    </div>
+    <div style="padding:6px;">
+      <div class="avatar-menu-item" onclick="irPara('configuracoes', null);fecharMenuAvatar()">
+        <svg width="14" height="14" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="7.5" r="2" stroke="currentColor" stroke-width="1.3"/><path d="M7.5 1v1.5M7.5 12.5V14M1 7.5h1.5M12.5 7.5H14M3 3l1 1M11 11l1 1M3 12l1-1M11 4l1-1" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+        Configurações
+      </div>
+      <div class="avatar-menu-item" onclick="window.location.href='planos.html';fecharMenuAvatar()">
+        <svg width="14" height="14" viewBox="0 0 15 15" fill="none"><rect x="1.5" y="3.5" width="12" height="9" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M1.5 6.5h12" stroke="currentColor" stroke-width="1.3"/></svg>
+        Meu plano
+      </div>
+      <div class="avatar-menu-item" onclick="toggleTema();fecharMenuAvatar()">
+        <svg width="14" height="14" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="7.5" r="2.5" stroke="currentColor" stroke-width="1.3"/><path d="M7.5 1v1.5M7.5 12.5V14M1 7.5h1.5M12.5 7.5H14" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+        <span id="avatar-menu-tema-label">Mudar para claro</span>
+      </div>
+      <div style="height:1px;background:var(--border);margin:4px 0;"></div>
+      <div class="avatar-menu-item" style="color:var(--red)!important" onclick="sair()">
+        <svg width="14" height="14" viewBox="0 0 13 13" fill="none"><path d="M5 6.5h6M8.5 4.5L11 6.5l-2.5 2M7.5 2H3a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h4.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Sair da conta
+      </div>
+    </div>
+  `
+  document.body.appendChild(menu)
+
+  // Estilos do menu
+  const style = document.createElement('style')
+  style.textContent = `
+    .avatar-menu-item {
+      display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;
+      font-size:13px;font-weight:500;color:var(--text2);cursor:pointer;transition:all .12s;
+    }
+    .avatar-menu-item:hover { background:rgba(255,255,255,0.06);color:var(--text); }
+  `
+  document.head.appendChild(style)
+
+  // Fecha ao clicar fora
+  document.addEventListener('click', e => {
+    const btn = document.getElementById('topbar-avatar-btn')
+    if (!menu.contains(e.target) && e.target !== btn) fecharMenuAvatar()
+  })
+})()
+
+function abrirMenuAvatar() {
+  const menu = document.getElementById('avatar-menu')
+  if (!menu) return
+  const aberto = menu.style.display === 'block'
+  menu.style.display = aberto ? 'none' : 'block'
+
+  // Atualiza nome do negócio
+  const elNeg = document.getElementById('avatar-menu-negocio')
+  const elAv  = document.getElementById('avatar-menu-avatar')
+  if (negocioAtual) {
+    if (elNeg) elNeg.textContent = negocioAtual.nome
+    if (elAv)  elAv.textContent  = negocioAtual.nome[0].toUpperCase()
+  }
+
+  // Atualiza label do tema
+  const tema = localStorage.getItem('tema') || 'escuro'
+  const elTema = document.getElementById('avatar-menu-tema-label')
+  if (elTema) elTema.textContent = tema === 'escuro' ? 'Mudar para claro' : 'Mudar para escuro'
+}
+
+function fecharMenuAvatar() {
+  const menu = document.getElementById('avatar-menu')
+  if (menu) menu.style.display = 'none'
+}
+
+// Liga o botão do avatar
+document.addEventListener('DOMContentLoaded', () => {
+  const btn = document.getElementById('topbar-avatar-btn')
+  if (btn) btn.addEventListener('click', e => { e.stopPropagation(); abrirMenuAvatar() })
+})
+
+/* ──────────────────────────────────────────────────────────
+   3. FINANCE CARD — valor do mês em tempo real
+   (complementa o carregarInsights do painel_insights_patch.js)
+────────────────────────────────────────────────────────── */
+function atualizarFinanceCard() {
+  if (!negocioAtual) return
+  const nid = negocioAtual._id
+  const mes = mesAtualChave()
+
+  const lucro  = getLucroMes(nid) || 0
+  const ids    = getLucroIds(nid)
+  const atend  = ids.length
+
+  const elAmount = document.getElementById('finance-amount-val')
+  const elMeta   = document.getElementById('finance-meta')
+  const elAtend  = document.getElementById('finance-atend')
+  const elChartL = document.getElementById('finance-chart-label')
+  const elTotal  = document.getElementById('stat-total')
+
+  if (elAmount) elAmount.textContent =
+    lucro.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+  if (elMeta)   elMeta.textContent   = `Movidas: ${atend} agendamentos`
+  if (elAtend)  elAtend.textContent  = atend
+  if (elChartL) elChartL.textContent = `R$${Math.round(lucro)}`
+
+  // Lucro da semana (últimos 7 dias a partir dos agendamentos em memória)
+  if (window.todosAgendamentos) {
+    const hoje    = new Date().toISOString().split('T')[0]
+    const semStr  = (() => { const d = new Date(); d.setDate(d.getDate()-7); return d.toISOString().split('T')[0] })()
+    const lucroSem = todosAgendamentos
+      .filter(a => a.status === 'concluido' && a.data >= semStr && a.data <= hoje)
+      .reduce((acc, a) => acc + (Number(a.preco) || 0), 0)
+    if (elTotal) elTotal.textContent =
+      'R$ ' + lucroSem.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+  }
+}
+
+// Chama após cada atualização de lucro
+const _exibirLucroOrig = exibirLucro
+exibirLucro = function () {
+  _exibirLucroOrig()
+  atualizarFinanceCard()
+}
+
+/* ──────────────────────────────────────────────────────────
+   4. PÁGINA DE HORÁRIOS — garante que o menu item navegue
+────────────────────────────────────────────────────────── */
+document.addEventListener('DOMContentLoaded', () => {
+  // Corrige todos os botões do menu que chamam 'horarios'
+  document.querySelectorAll('.menu-item').forEach(btn => {
+    const onclick = btn.getAttribute('onclick') || ''
+    if (onclick.includes("'horarios'")) {
+      btn.onclick = function () { irPara('horarios', this) }
+    }
+  })
+
+  // Liga busca da topbar
+  const btnBusca = document.querySelector('.main-topbar-search')
+  if (btnBusca) btnBusca.onclick = abrirBusca
+
+  // Liga avatar
+  const btnAvatar = document.getElementById('topbar-avatar-btn')
+  if (btnAvatar) btnAvatar.onclick = e => { e.stopPropagation(); abrirMenuAvatar() }
+
+  // Atualiza finance card quando dados já estiverem disponíveis
+  setTimeout(atualizarFinanceCard, 1500)
+})
+
+/* ──────────────────────────────────────────────────────────
+   5. PIX RECEBIDOS — percentual de agendamentos com pagamento
+────────────────────────────────────────────────────────── */
+function atualizarPix() {
+  const elPix = document.getElementById('finance-pix')
+  if (!elPix || !window.todosAgendamentos) return
+  const mes = mesAtualChave()
+  const doMes = todosAgendamentos.filter(a => a.data?.startsWith(mes))
+  const pagos  = doMes.filter(a => a.pagamento?.status === 'pago').length
+  const pct    = doMes.length > 0 ? Math.round((pagos / doMes.length) * 100) : 0
+  elPix.textContent = `${pct}%`
+}
+
+// Chama junto com renderTabela
+const _filtrarDataOrig = filtrarData
+filtrarData = function () {
+  _filtrarDataOrig()
+  atualizarFinanceCard()
+  atualizarPix()
+}
