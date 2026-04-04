@@ -361,7 +361,7 @@ async function carregarAgendamentos() {
 
   const hoje  = new Date().toISOString().split('T')[0]
   const semana = new Date(Date.now() + 7 * 86400000).toISOString().split('T')[0]
-  document.getElementById('stat-total').textContent  = todosAgendamentos.length
+  // stat-total agora é lucro da semana — calculado pelo painel_extras.js
   document.getElementById('stat-hoje').textContent   = todosAgendamentos.filter(a => a.data === hoje).length
   document.getElementById('stat-semana').textContent = todosAgendamentos.filter(a => a.data >= hoje && a.data <= semana).length
 
