@@ -421,7 +421,7 @@ body.light-mode .topbar-icon-btn { background: rgba(15,23,42,0.04); }
 /* ══════════════════════════════════════════════════
    STAT CARDS — 4 colunas como na foto
 ══════════════════════════════════════════════════ */
-.stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; margin-bottom: 22px; }
+.stats { display: grid; grid-template-columns: 1fr 1fr 2fr; gap: 14px; margin-bottom: 22px; }
 
 .stat-card {
   background: var(--bg-card);
