@@ -2204,3 +2204,265 @@ if (_token) { mostrarPainel() } else { window.location.href = '/auth.html' }
   document.head.appendChild(styleExtra);
  
 })();
+
+(function () {
+ 
+  /* ─── paleta de cores para ícones dos serviços ─── */
+  const CFG_PALETA = [
+    { bg: 'rgba(239,68,68,0.18)',   bd: 'rgba(239,68,68,0.35)',   cor: '#f87171'  },
+    { bg: 'rgba(249,115,22,0.18)',  bd: 'rgba(249,115,22,0.35)',  cor: '#fb923c'  },
+    { bg: 'rgba(234,179,8,0.18)',   bd: 'rgba(234,179,8,0.35)',   cor: '#facc15'  },
+    { bg: 'rgba(16,185,129,0.18)',  bd: 'rgba(16,185,129,0.35)',  cor: '#34d399'  },
+    { bg: 'rgba(59,130,246,0.18)',  bd: 'rgba(59,130,246,0.35)',  cor: '#60a5fa'  },
+    { bg: 'rgba(139,92,246,0.18)',  bd: 'rgba(139,92,246,0.35)',  cor: '#a78bfa'  },
+    { bg: 'rgba(236,72,153,0.18)',  bd: 'rgba(236,72,153,0.35)',  cor: '#f472b6'  },
+    { bg: 'rgba(6,182,212,0.18)',   bd: 'rgba(6,182,212,0.35)',   cor: '#22d3ee'  },
+  ];
+  function cfgPaletaFor(nome) {
+    let h = 0;
+    for (const c of (nome || 'A')) h = ((h << 5) - h) + c.charCodeAt(0);
+    return CFG_PALETA[Math.abs(h) % CFG_PALETA.length];
+  }
+ 
+  /* ─── ícone scissor SVG ─── */
+  const ICON_TESOURA = `<svg width="16" height="16" viewBox="0 0 18 18" fill="none">
+    <circle cx="4.5" cy="5"   r="2.5" stroke="currentColor" stroke-width="1.4"/>
+    <circle cx="4.5" cy="13" r="2.5" stroke="currentColor" stroke-width="1.4"/>
+    <path d="M6.5 6.5L14.5 11M6.5 11.5L14.5 7" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+  </svg>`;
+ 
+  /* ─── índice do serviço sendo editado ─── */
+  let cfgEditIdx = -1;
+ 
+  /* ─── render da lista ─── */
+  window.cfgRenderServicos = function () {
+    const lista = window.servicosAtuais || [];
+    const cont  = document.getElementById('cfg-servicos-lista');
+    const badge = document.getElementById('cfg-badge-num');
+    if (badge) badge.textContent = lista.length;
+    if (!cont) return;
+ 
+    if (!lista.length) {
+      cont.innerHTML = `<div class="cfg-lista-vazia">
+        <svg width="32" height="32" viewBox="0 0 34 34" fill="none" style="margin-bottom:10px;opacity:.35">
+          <rect x="3" y="5" width="28" height="24" rx="4" stroke="var(--text3)" stroke-width="1.8"/>
+          <path d="M9 13h16M9 18h10" stroke="var(--text3)" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+        <div>Nenhum serviço cadastrado ainda.</div>
+        <div style="font-size:12px;color:var(--text3);margin-top:4px">Use o formulário acima para adicionar.</div>
+      </div>`;
+      return;
+    }
+ 
+    cont.innerHTML = lista.map((s, i) => {
+      const nome   = typeof s === 'object' ? s.nome  : s;
+      const preco  = typeof s === 'object' ? Number(s.preco || 0) : 0;
+      const desc   = typeof s === 'object' ? (s.desc || s.descricao || '') : '';
+      const dur    = typeof s === 'object' ? (s.duracao || 0) : 0;
+      const pal    = cfgPaletaFor(nome);
+      const ini    = (nome || '?')[0].toUpperCase();
+      const precoFmt = preco > 0
+        ? `R$ ${preco.toFixed(2).replace('.', ',')}`
+        : `<span style="color:var(--text3)">—</span>`;
+      const durLabel = dur > 0
+        ? `<span class="cfg-serv-dur"><svg width="11" height="11" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="currentColor" stroke-width="1.3"/><path d="M7 4.5V7.5l2 2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg> ${dur} min</span>`
+        : '';
+      const descLabel = desc
+        ? `<span class="cfg-serv-desc">${desc}</span>`
+        : '';
+ 
+      return `<div class="cfg-serv-row" draggable="true" data-idx="${i}">
+        <!-- drag handle -->
+        <div class="cfg-drag-handle" title="Arrastar para reordenar">
+          <svg width="12" height="14" viewBox="0 0 12 14" fill="none">
+            <circle cx="4" cy="3"  r="1.2" fill="currentColor"/>
+            <circle cx="8" cy="3"  r="1.2" fill="currentColor"/>
+            <circle cx="4" cy="7"  r="1.2" fill="currentColor"/>
+            <circle cx="8" cy="7"  r="1.2" fill="currentColor"/>
+            <circle cx="4" cy="11" r="1.2" fill="currentColor"/>
+            <circle cx="8" cy="11" r="1.2" fill="currentColor"/>
+          </svg>
+        </div>
+        <!-- avatar -->
+        <div class="cfg-serv-avatar" style="background:${pal.bg};border-color:${pal.bd};color:${pal.cor}">
+          ${ini}
+        </div>
+        <!-- info -->
+        <div class="cfg-serv-info">
+          <div class="cfg-serv-nome">${nome}</div>
+          <div class="cfg-serv-meta">${descLabel}${durLabel}</div>
+        </div>
+        <!-- preço -->
+        <div class="cfg-serv-preco">${precoFmt}</div>
+        <!-- ações -->
+        <div class="cfg-serv-acoes">
+          <button class="cfg-act-btn cfg-act-edit" onclick="cfgAbrirModalEditar(${i})" title="Editar">
+            <svg width="13" height="13" viewBox="0 0 15 15" fill="none">
+              <path d="M10.5 2.5l2 2-8 8H2.5v-2l8-8Z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <button class="cfg-act-btn cfg-act-del" onclick="cfgRemoverServico(${i})" title="Remover">
+            <svg width="13" height="13" viewBox="0 0 15 15" fill="none">
+              <path d="M2.5 4h10M5 4V3a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v1M6 7v4M9 7v4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M3.5 4l.5 8a1 1 0 0 0 1 1h5a1 1 0 0 0 1-1l.5-8" stroke="currentColor" stroke-width="1.3"/>
+            </svg>
+          </button>
+        </div>
+      </div>`;
+    }).join('');
+  };
+ 
+  /* ─── adicionar serviço ─── */
+  window.cfgAdicionarServico = function () {
+    const nomeEl  = document.getElementById('cfg-novo-servico');
+    const precoEl = document.getElementById('cfg-novo-preco');
+    const erroEl  = document.getElementById('cfg-add-erro');
+    const nome    = nomeEl.value.trim();
+    const preco   = parseFloat(precoEl.value);
+ 
+    erroEl.textContent = '';
+    nomeEl.classList.remove('cfg-input-erro');
+    precoEl.classList.remove('cfg-input-erro');
+ 
+    if (!nome) {
+      erroEl.textContent = '⚠ Digite o nome do serviço.';
+      nomeEl.classList.add('cfg-input-erro');
+      nomeEl.focus();
+      return;
+    }
+    if (!precoEl.value.trim() || isNaN(preco) || preco <= 0) {
+      erroEl.textContent = '⚠ O preço é obrigatório e deve ser maior que R$ 0,00.';
+      precoEl.classList.add('cfg-input-erro');
+      precoEl.focus();
+      return;
+    }
+ 
+    window.servicosAtuais = window.servicosAtuais || [];
+    const jaExiste = window.servicosAtuais.some(s =>
+      (typeof s === 'object' ? s.nome : s).toLowerCase() === nome.toLowerCase()
+    );
+    if (jaExiste) {
+      erroEl.textContent = '⚠ Já existe um serviço com esse nome.';
+      nomeEl.classList.add('cfg-input-erro');
+      nomeEl.focus();
+      return;
+    }
+ 
+    window.servicosAtuais.push({ nome, preco });
+    nomeEl.value = '';
+    precoEl.value = '';
+    nomeEl.focus();
+    window.cfgRenderServicos();
+    if (window.renderIntervalosServicos) window.renderIntervalosServicos();
+  };
+ 
+  /* ─── remover serviço ─── */
+  window.cfgRemoverServico = function (i) {
+    const nome = typeof window.servicosAtuais[i] === 'object'
+      ? window.servicosAtuais[i].nome
+      : window.servicosAtuais[i];
+    if (window.intervalosServicos) delete window.intervalosServicos[nome];
+    window.servicosAtuais.splice(i, 1);
+    window.cfgRenderServicos();
+    if (window.renderIntervalosServicos) window.renderIntervalosServicos();
+  };
+ 
+  /* ─── editar serviço (modal) ─── */
+  window.cfgAbrirModalEditar = function (i) {
+    cfgEditIdx = i;
+    const s = window.servicosAtuais[i] || {};
+    document.getElementById('cfg-edit-nome').value    = typeof s === 'object' ? s.nome  : s;
+    document.getElementById('cfg-edit-preco').value   = typeof s === 'object' ? (s.preco || '') : '';
+    document.getElementById('cfg-edit-desc').value    = typeof s === 'object' ? (s.desc || s.descricao || '') : '';
+    document.getElementById('cfg-edit-duracao').value = typeof s === 'object' ? (s.duracao || '') : '';
+    document.getElementById('cfg-modal-editar').style.display = 'flex';
+  };
+  window.cfgFecharModalEditar = function () {
+    document.getElementById('cfg-modal-editar').style.display = 'none';
+    cfgEditIdx = -1;
+  };
+  window.cfgSalvarEdicao = function () {
+    if (cfgEditIdx < 0) return;
+    const nome    = document.getElementById('cfg-edit-nome').value.trim();
+    const preco   = parseFloat(document.getElementById('cfg-edit-preco').value) || 0;
+    const desc    = document.getElementById('cfg-edit-desc').value.trim();
+    const duracao = parseInt(document.getElementById('cfg-edit-duracao').value) || 0;
+    if (!nome) { alert('Digite o nome do serviço.'); return; }
+    window.servicosAtuais[cfgEditIdx] = { nome, preco, desc, duracao };
+    window.cfgRenderServicos();
+    if (window.renderIntervalosServicos) window.renderIntervalosServicos();
+    window.cfgFecharModalEditar();
+  };
+ 
+  /* ─── salvar ─── */
+  window.cfgSalvarServicos = async function () {
+    if (!window.negocioAtual) return;
+    const token = localStorage.getItem('token');
+    const btn   = document.getElementById('cfg-btn-salvar-servicos');
+    if (btn) { btn.disabled = true; btn.textContent = 'Salvando...'; }
+    try {
+      await fetch(`${window.API}/auth/servicos`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({ negocioId: window.negocioAtual._id, servicos: window.servicosAtuais }),
+      });
+      const msg = document.getElementById('cfg-salvo-msg');
+      if (msg) { msg.style.display = 'inline'; setTimeout(() => msg.style.display = 'none', 2500); }
+    } finally {
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = `<svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg> Salvar alterações`;
+      }
+    }
+  };
+ 
+  /* ─── abrir minha página ─── */
+  window.abrirMinhaPagina = function (e) {
+    if (e) e.preventDefault();
+    if (!window.negocioAtual) return;
+    window.open(`https://agendorapido.com.br/agendar.html?id=${window.negocioAtual._id}`, '_blank');
+  };
+ 
+  /* ─── hook: quando carregarServicos() terminar, renderizar a nova lista ─── */
+  const _origCarregarServicos = window.carregarServicos;
+  window.carregarServicos = async function () {
+    if (_origCarregarServicos) await _origCarregarServicos.apply(this, arguments);
+    window.cfgRenderServicos();
+  };
+ 
+  /* ─── inicializar se dados já carregados ─── */
+  if (window.servicosAtuais) window.cfgRenderServicos();
+ 
+  /* ─── também sobrescreve o salvarServicos original ─── */
+  window.salvarServicos = window.cfgSalvarServicos;
+ 
+  /* ─── drag & drop para reordenar ─── */
+  let dragSrc = null;
+  document.addEventListener('dragstart', e => {
+    const row = e.target.closest('.cfg-serv-row');
+    if (row) { dragSrc = row; row.classList.add('cfg-dragging'); }
+  });
+  document.addEventListener('dragend', e => {
+    document.querySelectorAll('.cfg-serv-row').forEach(r => r.classList.remove('cfg-dragging','cfg-drag-over'));
+    dragSrc = null;
+  });
+  document.addEventListener('dragover', e => {
+    e.preventDefault();
+    const row = e.target.closest('.cfg-serv-row');
+    if (row && row !== dragSrc) {
+      document.querySelectorAll('.cfg-serv-row').forEach(r => r.classList.remove('cfg-drag-over'));
+      row.classList.add('cfg-drag-over');
+    }
+  });
+  document.addEventListener('drop', e => {
+    e.preventDefault();
+    const rowDest = e.target.closest('.cfg-serv-row');
+    if (!rowDest || !dragSrc || rowDest === dragSrc) return;
+    const src  = parseInt(dragSrc.dataset.idx);
+    const dest = parseInt(rowDest.dataset.idx);
+    const tmp  = window.servicosAtuais.splice(src, 1)[0];
+    window.servicosAtuais.splice(dest, 0, tmp);
+    window.cfgRenderServicos();
+  });
+ 
+})();

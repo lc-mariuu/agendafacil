@@ -1233,69 +1233,230 @@ Estamos te esperando! 🙏</textarea>
 
   <!-- ── CONFIGURAÇÕES ── -->
   <div class="page" id="page-configuracoes">
-    <div class="main-topbar" style="position:relative;margin:0 -36px 28px;padding:0 32px">
-      <div class="main-topbar-left"><div><div class="main-topbar-title">Configurações</div><div class="main-topbar-sub">Personalize os serviços e a aparência do seu painel</div></div></div>
+ 
+  <!-- ── TOPBAR INTERNA ── -->
+  <div class="cfg-topbar">
+    <div class="cfg-topbar-left">
+      <div class="main-topbar-title">Configurações</div>
+      <div class="main-topbar-sub">Personalize os serviços e a aparência do seu painel.</div>
     </div>
-    <div class="section-block">
-      <div class="section-block-header">
-        <div class="section-block-icon"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M2 5h16M2 10h10M2 15h12" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round"/></svg></div>
-        <div>
-          <div class="section-block-title">Serviços oferecidos</div>
-          <div class="section-block-sub">Adicione os serviços com seus respectivos preços</div>
-        </div>
+    <a href="#" class="cfg-ver-pagina-btn" id="btn-ver-minha-pagina" onclick="abrirMinhaPagina(event)">
+      Ver minha página
+      <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
+        <path d="M2 12L12 2M12 2H6M12 2v6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </a>
+  </div>
+ 
+  <!-- ── HERO BANNER (3 colunas) ── -->
+  <div class="cfg-hero">
+    <button class="cfg-hero-close" onclick="this.closest('.cfg-hero').style.display='none'">×</button>
+    <div class="cfg-hero-col">
+      <div class="cfg-hero-icon" style="background:rgba(139,92,246,0.18);border-color:rgba(139,92,246,0.3)">
+        <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+          <path d="M10 2l1.5 4.5H16l-3.5 2.5 1.5 4.5L10 11l-4 2.5 1.5-4.5L4 6.5h4.5L10 2Z"
+                stroke="#a78bfa" stroke-width="1.5" stroke-linejoin="round"/>
+        </svg>
       </div>
-      <div class="section-block-body">
-        <div id="servicos-tags" style="margin-bottom:14px;min-height:34px"></div>
-        <div class="add-servico-wrap">
-          <div class="add-servico-row">
-            <div class="add-field-group add-field-nome">
-              <label>Nome do serviço</label>
-              <input type="text" id="novo-servico" placeholder="Ex: Corte + Barba, Consulta...">
-            </div>
-            <div class="add-field-group add-field-preco">
-              <label>Preço (R$) *</label>
-              <input type="number" id="novo-preco" placeholder="0,00" min="0.01" step="0.01">
-            </div>
-            <button class="btn-add" onclick="adicionarServico()">+ Adicionar</button>
-          </div>
-          <div class="add-servico-erro" id="servico-erro"></div>
-        </div>
-        <div style="display:flex;align-items:center">
-          <button class="btn-salvar" onclick="salvarServicos()">
-            <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            Salvar serviços
-          </button>
-          <span class="salvo-msg" id="salvo-msg">✓ Salvo!</span>
-        </div>
+      <div>
+        <div class="cfg-hero-title">Organize seus serviços do seu jeito</div>
+        <div class="cfg-hero-sub">Seus clientes verão essas opções na hora de agendar.</div>
       </div>
     </div>
-    <div class="section-block">
-      <div class="section-block-header">
-        <div class="section-block-icon"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="4" stroke="var(--accent)" stroke-width="1.6"/><path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.22 4.22l1.42 1.42M14.36 14.36l1.42 1.42M4.22 15.78l1.42-1.42M14.36 5.64l1.42-1.42" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round"/></svg></div>
-        <div>
-          <div class="section-block-title">Aparência</div>
-          <div class="section-block-sub">Escolha entre o modo claro e escuro para o painel</div>
-        </div>
+    <div class="cfg-hero-col">
+      <div class="cfg-hero-icon" style="background:rgba(59,130,246,0.15);border-color:rgba(59,130,246,0.28)">
+        <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+          <path d="M2 12l3.5-3.5 3 3L14 5" stroke="#60a5fa" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M14 5h3M14 5v3" stroke="#60a5fa" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
       </div>
-      <div class="section-block-body">
-        <div class="theme-selector-wrap">
-          <div class="theme-option" id="theme-opt-claro" onclick="definirTema('claro')">
-            <div class="theme-option-check"><svg width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5L8 3" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-            <div class="theme-preview claro"><div class="theme-preview-sidebar"></div><div class="theme-preview-content"><div class="theme-preview-bar"></div><div class="theme-preview-bar2"></div><div class="theme-preview-bar" style="width:70%"></div></div></div>
-            <div><div style="display:flex;align-items:center;gap:5px"><span class="theme-option-emoji">☀️</span><span class="theme-option-label">Modo Claro</span></div><div class="theme-option-desc">Interface clara e limpa</div></div>
-          </div>
-          <div class="theme-option" id="theme-opt-escuro" onclick="definirTema('escuro')">
-            <div class="theme-option-check"><svg width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5L8 3" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-            <div class="theme-preview escuro"><div class="theme-preview-sidebar"></div><div class="theme-preview-content"><div class="theme-preview-bar"></div><div class="theme-preview-bar2"></div><div class="theme-preview-bar" style="width:70%"></div></div></div>
-            <div><div style="display:flex;align-items:center;gap:5px"><span class="theme-option-emoji">🌙</span><span class="theme-option-label">Modo Escuro</span></div><div class="theme-option-desc">Confortável para uso noturno</div></div>
-          </div>
-        </div>
-        <div style="margin-top:14px;padding:11px 14px;background:var(--accent-light);border:1px solid var(--accent-mid);border-radius:9px;font-size:12px;color:var(--accent);font-weight:500;line-height:1.5">
-          💾 A preferência de tema é salva automaticamente no seu navegador.
-        </div>
+      <div>
+        <div class="cfg-hero-title">Mais agendamentos</div>
+        <div class="cfg-hero-sub">Serviços claros convertem mais.</div>
+      </div>
+    </div>
+    <div class="cfg-hero-col">
+      <div class="cfg-hero-icon" style="background:rgba(245,158,11,0.15);border-color:rgba(245,158,11,0.28)">
+        <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+          <path d="M4 13l4-4 4 4 4-7" stroke="#fbbf24" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M3 17h14" stroke="#fbbf24" stroke-width="1.4" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div>
+        <div class="cfg-hero-title">Gestão fácil</div>
+        <div class="cfg-hero-sub">Edite, organize e atualize quando quiser.</div>
       </div>
     </div>
   </div>
+ 
+  <!-- ── CARD: SERVIÇOS OFERECIDOS ── -->
+  <div class="cfg-card">
+    <!-- Header do card -->
+    <div class="cfg-card-header">
+      <div style="display:flex;align-items:center;gap:13px">
+        <div class="cfg-card-icon">
+          <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+            <path d="M3 5h14M3 10h8M3 15h10" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div>
+          <div class="cfg-card-title">Serviços oferecidos</div>
+          <div class="cfg-card-sub">Adicione os serviços com seus respectivos preços</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <div class="cfg-servicos-badge" id="cfg-badge-count">
+          <span class="cfg-badge-dot"></span>
+          <span id="cfg-badge-num">0</span> serviços cadastrados
+        </div>
+        <button class="cfg-ordenar-btn">
+          <svg width="13" height="13" viewBox="0 0 15 15" fill="none">
+            <path d="M3 5h9M5 7.5h5M7 10h1" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+          </svg>
+          Ordenar
+        </button>
+      </div>
+    </div>
+ 
+    <!-- Formulário add serviço -->
+    <div class="cfg-add-form">
+      <div class="cfg-add-nome-wrap">
+        <label class="cfg-field-label">Nome do serviço</label>
+        <div class="cfg-add-nome-input-wrap">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" class="cfg-input-prefix-icon">
+            <circle cx="8" cy="8" r="6" stroke="var(--text3)" stroke-width="1.3"/>
+            <path d="M6 8.5l1.5 1.5L10.5 6" stroke="var(--text3)" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <input
+            type="text"
+            id="cfg-novo-servico"
+            class="cfg-input cfg-input-nome"
+            placeholder="Ex: Corte + Barba, Consultoria, etc."
+            onkeydown="if(event.key==='Enter'){event.preventDefault();cfgAdicionarServico()}"
+          >
+        </div>
+        <div class="cfg-add-hint">Pressione <kbd>Enter</kbd> para adicionar rapidamente</div>
+      </div>
+      <div class="cfg-add-preco-wrap">
+        <label class="cfg-field-label">Preço (R$)</label>
+        <div class="cfg-preco-input-row">
+          <div class="cfg-preco-prefix">R$</div>
+          <input
+            type="number"
+            id="cfg-novo-preco"
+            class="cfg-input cfg-input-preco"
+            placeholder="0,00"
+            min="0.01"
+            step="0.01"
+            onkeydown="if(event.key==='Enter'){event.preventDefault();cfgAdicionarServico()}"
+          >
+        </div>
+      </div>
+      <button class="cfg-btn-add" onclick="cfgAdicionarServico()">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+          <path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+        Adicionar serviço
+      </button>
+    </div>
+    <div class="cfg-add-erro" id="cfg-add-erro"></div>
+ 
+    <!-- Lista de serviços -->
+    <div id="cfg-servicos-lista" class="cfg-servicos-lista"></div>
+ 
+    <!-- Dicas rápidas -->
+    <div class="cfg-dicas-section">
+      <div class="cfg-dicas-title">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+          <circle cx="8" cy="8" r="6.5" stroke="#f59e0b" stroke-width="1.3"/>
+          <path d="M8 5v4M8 11v.5" stroke="#f59e0b" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        Dicas rápidas
+      </div>
+      <div class="cfg-dicas-grid">
+        <div class="cfg-dica-item">
+          <div class="cfg-dica-icon" style="background:rgba(139,92,246,0.12);border-color:rgba(139,92,246,0.22)">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+              <path d="M3 8h10M3 5h10M3 11h6" stroke="#a78bfa" stroke-width="1.4" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div>
+            <div class="cfg-dica-nome">Use nomes claros</div>
+            <div class="cfg-dica-desc">Seus clientes entendem na hora.</div>
+          </div>
+        </div>
+        <div class="cfg-dica-item">
+          <div class="cfg-dica-icon" style="background:rgba(16,185,129,0.12);border-color:rgba(16,185,129,0.22)">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+              <rect x="2" y="4" width="12" height="9" rx="1.5" stroke="#10b981" stroke-width="1.3"/>
+              <path d="M2 7h12M6 10.5h4" stroke="#10b981" stroke-width="1.3" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div>
+            <div class="cfg-dica-nome">Preços justos</div>
+            <div class="cfg-dica-desc">Pesquise o mercado da sua região.</div>
+          </div>
+        </div>
+        <div class="cfg-dica-item">
+          <div class="cfg-dica-icon" style="background:rgba(245,158,11,0.12);border-color:rgba(245,158,11,0.22)">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+              <circle cx="8" cy="8" r="6" stroke="#f59e0b" stroke-width="1.3"/>
+              <path d="M8 5v3.5l2.5 2.5" stroke="#f59e0b" stroke-width="1.4" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div>
+            <div class="cfg-dica-nome">Mantenha atualizado</div>
+            <div class="cfg-dica-desc">Serviços desatualizados geram dúvidas.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+ 
+    <!-- Footer com botão salvar -->
+    <div class="cfg-card-footer">
+      <button class="cfg-btn-salvar" id="cfg-btn-salvar-servicos" onclick="cfgSalvarServicos()">
+        <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
+          <path d="M2 7l3.5 3.5L12 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Salvar alterações
+      </button>
+      <span class="cfg-salvo-msg" id="cfg-salvo-msg" style="display:none">✓ Salvo com sucesso!</span>
+    </div>
+  </div>
+ 
+  <!-- ── MODAL EDITAR SERVIÇO ── -->
+  <div class="modal-overlay" id="cfg-modal-editar" style="display:none">
+    <div class="modal" style="max-width:420px">
+      <div class="modal-header">
+        <h2>Editar serviço</h2>
+        <button class="modal-close" onclick="cfgFecharModalEditar()">×</button>
+      </div>
+      <div class="form-group">
+        <label>Nome do serviço</label>
+        <input type="text" id="cfg-edit-nome" placeholder="Ex: Corte + Barba">
+      </div>
+      <div class="form-group">
+        <label>Descrição (opcional)</label>
+        <input type="text" id="cfg-edit-desc" placeholder="Ex: Corte masculino">
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div class="form-group" style="margin-bottom:0">
+          <label>Preço (R$)</label>
+          <input type="number" id="cfg-edit-preco" placeholder="0,00" min="0.01" step="0.01">
+        </div>
+        <div class="form-group" style="margin-bottom:0">
+          <label>Duração (min)</label>
+          <input type="number" id="cfg-edit-duracao" placeholder="30" min="5" step="5">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancelar-modal" onclick="cfgFecharModalEditar()">Cancelar</button>
+        <button class="btn-salvar-modal" onclick="cfgSalvarEdicao()">Salvar</button>
+      </div>
+    </div>
+  </div>
+ 
+</div>
 
   <!-- ── MINHA BIO ── -->
   <div class="page" id="page-bio">
