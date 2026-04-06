@@ -711,54 +711,308 @@
       </div>
     </div>
 
-  </div><!-- /page-horarios -->
+  </div>
+  
+<div class="page" id="page-lembretes">
 
-  <!-- ── LEMBRETES ── -->
-  <div class="page" id="page-lembretes">
-    <div class="main-topbar" style="position:relative;margin:0 -36px 28px;padding:0 32px">
-      <div class="main-topbar-left"><div><div class="main-topbar-title">Lembretes Automáticos</div><div class="main-topbar-sub">Avise seus clientes 24h antes via WhatsApp</div></div></div>
-    </div>
-    <div class="section-block">
-      <div class="section-block-header">
-        <div class="section-block-icon"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M10 2a6 6 0 0 1 6 6c0 3.3.7 4.7 1.4 5.5H2.6C3.3 12.7 4 11.3 4 8a6 6 0 0 1 6-6Z" stroke="var(--accent)" stroke-width="1.6" stroke-linejoin="round"/><path d="M8 16.5a2 2 0 0 0 4 0" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round"/></svg></div>
-        <div>
-          <div class="section-block-title">Lembrete automático 24h antes</div>
-          <div class="section-block-sub">Mensagem enviada pelo WhatsApp do AgendoRapido</div>
-        </div>
+  <!-- HERO -->
+  <div class="auto-hero">
+    <div class="auto-hero-left">
+      <div class="auto-hero-icon">
+        <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+          <path d="M10 2l1.5 4.5H16l-3.5 2.5 1.5 4.5L10 11l-4 2.5 1.5-4.5L4 6.5h4.5L10 2Z" stroke="#60a5fa" stroke-width="1.5" stroke-linejoin="round"/>
+        </svg>
       </div>
-      <div class="section-block-body">
-        <div class="toggle-row">
-          <div>
-            <div class="toggle-row-label">Ativar lembretes automáticos</div>
-            <div class="toggle-row-desc">Seus clientes recebem uma mensagem no WhatsApp 24h antes</div>
-          </div>
-          <label class="toggle-switch">
-            <input type="checkbox" id="toggle-lembrete" onchange="salvarLembrete()">
-            <span class="toggle-track" id="toggle-track"></span>
-            <span class="toggle-thumb" id="toggle-thumb"></span>
-          </label>
-        </div>
-        <div id="lembrete-info" style="display:none" class="info-box green">
-          <div class="info-box-title">✓ Lembretes ativados</div>
-          Seus clientes receberão automaticamente uma mensagem 24h antes.
-        </div>
-        <div style="margin-top:18px">
-          <div class="form-group">
-            <label>Mensagem do lembrete</label>
-            <textarea id="lembrete-msg" style="resize:vertical;min-height:95px">Olá {nome}! A *{negocio}* lembra que você tem um agendamento amanhã, {data} às {hora} — {servico}. Te esperamos!</textarea>
-            <div class="form-hint">Variáveis: <strong>{nome}</strong>, <strong>{negocio}</strong>, <strong>{data}</strong>, <strong>{hora}</strong>, <strong>{servico}</strong></div>
-          </div>
-        </div>
-        <div style="display:flex;align-items:center">
-          <button class="btn-salvar" onclick="salvarConfLembrete()">
-            <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            Salvar configurações
-          </button>
-          <span class="salvo-msg" id="salvo-lembrete">✓ Salvo!</span>
-        </div>
+      <div class="auto-hero-text">
+        <div class="auto-hero-title">Automação</div>
+        <div class="auto-hero-sub">Lembretes automáticos via WhatsApp<br>que trabalham por você 24h por dia.</div>
+      </div>
+    </div>
+    <div class="auto-hero-right">
+      <!-- Ilustração WhatsApp + relógio -->
+      <div class="auto-hero-illustration">
+        <svg width="200" height="120" viewBox="0 0 200 120" fill="none">
+          <!-- Fundo azul claro do relógio -->
+          <circle cx="150" cy="72" r="38" fill="#0d2a5e" opacity="0.8"/>
+          <circle cx="150" cy="72" r="32" fill="#0f3372" stroke="rgba(59,130,246,0.3)" stroke-width="1.5"/>
+          <!-- Ponteiros relógio -->
+          <path d="M150 55v18" stroke="#60a5fa" stroke-width="2.5" stroke-linecap="round"/>
+          <path d="M150 72l10 9" stroke="#3b82f6" stroke-width="2.5" stroke-linecap="round"/>
+          <circle cx="150" cy="72" r="3" fill="#60a5fa"/>
+          <!-- Ticks -->
+          <path d="M150 47v4M150 93v4M124 72h4M172 72h4" stroke="rgba(96,165,250,0.35)" stroke-width="1.5" stroke-linecap="round"/>
+          <!-- WhatsApp icon base -->
+          <rect x="42" y="10" width="80" height="80" rx="22" fill="#1a5e38"/>
+          <rect x="42" y="10" width="80" height="80" rx="22" fill="#25d366" opacity="0.9"/>
+          <!-- WhatsApp chat bubbles inside -->
+          <rect x="58" y="32" width="48" height="8" rx="4" fill="white" opacity="0.9"/>
+          <rect x="58" y="46" width="36" height="8" rx="4" fill="white" opacity="0.7"/>
+          <rect x="58" y="60" width="42" height="8" rx="4" fill="white" opacity="0.5"/>
+          <!-- Stars / sparkles -->
+          <circle cx="30" cy="18" r="3" fill="#60a5fa" opacity="0.5"/>
+          <circle cx="190" cy="30" r="2" fill="#93c5fd" opacity="0.4"/>
+          <circle cx="22" cy="90" r="2.5" fill="#60a5fa" opacity="0.3"/>
+          <path d="M170 18l1.5 3 3 1.5-3 1.5L170 27l-1.5-3-3-1.5 3-1.5L170 18Z" fill="#60a5fa" opacity="0.5"/>
+          <path d="M35 55l1 2 2 1-2 1-1 2-1-2-2-1 2-1L35 55Z" fill="#93c5fd" opacity="0.4"/>
+        </svg>
+      </div>
+      <!-- Badge -->
+      <div class="auto-hero-badge">
+        <div class="auto-hero-badge-title">Mais presença, menos faltas</div>
+        <div class="auto-hero-badge-text">Negócios que usam lembretes têm até 60% menos faltas.</div>
       </div>
     </div>
   </div>
+
+  <!-- INFO BANNER -->
+  <div class="auto-info-banner" id="auto-info-banner">
+    <div class="auto-info-banner-left">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <circle cx="8" cy="8" r="6.5" stroke="#3b82f6" stroke-width="1.4"/>
+        <path d="M8 7v4M8 5.5v.5" stroke="#3b82f6" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      <span class="auto-info-banner-text">Lembretes automáticos ajudam a reduzir faltas e aumentam a satisfação dos seus clientes.</span>
+    </div>
+    <button class="auto-info-banner-close" onclick="document.getElementById('auto-info-banner').style.display='none'">×</button>
+  </div>
+
+  <!-- CARDS DOS TIPOS DE LEMBRETE -->
+  <div class="auto-tipos-grid">
+
+    <!-- 1. Lembrete 24h -->
+    <div class="auto-tipo-card ativo-selected" onclick="selecionarTipoAuto('24h', this)">
+      <div class="auto-tipo-icon green">🔔</div>
+      <div class="auto-tipo-nome">
+        Lembrete 24h antes
+        <span class="auto-tipo-badge ativo">Ativo</span>
+      </div>
+      <div class="auto-tipo-desc">Avise seus clientes com antecedência.</div>
+      <div class="auto-tipo-toggle on" id="toggle-24h" onclick="event.stopPropagation();toggleAutoTipo('24h',this)">
+        <div class="auto-tipo-toggle-thumb"></div>
+      </div>
+    </div>
+
+    <!-- 2. Lembrete 1h -->
+    <div class="auto-tipo-card" onclick="selecionarTipoAuto('1h', this)">
+      <div class="auto-tipo-icon blue">📅</div>
+      <div class="auto-tipo-nome">
+        Lembrete 1h antes
+        <span class="auto-tipo-badge ativo">Ativo</span>
+      </div>
+      <div class="auto-tipo-desc">Reforce o compromisso do cliente.</div>
+      <div class="auto-tipo-toggle on" id="toggle-1h" onclick="event.stopPropagation();toggleAutoTipo('1h',this)">
+        <div class="auto-tipo-toggle-thumb"></div>
+      </div>
+    </div>
+
+    <!-- 3. Pós-atendimento -->
+    <div class="auto-tipo-card" onclick="selecionarTipoAuto('pos', this)">
+      <div class="auto-tipo-icon red">❤️</div>
+      <div class="auto-tipo-nome">
+        Mensagem pós-atendimento
+        <span class="auto-tipo-badge inativo">Inativo</span>
+      </div>
+      <div class="auto-tipo-desc">Agradeça e incentive novas visitas.</div>
+      <div class="auto-tipo-toggle off" id="toggle-pos" onclick="event.stopPropagation();toggleAutoTipo('pos',this)">
+        <div class="auto-tipo-toggle-thumb"></div>
+      </div>
+    </div>
+
+    <!-- 4. Aniversário -->
+    <div class="auto-tipo-card" onclick="selecionarTipoAuto('aniversario', this)">
+      <div class="auto-tipo-icon yellow">⭐</div>
+      <div class="auto-tipo-nome">
+        Mensagem de aniversário
+        <span class="auto-tipo-badge inativo">Inativo</span>
+      </div>
+      <div class="auto-tipo-desc">Surpreenda e fidelize seus clientes.</div>
+      <div class="auto-tipo-toggle off" id="toggle-aniversario" onclick="event.stopPropagation();toggleAutoTipo('aniversario',this)">
+        <div class="auto-tipo-toggle-thumb"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- GRID EDITOR + STATS -->
+  <div class="auto-content-grid">
+
+    <!-- EDITOR -->
+    <div class="auto-editor-card">
+      <!-- Header -->
+      <div class="auto-editor-header">
+        <div class="auto-editor-header-left">
+          <div class="auto-editor-header-title">Editar lembrete 24h antes</div>
+          <div class="auto-editor-header-sub">Personalize a mensagem enviada aos seus clientes.</div>
+        </div>
+        <div class="auto-editor-header-right">
+          <span class="auto-ativo-label">Ativo</span>
+          <div class="auto-tipo-toggle on" id="toggle-editor-main" onclick="toggleEditorMain(this)" style="width:44px;height:24px">
+            <div class="auto-tipo-toggle-thumb"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Body -->
+      <div class="auto-editor-body">
+        <!-- Mensagem -->
+        <div class="auto-msg-label">MENSAGEM</div>
+        <textarea class="auto-msg-textarea" id="auto-mensagem-textarea" oninput="atualizarPreviewAuto()">Olá {nome}! 👋
+Lembramos que você tem um agendamento amanhã, {data}, às {hora} — {servico}.
+Estamos te esperando! 🙏</textarea>
+
+        <!-- Variáveis -->
+        <div class="auto-vars-row">
+          <span class="auto-vars-label">Variáveis disponíveis:</span>
+          <span class="auto-var-chip" onclick="inserirVarAuto('{nome}')">{nome}</span>
+          <span class="auto-var-chip" onclick="inserirVarAuto('{servico}')">{servico}</span>
+          <span class="auto-var-chip" onclick="inserirVarAuto('{data}')">{data}</span>
+          <span class="auto-var-chip" onclick="inserirVarAuto('{hora}')">{hora}</span>
+          <span class="auto-var-chip" onclick="inserirVarAuto('{negocio}')">{negocio}</span>
+        </div>
+
+        <!-- Pré-visualização -->
+        <div class="auto-preview-label">PRÉ-VISUALIZAÇÃO</div>
+        <div class="auto-preview-box">
+          <div class="auto-wpp-bubble" id="auto-preview-bubble">
+            Olá Carlos! 👋<br>
+            Lembramos que você tem um agendamento amanhã, 23/05, às 15:00 — Barba.<br>
+            Estamos te esperando! 🙏
+            <div class="auto-wpp-bubble-time">
+              10:30
+              <svg width="14" height="10" viewBox="0 0 16 11" fill="none">
+                <path d="M1 5.5l3.5 3.5L9 2M7 5.5l3.5 3.5L15 2" stroke="#4fc3f7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="auto-editor-footer">
+        <button class="auto-btn-salvar" onclick="salvarAutomacao()">
+          <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
+            <path d="M2 7l3.5 3.5L12 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Salvar alterações
+        </button>
+        <button class="auto-btn-teste" onclick="enviarTesteAuto()">
+          <svg width="13" height="13" viewBox="0 0 15 15" fill="none">
+            <path d="M2 7.5h11M9.5 4L13 7.5 9.5 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Enviar teste
+        </button>
+      </div>
+    </div>
+
+    <!-- COLUNA DIREITA -->
+    <div>
+
+      <!-- ESTATÍSTICAS -->
+      <div class="auto-stats-card">
+        <div class="auto-stats-header">
+          <div class="auto-stats-title">Suas estatísticas</div>
+          <div class="auto-stats-period">
+            Este mês
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+              <path d="M3 5l3 3 3-3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+        </div>
+        <div class="auto-stats-grid">
+          <!-- Mensagens enviadas -->
+          <div class="auto-stat-item">
+            <div class="auto-stat-icon green">
+              <svg width="14" height="14" viewBox="0 0 15 15" fill="none">
+                <path d="M2 12.5L13 7.5 2 2.5v4l8 1-8 1v4Z" stroke="#34d399" stroke-width="1.4" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div class="auto-stat-label">Mensagens enviadas</div>
+            <div class="auto-stat-valor">128</div>
+            <div class="auto-stat-trend">+12% vs mês passado</div>
+          </div>
+          <!-- Entregues -->
+          <div class="auto-stat-item">
+            <div class="auto-stat-icon blue">
+              <svg width="14" height="14" viewBox="0 0 15 15" fill="none">
+                <path d="M2 7l4 4L13 4" stroke="#3b82f6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div class="auto-stat-label">Entregues</div>
+            <div class="auto-stat-valor">118</div>
+            <div class="auto-stat-trend neutral">92% de sucesso</div>
+          </div>
+          <!-- Faltas evitadas -->
+          <div class="auto-stat-item">
+            <div class="auto-stat-icon orange">
+              <svg width="14" height="14" viewBox="0 0 15 15" fill="none">
+                <circle cx="7.5" cy="7.5" r="5.5" stroke="#f59e0b" stroke-width="1.4"/>
+                <path d="M7.5 4.5V8l2 2" stroke="#f59e0b" stroke-width="1.4" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div class="auto-stat-label">Faltas evitadas</div>
+            <div class="auto-stat-valor">7</div>
+            <div class="auto-stat-trend">+40% vs mês passado</div>
+          </div>
+          <!-- Respostas -->
+          <div class="auto-stat-item">
+            <div class="auto-stat-icon pink">
+              <svg width="14" height="14" viewBox="0 0 15 15" fill="none">
+                <path d="M7.5 2.5a5 5 0 0 1 5 5c0 .8-.5 1.8-1 2.5l.5 2-2-.5a5 5 0 1 1-2.5-9Z" stroke="#ec4899" stroke-width="1.4" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div class="auto-stat-label">Respostas</div>
+            <div class="auto-stat-valor">24</div>
+            <div class="auto-stat-trend neutral">18% de taxa</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DICAS -->
+      <div class="auto-dicas-card">
+        <div class="auto-dicas-title">Dicas para melhores resultados</div>
+
+        <div class="auto-dica-item">
+          <div class="auto-dica-icon">
+            <svg width="14" height="14" viewBox="0 0 15 15" fill="none">
+              <path d="M2 12.5L13 7.5 2 2.5v4l8 1-8 1v4Z" stroke="#3b82f6" stroke-width="1.4" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div>
+            <div class="auto-dica-nome">Seja claro e objetivo</div>
+            <div class="auto-dica-desc">Mensagens curtas têm mais taxa de leitura.</div>
+          </div>
+        </div>
+
+        <div class="auto-dica-item">
+          <div class="auto-dica-icon">
+            <svg width="14" height="14" viewBox="0 0 15 15" fill="none">
+              <rect x="2" y="3" width="11" height="9" rx="1.5" stroke="#3b82f6" stroke-width="1.4"/>
+              <path d="M5 7h5M5 9.5h3" stroke="#3b82f6" stroke-width="1.3" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div>
+            <div class="auto-dica-nome">Use variáveis</div>
+            <div class="auto-dica-desc">Personalize e crie conexão com o cliente.</div>
+          </div>
+        </div>
+
+        <div class="auto-dica-item">
+          <div class="auto-dica-icon">
+            <svg width="14" height="14" viewBox="0 0 15 15" fill="none">
+              <circle cx="7.5" cy="7.5" r="5.5" stroke="#3b82f6" stroke-width="1.4"/>
+              <path d="M7.5 4.5V8l2 2" stroke="#3b82f6" stroke-width="1.4" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div>
+            <div class="auto-dica-nome">Envie no horário certo</div>
+            <div class="auto-dica-desc">Lembretes 24h antes funcionam melhor.</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
 
   <!-- ── WHATSAPP AUTO ── -->
   <div class="page" id="page-whatsapp">

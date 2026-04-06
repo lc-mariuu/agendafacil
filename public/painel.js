@@ -1672,3 +1672,206 @@ function fecharGerenciarDias() {
 carregarTema()
 const _token = localStorage.getItem('token')
 if (_token) { mostrarPainel() } else { window.location.href = '/auth.html' }
+
+(function() {
+ 
+  let tipoSelecionado = '24h';
+ 
+  const mensagensAuto = {
+    '24h':        'Olá {nome}! 👋\nLembramos que você tem um agendamento amanhã, {data}, às {hora} — {servico}.\nEstamos te esperando! 🙏',
+    '1h':         'Olá {nome}! ⏰\nSeu agendamento é em 1 hora — {hora}. Serviço: {servico}.\nTe esperamos em breve! 😊',
+    'pos':        'Olá {nome}! 🙏\nObrigado por nos visitar hoje! Foi um prazer te atender.\nAgende seu próximo horário: {link}',
+    'aniversario':'Feliz aniversário, {nome}! 🎉\nA equipe da {negocio} deseja tudo de melhor para você!\nTemos um presente especial esperando por você. 🎁',
+  };
+ 
+  const titulos = {
+    '24h':        'Editar lembrete 24h antes',
+    '1h':         'Editar lembrete 1h antes',
+    'pos':        'Editar mensagem pós-atendimento',
+    'aniversario':'Editar mensagem de aniversário',
+  };
+ 
+  window.selecionarTipoAuto = function(tipo, card) {
+    tipoSelecionado = tipo;
+    document.querySelectorAll('.auto-tipo-card').forEach(c => c.classList.remove('ativo-selected'));
+    card.classList.add('ativo-selected');
+ 
+    const headerTitle = document.querySelector('.auto-editor-header-title');
+    if (headerTitle) headerTitle.textContent = titulos[tipo] || 'Editar mensagem';
+ 
+    const textarea = document.getElementById('auto-mensagem-textarea');
+    if (textarea) {
+      textarea.value = mensagensAuto[tipo] || '';
+      atualizarPreviewAuto();
+    }
+ 
+    // Sync toggle do editor com o toggle do card
+    const toggleCard = document.getElementById('toggle-' + tipo);
+    const toggleEditor = document.getElementById('toggle-editor-main');
+    const labelAtivo = document.querySelector('.auto-ativo-label');
+    if (toggleCard && toggleEditor) {
+      const isOn = toggleCard.classList.contains('on');
+      toggleEditor.className = 'auto-tipo-toggle ' + (isOn ? 'on' : 'off');
+      if (labelAtivo) {
+        labelAtivo.textContent = isOn ? 'Ativo' : 'Inativo';
+        labelAtivo.style.color = isOn ? '#34d399' : 'var(--text3)';
+      }
+    }
+  };
+ 
+  window.toggleAutoTipo = function(tipo, toggleEl) {
+    const isOn = toggleEl.classList.contains('on');
+    toggleEl.className = 'auto-tipo-toggle ' + (isOn ? 'off' : 'on');
+    const thumb = toggleEl.querySelector('.auto-tipo-toggle-thumb');
+    if (thumb) {} // CSS handles it
+ 
+    // Atualizar badge
+    const card = toggleEl.closest('.auto-tipo-card');
+    if (card) {
+      const badge = card.querySelector('.auto-tipo-badge');
+      if (badge) {
+        badge.textContent = isOn ? 'Inativo' : 'Ativo';
+        badge.className = 'auto-tipo-badge ' + (isOn ? 'inativo' : 'ativo');
+      }
+    }
+ 
+    // Sync com editor se for o tipo selecionado
+    if (tipo === tipoSelecionado) {
+      const toggleEditor = document.getElementById('toggle-editor-main');
+      const labelAtivo   = document.querySelector('.auto-ativo-label');
+      if (toggleEditor) toggleEditor.className = 'auto-tipo-toggle ' + (isOn ? 'off' : 'on');
+      if (labelAtivo) {
+        labelAtivo.textContent = isOn ? 'Inativo' : 'Ativo';
+        labelAtivo.style.color = isOn ? 'var(--text3)' : '#34d399';
+      }
+    }
+  };
+ 
+  window.toggleEditorMain = function(toggleEl) {
+    const isOn = toggleEl.classList.contains('on');
+    toggleEl.className = 'auto-tipo-toggle ' + (isOn ? 'off' : 'on');
+    const labelAtivo = document.querySelector('.auto-ativo-label');
+    if (labelAtivo) {
+      labelAtivo.textContent = isOn ? 'Inativo' : 'Ativo';
+      labelAtivo.style.color = isOn ? 'var(--text3)' : '#34d399';
+    }
+    // Sync card toggle
+    const cardToggle = document.getElementById('toggle-' + tipoSelecionado);
+    if (cardToggle) {
+      cardToggle.className = 'auto-tipo-toggle ' + (isOn ? 'off' : 'on');
+      const card = cardToggle.closest('.auto-tipo-card');
+      if (card) {
+        const badge = card.querySelector('.auto-tipo-badge');
+        if (badge) {
+          badge.textContent = isOn ? 'Inativo' : 'Ativo';
+          badge.className = 'auto-tipo-badge ' + (isOn ? 'inativo' : 'ativo');
+        }
+      }
+    }
+  };
+ 
+  window.inserirVarAuto = function(variavel) {
+    const ta = document.getElementById('auto-mensagem-textarea');
+    if (!ta) return;
+    const start = ta.selectionStart;
+    const end   = ta.selectionEnd;
+    const val   = ta.value;
+    ta.value = val.substring(0, start) + variavel + val.substring(end);
+    ta.selectionStart = ta.selectionEnd = start + variavel.length;
+    ta.focus();
+    atualizarPreviewAuto();
+  };
+ 
+  window.atualizarPreviewAuto = function() {
+    const ta      = document.getElementById('auto-mensagem-textarea');
+    const bubble  = document.getElementById('auto-preview-bubble');
+    if (!ta || !bubble) return;
+ 
+    const negNome = (window.negocioAtual && window.negocioAtual.nome) ? window.negocioAtual.nome : 'sua empresa';
+ 
+    let txt = ta.value
+      .replace(/\{nome\}/g,    'Carlos')
+      .replace(/\{data\}/g,    '23/05')
+      .replace(/\{hora\}/g,    '15:00')
+      .replace(/\{servico\}/g, 'Barba')
+      .replace(/\{negocio\}/g, negNome)
+      .replace(/\{link\}/g,    'agendorapido.com.br/...');
+ 
+    const linhas = txt.split('\n').map(l => l || '<br>').join('<br>');
+    bubble.innerHTML = linhas + `
+      <div class="auto-wpp-bubble-time">
+        10:30
+        <svg width="14" height="10" viewBox="0 0 16 11" fill="none">
+          <path d="M1 5.5l3.5 3.5L9 2M7 5.5l3.5 3.5L15 2" stroke="#4fc3f7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>`;
+  };
+ 
+  window.salvarAutomacao = function() {
+    const ta  = document.getElementById('auto-mensagem-textarea');
+    const msg = ta ? ta.value : '';
+    const isOn = document.getElementById('toggle-editor-main')?.classList.contains('on');
+ 
+    if (!window.negocioAtual) return;
+    const token = localStorage.getItem('token');
+    fetch(`${window.API || 'https://agendafacil-wf3q.onrender.com/api'}/auth/lembretes`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      body: JSON.stringify({ negocioId: window.negocioAtual._id, ativo: isOn, mensagem: msg }),
+    }).then(() => {
+      const btn = document.querySelector('.auto-btn-salvar');
+      if (btn) {
+        const orig = btn.innerHTML;
+        btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg> Salvo!';
+        setTimeout(() => btn.innerHTML = orig, 2000);
+      }
+    }).catch(() => {});
+  };
+ 
+  window.enviarTesteAuto = function() {
+    const btn = document.querySelector('.auto-btn-teste');
+    if (!btn) return;
+    const orig = btn.innerHTML;
+    btn.innerHTML = '✓ Teste enviado!';
+    btn.style.color = '#34d399';
+    setTimeout(() => { btn.innerHTML = orig; btn.style.color = ''; }, 2500);
+  };
+ 
+  // Carregar configuração existente ao trocar de negócio
+  const _origCarregarLembretes = window.carregarLembretes;
+  window.carregarLembretes = async function() {
+    if (_origCarregarLembretes) await _origCarregarLembretes.apply(this, arguments);
+    // Sync toggle do editor com o estado real
+    const checkbox = document.getElementById('toggle-lembrete');
+    const toggleEditor = document.getElementById('toggle-editor-main');
+    const labelAtivo   = document.querySelector('.auto-ativo-label');
+    const toggle24h    = document.getElementById('toggle-24h');
+    if (checkbox && toggleEditor) {
+      const isOn = checkbox.checked;
+      toggleEditor.className = 'auto-tipo-toggle ' + (isOn ? 'on' : 'off');
+      if (labelAtivo) {
+        labelAtivo.textContent = isOn ? 'Ativo' : 'Inativo';
+        labelAtivo.style.color = isOn ? '#34d399' : 'var(--text3)';
+      }
+      if (toggle24h) {
+        toggle24h.className = 'auto-tipo-toggle ' + (isOn ? 'on' : 'off');
+        const card = toggle24h.closest('.auto-tipo-card');
+        if (card) {
+          const badge = card.querySelector('.auto-tipo-badge');
+          if (badge) {
+            badge.textContent = isOn ? 'Ativo' : 'Inativo';
+            badge.className = 'auto-tipo-badge ' + (isOn ? 'ativo' : 'inativo');
+          }
+        }
+      }
+    }
+    // Carregar mensagem salva
+    const msgEl = document.getElementById('lembrete-msg');
+    const taAuto = document.getElementById('auto-mensagem-textarea');
+    if (msgEl && taAuto && msgEl.value) {
+      taAuto.value = msgEl.value;
+      atualizarPreviewAuto();
+    }
+  };
+ 
+})();
