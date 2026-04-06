@@ -1875,3 +1875,332 @@ if (_token) { mostrarPainel() } else { window.location.href = '/auth.html' }
   };
  
 })();
+
+(function () {
+  /* ─────── estado ─────── */
+  let agFiltroAtivo   = 'todos';
+  let agFiltroData    = '';
+  let agPagina        = 1;
+  let agPorPagina     = 10;
+  let agListaFiltrada = [];
+ 
+  /* ─────── cores de avatar ─────── */
+  function agAvatarColor(nome) {
+    const paletas = [
+      ['#1d4ed8','#3b82f6'],['#7c3aed','#8b5cf6'],['#0e7490','#06b6d4'],
+      ['#15803d','#22c55e'],['#b45309','#f59e0b'],['#be185d','#ec4899'],
+      ['#0369a1','#38bdf8'],['#6d28d9','#a78bfa'],['#9f1239','#f43f5e'],
+    ];
+    let h = 0;
+    for (const c of (nome || 'A')) h = ((h << 5) - h) + c.charCodeAt(0);
+    return paletas[Math.abs(h) % paletas.length];
+  }
+ 
+  /* ─────── cor do ponto do serviço ─────── */
+  function agServicoCor(status) {
+    if (status === 'confirmado') return '#22c55e';
+    if (status === 'concluido')  return '#a78bfa';
+    if (status === 'cancelado')  return '#f87171';
+    return '#f59e0b';
+  }
+ 
+  /* ─────── duração fictícia p/ demo (substitua por a.duracao se disponível) ─────── */
+  function agDuracao(ag) {
+    if (ag.duracao) return ag.duracao + ' min';
+    const mapa = { 'Barba': 45, 'Corte': 60, 'Corte + Barba': 75, 'Sobrancelha': 30, 'Manicure': 50 };
+    const dur = mapa[ag.servico] || 30;
+    return dur + ' min';
+  }
+ 
+  /* ─────── formatar data ─────── */
+  function agFmtData(data) {
+    if (!data) return '—';
+    const [a, m, d] = data.split('-');
+    return `${d.padStart(2,'0')}/${m.padStart(2,'0')}/${a}`;
+  }
+ 
+  /* ─────── filtrar lista ─────── */
+  function agAplicarFiltro() {
+    const base = window.todosAgendamentos || [];
+    const hoje = new Date().toISOString().split('T')[0];
+    const inicioSemana = (() => { const d = new Date(); d.setDate(d.getDate() - d.getDay()); return d.toISOString().split('T')[0]; })();
+    const fimSemana    = (() => { const d = new Date(); d.setDate(d.getDate() + (6 - d.getDay())); return d.toISOString().split('T')[0]; })();
+    const mes = new Date().toISOString().slice(0, 7);
+ 
+    let lista = [...base];
+ 
+    if (agFiltroData) {
+      lista = lista.filter(a => a.data === agFiltroData);
+    } else {
+      if (agFiltroAtivo === 'hoje')      lista = lista.filter(a => a.data === hoje);
+      else if (agFiltroAtivo === 'semana') lista = lista.filter(a => a.data >= inicioSemana && a.data <= fimSemana);
+      else if (agFiltroAtivo === 'mes')    lista = lista.filter(a => a.data && a.data.startsWith(mes));
+      else if (agFiltroAtivo === 'concluido') lista = lista.filter(a => a.status === 'concluido');
+      else if (agFiltroAtivo === 'cancelado') lista = lista.filter(a => a.status === 'cancelado');
+    }
+ 
+    lista.sort((a, b) => {
+      const da = (a.data || '') + (a.hora || '');
+      const db = (b.data || '') + (b.hora || '');
+      return db.localeCompare(da);
+    });
+ 
+    agListaFiltrada = lista;
+    agPagina = 1;
+    agAtualizarStats(base, mes);
+    agRenderTabela();
+  }
+ 
+  /* ─────── stats ─────── */
+  function agAtualizarStats(base, mes) {
+    const doMes    = base.filter(a => a.data && a.data.startsWith(mes));
+    const total    = doMes.length;
+    const concl    = doMes.filter(a => a.status === 'concluido').length;
+    const canc     = doMes.filter(a => a.status === 'cancelado').length;
+    const pctConc  = total ? Math.round((concl / total) * 100) : 0;
+    const pctCanc  = total ? Math.round((canc  / total) * 100) : 0;
+ 
+    const elTotal = document.getElementById('ag-stat-total-num');
+    const elConc  = document.getElementById('ag-stat-conc-num');
+    const elCanc  = document.getElementById('ag-stat-canc-num');
+    const elPConc = document.getElementById('ag-stat-conc-pct');
+    const elPCanc = document.getElementById('ag-stat-canc-pct');
+ 
+    if (elTotal) elTotal.textContent = total;
+    if (elConc)  elConc.textContent  = concl;
+    if (elCanc)  elCanc.textContent  = canc;
+    if (elPConc) elPConc.textContent = pctConc + '%';
+    if (elPCanc) elPCanc.textContent = pctCanc + '%';
+  }
+ 
+  /* ─────── renderizar tabela ─────── */
+  function agRenderTabela() {
+    const tbody  = document.getElementById('ag-nova-tbody');
+    const mcards = document.getElementById('ag-mobile-cards');
+    const pag    = document.getElementById('ag-nova-pag');
+ 
+    const total   = agListaFiltrada.length;
+    const totalPg = Math.ceil(total / agPorPagina);
+    const inicio  = (agPagina - 1) * agPorPagina;
+    const fim     = inicio + agPorPagina;
+    const slice   = agListaFiltrada.slice(inicio, fim);
+ 
+    if (!total) {
+      if (tbody)  tbody.innerHTML  = '<div style="text-align:center;color:var(--text3);padding:52px 20px;font-size:13.5px">Nenhum agendamento encontrado</div>';
+      if (mcards) mcards.innerHTML = '<div style="text-align:center;color:var(--text3);padding:36px 18px;font-size:13px">Nenhum agendamento encontrado</div>';
+      if (pag)    pag.style.display = 'none';
+      return;
+    }
+ 
+    /* ── linhas desktop ── */
+    if (tbody) {
+      tbody.innerHTML = slice.map(a => {
+        const [c1, c2] = agAvatarColor(a.pacienteNome);
+        const ini      = (a.pacienteNome || 'C')[0].toUpperCase();
+        const corPonto = agServicoCor(a.status);
+        const dur      = agDuracao(a);
+        const statusMap = { confirmado:'confirmado', concluido:'concluido', cancelado:'cancelado', pendente:'pendente', agendado:'agendado' };
+        const cls = statusMap[a.status] || 'pendente';
+        const labelMap = { confirmado:'confirmado', concluido:'concluído', cancelado:'cancelado', pendente:'pendente', agendado:'agendado' };
+        const label = labelMap[a.status] || a.status;
+ 
+        return `<div class="ag-nova-row">
+          <!-- Cliente -->
+          <div class="ag-nova-cliente">
+            <div class="ag-nova-avatar" style="background:linear-gradient(135deg,${c1},${c2})">
+              ${ini}
+              <div class="ag-nova-avatar-dot" style="background:${corPonto}"></div>
+            </div>
+            <div>
+              <div class="ag-nova-nome">${a.pacienteNome}</div>
+              <div class="ag-nova-tel">
+                <svg width="10" height="10" viewBox="0 0 15 15" fill="none" style="opacity:.5">
+                  <path d="M12 9.5c-.5-.25-1.7-.85-2-.95-.3-.1-.5-.15-.7.15s-.75.95-.9 1.15c-.18.2-.35.22-.65.07-.3-.15-1.25-.46-2.4-1.47-.88-.79-1.48-1.76-1.65-2.06-.17-.3-.02-.46.13-.61.13-.13.3-.35.44-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.03-.52C4.45 4.1 3.85 2.5 3.6 2c-.25-.5-.5-.5-.7-.5H2.3a1 1 0 0 0-.8.37C1.3 2.17.5 2.9.5 4.3c0 1.38 1 2.73 1.13 2.92C1.8 7.4 3.7 10.2 6.6 11.4c.7.3 1.2.47 1.63.6.7.22 1.34.19 1.84.11.57-.08 1.76-.72 2-1.4.24-.7.24-1.3.17-1.41-.07-.12-.27-.2-.57-.35z" stroke="currentColor" stroke-width="1.2"/>
+                </svg>
+                ${a.pacienteTelefone || '—'}
+              </div>
+            </div>
+          </div>
+          <!-- Serviço -->
+          <div class="ag-nova-servico">
+            <div class="ag-nova-serv-nome">${a.servico}</div>
+            <div class="ag-nova-serv-dur">
+              ${dur}
+              <span class="ag-nova-serv-dur-dot" style="background:${corPonto}"></span>
+            </div>
+          </div>
+          <!-- Data e hora -->
+          <div class="ag-nova-data">
+            <div class="ag-nova-data-row">
+              <svg width="11" height="11" viewBox="0 0 15 15" fill="none">
+                <rect x="1.5" y="2.5" width="12" height="11" rx="1.5" stroke="currentColor" stroke-width="1.3"/>
+                <path d="M5 1.5v2M10 1.5v2M1.5 5.5h12" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+              </svg>
+              ${agFmtData(a.data)}
+            </div>
+            <div class="ag-nova-data-row">
+              <svg width="11" height="11" viewBox="0 0 15 15" fill="none">
+                <circle cx="7.5" cy="7.5" r="5.5" stroke="currentColor" stroke-width="1.3"/>
+                <path d="M7.5 4.5V8l2 2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+              </svg>
+              às ${a.hora}
+            </div>
+          </div>
+          <!-- Status -->
+          <div>
+            <span class="badge ${cls}">${label}</span>
+          </div>
+          <!-- Ações -->
+          <div class="ag-nova-acoes">
+            <button class="ag-ver-btn">
+              <svg width="12" height="12" viewBox="0 0 15 15" fill="none">
+                <circle cx="7.5" cy="7.5" r="3" stroke="currentColor" stroke-width="1.3"/>
+                <path d="M1 7.5C2.5 4 4.8 2.5 7.5 2.5S12.5 4 14 7.5C12.5 11 10.2 12.5 7.5 12.5S2.5 11 1 7.5Z" stroke="currentColor" stroke-width="1.3"/>
+              </svg>
+              Ver
+            </button>
+            <button class="ag-dots-btn" title="Mais opções">
+              <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+                <circle cx="6.5" cy="2.5" r="1" fill="currentColor"/>
+                <circle cx="6.5" cy="6.5" r="1" fill="currentColor"/>
+                <circle cx="6.5" cy="10.5" r="1" fill="currentColor"/>
+              </svg>
+            </button>
+          </div>
+        </div>`;
+      }).join('');
+    }
+ 
+    /* ── cards mobile ── */
+    if (mcards) {
+      mcards.innerHTML = slice.map(a => {
+        const [c1, c2] = agAvatarColor(a.pacienteNome);
+        const ini      = (a.pacienteNome || 'C')[0].toUpperCase();
+        const statusMap = { confirmado:'confirmado', concluido:'concluido', cancelado:'cancelado', pendente:'pendente', agendado:'agendado' };
+        const cls = statusMap[a.status] || 'pendente';
+        const labelMap = { confirmado:'confirmado', concluido:'concluído', cancelado:'cancelado', pendente:'pendente', agendado:'agendado' };
+        const label = labelMap[a.status] || a.status;
+        return `<div class="ag-mobile-card">
+          <div class="ag-mobile-top">
+            <div style="display:flex;align-items:center;gap:10px">
+              <div class="ag-nova-avatar" style="background:linear-gradient(135deg,${c1},${c2});width:34px;height:34px;font-size:12px;flex-shrink:0">${ini}</div>
+              <div>
+                <div class="ag-nova-nome">${a.pacienteNome}</div>
+                <div class="ag-nova-tel" style="font-size:11px">${a.pacienteTelefone || ''}</div>
+              </div>
+            </div>
+            <span class="badge ${cls}">${label}</span>
+          </div>
+          <div class="ag-mobile-chips">
+            <span class="ag-mobile-chip">${agFmtData(a.data)}</span>
+            <span class="ag-mobile-chip">às ${a.hora}</span>
+            <span class="ag-mobile-chip">${a.servico}</span>
+            <span class="ag-mobile-chip">${agDuracao(a)}</span>
+          </div>
+          <div class="ag-mobile-actions">
+            <button class="ag-ver-btn" style="flex:1;justify-content:center">
+              <svg width="12" height="12" viewBox="0 0 15 15" fill="none">
+                <circle cx="7.5" cy="7.5" r="3" stroke="currentColor" stroke-width="1.3"/>
+                <path d="M1 7.5C2.5 4 4.8 2.5 7.5 2.5S12.5 4 14 7.5C12.5 11 10.2 12.5 7.5 12.5S2.5 11 1 7.5Z" stroke="currentColor" stroke-width="1.3"/>
+              </svg>
+              Ver detalhes
+            </button>
+          </div>
+        </div>`;
+      }).join('');
+    }
+ 
+    /* ── paginação ── */
+    if (pag) {
+      document.getElementById('ag-pag-info').textContent =
+        `Mostrando ${inicio + 1} a ${Math.min(fim, total)} de ${total} agendamentos`;
+ 
+      let btns = `<button class="ag-pag-btn" onclick="agIrPagina(${agPagina - 1})" ${agPagina === 1 ? 'disabled' : ''}>
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M7.5 9L4.5 6l3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>`;
+ 
+      for (let i = 1; i <= totalPg; i++) {
+        if (totalPg <= 7 || i === 1 || i === totalPg || Math.abs(i - agPagina) <= 1)
+          btns += `<button class="ag-pag-btn ${i === agPagina ? 'ativo' : ''}" onclick="agIrPagina(${i})">${i}</button>`;
+        else if (Math.abs(i - agPagina) === 2)
+          btns += `<span style="color:var(--text3);font-size:12px;padding:0 2px;line-height:32px">…</span>`;
+      }
+ 
+      btns += `<button class="ag-pag-btn" onclick="agIrPagina(${agPagina + 1})" ${agPagina === totalPg ? 'disabled' : ''}>
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M4.5 9l3-3-3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>`;
+ 
+      document.getElementById('ag-pag-btns').innerHTML = btns;
+      pag.style.display = totalPg >= 1 ? 'flex' : 'none';
+    }
+  }
+ 
+  /* ─────── funções globais ─────── */
+  window.agFiltrar = function (filtro, btn) {
+    agFiltroAtivo = filtro;
+    agFiltroData  = '';
+    const dataInput = document.getElementById('ag-filtro-data');
+    if (dataInput) dataInput.value = '';
+    document.querySelectorAll('.ag-tab').forEach(b => b.classList.remove('ativo'));
+    if (btn) btn.classList.add('ativo');
+    agAplicarFiltro();
+  };
+ 
+  window.agFiltrarData = function (val) {
+    agFiltroData = val;
+    if (val) {
+      document.querySelectorAll('.ag-tab').forEach(b => b.classList.remove('ativo'));
+    }
+    agAplicarFiltro();
+  };
+ 
+  window.agIrPagina = function (n) {
+    const total = Math.ceil(agListaFiltrada.length / agPorPagina);
+    if (n < 1 || n > total) return;
+    agPagina = n;
+    agRenderTabela();
+  };
+ 
+  window.agMudarPorPagina = function (val) {
+    agPorPagina = parseInt(val);
+    agPagina    = 1;
+    agRenderTabela();
+  };
+ 
+  /* ─────── hook: recarregar quando os dados chegarem ─────── */
+  const _origCarregar = window.carregarAgendamentos;
+  window.carregarAgendamentos = async function () {
+    if (_origCarregar) await _origCarregar.apply(this, arguments);
+    agAplicarFiltro();
+  };
+ 
+  /* ─────── hook: irPara ─────── */
+  const _origIrPara = window.irPara;
+  window.irPara = function (pagina, btn) {
+    if (_origIrPara) _origIrPara(pagina, btn);
+    if (pagina === 'agendamentos') {
+      agFiltroAtivo = 'todos';
+      agFiltroData  = '';
+      const dataInput = document.getElementById('ag-filtro-data');
+      if (dataInput) dataInput.value = '';
+      document.querySelectorAll('.ag-tab').forEach(b => b.classList.remove('ativo'));
+      const primTab = document.querySelector('.ag-tab[data-filtro="todos"]');
+      if (primTab) primTab.classList.add('ativo');
+      agAplicarFiltro();
+    }
+  };
+ 
+  /* ─────── init ─────── */
+  if (window.todosAgendamentos && window.todosAgendamentos.length) {
+    agAplicarFiltro();
+  }
+ 
+  /* badge css para "agendado" (novo status) */
+  const styleExtra = document.createElement('style');
+  styleExtra.textContent = `
+    .badge.agendado { background:rgba(59,130,246,0.12); color:#60a5fa; border:1px solid rgba(59,130,246,0.25); }
+    .badge.agendado::before { background:#60a5fa; }
+  `;
+  document.head.appendChild(styleExtra);
+ 
+})();
