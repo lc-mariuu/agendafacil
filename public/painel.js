@@ -2121,7 +2121,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  if (window.todosAgendamentos && window.todosAgendamentos.length) agAplicarFiltro()
+  console.log('Agendamentos carregados:', (window.todosAgendamentos || []).length)
 })()
 
 /* ═══════════════════════════════════════════════════
@@ -2308,9 +2308,21 @@ document.addEventListener('DOMContentLoaded', () => {
   })
 })()
 
+// Fix: garantir que agAplicarFiltro rode após os dados chegarem
+const _fixCarregar = window.carregarAgendamentos
+window.carregarAgendamentos = async function () {
+  await _fixCarregar.apply(this, arguments)
+  // Forçar re-render da tabela de agendamentos após dados carregados
+  if (typeof agFiltrar === 'function') {
+    const tab = document.querySelector('.ag-tab[data-filtro="todos"]')
+    if (tab) agFiltrar('todos', tab)
+  }
+}
+
 /* ═══════════════════════════════════════════════════
    INIT
 ═══════════════════════════════════════════════════ */
 carregarTema()
 const _token = localStorage.getItem('token')
 if (_token) { mostrarPainel() } else { window.location.href = '/auth.html' }
+
