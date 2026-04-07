@@ -38,6 +38,31 @@ const servicosPorSegmento = {
 }
 
 /* ═══════════════════════════════════════════════════
+   ESTILOS UTILITÁRIOS (sr-only, modal-open, etc.)
+═══════════════════════════════════════════════════ */
+const srStyle = document.createElement('style')
+srStyle.textContent = `
+  .sr-only {
+    position: absolute !important; width: 1px !important; height: 1px !important;
+    padding: 0 !important; margin: -1px !important; overflow: hidden !important;
+    clip: rect(0,0,0,0) !important; white-space: nowrap !important; border: 0 !important;
+  }
+  .skip-link { position: absolute; left: -9999px; top: auto; width: 1px; height: 1px; overflow: hidden; }
+  .skip-link:focus { left: 12px; top: 12px; width: auto; height: auto; padding: 8px 16px;
+    background: var(--accent); color: white; border-radius: 8px; font-weight: 700;
+    font-size: 13px; z-index: 9999; text-decoration: none; }
+  body.modal-open { overflow: hidden; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  button:focus-visible, a:focus-visible, [tabindex]:focus-visible {
+    outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+  .notif-dot-badge { position: absolute; top: 5px; right: 5px; width: 8px; height: 8px;
+    border-radius: 50%; background: var(--red); border: 2px solid var(--bg); }
+  .badge.agendado { background:rgba(59,130,246,0.12); color:#60a5fa; border:1px solid rgba(59,130,246,0.25); }
+  .badge.agendado::before { background:#60a5fa; }
+`
+document.head.appendChild(srStyle)
+
+/* ═══════════════════════════════════════════════════
    LUCRO — localStorage helpers
 ═══════════════════════════════════════════════════ */
 function mesAtualChave() { return new Date().toISOString().slice(0, 7) }
@@ -87,9 +112,10 @@ function exibirLucro() {
    UTILITÁRIOS
 ═══════════════════════════════════════════════════ */
 function fmtBRL(v) {
-  return 'R$ ' + v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+  return 'R$ ' + Number(v).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 }
 function formatarData(data) {
+  if (!data) return ''
   const [a, m, d] = data.split('-')
   return `${d}/${m}/${a}`
 }
@@ -107,6 +133,31 @@ function formatarCompacto(val) {
 }
 function sair() { localStorage.clear(); window.location.href = '/auth.html' }
 
+/* Modal helpers */
+function openModal(id) {
+  const el = document.getElementById(id)
+  if (el) {
+    el.style.display = 'flex'
+    document.body.classList.add('modal-open')
+    const firstInput = el.querySelector('input, select, textarea, button:not(.modal-close)')
+    if (firstInput) setTimeout(() => firstInput.focus(), 50)
+  }
+}
+function closeModal(id) {
+  const el = document.getElementById(id)
+  if (el) { el.style.display = 'none'; document.body.classList.remove('modal-open') }
+}
+
+/* Fechar modais com ESC */
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    ;['modal-agendamento','modal-negocio','modal-gerenciar-dias','cfg-modal-editar'].forEach(id => {
+      const el = document.getElementById(id)
+      if (el && el.style.display !== 'none') closeModal(id)
+    })
+  }
+})
+
 /* ═══════════════════════════════════════════════════
    TEMA
 ═══════════════════════════════════════════════════ */
@@ -114,6 +165,10 @@ function definirTema(tema) {
   document.body.classList.remove('dark-mode', 'light-mode')
   document.body.classList.add(tema === 'claro' ? 'light-mode' : 'dark-mode')
   localStorage.setItem('tema', tema)
+  const metaTheme = document.querySelector('meta[name="theme-color"]:not([media])') || document.createElement('meta')
+  metaTheme.name    = 'theme-color'
+  metaTheme.content = tema === 'claro' ? '#f0f4f8' : '#0b0f1a'
+  if (!metaTheme.parentNode) document.head.appendChild(metaTheme)
   const oc = document.getElementById('theme-opt-claro')
   const oe = document.getElementById('theme-opt-escuro')
   if (oc) oc.classList.toggle('ativo', tema === 'claro')
@@ -131,25 +186,38 @@ function toggleTema() {
    SIDEBAR / NAVEGAÇÃO
 ═══════════════════════════════════════════════════ */
 function toggleSidebar() {
-  document.getElementById('sidebar').classList.toggle('aberta')
-  document.getElementById('sidebar-overlay').classList.toggle('visivel')
+  const sidebar = document.getElementById('sidebar')
+  const overlay = document.getElementById('sidebar-overlay')
+  const btn     = document.getElementById('btn-hamburger')
+  const aberta  = sidebar.classList.toggle('aberta')
+  overlay.classList.toggle('visivel', aberta)
+  overlay.setAttribute('aria-hidden', !aberta)
+  if (btn) btn.setAttribute('aria-expanded', aberta)
 }
 function fecharSidebar() {
-  document.getElementById('sidebar').classList.remove('aberta')
-  document.getElementById('sidebar-overlay').classList.remove('visivel')
+  const sidebar = document.getElementById('sidebar')
+  const overlay = document.getElementById('sidebar-overlay')
+  const btn     = document.getElementById('btn-hamburger')
+  sidebar.classList.remove('aberta')
+  overlay.classList.remove('visivel')
+  overlay.setAttribute('aria-hidden', 'true')
+  if (btn) btn.setAttribute('aria-expanded', 'false')
 }
+
 function irPara(pagina, btn) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('ativo'))
-  document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('ativo'))
+  document.querySelectorAll('.page').forEach(p => {
+    p.classList.remove('ativo')
+    p.setAttribute('aria-hidden', 'true')
+  })
+  document.querySelectorAll('.menu-item').forEach(m => {
+    m.classList.remove('ativo')
+    m.removeAttribute('aria-current')
+  })
   const page = document.getElementById(`page-${pagina}`)
-  if (page) page.classList.add('ativo')
-  if (btn) btn.classList.add('ativo')
+  if (page) { page.classList.add('ativo'); page.setAttribute('aria-hidden', 'false') }
+  if (btn)  { btn.classList.add('ativo'); btn.setAttribute('aria-current', 'page') }
   fecharSidebar()
-  if (pagina === 'clientes') renderClientes('')
-  if (pagina === 'agendamentos') {
-    const fd = document.getElementById('filtro-data')
-    if (fd) { fd.value = ''; if (window.filtrarData) window.filtrarData() }
-  }
+
   const titulos = {
     dashboard:     ['Dashboard',           'Painel de controle do seu negócio'],
     agendamentos:  ['Agendamentos',        'Lista completa de agendamentos'],
@@ -168,6 +236,16 @@ function irPara(pagina, btn) {
     const sub = document.getElementById('topbar-page-sub')
     if (el)  el.textContent  = t[0]
     if (sub) sub.textContent = t[1]
+    document.title = `AgendoRapido — ${t[0]}`
+  }
+
+  if (pagina === 'clientes' && typeof renderClientes === 'function') renderClientes('')
+  if (pagina === 'horarios') setTimeout(() => renderHorariosDiasLateral(), 100)
+  if (pagina === 'agendamentos') {
+    if (typeof agFiltrar === 'function') {
+      const primTab = document.querySelector('.ag-tab[data-filtro="todos"]')
+      agFiltrar('todos', primTab)
+    }
   }
 }
 
@@ -180,9 +258,10 @@ function toggleDropdown() {
 }
 
 document.addEventListener('click', e => {
-  if (!e.target.closest('.negocio-selector')) {
-    document.getElementById('neg-dropdown').classList.remove('show')
-    document.getElementById('neg-chevron').classList.remove('open')
+  if (!e.target.closest('.negocio-selector') && !e.target.closest('#notif-panel') &&
+      !e.target.closest('#msg-panel') && !e.target.closest('#avatar-menu') &&
+      !e.target.closest('.topbar-icon-btn') && !e.target.closest('#topbar-avatar-btn')) {
+    fecharTodosDropdowns()
   }
 })
 
@@ -239,11 +318,9 @@ function abrirModalNegocio() {
   }
   document.getElementById('modal-negocio').style.display = 'flex'
 }
-
 function fecharModalNegocio() {
   document.getElementById('modal-negocio').style.display = 'none'
 }
-
 async function criarNegocio() {
   const nome     = document.getElementById('neg-nome').value.trim()
   const segmento = document.getElementById('neg-segmento').value
@@ -285,7 +362,8 @@ async function mostrarPainel() {
   }
   renderDropdown()
   atualizarSidebarNegocio()
-  document.getElementById('filtro-data').value = new Date().toISOString().split('T')[0]
+  const fd = document.getElementById('filtro-data')
+  if (fd) fd.value = new Date().toISOString().split('T')[0]
   carregarDadosNegocio()
   verificarAcesso()
 }
@@ -312,24 +390,22 @@ function atualizarLinkWpp() {
 }
 
 function copiarLink() {
-  navigator.clipboard.writeText(document.getElementById('link-agendamento').textContent)
-  flashBtn('btn-copiar-agendamento', '✓ Copiado!')
+  const el = document.getElementById('link-agendamento')
+  if (el) navigator.clipboard.writeText(el.textContent).then(() => flashBtn('btn-copiar-agendamento', '✓ Copiado!'))
 }
 function copiarLinkBio() {
-  navigator.clipboard.writeText(document.getElementById('link-bio').textContent)
-  flashBtn('btn-copiar-bio', '✓ Copiado!')
+  const el = document.getElementById('link-bio')
+  if (el) navigator.clipboard.writeText(el.textContent).then(() => flashBtn('btn-copiar-bio', '✓ Copiado!'))
 }
 function copiarLinkWpp() {
   if (!negocioAtual) return
   navigator.clipboard.writeText(`https://agendorapido.com.br/agendar.html?id=${negocioAtual._id}`)
-  const btn = document.querySelector('[onclick="copiarLinkWpp()"]')
-  if (btn) flash(btn, '✓ Copiado!')
+    .then(() => { const btn = document.querySelector('[onclick="copiarLinkWpp()"]'); if (btn) flash(btn, '✓ Copiado!') })
 }
 function copiarMensagemWpp() {
   const el = document.getElementById('wpp-mensagem-preview')
   if (!el) return
-  navigator.clipboard.writeText(el.textContent)
-  flashBtn('btn-copiar-msg', '✓ Mensagem copiada!')
+  navigator.clipboard.writeText(el.textContent).then(() => flashBtn('btn-copiar-msg', '✓ Mensagem copiada!'))
 }
 function flashBtn(id, txt) {
   const btn = document.getElementById(id)
@@ -338,7 +414,8 @@ function flashBtn(id, txt) {
 function flash(btn, txt) {
   const orig = btn.innerHTML
   btn.innerHTML = txt
-  setTimeout(() => btn.innerHTML = orig, 2000)
+  btn.disabled = true
+  setTimeout(() => { btn.innerHTML = orig; btn.disabled = false }, 2000)
 }
 
 /* ═══════════════════════════════════════════════════
@@ -379,8 +456,10 @@ async function carregarAgendamentos() {
 
   const hoje   = new Date().toISOString().split('T')[0]
   const semana = new Date(Date.now() + 7 * 86400000).toISOString().split('T')[0]
-  document.getElementById('stat-hoje').textContent   = todosAgendamentos.filter(a => a.data === hoje).length
-  document.getElementById('stat-semana').textContent = todosAgendamentos.filter(a => a.data >= hoje && a.data <= semana).length
+  const elHoje   = document.getElementById('stat-hoje')
+  const elSemana = document.getElementById('stat-semana')
+  if (elHoje)   elHoje.textContent   = todosAgendamentos.filter(a => a.data === hoje).length
+  if (elSemana) elSemana.textContent = todosAgendamentos.filter(a => a.data >= hoje && a.data <= semana).length
 
   seedLucroDoMes(todosAgendamentos)
   exibirLucro()
@@ -388,18 +467,18 @@ async function carregarAgendamentos() {
   filtrarData()
   atualizarInsights()
 
-  // Badge sino
   const dot = document.getElementById('notif-dot')
   if (dot) dot.style.display = todosAgendamentos.filter(a => a.data === hoje).length > 0 ? 'block' : 'none'
 }
 
-/* ── Tabela / paginação ── */
+/* ── Tabela / paginação (dashboard) ── */
 const POR_PAGINA = 8
 let paginaAtual   = 1
 let listaFiltrada = []
 
 function filtrarData() {
-  const data = document.getElementById('filtro-data').value
+  const el   = document.getElementById('filtro-data')
+  const data = el ? el.value : ''
   listaFiltrada = data
     ? todosAgendamentos.filter(a => a.data === data)
     : todosAgendamentos
@@ -429,10 +508,12 @@ function renderTabela() {
     cards.innerHTML = slice.map(a => {
       const [c1,c2] = avatarColor(a.pacienteNome)
       const ini = (a.pacienteNome||'C')[0].toUpperCase()
+      const nomeSafe = (a.pacienteNome||'').replace(/'/g,"\\'")
+      const telSafe  = (a.pacienteTelefone||'').replace(/'/g,"\\'")
       const acoes = a.status === 'confirmado'
         ? `<div class="ag-card-actions">
-             <button class="btn-acao concluir" onclick="atualizar('${a._id}','concluido')">Concluir</button>
-             <button class="btn-acao cancelar" onclick="cancelarComAviso('${a._id}','${a.pacienteNome}','${a.pacienteTelefone}','${a.data}','${a.hora}')">Cancelar</button>
+             <button class="btn-acao concluir" onclick="atualizar('${a._id}','concluido')" type="button">Concluir</button>
+             <button class="btn-acao cancelar" onclick="cancelarComAviso('${a._id}','${nomeSafe}','${telSafe}','${a.data}','${a.hora}')" type="button">Cancelar</button>
            </div>` : ''
       return `<div class="ag-card">
         <div class="ag-card-top">
@@ -484,7 +565,7 @@ function avatarColor(nome) {
     ['#0369a1','#38bdf8'],['#6d28d9','#a78bfa'],
   ]
   let h = 0
-  for (let c of (nome || 'A')) h = ((h << 5) - h) + c.charCodeAt(0)
+  for (const c of (nome || 'A')) h = ((h << 5) - h) + c.charCodeAt(0)
   return colors[Math.abs(h) % colors.length]
 }
 
@@ -493,25 +574,27 @@ function renderizarLinhasComAvatar(slice) {
     const ini = (a.pacienteNome || 'C')[0].toUpperCase()
     const [c1, c2] = avatarColor(a.pacienteNome)
     const isOnline = a.status === 'confirmado'
+    const nomeSafe = (a.pacienteNome || '').replace(/'/g, "\\'").replace(/"/g, '&quot;')
+    const telSafe  = (a.pacienteTelefone || '').replace(/'/g, "\\'")
     const acoes = a.status === 'confirmado'
       ? `<div class="acoes">
-           <button class="btn-acao concluir" onclick="atualizar('${a._id}','concluido')">Concluir</button>
-           <button class="btn-acao cancelar" onclick="cancelarComAviso('${a._id}','${a.pacienteNome}','${a.pacienteTelefone}','${a.data}','${a.hora}')">Cancelar</button>
+           <button class="btn-acao concluir" onclick="atualizar('${a._id}','concluido')" type="button">Concluir</button>
+           <button class="btn-acao cancelar" onclick="cancelarComAviso('${a._id}','${nomeSafe}','${telSafe}','${a.data}','${a.hora}')" type="button">Cancelar</button>
          </div>` : ''
-    const preco = a.preco ? `R$${Number(a.preco).toFixed(2).replace('.',',')}` : '—'
+    const preco = a.preco ? `R$${Number(a.preco).toFixed(2).replace('.', ',')}` : '—'
     return `<div class="ag-row">
-      <div class="ag-avatar" style="background:linear-gradient(135deg,${c1},${c2})">
+      <div class="ag-avatar" style="background:linear-gradient(135deg,${c1},${c2})" aria-hidden="true">
         ${ini}${isOnline ? '<div class="ag-avatar-online"></div>' : ''}
       </div>
       <div class="ag-info">
-        <div class="ag-nome">${a.pacienteNome}</div>
-        <div class="ag-servico">${a.servico}</div>
+        <div class="ag-nome">${a.pacienteNome || '—'}</div>
+        <div class="ag-servico">${a.servico || '—'}</div>
       </div>
       <div class="ag-time">
-        <div class="ag-hora">às ${a.hora}</div>
+        <div class="ag-hora">às ${a.hora || '—'}</div>
         <div class="ag-data">${a.data ? formatarData(a.data) : ''}</div>
       </div>
-      <span class="badge ${a.status}">${a.status}</span>
+      <span class="badge ${a.status || 'pendente'}">${a.status || 'pendente'}</span>
       <div class="ag-preco">${preco}</div>
       ${acoes}
     </div>`
@@ -519,38 +602,41 @@ function renderizarLinhasComAvatar(slice) {
 }
 
 function renderDashboardHoje() {
-  const ags   = todosAgendamentos || []
-  const hoje  = new Date().toISOString().split('T')[0]
-  const deHoje = ags.filter(a => a.data === hoje).sort((a,b) => a.hora.localeCompare(b.hora))
-  const wrap  = document.getElementById('tbody-rows-dash')
-  const cards = document.getElementById('ag-cards-dash')
+  const ags    = todosAgendamentos || []
+  const hoje   = new Date().toISOString().split('T')[0]
+  const deHoje = ags.filter(a => a.data === hoje).sort((a, b) => (a.hora || '').localeCompare(b.hora || ''))
+  const wrap   = document.getElementById('tbody-rows-dash')
+  const cards  = document.getElementById('ag-cards-dash')
+  const vazio  = '<div class="vazio">Nenhum agendamento hoje</div>'
   if (!deHoje.length) {
-    if (wrap)  wrap.innerHTML  = '<div class="vazio">Nenhum agendamento hoje</div>'
-    if (cards) cards.innerHTML = '<div class="vazio">Nenhum agendamento hoje</div>'
+    if (wrap)  wrap.innerHTML  = vazio
+    if (cards) cards.innerHTML = vazio
     return
   }
-  if (wrap)  wrap.innerHTML = renderizarLinhasComAvatar(deHoje)
+  if (wrap) wrap.innerHTML = renderizarLinhasComAvatar(deHoje)
   if (cards) {
     cards.innerHTML = deHoje.map(a => {
-      const [c1,c2] = avatarColor(a.pacienteNome)
-      const ini = (a.pacienteNome||'C')[0].toUpperCase()
+      const [c1, c2] = avatarColor(a.pacienteNome)
+      const ini = (a.pacienteNome || 'C')[0].toUpperCase()
+      const nomeSafe = (a.pacienteNome || '').replace(/'/g, "\\'")
+      const telSafe  = (a.pacienteTelefone || '').replace(/'/g, "\\'")
       const acoes = a.status === 'confirmado'
         ? `<div class="ag-card-actions">
-             <button class="btn-acao concluir" onclick="atualizar('${a._id}','concluido')">Concluir</button>
-             <button class="btn-acao cancelar" onclick="cancelarComAviso('${a._id}','${a.pacienteNome}','${a.pacienteTelefone}','${a.data}','${a.hora}')">Cancelar</button>
+             <button class="btn-acao concluir" onclick="atualizar('${a._id}','concluido')" type="button">Concluir</button>
+             <button class="btn-acao cancelar" onclick="cancelarComAviso('${a._id}','${nomeSafe}','${telSafe}','${a.data}','${a.hora}')" type="button">Cancelar</button>
            </div>` : ''
       return `<div class="ag-card">
         <div class="ag-card-top">
           <div style="display:flex;align-items:center;gap:10px">
-            <div class="ag-avatar" style="background:linear-gradient(135deg,${c1},${c2});width:32px;height:32px;font-size:11px;flex-shrink:0">${ini}</div>
-            <div><div class="ag-card-nome">${a.pacienteNome}</div><div class="paciente-tel">${a.pacienteTelefone||''}</div></div>
+            <div class="ag-avatar" style="background:linear-gradient(135deg,${c1},${c2});width:32px;height:32px;font-size:11px;flex-shrink:0" aria-hidden="true">${ini}</div>
+            <div><div class="ag-card-nome">${a.pacienteNome || '—'}</div><div class="paciente-tel">${a.pacienteTelefone || ''}</div></div>
           </div>
-          <span class="badge ${a.status}">${a.status}</span>
+          <span class="badge ${a.status || 'pendente'}">${a.status || 'pendente'}</span>
         </div>
         <div class="ag-card-body">
           <div class="ag-chip">${formatarData(a.data)}</div>
-          <div class="ag-chip">${a.hora}</div>
-          <div class="ag-chip">${a.servico}</div>
+          <div class="ag-chip">${a.hora || '—'}</div>
+          <div class="ag-chip">${a.servico || '—'}</div>
         </div>
         ${acoes}
       </div>`
@@ -606,10 +692,12 @@ function abrirModalNovoAgendamento() {
   document.getElementById('m-servico').innerHTML = servicosAtuais
     .map(s => { const n = typeof s === 'object' ? s.nome : s; return `<option value="${n}">${n}</option>` }).join('')
   document.getElementById('modal-agendamento').style.display = 'flex'
+  document.body.classList.add('modal-open')
   carregarHorariosModal()
 }
 function fecharModal() {
   document.getElementById('modal-agendamento').style.display = 'none'
+  document.body.classList.remove('modal-open')
 }
 async function carregarHorariosModal() {
   const data = document.getElementById('m-data').value
@@ -666,7 +754,9 @@ async function carregarServicos() {
   renderIntervalosServicos()
 }
 function renderServicos() {
-  document.getElementById('servicos-tags').innerHTML = servicosAtuais.map((s, i) => {
+  const el = document.getElementById('servicos-tags')
+  if (!el) return
+  el.innerHTML = servicosAtuais.map((s, i) => {
     const nome  = typeof s === 'object' ? s.nome  : s
     const preco = typeof s === 'object' && s.preco ? Number(s.preco) : 0
     const precoLabel = preco > 0 ? `R$ ${preco.toFixed(2).replace('.', ',')}` : ''
@@ -674,7 +764,7 @@ function renderServicos() {
       <span class="servico-tag">
         ${nome}
         ${precoLabel ? `<span class="servico-preco">${precoLabel}</span>` : ''}
-        <button onclick="removerServico(${i})" title="Remover">×</button>
+        <button onclick="removerServico(${i})" title="Remover" type="button">×</button>
       </span>
     </div>`
   }).join('')
@@ -714,7 +804,7 @@ async function salvarServicos() {
   mostrarSalvo('salvo-msg')
 }
 document.addEventListener('DOMContentLoaded', () => {
-  ['novo-servico', 'novo-preco'].forEach(id => {
+  ;['novo-servico', 'novo-preco'].forEach(id => {
     const el = document.getElementById(id)
     if (el) el.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); adicionarServico() } })
   })
@@ -752,13 +842,14 @@ function aplicarSelecaoIntervalo(valor) {
   const customBtn  = document.getElementById('btn-custom-intervalo')
   const customWrap = document.getElementById('intervalo-custom-wrap')
   if (!preds.includes(valor)) {
-    customBtn.classList.add('selecionado')
-    customWrap.classList.add('visivel')
-    document.getElementById('intervalo-custom').value = valor
+    if (customBtn)  customBtn.classList.add('selecionado')
+    if (customWrap) customWrap.classList.add('visivel')
+    const inp = document.getElementById('intervalo-custom')
+    if (inp) inp.value = valor
     intervaloCustomAtivo = true
   } else {
-    customBtn.classList.remove('selecionado')
-    customWrap.classList.remove('visivel')
+    if (customBtn)  customBtn.classList.remove('selecionado')
+    if (customWrap) customWrap.classList.remove('visivel')
     intervaloCustomAtivo = false
   }
 }
@@ -773,7 +864,7 @@ function renderIntervalosServicos() {
     grid.innerHTML = `<div class="servicos-vazio"><div class="servicos-vazio-icon">🛠️</div>Adicione serviços em <strong>Configurações → Serviços</strong> para configurar durações individuais.</div>`
     return
   }
- 
+
   const opcoesHtml = [
     ['0','Usar padrão'],['5','5 min'],['10','10 min'],['15','15 min'],
     ['20','20 min'],['25','25 min'],['30','30 min'],['45','45 min'],
@@ -781,13 +872,12 @@ function renderIntervalosServicos() {
     ['120','2 horas'],['150','2h30'],['180','3 horas'],['240','4 horas'],
     ['300','5 horas'],['360','6 horas'],['custom','Personalizado...'],
   ].map(([v, l]) => `<option value="${v}">${l}</option>`).join('')
- 
+
   grid.innerHTML = servicosAtuais.map(s => {
     const nome    = typeof s === 'object' ? s.nome  : s
     const preco   = typeof s === 'object' && s.preco ? Number(s.preco) : 0
-    const duracao = intervalosServicos[nome] || 0
     const precoLabel = preco > 0 ? `R$ ${preco.toFixed(2).replace('.', ',')}` : ''
- 
+
     return `<div class="servico-intervalo-card">
       <div class="servico-intervalo-info">
         <div class="servico-intervalo-nome">${nome}</div>
@@ -795,16 +885,13 @@ function renderIntervalosServicos() {
       </div>
       <select class="servico-intervalo-select" data-servico="${nome}" onchange="alterarIntervaloServico(this)">${opcoesHtml}</select>
       <div class="servico-intervalo-actions">
-        <div class="servico-intervalo-act-btn edit" title="Editar" onclick="alert('Para editar o serviço, vá em Configurações.')">
-          <svg width="12" height="12" viewBox="0 0 15 15" fill="none"><path d="M10.5 2.5l2 2-8 8H2.5v-2l8-8Z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>
-        </div>
         <div class="servico-intervalo-act-btn" title="Remover" onclick="removerServico(${servicosAtuais.indexOf(s)})">
           <svg width="12" height="12" viewBox="0 0 15 15" fill="none"><path d="M2.5 4h10M5 4V3a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v1M6 7v4M9 7v4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M3.5 4l.5 8a1 1 0 0 0 1 1h5a1 1 0 0 0 1-1l.5-8" stroke="currentColor" stroke-width="1.3"/></svg>
         </div>
       </div>
     </div>`
   }).join('')
- 
+
   const preds = [0,5,10,15,20,25,30,45,60,75,90,105,120,150,180,240,300,360]
   servicosAtuais.forEach(s => {
     const nome    = typeof s === 'object' ? s.nome : s
@@ -820,30 +907,6 @@ function renderIntervalosServicos() {
       select.value = String(duracao)
     }
   })
-}
- 
-/* ── ADICIONE esta função (nova, não existe no original) ── */
-function renderHorariosDiasLateral() {
-  const diasNomesLateral = ['Segunda','Terça','Quarta','Quinta','Sexta','Sábado','Domingo']
-  const diasIndices = [1,2,3,4,5,6,0]
-  const container = document.getElementById('horarios-dias-lista')
-  if (!container) return
-  container.innerHTML = diasIndices.map((idx, i) => {
-    const cfg = horariosConfig[idx] || { ativo: false, inicio: '09:00', fim: '18:00' }
-    const ativo = cfg.ativo
-    return `<div class="horarios-dia-row">
-      <span class="horarios-dia-nome">${diasNomesLateral[i]}</span>
-      <div class="horarios-dia-right">
-        ${ativo
-          ? `<span class="horarios-dia-horas">${cfg.inicio} - ${cfg.fim}</span>`
-          : `<span class="horarios-dia-fechado">Fechado</span>`
-        }
-        <div class="horarios-dia-toggle ${ativo ? 'on' : 'off'}" onclick="toggleDiaLateral(${idx}, this)">
-          <div class="horarios-dia-toggle-thumb"></div>
-        </div>
-      </div>
-    </div>`
-  }).join('')
 }
 
 function alterarIntervaloServico(select) {
@@ -865,12 +928,6 @@ function alterarIntervaloServico(select) {
     const min = parseInt(val)
     if (min === 0) delete intervalosServicos[nome]; else intervalosServicos[nome] = min
   }
-  const badge = document.getElementById(`badge-${nome.replace(/\s+/g, '-')}`)
-  if (badge) {
-    const d = intervalosServicos[nome] || 0
-    badge.textContent = d > 0 ? formatarMinutos(d) : `Padrão (${formatarMinutos(intervaloAtual)})`
-    badge.className   = `servico-intervalo-badge ${d > 0 ? 'custom' : ''}`
-  }
 }
 async function salvarIntervalosServicos() {
   if (!negocioAtual) return
@@ -882,7 +939,9 @@ async function salvarIntervalosServicos() {
    HORÁRIOS
 ═══════════════════════════════════════════════════ */
 function renderDias() {
-  document.getElementById('dias-container').innerHTML = diasNomes.map((nome, i) => {
+  const el = document.getElementById('dias-container')
+  if (!el) return
+  el.innerHTML = diasNomes.map((nome, i) => {
     const cfg = horariosConfig[i] || { ativo: false, inicio: '08:00', fim: '18:00' }
     return `<div class="dia-row ${cfg.ativo ? '' : 'dia-inativo'}" id="dia-row-${i}">
       <div class="dia-toggle">
@@ -899,7 +958,9 @@ function renderDias() {
   }).join('')
 }
 function toggleDia(i) {
-  document.getElementById(`dia-row-${i}`).classList.toggle('dia-inativo', !document.getElementById(`dia-${i}`).checked)
+  const cb  = document.getElementById(`dia-${i}`)
+  const row = document.getElementById(`dia-row-${i}`)
+  if (row && cb) row.classList.toggle('dia-inativo', !cb.checked)
 }
 async function carregarHorariosConfig() {
   if (!negocioAtual) return
@@ -913,17 +974,21 @@ async function carregarHorariosConfig() {
   aplicarSelecaoIntervalo(intervaloAtual)
   renderDias()
   renderIntervalosServicos()
+  renderHorariosDiasLateral()
 }
 async function salvarHorarios() {
   if (!negocioAtual) return
   diasNomes.forEach((_, i) => {
+    const cb = document.getElementById(`dia-${i}`)
+    if (!cb) return
     horariosConfig[i] = {
-      ativo:  document.getElementById(`dia-${i}`).checked,
+      ativo:  cb.checked,
       inicio: document.getElementById(`inicio-${i}`).value,
       fim:    document.getElementById(`fim-${i}`).value,
     }
   })
   await patchHorarios()
+  renderHorariosDiasLateral()
   mostrarSalvo('salvo-horarios')
 }
 async function patchHorarios() {
@@ -942,6 +1007,52 @@ async function patchHorarios() {
 }
 
 /* ═══════════════════════════════════════════════════
+   HORÁRIOS — LATERAL (dias)
+═══════════════════════════════════════════════════ */
+function renderHorariosDiasLateral() {
+  const diasNomesLateral = ['Segunda','Terça','Quarta','Quinta','Sexta','Sábado','Domingo']
+  const diasIndices = [1,2,3,4,5,6,0]
+  const container = document.getElementById('horarios-dias-lista')
+  if (!container) return
+  container.innerHTML = diasIndices.map((idx, i) => {
+    const cfg  = horariosConfig[idx] || { ativo: false, inicio: '09:00', fim: '18:00' }
+    const ativo = cfg.ativo
+    return `<div class="horarios-dia-row">
+      <span class="horarios-dia-nome">${diasNomesLateral[i]}</span>
+      <div class="horarios-dia-right">
+        ${ativo
+          ? `<span class="horarios-dia-horas">${cfg.inicio} - ${cfg.fim}</span>`
+          : `<span class="horarios-dia-fechado">Fechado</span>`
+        }
+        <div class="horarios-dia-toggle ${ativo ? 'on' : 'off'}" onclick="toggleDiaLateral(${idx}, this)"
+             role="switch" aria-checked="${ativo}" aria-label="Ativar ${diasNomesLateral[i]}" tabindex="0"
+             onkeydown="if(event.key==='Enter'||event.key===' ')toggleDiaLateral(${idx},this)">
+          <div class="horarios-dia-toggle-thumb"></div>
+        </div>
+      </div>
+    </div>`
+  }).join('')
+}
+
+function toggleDiaLateral(idx, toggleEl) {
+  const cfg  = horariosConfig[idx] || { ativo: false, inicio: '09:00', fim: '18:00' }
+  cfg.ativo  = !cfg.ativo
+  horariosConfig[idx] = cfg
+  renderHorariosDiasLateral()
+  abrirGerenciarDias()
+}
+
+function abrirGerenciarDias() {
+  if (typeof renderDias === 'function') renderDias()
+  const modal = document.getElementById('modal-gerenciar-dias')
+  if (modal) { modal.style.display = 'flex'; document.body.classList.add('modal-open') }
+}
+function fecharGerenciarDias() {
+  const modal = document.getElementById('modal-gerenciar-dias')
+  if (modal) { modal.style.display = 'none'; document.body.classList.remove('modal-open') }
+}
+
+/* ═══════════════════════════════════════════════════
    PAUSAS
 ═══════════════════════════════════════════════════ */
 function mascaraHora(inp) {
@@ -951,6 +1062,7 @@ function mascaraHora(inp) {
 }
 function renderPausas() {
   const lista = document.getElementById('pausas-lista')
+  if (!lista) return
   if (!pausasAtuais.length) {
     lista.innerHTML = '<p style="font-size:12.5px;color:var(--text3);padding:8px 0">Nenhuma pausa configurada</p>'
     return
@@ -959,7 +1071,7 @@ function renderPausas() {
     <div class="pausa-item">
       <span class="pausa-item-label">${p.label || 'Pausa'}</span>
       <span class="pausa-item-hora">${p.inicio} – ${p.fim}</span>
-      <button onclick="removerPausa(${i})"
+      <button onclick="removerPausa(${i})" type="button"
         style="margin-left:auto;background:none;border:none;color:var(--text3);cursor:pointer;font-size:18px;line-height:1;padding:2px 4px;border-radius:5px;transition:all .15s"
         onmouseover="this.style.color='var(--red)';this.style.background='var(--red-bg)'"
         onmouseout="this.style.color='var(--text3)';this.style.background='none'">×</button>
@@ -998,7 +1110,7 @@ async function carregarBioConfig() {
   document.getElementById('bio-instagram').value = bio.instagram || ''
   document.getElementById('bio-whatsapp').value  = bio.whatsapp  || ''
   const prev = document.getElementById('foto-preview')
-  prev.innerHTML = bio.foto ? `<img src="${bio.foto}">` : '👤'
+  if (prev) prev.innerHTML = bio.foto ? `<img src="${bio.foto}">` : '👤'
 }
 async function salvarBio() {
   if (!negocioAtual) return
@@ -1050,7 +1162,8 @@ function atualizarToggleVisual(ativo) {
   if (!track || !thumb) return
   track.style.background = ativo ? 'var(--accent)' : ''
   thumb.style.left       = ativo ? '24px' : '3px'
-  document.getElementById('lembrete-info').style.display = ativo ? 'block' : 'none'
+  const info = document.getElementById('lembrete-info')
+  if (info) info.style.display = ativo ? 'block' : 'none'
 }
 async function carregarLembretes() {
   if (!negocioAtual) return
@@ -1060,7 +1173,10 @@ async function carregarLembretes() {
   const checkbox = document.getElementById('toggle-lembrete')
   if (checkbox) checkbox.checked = !!lembrete.ativo
   atualizarToggleVisual(!!lembrete.ativo)
-  if (lembrete.mensagem) document.getElementById('lembrete-msg').value = lembrete.mensagem
+  if (lembrete.mensagem) {
+    const msgEl = document.getElementById('lembrete-msg')
+    if (msgEl) msgEl.value = lembrete.mensagem
+  }
 }
 async function salvarLembrete() {
   const ativo = document.getElementById('toggle-lembrete').checked
@@ -1103,8 +1219,9 @@ async function verificarAcesso() {
     const banner = document.createElement('div')
     banner.className = 'trial-banner'
     banner.innerHTML = `<p>⏰ Seu trial expira em <strong>${data.diasRestantes} dias</strong>. Assine para não perder o acesso.</p>
-      <button class="btn-assinar-banner" onclick="window.location.href='/planos.html'">Ver planos</button>`
-    document.querySelector('.main').prepend(banner)
+      <button class="btn-assinar-banner" onclick="window.location.href='/planos.html'" type="button">Ver planos</button>`
+    const main = document.querySelector('.main')
+    if (main) main.prepend(banner)
   }
 }
 
@@ -1132,13 +1249,18 @@ function renderHistorico() {
   const nid   = negocioAtual._id
   const chav  = chaveDoOffset(historicoMesOffset)
   const dados = dadosMes(nid, chav)
-  document.getElementById('hist-mes-label').textContent = historicoMesOffset === 0 ? 'Este mês' : formatarMesLabel(chav)
-  document.getElementById('hist-next').disabled         = historicoMesOffset >= 0
+  const elLabel = document.getElementById('hist-mes-label')
+  const elNext  = document.getElementById('hist-next')
+  if (elLabel) elLabel.textContent = historicoMesOffset === 0 ? 'Este mês' : formatarMesLabel(chav)
+  if (elNext)  elNext.disabled     = historicoMesOffset >= 0
   const { lucro, atendimentos: atend } = dados
   const ticket = atend > 0 ? lucro / atend : 0
-  document.getElementById('hist-lucro').textContent  = fmtBRL(lucro)
-  document.getElementById('hist-atend').textContent  = atend
-  document.getElementById('hist-ticket').textContent = fmtBRL(ticket)
+  const elLucro  = document.getElementById('hist-lucro')
+  const elAtend  = document.getElementById('hist-atend')
+  const elTicket = document.getElementById('hist-ticket')
+  if (elLucro)  elLucro.textContent  = fmtBRL(lucro)
+  if (elAtend)  elAtend.textContent  = atend
+  if (elTicket) elTicket.textContent = fmtBRL(ticket)
   const meses = []
   for (let i = -5; i <= 0; i++) {
     const c = chaveDoOffset(i)
@@ -1146,7 +1268,8 @@ function renderHistorico() {
     meses.push({ chave: c, offset: i, lucro: d.lucro, atend: d.atendimentos })
   }
   const maxLucro = Math.max(...meses.map(m => m.lucro), 1)
-  document.getElementById('hist-grafico').innerHTML = meses.map(m => {
+  const elGraf = document.getElementById('hist-grafico')
+  if (elGraf) elGraf.innerHTML = meses.map(m => {
     const pct   = Math.max((m.lucro / maxLucro) * 100, m.lucro > 0 ? 4 : 0)
     const ativo = m.chave === chav
     const zero  = m.lucro === 0
@@ -1156,7 +1279,8 @@ function renderHistorico() {
     </div>`
   }).join('')
   const nomesM = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez']
-  document.getElementById('hist-grafico-labels').innerHTML = meses.map(m => {
+  const elLabels = document.getElementById('hist-grafico-labels')
+  if (elLabels) elLabels.innerHTML = meses.map(m => {
     const mes = parseInt(m.chave.split('-')[1]) - 1
     return `<div class="hist-grafico-label ${m.chave === chav ? 'ativo' : ''}">${nomesM[mes]}</div>`
   }).join('')
@@ -1212,17 +1336,17 @@ function atualizarInsights() {
   const elIS = document.getElementById('insight-inativos-sub')
   if (elI)  elI.textContent  = inativos > 0 ? `${inativos} cliente${inativos > 1 ? 's' : ''}` : 'Nenhum'
   if (elIS) { elIS.textContent = inativos > 0 ? 'há mais de 30 dias' : 'todos ativos'; elIS.className = 'insight-item-sub' + (inativos > 0 ? ' warning' : '') }
-
   const banner = document.getElementById('alert-clientes-inativos')
   if (banner) banner.style.display = inativos >= 3 ? 'flex' : 'none'
   if (inativos >= 3) { const t = document.getElementById('alert-clientes-texto'); if (t) t.innerHTML = `<strong>${inativos} clientes estão inativos</strong>, mande uma promoção para reativá-los` }
 
   const hoje   = new Date().toISOString().split('T')[0]
-  const semStr = (() => { const d = new Date(); d.setDate(d.getDate()-7); return d.toISOString().split('T')[0] })()
+  const semStart = new Date(); semStart.setDate(semStart.getDate()-7)
+  const semStr = semStart.toISOString().split('T')[0]
   const lucroSem = ags.filter(a => a.status === 'concluido' && a.data >= semStr && a.data <= hoje)
     .reduce((s,a) => s + (Number(a.preco)||0), 0)
   const elTotal = document.getElementById('stat-total')
-  if (elTotal) elTotal.textContent = 'R$ ' + lucroSem.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})
+  if (elTotal) elTotal.textContent = fmtBRL(lucroSem)
 
   const mes = new Date().toISOString().slice(0,7)
   const nid = negocioAtual?._id
@@ -1260,12 +1384,12 @@ async function carregarInsights() {
     const elMeta   = document.getElementById('finance-meta')
     const elAtend  = document.getElementById('finance-atend')
     const elChartL = document.getElementById('finance-chart-label')
-    const elTotal  = document.getElementById('stat-total')
+    const elTotal2 = document.getElementById('stat-total')
     if (elAmount) elAmount.textContent = (fin.lucroMes||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})
     if (elMeta)   elMeta.textContent   = `Movidas: ${fin.atendMes||0} agendamentos`
     if (elAtend)  elAtend.textContent  = fin.atendMes||0
     if (elChartL) elChartL.textContent = `R$${Math.round(fin.lucroMes||0)}`
-    if (elTotal)  elTotal.textContent  = 'R$ ' + (fin.lucroSemana||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})
+    if (elTotal2) elTotal2.textContent = fmtBRL(fin.lucroSemana||0)
     if (fin.historicoMeses?.length && negocioAtual) {
       fin.historicoMeses.forEach(({ mes, lucro, atendimentos }) => {
         localStorage.setItem(`lucro_val_${negocioAtual._id}_${mes}`, String(lucro))
@@ -1341,7 +1465,7 @@ function renderClientes(filtro) {
 function filtrarClientes(v) { renderClientes(v) }
 
 /* ═══════════════════════════════════════════════════
-   BUSCA GLOBAL — implementação única
+   BUSCA GLOBAL
 ═══════════════════════════════════════════════════ */
 let buscaAberta = false
 
@@ -1349,25 +1473,24 @@ function abrirBusca() {
   const overlay = document.getElementById('busca-overlay')
   if (!overlay) return
   overlay.classList.add('aberta')
+  overlay.removeAttribute('aria-hidden')
   buscaAberta = true
+  document.body.classList.add('modal-open')
   const inp = document.getElementById('busca-input')
-  if (inp) {
-    inp.value = ''
-    setTimeout(() => { inp.focus(); executarBusca('') }, 60)
-  }
+  if (inp) { inp.value = ''; setTimeout(() => { inp.focus(); executarBusca('') }, 60) }
 }
 
 function fecharBusca() {
   const overlay = document.getElementById('busca-overlay')
-  if (overlay) overlay.classList.remove('aberta')
+  if (overlay) { overlay.classList.remove('aberta'); overlay.setAttribute('aria-hidden', 'true') }
   buscaAberta = false
+  document.body.classList.remove('modal-open')
 }
 
 function executarBusca(q) {
   const res = document.getElementById('busca-resultados')
   if (!res) return
   const ags = todosAgendamentos || []
-
   if (!q || !q.trim()) {
     const hoje   = new Date().toISOString().split('T')[0]
     const deHoje = ags.filter(a => a.data === hoje).slice(0, 6)
@@ -1378,7 +1501,6 @@ function executarBusca(q) {
     res.innerHTML = '<div class="busca-secao-label">Agendamentos de hoje</div>' + deHoje.map(buscaItemHTML).join('')
     return
   }
-
   const termo = q.toLowerCase().trim()
   const encontrados = ags.filter(a =>
     (a.pacienteNome     || '').toLowerCase().includes(termo) ||
@@ -1387,15 +1509,11 @@ function executarBusca(q) {
     (a.hora             || '').includes(termo) ||
     (a.pacienteTelefone || '').includes(termo)
   ).slice(0, 12)
-
   if (!encontrados.length) {
     res.innerHTML = `<div style="text-align:center;color:var(--text3);padding:28px;font-size:13px">Nenhum resultado para "<strong>${q}</strong>"</div>`
     return
   }
-
-  res.innerHTML =
-    `<div class="busca-secao-label">${encontrados.length} resultado${encontrados.length > 1 ? 's' : ''}</div>` +
-    encontrados.map(buscaItemHTML).join('')
+  res.innerHTML = `<div class="busca-secao-label">${encontrados.length} resultado${encontrados.length > 1 ? 's' : ''}</div>` + encontrados.map(buscaItemHTML).join('')
 }
 
 function buscaItemHTML(a) {
@@ -1404,11 +1522,11 @@ function buscaItemHTML(a) {
   const dataFmt   = a.data ? a.data.split('-').reverse().join('/') : ''
   const preco     = a.preco ? ` · R$${Number(a.preco).toFixed(2).replace('.',',')}` : ''
   const statusCor = { confirmado:'#10b981', concluido:'#8b5cf6', cancelado:'#ef4444', pendente:'#f59e0b' }[a.status] || '#8b9ab4'
-  return `<div class="busca-item" onclick="buscaSelecionarAgendamento('${a._id}','${a.data||''}')">
-    <div class="busca-avatar-mini" style="background:linear-gradient(135deg,${c1},${c2})">${ini}</div>
+  return `<div class="busca-item" onclick="buscaSelecionarAgendamento('${a._id}','${a.data||''}')" role="option" tabindex="0">
+    <div class="busca-avatar-mini" style="background:linear-gradient(135deg,${c1},${c2})" aria-hidden="true">${ini}</div>
     <div class="busca-item-info">
-      <div class="busca-item-nome">${a.pacienteNome}</div>
-      <div class="busca-item-sub">${a.servico} · ${dataFmt} às ${a.hora}${preco}</div>
+      <div class="busca-item-nome">${a.pacienteNome || '—'}</div>
+      <div class="busca-item-sub">${a.servico || ''} · ${dataFmt} às ${a.hora || ''}${preco}</div>
     </div>
     <span class="busca-item-badge" style="background:${statusCor}22;color:${statusCor};border:1px solid ${statusCor}44">${a.status}</span>
   </div>`
@@ -1416,12 +1534,14 @@ function buscaItemHTML(a) {
 
 function buscaSelecionarAgendamento(id, data) {
   fecharBusca()
-  const filtroEl = document.getElementById('filtro-data')
-  if (filtroEl && data) { filtroEl.value = data; if (window.filtrarData) window.filtrarData() }
   irPara('agendamentos', document.getElementById('menu-agendamentos'))
+  if (data && typeof agFiltrarData === 'function') {
+    const inp = document.getElementById('ag-filtro-data')
+    if (inp) { inp.value = data; agFiltrarData(data) }
+  }
 }
 
-/* Atalhos de teclado da busca */
+/* Atalhos de teclado */
 document.addEventListener('keydown', e => {
   if ((e.metaKey || e.ctrlKey) && e.key === 'k') { e.preventDefault(); buscaAberta ? fecharBusca() : abrirBusca() }
   if (e.key === 'Escape' && buscaAberta) fecharBusca()
@@ -1509,19 +1629,18 @@ function abrirMensagens() {
 function abrirAvatarMenu() {
   const menu = document.getElementById('avatar-menu')
   if (!menu) return
-  const aberto = menu.classList.contains('aberto')
+  const aberto = menu.style.display !== 'none' && menu.style.display !== ''
   fecharTodosDropdowns()
   if (!aberto) {
     const elNeg = document.getElementById('avatar-menu-negocio')
-    const elAv  = document.getElementById('avatar-menu-avatar')
-    if (negocioAtual) {
-      if (elNeg) elNeg.textContent = negocioAtual.nome
-      if (elAv)  elAv.textContent  = negocioAtual.nome[0].toUpperCase()
-    }
+    const elAv  = document.getElementById('avatar-menu-av') || document.getElementById('avatar-menu-avatar')
+    if (negocioAtual && elNeg) elNeg.textContent = negocioAtual.nome
+    if (negocioAtual && elAv)  elAv.textContent  = negocioAtual.nome[0].toUpperCase()
     const tema = localStorage.getItem('tema') || 'escuro'
     const elTema = document.getElementById('avatar-menu-tema-label')
     if (elTema) elTema.textContent = tema === 'escuro' ? 'Mudar para claro' : 'Mudar para escuro'
-    menu.classList.add('aberto')
+    menu.style.display = 'block'
+    menu.removeAttribute('aria-hidden')
   }
 }
 
@@ -1529,21 +1648,13 @@ function fecharTodosDropdowns() {
   const notif  = document.getElementById('notif-panel')
   const msg    = document.getElementById('msg-panel')
   const avatar = document.getElementById('avatar-menu')
+  const neg    = document.getElementById('neg-dropdown')
   if (notif)  notif.classList.remove('aberto')
   if (msg)    msg.classList.remove('aberto')
-  if (avatar) avatar.classList.remove('aberto')
+  if (avatar) { avatar.style.display = 'none'; avatar.setAttribute('aria-hidden', 'true') }
+  if (neg)    { neg.classList.remove('show'); const chev = document.getElementById('neg-chevron'); if (chev) chev.classList.remove('open') }
 }
 window.fecharTodosDropdowns = fecharTodosDropdowns
-
-document.addEventListener('click', e => {
-  if (!e.target.closest('#notif-panel') &&
-      !e.target.closest('#msg-panel') &&
-      !e.target.closest('#avatar-menu') &&
-      !e.target.closest('.topbar-icon-btn') &&
-      !e.target.closest('#topbar-avatar-btn')) {
-    fecharTodosDropdowns()
-  }
-})
 
 /* ═══════════════════════════════════════════════════
    PIX
@@ -1593,9 +1704,12 @@ window.addEventListener('appinstalled', () => {
   const btn = document.getElementById('btn-instalar-app')
   if (btn) btn.style.display = 'none'
 })
-document.getElementById('btn-instalar-app').onclick = function () {
-  if (isAppInstalled()) { this.style.display = 'none'; return }
-  if (deferredPrompt) { deferredPrompt.prompt(); deferredPrompt.userChoice.then(() => { deferredPrompt = null }) }
+const _installBtn = document.getElementById('btn-instalar-app')
+if (_installBtn) {
+  _installBtn.onclick = function () {
+    if (isAppInstalled()) { this.style.display = 'none'; return }
+    if (deferredPrompt) { deferredPrompt.prompt(); deferredPrompt.userChoice.then(() => { deferredPrompt = null }) }
+  }
 }
 
 /* ═══════════════════════════════════════════════════
@@ -1603,491 +1717,329 @@ document.getElementById('btn-instalar-app').onclick = function () {
 ═══════════════════════════════════════════════════ */
 document.addEventListener('DOMContentLoaded', () => {
   const btnBusca  = document.querySelector('.main-topbar-search')
-  const sinoBtn   = document.querySelectorAll('.topbar-icon-btn')[1]
-  const envBtn    = document.querySelectorAll('.topbar-icon-btn')[2]
+  const sinoBtn   = document.getElementById('btn-notif')
+  const envBtn    = document.getElementById('btn-msg')
   const avatarBtn = document.getElementById('topbar-avatar-btn')
 
-  if (btnBusca) btnBusca.addEventListener('click', abrirBusca)
+  if (btnBusca)  btnBusca.addEventListener('click', abrirBusca)
   if (sinoBtn) {
-    sinoBtn.onclick = abrirNotificacoes
+    sinoBtn.onclick = function() { fecharTodosDropdowns(); abrirNotificacoes() }
     const dot = document.createElement('div')
-    dot.id = 'notif-dot'
-    dot.className = 'notif-dot-badge'
-    dot.style.display = 'none'
+    dot.id = 'notif-dot'; dot.className = 'notif-dot-badge'
+    dot.style.display = 'none'; dot.setAttribute('aria-hidden', 'true')
     sinoBtn.appendChild(dot)
   }
-  if (envBtn)    envBtn.onclick    = abrirMensagens
+  if (envBtn)    envBtn.onclick    = function() { fecharTodosDropdowns(); abrirMensagens() }
   if (avatarBtn) avatarBtn.onclick = e => { e.stopPropagation(); abrirAvatarMenu() }
 
   const isMac = navigator.platform.toUpperCase().includes('MAC')
   const searchSpan = document.querySelector('.main-topbar-search span')
   if (searchSpan) searchSpan.textContent = `Buscar... (${isMac ? '⌘K' : 'Ctrl+K'})`
+
+  document.querySelectorAll('.page').forEach(p => {
+    if (!p.classList.contains('ativo')) p.setAttribute('aria-hidden', 'true')
+  })
 })
 
-function renderHorariosDiasLateral() {
-  const diasNomesLateral = ['Segunda','Terça','Quarta','Quinta','Sexta','Sábado','Domingo']
-  const diasIndices = [1,2,3,4,5,6,0]
-  const container = document.getElementById('horarios-dias-lista')
-  if (!container) return
-  container.innerHTML = diasIndices.map((idx, i) => {
-    const cfg = horariosConfig[idx] || { ativo: false, inicio: '09:00', fim: '18:00' }
-    const ativo = cfg.ativo
-    return `<div class="horarios-dia-row">
-      <span class="horarios-dia-nome">${diasNomesLateral[i]}</span>
-      <div class="horarios-dia-right">
-        ${ativo
-          ? `<span class="horarios-dia-horas">${cfg.inicio} - ${cfg.fim}</span>`
-          : `<span class="horarios-dia-fechado">Fechado</span>`
-        }
-        <div class="horarios-dia-toggle ${ativo ? 'on' : 'off'}" onclick="toggleDiaLateral(${idx}, this)">
-          <div class="horarios-dia-toggle-thumb"></div>
-        </div>
-      </div>
-    </div>`
-  }).join('')
-}
- 
-/* ── ADICIONE esta função auxiliar ── */
-function toggleDiaLateral(idx, toggleEl) {
-  const cfg = horariosConfig[idx] || { ativo: false, inicio: '09:00', fim: '18:00' }
-  cfg.ativo = !cfg.ativo
-  horariosConfig[idx] = cfg
-  renderHorariosDiasLateral()
-  /* Abre modal de gerenciar para o usuário salvar */
-  abrirGerenciarDias()
-}
- 
-/* ── ADICIONE estas funções do modal de dias ── */
-function abrirGerenciarDias() {
-  renderDias()
-  document.getElementById('modal-gerenciar-dias').style.display = 'flex'
-}
-function fecharGerenciarDias() {
-  document.getElementById('modal-gerenciar-dias').style.display = 'none'
-}
-
 /* ═══════════════════════════════════════════════════
-   INIT
+   AUTOMAÇÃO — página de lembretes
 ═══════════════════════════════════════════════════ */
-carregarTema()
-const _token = localStorage.getItem('token')
-if (_token) { mostrarPainel() } else { window.location.href = '/auth.html' }
+;(function () {
+  let tipoSelecionado = '24h'
 
-(function() {
- 
-  let tipoSelecionado = '24h';
- 
   const mensagensAuto = {
     '24h':        'Olá {nome}! 👋\nLembramos que você tem um agendamento amanhã, {data}, às {hora} — {servico}.\nEstamos te esperando! 🙏',
     '1h':         'Olá {nome}! ⏰\nSeu agendamento é em 1 hora — {hora}. Serviço: {servico}.\nTe esperamos em breve! 😊',
     'pos':        'Olá {nome}! 🙏\nObrigado por nos visitar hoje! Foi um prazer te atender.\nAgende seu próximo horário: {link}',
     'aniversario':'Feliz aniversário, {nome}! 🎉\nA equipe da {negocio} deseja tudo de melhor para você!\nTemos um presente especial esperando por você. 🎁',
-  };
- 
+  }
+
   const titulos = {
     '24h':        'Editar lembrete 24h antes',
     '1h':         'Editar lembrete 1h antes',
     'pos':        'Editar mensagem pós-atendimento',
     'aniversario':'Editar mensagem de aniversário',
-  };
- 
+  }
+
   window.selecionarTipoAuto = function(tipo, card) {
-    tipoSelecionado = tipo;
-    document.querySelectorAll('.auto-tipo-card').forEach(c => c.classList.remove('ativo-selected'));
-    card.classList.add('ativo-selected');
- 
-    const headerTitle = document.querySelector('.auto-editor-header-title');
-    if (headerTitle) headerTitle.textContent = titulos[tipo] || 'Editar mensagem';
- 
-    const textarea = document.getElementById('auto-mensagem-textarea');
-    if (textarea) {
-      textarea.value = mensagensAuto[tipo] || '';
-      atualizarPreviewAuto();
-    }
- 
-    // Sync toggle do editor com o toggle do card
-    const toggleCard = document.getElementById('toggle-' + tipo);
-    const toggleEditor = document.getElementById('toggle-editor-main');
-    const labelAtivo = document.querySelector('.auto-ativo-label');
+    tipoSelecionado = tipo
+    document.querySelectorAll('.auto-tipo-card').forEach(c => c.classList.remove('ativo-selected'))
+    card.classList.add('ativo-selected')
+    const headerTitle = document.querySelector('.auto-editor-header-title')
+    if (headerTitle) headerTitle.textContent = titulos[tipo] || 'Editar mensagem'
+    const textarea = document.getElementById('auto-mensagem-textarea')
+    if (textarea) { textarea.value = mensagensAuto[tipo] || ''; atualizarPreviewAuto() }
+    const toggleCard   = document.getElementById('toggle-' + tipo)
+    const toggleEditor = document.getElementById('toggle-editor-main')
+    const labelAtivo   = document.querySelector('.auto-ativo-label')
     if (toggleCard && toggleEditor) {
-      const isOn = toggleCard.classList.contains('on');
-      toggleEditor.className = 'auto-tipo-toggle ' + (isOn ? 'on' : 'off');
-      if (labelAtivo) {
-        labelAtivo.textContent = isOn ? 'Ativo' : 'Inativo';
-        labelAtivo.style.color = isOn ? '#34d399' : 'var(--text3)';
-      }
+      const isOn = toggleCard.classList.contains('on')
+      toggleEditor.className = 'auto-tipo-toggle ' + (isOn ? 'on' : 'off')
+      if (labelAtivo) { labelAtivo.textContent = isOn ? 'Ativo' : 'Inativo'; labelAtivo.style.color = isOn ? '#34d399' : 'var(--text3)' }
     }
-  };
- 
+  }
+
   window.toggleAutoTipo = function(tipo, toggleEl) {
-    const isOn = toggleEl.classList.contains('on');
-    toggleEl.className = 'auto-tipo-toggle ' + (isOn ? 'off' : 'on');
-    const thumb = toggleEl.querySelector('.auto-tipo-toggle-thumb');
-    if (thumb) {} // CSS handles it
- 
-    // Atualizar badge
-    const card = toggleEl.closest('.auto-tipo-card');
+    const isOn = toggleEl.classList.contains('on')
+    toggleEl.className = 'auto-tipo-toggle ' + (isOn ? 'off' : 'on')
+    const card = toggleEl.closest('.auto-tipo-card')
     if (card) {
-      const badge = card.querySelector('.auto-tipo-badge');
-      if (badge) {
-        badge.textContent = isOn ? 'Inativo' : 'Ativo';
-        badge.className = 'auto-tipo-badge ' + (isOn ? 'inativo' : 'ativo');
-      }
+      const badge = card.querySelector('.auto-tipo-badge')
+      if (badge) { badge.textContent = isOn ? 'Inativo' : 'Ativo'; badge.className = 'auto-tipo-badge ' + (isOn ? 'inativo' : 'ativo') }
     }
- 
-    // Sync com editor se for o tipo selecionado
     if (tipo === tipoSelecionado) {
-      const toggleEditor = document.getElementById('toggle-editor-main');
-      const labelAtivo   = document.querySelector('.auto-ativo-label');
-      if (toggleEditor) toggleEditor.className = 'auto-tipo-toggle ' + (isOn ? 'off' : 'on');
-      if (labelAtivo) {
-        labelAtivo.textContent = isOn ? 'Inativo' : 'Ativo';
-        labelAtivo.style.color = isOn ? 'var(--text3)' : '#34d399';
-      }
+      const toggleEditor = document.getElementById('toggle-editor-main')
+      const labelAtivo   = document.querySelector('.auto-ativo-label')
+      if (toggleEditor) toggleEditor.className = 'auto-tipo-toggle ' + (isOn ? 'off' : 'on')
+      if (labelAtivo) { labelAtivo.textContent = isOn ? 'Inativo' : 'Ativo'; labelAtivo.style.color = isOn ? 'var(--text3)' : '#34d399' }
     }
-  };
- 
+  }
+
   window.toggleEditorMain = function(toggleEl) {
-    const isOn = toggleEl.classList.contains('on');
-    toggleEl.className = 'auto-tipo-toggle ' + (isOn ? 'off' : 'on');
-    const labelAtivo = document.querySelector('.auto-ativo-label');
-    if (labelAtivo) {
-      labelAtivo.textContent = isOn ? 'Inativo' : 'Ativo';
-      labelAtivo.style.color = isOn ? 'var(--text3)' : '#34d399';
-    }
-    // Sync card toggle
-    const cardToggle = document.getElementById('toggle-' + tipoSelecionado);
+    const isOn = toggleEl.classList.contains('on')
+    toggleEl.className = 'auto-tipo-toggle ' + (isOn ? 'off' : 'on')
+    const labelAtivo = document.querySelector('.auto-ativo-label')
+    if (labelAtivo) { labelAtivo.textContent = isOn ? 'Inativo' : 'Ativo'; labelAtivo.style.color = isOn ? 'var(--text3)' : '#34d399' }
+    const cardToggle = document.getElementById('toggle-' + tipoSelecionado)
     if (cardToggle) {
-      cardToggle.className = 'auto-tipo-toggle ' + (isOn ? 'off' : 'on');
-      const card = cardToggle.closest('.auto-tipo-card');
+      cardToggle.className = 'auto-tipo-toggle ' + (isOn ? 'off' : 'on')
+      const card = cardToggle.closest('.auto-tipo-card')
       if (card) {
-        const badge = card.querySelector('.auto-tipo-badge');
-        if (badge) {
-          badge.textContent = isOn ? 'Inativo' : 'Ativo';
-          badge.className = 'auto-tipo-badge ' + (isOn ? 'inativo' : 'ativo');
-        }
+        const badge = card.querySelector('.auto-tipo-badge')
+        if (badge) { badge.textContent = isOn ? 'Inativo' : 'Ativo'; badge.className = 'auto-tipo-badge ' + (isOn ? 'inativo' : 'ativo') }
       }
     }
-  };
- 
+  }
+
   window.inserirVarAuto = function(variavel) {
-    const ta = document.getElementById('auto-mensagem-textarea');
-    if (!ta) return;
-    const start = ta.selectionStart;
-    const end   = ta.selectionEnd;
-    const val   = ta.value;
-    ta.value = val.substring(0, start) + variavel + val.substring(end);
-    ta.selectionStart = ta.selectionEnd = start + variavel.length;
-    ta.focus();
-    atualizarPreviewAuto();
-  };
- 
+    const ta = document.getElementById('auto-mensagem-textarea')
+    if (!ta) return
+    const start = ta.selectionStart
+    const end   = ta.selectionEnd
+    const val   = ta.value
+    ta.value = val.substring(0, start) + variavel + val.substring(end)
+    ta.selectionStart = ta.selectionEnd = start + variavel.length
+    ta.focus()
+    atualizarPreviewAuto()
+  }
+
   window.atualizarPreviewAuto = function() {
-    const ta      = document.getElementById('auto-mensagem-textarea');
-    const bubble  = document.getElementById('auto-preview-bubble');
-    if (!ta || !bubble) return;
- 
-    const negNome = (window.negocioAtual && window.negocioAtual.nome) ? window.negocioAtual.nome : 'sua empresa';
- 
+    const ta     = document.getElementById('auto-mensagem-textarea')
+    const bubble = document.getElementById('auto-preview-bubble')
+    if (!ta || !bubble) return
+    const negNome = (window.negocioAtual && window.negocioAtual.nome) ? window.negocioAtual.nome : 'sua empresa'
     let txt = ta.value
       .replace(/\{nome\}/g,    'Carlos')
       .replace(/\{data\}/g,    '23/05')
       .replace(/\{hora\}/g,    '15:00')
       .replace(/\{servico\}/g, 'Barba')
       .replace(/\{negocio\}/g, negNome)
-      .replace(/\{link\}/g,    'agendorapido.com.br/...');
- 
-    const linhas = txt.split('\n').map(l => l || '<br>').join('<br>');
+      .replace(/\{link\}/g,    'agendorapido.com.br/...')
+    const linhas = txt.split('\n').map(l => l || '<br>').join('<br>')
     bubble.innerHTML = linhas + `
-      <div class="auto-wpp-bubble-time">
-        10:30
+      <div class="auto-wpp-bubble-time">10:30
         <svg width="14" height="10" viewBox="0 0 16 11" fill="none">
           <path d="M1 5.5l3.5 3.5L9 2M7 5.5l3.5 3.5L15 2" stroke="#4fc3f7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
-      </div>`;
-  };
- 
+      </div>`
+  }
+
   window.salvarAutomacao = function() {
-    const ta  = document.getElementById('auto-mensagem-textarea');
-    const msg = ta ? ta.value : '';
-    const isOn = document.getElementById('toggle-editor-main')?.classList.contains('on');
- 
-    if (!window.negocioAtual) return;
-    const token = localStorage.getItem('token');
-    fetch(`${window.API || 'https://agendafacil-wf3q.onrender.com/api'}/auth/lembretes`, {
+    const ta  = document.getElementById('auto-mensagem-textarea')
+    const msg = ta ? ta.value : ''
+    const isOn = document.getElementById('toggle-editor-main')?.classList.contains('on')
+    if (!window.negocioAtual) return
+    const token = localStorage.getItem('token')
+    fetch(`${API}/auth/lembretes`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
       body: JSON.stringify({ negocioId: window.negocioAtual._id, ativo: isOn, mensagem: msg }),
     }).then(() => {
-      const btn = document.querySelector('.auto-btn-salvar');
+      const btn = document.querySelector('.auto-btn-salvar')
       if (btn) {
-        const orig = btn.innerHTML;
-        btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg> Salvo!';
-        setTimeout(() => btn.innerHTML = orig, 2000);
+        const orig = btn.innerHTML
+        btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg> Salvo!'
+        setTimeout(() => btn.innerHTML = orig, 2000)
       }
-    }).catch(() => {});
-  };
- 
+    }).catch(() => {})
+  }
+
   window.enviarTesteAuto = function() {
-    const btn = document.querySelector('.auto-btn-teste');
-    if (!btn) return;
-    const orig = btn.innerHTML;
-    btn.innerHTML = '✓ Teste enviado!';
-    btn.style.color = '#34d399';
-    setTimeout(() => { btn.innerHTML = orig; btn.style.color = ''; }, 2500);
-  };
- 
-  // Carregar configuração existente ao trocar de negócio
-  const _origCarregarLembretes = window.carregarLembretes;
+    const btn = document.querySelector('.auto-btn-teste')
+    if (!btn) return
+    const orig = btn.innerHTML
+    btn.innerHTML = '✓ Teste enviado!'; btn.style.color = '#34d399'
+    setTimeout(() => { btn.innerHTML = orig; btn.style.color = '' }, 2500)
+  }
+
+  // Sobrescrever carregarLembretes para sincronizar toggles da automação
+  const _origCarregarLembretes = window.carregarLembretes
   window.carregarLembretes = async function() {
-    if (_origCarregarLembretes) await _origCarregarLembretes.apply(this, arguments);
-    // Sync toggle do editor com o estado real
-    const checkbox = document.getElementById('toggle-lembrete');
-    const toggleEditor = document.getElementById('toggle-editor-main');
-    const labelAtivo   = document.querySelector('.auto-ativo-label');
-    const toggle24h    = document.getElementById('toggle-24h');
+    if (_origCarregarLembretes) await _origCarregarLembretes.apply(this, arguments)
+    const checkbox     = document.getElementById('toggle-lembrete')
+    const toggleEditor = document.getElementById('toggle-editor-main')
+    const labelAtivo   = document.querySelector('.auto-ativo-label')
+    const toggle24h    = document.getElementById('toggle-24h')
     if (checkbox && toggleEditor) {
-      const isOn = checkbox.checked;
-      toggleEditor.className = 'auto-tipo-toggle ' + (isOn ? 'on' : 'off');
-      if (labelAtivo) {
-        labelAtivo.textContent = isOn ? 'Ativo' : 'Inativo';
-        labelAtivo.style.color = isOn ? '#34d399' : 'var(--text3)';
-      }
+      const isOn = checkbox.checked
+      toggleEditor.className = 'auto-tipo-toggle ' + (isOn ? 'on' : 'off')
+      if (labelAtivo) { labelAtivo.textContent = isOn ? 'Ativo' : 'Inativo'; labelAtivo.style.color = isOn ? '#34d399' : 'var(--text3)' }
       if (toggle24h) {
-        toggle24h.className = 'auto-tipo-toggle ' + (isOn ? 'on' : 'off');
-        const card = toggle24h.closest('.auto-tipo-card');
+        toggle24h.className = 'auto-tipo-toggle ' + (isOn ? 'on' : 'off')
+        const card = toggle24h.closest('.auto-tipo-card')
         if (card) {
-          const badge = card.querySelector('.auto-tipo-badge');
-          if (badge) {
-            badge.textContent = isOn ? 'Ativo' : 'Inativo';
-            badge.className = 'auto-tipo-badge ' + (isOn ? 'ativo' : 'inativo');
-          }
+          const badge = card.querySelector('.auto-tipo-badge')
+          if (badge) { badge.textContent = isOn ? 'Ativo' : 'Inativo'; badge.className = 'auto-tipo-badge ' + (isOn ? 'ativo' : 'inativo') }
         }
       }
     }
-    // Carregar mensagem salva
-    const msgEl = document.getElementById('lembrete-msg');
-    const taAuto = document.getElementById('auto-mensagem-textarea');
-    if (msgEl && taAuto && msgEl.value) {
-      taAuto.value = msgEl.value;
-      atualizarPreviewAuto();
-    }
-  };
- 
-})();
+    const msgEl  = document.getElementById('lembrete-msg')
+    const taAuto = document.getElementById('auto-mensagem-textarea')
+    if (msgEl && taAuto && msgEl.value) { taAuto.value = msgEl.value; atualizarPreviewAuto() }
+  }
+})()
 
-(function () {
-  /* ─────── estado ─────── */
-  let agFiltroAtivo   = 'todos';
-  let agFiltroData    = '';
-  let agPagina        = 1;
-  let agPorPagina     = 10;
-  let agListaFiltrada = [];
- 
-  /* ─────── cores de avatar ─────── */
+/* ═══════════════════════════════════════════════════
+   TABELA DE AGENDAMENTOS — versão avançada
+═══════════════════════════════════════════════════ */
+;(function () {
+  let agFiltroAtivo   = 'todos'
+  let agFiltroData    = ''
+  let agPagina        = 1
+  let agPorPagina     = 10
+  let agListaFiltrada = []
+
   function agAvatarColor(nome) {
     const paletas = [
       ['#1d4ed8','#3b82f6'],['#7c3aed','#8b5cf6'],['#0e7490','#06b6d4'],
       ['#15803d','#22c55e'],['#b45309','#f59e0b'],['#be185d','#ec4899'],
       ['#0369a1','#38bdf8'],['#6d28d9','#a78bfa'],['#9f1239','#f43f5e'],
-    ];
-    let h = 0;
-    for (const c of (nome || 'A')) h = ((h << 5) - h) + c.charCodeAt(0);
-    return paletas[Math.abs(h) % paletas.length];
+    ]
+    let h = 0
+    for (const c of (nome || 'A')) h = ((h << 5) - h) + c.charCodeAt(0)
+    return paletas[Math.abs(h) % paletas.length]
   }
- 
-  /* ─────── cor do ponto do serviço ─────── */
+
   function agServicoCor(status) {
-    if (status === 'confirmado') return '#22c55e';
-    if (status === 'concluido')  return '#a78bfa';
-    if (status === 'cancelado')  return '#f87171';
-    return '#f59e0b';
+    if (status === 'confirmado') return '#22c55e'
+    if (status === 'concluido')  return '#a78bfa'
+    if (status === 'cancelado')  return '#f87171'
+    return '#f59e0b'
   }
- 
-  /* ─────── duração fictícia p/ demo (substitua por a.duracao se disponível) ─────── */
+
   function agDuracao(ag) {
-    if (ag.duracao) return ag.duracao + ' min';
-    const mapa = { 'Barba': 45, 'Corte': 60, 'Corte + Barba': 75, 'Sobrancelha': 30, 'Manicure': 50 };
-    const dur = mapa[ag.servico] || 30;
-    return dur + ' min';
+    if (ag.duracao) return ag.duracao + ' min'
+    const mapa = { 'Barba': 45, 'Corte': 60, 'Corte + Barba': 75, 'Sobrancelha': 30, 'Manicure': 50 }
+    return (mapa[ag.servico] || 30) + ' min'
   }
- 
-  /* ─────── formatar data ─────── */
+
   function agFmtData(data) {
-    if (!data) return '—';
-    const [a, m, d] = data.split('-');
-    return `${d.padStart(2,'0')}/${m.padStart(2,'0')}/${a}`;
+    if (!data) return '—'
+    const [a, m, d] = data.split('-')
+    return `${d.padStart(2,'0')}/${m.padStart(2,'0')}/${a}`
   }
- 
-  /* ─────── filtrar lista ─────── */
+
   function agAplicarFiltro() {
-    const base = window.todosAgendamentos || [];
-    const hoje = new Date().toISOString().split('T')[0];
-    const inicioSemana = (() => { const d = new Date(); d.setDate(d.getDate() - d.getDay()); return d.toISOString().split('T')[0]; })();
-    const fimSemana    = (() => { const d = new Date(); d.setDate(d.getDate() + (6 - d.getDay())); return d.toISOString().split('T')[0]; })();
-    const mes = new Date().toISOString().slice(0, 7);
- 
-    let lista = [...base];
- 
+    const base = window.todosAgendamentos || []
+    const hoje = new Date().toISOString().split('T')[0]
+    const inicioSemana = (() => { const d = new Date(); d.setDate(d.getDate() - d.getDay()); return d.toISOString().split('T')[0] })()
+    const fimSemana    = (() => { const d = new Date(); d.setDate(d.getDate() + (6 - d.getDay())); return d.toISOString().split('T')[0] })()
+    const mes = new Date().toISOString().slice(0, 7)
+    let lista = [...base]
     if (agFiltroData) {
-      lista = lista.filter(a => a.data === agFiltroData);
+      lista = lista.filter(a => a.data === agFiltroData)
     } else {
-      if (agFiltroAtivo === 'hoje')      lista = lista.filter(a => a.data === hoje);
-      else if (agFiltroAtivo === 'semana') lista = lista.filter(a => a.data >= inicioSemana && a.data <= fimSemana);
-      else if (agFiltroAtivo === 'mes')    lista = lista.filter(a => a.data && a.data.startsWith(mes));
-      else if (agFiltroAtivo === 'concluido') lista = lista.filter(a => a.status === 'concluido');
-      else if (agFiltroAtivo === 'cancelado') lista = lista.filter(a => a.status === 'cancelado');
+      if (agFiltroAtivo === 'hoje')       lista = lista.filter(a => a.data === hoje)
+      else if (agFiltroAtivo === 'semana') lista = lista.filter(a => a.data >= inicioSemana && a.data <= fimSemana)
+      else if (agFiltroAtivo === 'mes')    lista = lista.filter(a => a.data && a.data.startsWith(mes))
+      else if (agFiltroAtivo === 'concluido') lista = lista.filter(a => a.status === 'concluido')
+      else if (agFiltroAtivo === 'cancelado') lista = lista.filter(a => a.status === 'cancelado')
     }
- 
-    lista.sort((a, b) => {
-      const da = (a.data || '') + (a.hora || '');
-      const db = (b.data || '') + (b.hora || '');
-      return db.localeCompare(da);
-    });
- 
-    agListaFiltrada = lista;
-    agPagina = 1;
-    agAtualizarStats(base, mes);
-    agRenderTabela();
+    lista.sort((a, b) => ((b.data||'')+(b.hora||'')).localeCompare((a.data||'')+(a.hora||'')))
+    agListaFiltrada = lista
+    agPagina = 1
+    agAtualizarStats(base, mes)
+    agRenderTabela()
   }
- 
-  /* ─────── stats ─────── */
+
   function agAtualizarStats(base, mes) {
-    const doMes    = base.filter(a => a.data && a.data.startsWith(mes));
-    const total    = doMes.length;
-    const concl    = doMes.filter(a => a.status === 'concluido').length;
-    const canc     = doMes.filter(a => a.status === 'cancelado').length;
-    const pctConc  = total ? Math.round((concl / total) * 100) : 0;
-    const pctCanc  = total ? Math.round((canc  / total) * 100) : 0;
- 
-    const elTotal = document.getElementById('ag-stat-total-num');
-    const elConc  = document.getElementById('ag-stat-conc-num');
-    const elCanc  = document.getElementById('ag-stat-canc-num');
-    const elPConc = document.getElementById('ag-stat-conc-pct');
-    const elPCanc = document.getElementById('ag-stat-canc-pct');
- 
-    if (elTotal) elTotal.textContent = total;
-    if (elConc)  elConc.textContent  = concl;
-    if (elCanc)  elCanc.textContent  = canc;
-    if (elPConc) elPConc.textContent = pctConc + '%';
-    if (elPCanc) elPCanc.textContent = pctCanc + '%';
+    const doMes   = base.filter(a => a.data && a.data.startsWith(mes))
+    const total   = doMes.length
+    const concl   = doMes.filter(a => a.status === 'concluido').length
+    const canc    = doMes.filter(a => a.status === 'cancelado').length
+    const pctConc = total ? Math.round((concl / total) * 100) : 0
+    const pctCanc = total ? Math.round((canc  / total) * 100) : 0
+    const elTotal = document.getElementById('ag-stat-total-num')
+    const elConc  = document.getElementById('ag-stat-conc-num')
+    const elCanc  = document.getElementById('ag-stat-canc-num')
+    const elPConc = document.getElementById('ag-stat-conc-pct')
+    const elPCanc = document.getElementById('ag-stat-canc-pct')
+    if (elTotal) elTotal.textContent = total
+    if (elConc)  elConc.textContent  = concl
+    if (elCanc)  elCanc.textContent  = canc
+    if (elPConc) elPConc.textContent = pctConc + '%'
+    if (elPCanc) elPCanc.textContent = pctCanc + '%'
   }
- 
-  /* ─────── renderizar tabela ─────── */
+
   function agRenderTabela() {
-    const tbody  = document.getElementById('ag-nova-tbody');
-    const mcards = document.getElementById('ag-mobile-cards');
-    const pag    = document.getElementById('ag-nova-pag');
- 
-    const total   = agListaFiltrada.length;
-    const totalPg = Math.ceil(total / agPorPagina);
-    const inicio  = (agPagina - 1) * agPorPagina;
-    const fim     = inicio + agPorPagina;
-    const slice   = agListaFiltrada.slice(inicio, fim);
- 
+    const tbody  = document.getElementById('ag-nova-tbody')
+    const mcards = document.getElementById('ag-mobile-cards')
+    const pag    = document.getElementById('ag-nova-pag')
+    const total   = agListaFiltrada.length
+    const totalPg = Math.ceil(total / agPorPagina)
+    const inicio  = (agPagina - 1) * agPorPagina
+    const fim     = inicio + agPorPagina
+    const slice   = agListaFiltrada.slice(inicio, fim)
     if (!total) {
-      if (tbody)  tbody.innerHTML  = '<div style="text-align:center;color:var(--text3);padding:52px 20px;font-size:13.5px">Nenhum agendamento encontrado</div>';
-      if (mcards) mcards.innerHTML = '<div style="text-align:center;color:var(--text3);padding:36px 18px;font-size:13px">Nenhum agendamento encontrado</div>';
-      if (pag)    pag.style.display = 'none';
-      return;
+      if (tbody)  tbody.innerHTML  = '<div style="text-align:center;color:var(--text3);padding:52px 20px;font-size:13.5px">Nenhum agendamento encontrado</div>'
+      if (mcards) mcards.innerHTML = '<div style="text-align:center;color:var(--text3);padding:36px 18px;font-size:13px">Nenhum agendamento encontrado</div>'
+      if (pag)    pag.style.display = 'none'
+      return
     }
- 
-    /* ── linhas desktop ── */
     if (tbody) {
       tbody.innerHTML = slice.map(a => {
-        const [c1, c2] = agAvatarColor(a.pacienteNome);
-        const ini      = (a.pacienteNome || 'C')[0].toUpperCase();
-        const corPonto = agServicoCor(a.status);
-        const dur      = agDuracao(a);
-        const statusMap = { confirmado:'confirmado', concluido:'concluido', cancelado:'cancelado', pendente:'pendente', agendado:'agendado' };
-        const cls = statusMap[a.status] || 'pendente';
-        const labelMap = { confirmado:'confirmado', concluido:'concluído', cancelado:'cancelado', pendente:'pendente', agendado:'agendado' };
-        const label = labelMap[a.status] || a.status;
- 
+        const [c1, c2] = agAvatarColor(a.pacienteNome)
+        const ini      = (a.pacienteNome || 'C')[0].toUpperCase()
+        const corPonto = agServicoCor(a.status)
+        const dur      = agDuracao(a)
+        const statusMap = { confirmado:'confirmado', concluido:'concluido', cancelado:'cancelado', pendente:'pendente', agendado:'agendado' }
+        const cls   = statusMap[a.status] || 'pendente'
+        const labelMap = { confirmado:'confirmado', concluido:'concluído', cancelado:'cancelado', pendente:'pendente', agendado:'agendado' }
+        const label = labelMap[a.status] || a.status
         return `<div class="ag-nova-row">
-          <!-- Cliente -->
           <div class="ag-nova-cliente">
-            <div class="ag-nova-avatar" style="background:linear-gradient(135deg,${c1},${c2})">
-              ${ini}
-              <div class="ag-nova-avatar-dot" style="background:${corPonto}"></div>
-            </div>
+            <div class="ag-nova-avatar" style="background:linear-gradient(135deg,${c1},${c2})">${ini}<div class="ag-nova-avatar-dot" style="background:${corPonto}"></div></div>
             <div>
               <div class="ag-nova-nome">${a.pacienteNome}</div>
-              <div class="ag-nova-tel">
-                <svg width="10" height="10" viewBox="0 0 15 15" fill="none" style="opacity:.5">
-                  <path d="M12 9.5c-.5-.25-1.7-.85-2-.95-.3-.1-.5-.15-.7.15s-.75.95-.9 1.15c-.18.2-.35.22-.65.07-.3-.15-1.25-.46-2.4-1.47-.88-.79-1.48-1.76-1.65-2.06-.17-.3-.02-.46.13-.61.13-.13.3-.35.44-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.03-.52C4.45 4.1 3.85 2.5 3.6 2c-.25-.5-.5-.5-.7-.5H2.3a1 1 0 0 0-.8.37C1.3 2.17.5 2.9.5 4.3c0 1.38 1 2.73 1.13 2.92C1.8 7.4 3.7 10.2 6.6 11.4c.7.3 1.2.47 1.63.6.7.22 1.34.19 1.84.11.57-.08 1.76-.72 2-1.4.24-.7.24-1.3.17-1.41-.07-.12-.27-.2-.57-.35z" stroke="currentColor" stroke-width="1.2"/>
-                </svg>
-                ${a.pacienteTelefone || '—'}
-              </div>
+              <div class="ag-nova-tel"><svg width="10" height="10" viewBox="0 0 15 15" fill="none" style="opacity:.5"><path d="M12 9.5c-.5-.25-1.7-.85-2-.95-.3-.1-.5-.15-.7.15s-.75.95-.9 1.15c-.18.2-.35.22-.65.07-.3-.15-1.25-.46-2.4-1.47-.88-.79-1.48-1.76-1.65-2.06-.17-.3-.02-.46.13-.61.13-.13.3-.35.44-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.03-.52C4.45 4.1 3.85 2.5 3.6 2c-.25-.5-.5-.5-.7-.5H2.3a1 1 0 0 0-.8.37C1.3 2.17.5 2.9.5 4.3c0 1.38 1 2.73 1.13 2.92C1.8 7.4 3.7 10.2 6.6 11.4c.7.3 1.2.47 1.63.6.7.22 1.34.19 1.84.11.57-.08 1.76-.72 2-1.4.24-.7.24-1.3.17-1.41-.07-.12-.27-.2-.57-.35z" stroke="currentColor" stroke-width="1.2"/></svg>${a.pacienteTelefone || '—'}</div>
             </div>
           </div>
-          <!-- Serviço -->
-          <div class="ag-nova-servico">
-            <div class="ag-nova-serv-nome">${a.servico}</div>
-            <div class="ag-nova-serv-dur">
-              ${dur}
-              <span class="ag-nova-serv-dur-dot" style="background:${corPonto}"></span>
-            </div>
-          </div>
-          <!-- Data e hora -->
+          <div class="ag-nova-servico"><div class="ag-nova-serv-nome">${a.servico}</div><div class="ag-nova-serv-dur">${dur}<span class="ag-nova-serv-dur-dot" style="background:${corPonto}"></span></div></div>
           <div class="ag-nova-data">
-            <div class="ag-nova-data-row">
-              <svg width="11" height="11" viewBox="0 0 15 15" fill="none">
-                <rect x="1.5" y="2.5" width="12" height="11" rx="1.5" stroke="currentColor" stroke-width="1.3"/>
-                <path d="M5 1.5v2M10 1.5v2M1.5 5.5h12" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
-              </svg>
-              ${agFmtData(a.data)}
-            </div>
-            <div class="ag-nova-data-row">
-              <svg width="11" height="11" viewBox="0 0 15 15" fill="none">
-                <circle cx="7.5" cy="7.5" r="5.5" stroke="currentColor" stroke-width="1.3"/>
-                <path d="M7.5 4.5V8l2 2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
-              </svg>
-              às ${a.hora}
-            </div>
+            <div class="ag-nova-data-row"><svg width="11" height="11" viewBox="0 0 15 15" fill="none"><rect x="1.5" y="2.5" width="12" height="11" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M5 1.5v2M10 1.5v2M1.5 5.5h12" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>${agFmtData(a.data)}</div>
+            <div class="ag-nova-data-row"><svg width="11" height="11" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="7.5" r="5.5" stroke="currentColor" stroke-width="1.3"/><path d="M7.5 4.5V8l2 2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>às ${a.hora}</div>
           </div>
-          <!-- Status -->
-          <div>
-            <span class="badge ${cls}">${label}</span>
-          </div>
-          <!-- Ações -->
+          <div><span class="badge ${cls}">${label}</span></div>
           <div class="ag-nova-acoes">
-            <button class="ag-ver-btn">
-              <svg width="12" height="12" viewBox="0 0 15 15" fill="none">
-                <circle cx="7.5" cy="7.5" r="3" stroke="currentColor" stroke-width="1.3"/>
-                <path d="M1 7.5C2.5 4 4.8 2.5 7.5 2.5S12.5 4 14 7.5C12.5 11 10.2 12.5 7.5 12.5S2.5 11 1 7.5Z" stroke="currentColor" stroke-width="1.3"/>
-              </svg>
-              Ver
-            </button>
-            <button class="ag-dots-btn" title="Mais opções">
-              <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
-                <circle cx="6.5" cy="2.5" r="1" fill="currentColor"/>
-                <circle cx="6.5" cy="6.5" r="1" fill="currentColor"/>
-                <circle cx="6.5" cy="10.5" r="1" fill="currentColor"/>
-              </svg>
-            </button>
+            <button class="ag-ver-btn" type="button"><svg width="12" height="12" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="7.5" r="3" stroke="currentColor" stroke-width="1.3"/><path d="M1 7.5C2.5 4 4.8 2.5 7.5 2.5S12.5 4 14 7.5C12.5 11 10.2 12.5 7.5 12.5S2.5 11 1 7.5Z" stroke="currentColor" stroke-width="1.3"/></svg>Ver</button>
+            <button class="ag-dots-btn" title="Mais opções" type="button"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="6.5" cy="2.5" r="1" fill="currentColor"/><circle cx="6.5" cy="6.5" r="1" fill="currentColor"/><circle cx="6.5" cy="10.5" r="1" fill="currentColor"/></svg></button>
           </div>
-        </div>`;
-      }).join('');
+        </div>`
+      }).join('')
     }
- 
-    /* ── cards mobile ── */
     if (mcards) {
       mcards.innerHTML = slice.map(a => {
-        const [c1, c2] = agAvatarColor(a.pacienteNome);
-        const ini      = (a.pacienteNome || 'C')[0].toUpperCase();
-        const statusMap = { confirmado:'confirmado', concluido:'concluido', cancelado:'cancelado', pendente:'pendente', agendado:'agendado' };
-        const cls = statusMap[a.status] || 'pendente';
-        const labelMap = { confirmado:'confirmado', concluido:'concluído', cancelado:'cancelado', pendente:'pendente', agendado:'agendado' };
-        const label = labelMap[a.status] || a.status;
+        const [c1, c2] = agAvatarColor(a.pacienteNome)
+        const ini      = (a.pacienteNome || 'C')[0].toUpperCase()
+        const statusMap = { confirmado:'confirmado', concluido:'concluido', cancelado:'cancelado', pendente:'pendente', agendado:'agendado' }
+        const cls   = statusMap[a.status] || 'pendente'
+        const labelMap = { confirmado:'confirmado', concluido:'concluído', cancelado:'cancelado', pendente:'pendente', agendado:'agendado' }
+        const label = labelMap[a.status] || a.status
         return `<div class="ag-mobile-card">
           <div class="ag-mobile-top">
             <div style="display:flex;align-items:center;gap:10px">
               <div class="ag-nova-avatar" style="background:linear-gradient(135deg,${c1},${c2});width:34px;height:34px;font-size:12px;flex-shrink:0">${ini}</div>
-              <div>
-                <div class="ag-nova-nome">${a.pacienteNome}</div>
-                <div class="ag-nova-tel" style="font-size:11px">${a.pacienteTelefone || ''}</div>
-              </div>
+              <div><div class="ag-nova-nome">${a.pacienteNome}</div><div class="ag-nova-tel" style="font-size:11px">${a.pacienteTelefone || ''}</div></div>
             </div>
             <span class="badge ${cls}">${label}</span>
           </div>
@@ -2098,116 +2050,84 @@ if (_token) { mostrarPainel() } else { window.location.href = '/auth.html' }
             <span class="ag-mobile-chip">${agDuracao(a)}</span>
           </div>
           <div class="ag-mobile-actions">
-            <button class="ag-ver-btn" style="flex:1;justify-content:center">
-              <svg width="12" height="12" viewBox="0 0 15 15" fill="none">
-                <circle cx="7.5" cy="7.5" r="3" stroke="currentColor" stroke-width="1.3"/>
-                <path d="M1 7.5C2.5 4 4.8 2.5 7.5 2.5S12.5 4 14 7.5C12.5 11 10.2 12.5 7.5 12.5S2.5 11 1 7.5Z" stroke="currentColor" stroke-width="1.3"/>
-              </svg>
-              Ver detalhes
-            </button>
+            <button class="ag-ver-btn" style="flex:1;justify-content:center" type="button"><svg width="12" height="12" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="7.5" r="3" stroke="currentColor" stroke-width="1.3"/><path d="M1 7.5C2.5 4 4.8 2.5 7.5 2.5S12.5 4 14 7.5C12.5 11 10.2 12.5 7.5 12.5S2.5 11 1 7.5Z" stroke="currentColor" stroke-width="1.3"/></svg>Ver detalhes</button>
           </div>
-        </div>`;
-      }).join('');
+        </div>`
+      }).join('')
     }
- 
-    /* ── paginação ── */
     if (pag) {
-      document.getElementById('ag-pag-info').textContent =
-        `Mostrando ${inicio + 1} a ${Math.min(fim, total)} de ${total} agendamentos`;
- 
-      let btns = `<button class="ag-pag-btn" onclick="agIrPagina(${agPagina - 1})" ${agPagina === 1 ? 'disabled' : ''}>
-        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M7.5 9L4.5 6l3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </button>`;
- 
-      for (let i = 1; i <= totalPg; i++) {
-        if (totalPg <= 7 || i === 1 || i === totalPg || Math.abs(i - agPagina) <= 1)
-          btns += `<button class="ag-pag-btn ${i === agPagina ? 'ativo' : ''}" onclick="agIrPagina(${i})">${i}</button>`;
-        else if (Math.abs(i - agPagina) === 2)
-          btns += `<span style="color:var(--text3);font-size:12px;padding:0 2px;line-height:32px">…</span>`;
+      const elPagInfo = document.getElementById('ag-pag-info')
+      const elPagBtns = document.getElementById('ag-pag-btns')
+      if (elPagInfo) elPagInfo.textContent = `Mostrando ${inicio + 1} a ${Math.min(fim, total)} de ${total} agendamentos`
+      if (elPagBtns) {
+        let btns = `<button class="ag-pag-btn" onclick="agIrPagina(${agPagina - 1})" ${agPagina === 1 ? 'disabled' : ''} type="button"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M7.5 9L4.5 6l3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`
+        for (let i = 1; i <= totalPg; i++) {
+          if (totalPg <= 7 || i === 1 || i === totalPg || Math.abs(i - agPagina) <= 1)
+            btns += `<button class="ag-pag-btn ${i === agPagina ? 'ativo' : ''}" onclick="agIrPagina(${i})" type="button">${i}</button>`
+          else if (Math.abs(i - agPagina) === 2)
+            btns += `<span style="color:var(--text3);font-size:12px;padding:0 2px;line-height:32px">…</span>`
+        }
+        btns += `<button class="ag-pag-btn" onclick="agIrPagina(${agPagina + 1})" ${agPagina === totalPg ? 'disabled' : ''} type="button"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M4.5 9l3-3-3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`
+        elPagBtns.innerHTML = btns
       }
- 
-      btns += `<button class="ag-pag-btn" onclick="agIrPagina(${agPagina + 1})" ${agPagina === totalPg ? 'disabled' : ''}>
-        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M4.5 9l3-3-3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </button>`;
- 
-      document.getElementById('ag-pag-btns').innerHTML = btns;
-      pag.style.display = totalPg >= 1 ? 'flex' : 'none';
+      pag.style.display = totalPg >= 1 ? 'flex' : 'none'
     }
   }
- 
-  /* ─────── funções globais ─────── */
-  window.agFiltrar = function (filtro, btn) {
-    agFiltroAtivo = filtro;
-    agFiltroData  = '';
-    const dataInput = document.getElementById('ag-filtro-data');
-    if (dataInput) dataInput.value = '';
-    document.querySelectorAll('.ag-tab').forEach(b => b.classList.remove('ativo'));
-    if (btn) btn.classList.add('ativo');
-    agAplicarFiltro();
-  };
- 
-  window.agFiltrarData = function (val) {
-    agFiltroData = val;
-    if (val) {
-      document.querySelectorAll('.ag-tab').forEach(b => b.classList.remove('ativo'));
-    }
-    agAplicarFiltro();
-  };
- 
-  window.agIrPagina = function (n) {
-    const total = Math.ceil(agListaFiltrada.length / agPorPagina);
-    if (n < 1 || n > total) return;
-    agPagina = n;
-    agRenderTabela();
-  };
- 
-  window.agMudarPorPagina = function (val) {
-    agPorPagina = parseInt(val);
-    agPagina    = 1;
-    agRenderTabela();
-  };
- 
-  /* ─────── hook: recarregar quando os dados chegarem ─────── */
-  const _origCarregar = window.carregarAgendamentos;
-  window.carregarAgendamentos = async function () {
-    if (_origCarregar) await _origCarregar.apply(this, arguments);
-    agAplicarFiltro();
-  };
- 
-  /* ─────── hook: irPara ─────── */
-  const _origIrPara = window.irPara;
-  window.irPara = function (pagina, btn) {
-    if (_origIrPara) _origIrPara(pagina, btn);
-    if (pagina === 'agendamentos') {
-      agFiltroAtivo = 'todos';
-      agFiltroData  = '';
-      const dataInput = document.getElementById('ag-filtro-data');
-      if (dataInput) dataInput.value = '';
-      document.querySelectorAll('.ag-tab').forEach(b => b.classList.remove('ativo'));
-      const primTab = document.querySelector('.ag-tab[data-filtro="todos"]');
-      if (primTab) primTab.classList.add('ativo');
-      agAplicarFiltro();
-    }
-  };
- 
-  /* ─────── init ─────── */
-  if (window.todosAgendamentos && window.todosAgendamentos.length) {
-    agAplicarFiltro();
-  }
- 
-  /* badge css para "agendado" (novo status) */
-  const styleExtra = document.createElement('style');
-  styleExtra.textContent = `
-    .badge.agendado { background:rgba(59,130,246,0.12); color:#60a5fa; border:1px solid rgba(59,130,246,0.25); }
-    .badge.agendado::before { background:#60a5fa; }
-  `;
-  document.head.appendChild(styleExtra);
- 
-})();
 
-(function () {
- 
-  /* ─── paleta de cores para ícones dos serviços ─── */
+  window.agFiltrar = function (filtro, btn) {
+    agFiltroAtivo = filtro; agFiltroData  = ''
+    const dataInput = document.getElementById('ag-filtro-data')
+    if (dataInput) dataInput.value = ''
+    document.querySelectorAll('.ag-tab').forEach(b => b.classList.remove('ativo'))
+    if (btn) btn.classList.add('ativo')
+    agAplicarFiltro()
+  }
+
+  window.agFiltrarData = function (val) {
+    agFiltroData = val
+    if (val) document.querySelectorAll('.ag-tab').forEach(b => b.classList.remove('ativo'))
+    agAplicarFiltro()
+  }
+
+  window.agIrPagina = function (n) {
+    const total = Math.ceil(agListaFiltrada.length / agPorPagina)
+    if (n < 1 || n > total) return
+    agPagina = n; agRenderTabela()
+  }
+
+  window.agMudarPorPagina = function (val) {
+    agPorPagina = parseInt(val); agPagina = 1; agRenderTabela()
+  }
+
+  // Hook em carregarAgendamentos
+  const _origCarregar = window.carregarAgendamentos
+  window.carregarAgendamentos = async function () {
+    if (_origCarregar) await _origCarregar.apply(this, arguments)
+    agAplicarFiltro()
+  }
+
+  // Hook em irPara
+  const _origIrPara = window.irPara
+  window.irPara = function (pagina, btn) {
+    if (_origIrPara) _origIrPara(pagina, btn)
+    if (pagina === 'agendamentos') {
+      agFiltroAtivo = 'todos'; agFiltroData = ''
+      const dataInput = document.getElementById('ag-filtro-data')
+      if (dataInput) dataInput.value = ''
+      document.querySelectorAll('.ag-tab').forEach(b => b.classList.remove('ativo'))
+      const primTab = document.querySelector('.ag-tab[data-filtro="todos"]')
+      if (primTab) primTab.classList.add('ativo')
+      agAplicarFiltro()
+    }
+  }
+
+  if (window.todosAgendamentos && window.todosAgendamentos.length) agAplicarFiltro()
+})()
+
+/* ═══════════════════════════════════════════════════
+   CONFIGURAÇÕES — lista de serviços avançada
+═══════════════════════════════════════════════════ */
+;(function () {
   const CFG_PALETA = [
     { bg: 'rgba(239,68,68,0.18)',   bd: 'rgba(239,68,68,0.35)',   cor: '#f87171'  },
     { bg: 'rgba(249,115,22,0.18)',  bd: 'rgba(249,115,22,0.35)',  cor: '#fb923c'  },
@@ -2217,31 +2137,21 @@ if (_token) { mostrarPainel() } else { window.location.href = '/auth.html' }
     { bg: 'rgba(139,92,246,0.18)',  bd: 'rgba(139,92,246,0.35)',  cor: '#a78bfa'  },
     { bg: 'rgba(236,72,153,0.18)',  bd: 'rgba(236,72,153,0.35)',  cor: '#f472b6'  },
     { bg: 'rgba(6,182,212,0.18)',   bd: 'rgba(6,182,212,0.35)',   cor: '#22d3ee'  },
-  ];
+  ]
   function cfgPaletaFor(nome) {
-    let h = 0;
-    for (const c of (nome || 'A')) h = ((h << 5) - h) + c.charCodeAt(0);
-    return CFG_PALETA[Math.abs(h) % CFG_PALETA.length];
+    let h = 0
+    for (const c of (nome || 'A')) h = ((h << 5) - h) + c.charCodeAt(0)
+    return CFG_PALETA[Math.abs(h) % CFG_PALETA.length]
   }
- 
-  /* ─── ícone scissor SVG ─── */
-  const ICON_TESOURA = `<svg width="16" height="16" viewBox="0 0 18 18" fill="none">
-    <circle cx="4.5" cy="5"   r="2.5" stroke="currentColor" stroke-width="1.4"/>
-    <circle cx="4.5" cy="13" r="2.5" stroke="currentColor" stroke-width="1.4"/>
-    <path d="M6.5 6.5L14.5 11M6.5 11.5L14.5 7" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
-  </svg>`;
- 
-  /* ─── índice do serviço sendo editado ─── */
-  let cfgEditIdx = -1;
- 
-  /* ─── render da lista ─── */
+
+  let cfgEditIdx = -1
+
   window.cfgRenderServicos = function () {
-    const lista = window.servicosAtuais || [];
-    const cont  = document.getElementById('cfg-servicos-lista');
-    const badge = document.getElementById('cfg-badge-num');
-    if (badge) badge.textContent = lista.length;
-    if (!cont) return;
- 
+    const lista = window.servicosAtuais || []
+    const cont  = document.getElementById('cfg-servicos-lista')
+    const badge = document.getElementById('cfg-badge-num')
+    if (badge) badge.textContent = lista.length
+    if (!cont) return
     if (!lista.length) {
       cont.innerHTML = `<div class="cfg-lista-vazia">
         <svg width="32" height="32" viewBox="0 0 34 34" fill="none" style="margin-bottom:10px;opacity:.35">
@@ -2250,219 +2160,157 @@ if (_token) { mostrarPainel() } else { window.location.href = '/auth.html' }
         </svg>
         <div>Nenhum serviço cadastrado ainda.</div>
         <div style="font-size:12px;color:var(--text3);margin-top:4px">Use o formulário acima para adicionar.</div>
-      </div>`;
-      return;
+      </div>`
+      return
     }
- 
     cont.innerHTML = lista.map((s, i) => {
-      const nome   = typeof s === 'object' ? s.nome  : s;
-      const preco  = typeof s === 'object' ? Number(s.preco || 0) : 0;
-      const desc   = typeof s === 'object' ? (s.desc || s.descricao || '') : '';
-      const dur    = typeof s === 'object' ? (s.duracao || 0) : 0;
-      const pal    = cfgPaletaFor(nome);
-      const ini    = (nome || '?')[0].toUpperCase();
-      const precoFmt = preco > 0
-        ? `R$ ${preco.toFixed(2).replace('.', ',')}`
-        : `<span style="color:var(--text3)">—</span>`;
-      const durLabel = dur > 0
-        ? `<span class="cfg-serv-dur"><svg width="11" height="11" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="currentColor" stroke-width="1.3"/><path d="M7 4.5V7.5l2 2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg> ${dur} min</span>`
-        : '';
-      const descLabel = desc
-        ? `<span class="cfg-serv-desc">${desc}</span>`
-        : '';
- 
+      const nome   = typeof s === 'object' ? s.nome  : s
+      const preco  = typeof s === 'object' ? Number(s.preco || 0) : 0
+      const desc   = typeof s === 'object' ? (s.desc || s.descricao || '') : ''
+      const dur    = typeof s === 'object' ? (s.duracao || 0) : 0
+      const pal    = cfgPaletaFor(nome)
+      const ini    = (nome || '?')[0].toUpperCase()
+      const precoFmt = preco > 0 ? `R$ ${preco.toFixed(2).replace('.', ',')}` : `<span style="color:var(--text3)">—</span>`
+      const durLabel = dur > 0 ? `<span class="cfg-serv-dur"><svg width="11" height="11" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="currentColor" stroke-width="1.3"/><path d="M7 4.5V7.5l2 2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg> ${dur} min</span>` : ''
+      const descLabel = desc ? `<span class="cfg-serv-desc">${desc}</span>` : ''
       return `<div class="cfg-serv-row" draggable="true" data-idx="${i}">
-        <!-- drag handle -->
-        <div class="cfg-drag-handle" title="Arrastar para reordenar">
-          <svg width="12" height="14" viewBox="0 0 12 14" fill="none">
-            <circle cx="4" cy="3"  r="1.2" fill="currentColor"/>
-            <circle cx="8" cy="3"  r="1.2" fill="currentColor"/>
-            <circle cx="4" cy="7"  r="1.2" fill="currentColor"/>
-            <circle cx="8" cy="7"  r="1.2" fill="currentColor"/>
-            <circle cx="4" cy="11" r="1.2" fill="currentColor"/>
-            <circle cx="8" cy="11" r="1.2" fill="currentColor"/>
-          </svg>
-        </div>
-        <!-- avatar -->
-        <div class="cfg-serv-avatar" style="background:${pal.bg};border-color:${pal.bd};color:${pal.cor}">
-          ${ini}
-        </div>
-        <!-- info -->
-        <div class="cfg-serv-info">
-          <div class="cfg-serv-nome">${nome}</div>
-          <div class="cfg-serv-meta">${descLabel}${durLabel}</div>
-        </div>
-        <!-- preço -->
+        <div class="cfg-drag-handle" title="Arrastar para reordenar"><svg width="12" height="14" viewBox="0 0 12 14" fill="none"><circle cx="4" cy="3" r="1.2" fill="currentColor"/><circle cx="8" cy="3" r="1.2" fill="currentColor"/><circle cx="4" cy="7" r="1.2" fill="currentColor"/><circle cx="8" cy="7" r="1.2" fill="currentColor"/><circle cx="4" cy="11" r="1.2" fill="currentColor"/><circle cx="8" cy="11" r="1.2" fill="currentColor"/></svg></div>
+        <div class="cfg-serv-avatar" style="background:${pal.bg};border-color:${pal.bd};color:${pal.cor}">${ini}</div>
+        <div class="cfg-serv-info"><div class="cfg-serv-nome">${nome}</div><div class="cfg-serv-meta">${descLabel}${durLabel}</div></div>
         <div class="cfg-serv-preco">${precoFmt}</div>
-        <!-- ações -->
         <div class="cfg-serv-acoes">
-          <button class="cfg-act-btn cfg-act-edit" onclick="cfgAbrirModalEditar(${i})" title="Editar">
-            <svg width="13" height="13" viewBox="0 0 15 15" fill="none">
-              <path d="M10.5 2.5l2 2-8 8H2.5v-2l8-8Z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/>
-            </svg>
-          </button>
-          <button class="cfg-act-btn cfg-act-del" onclick="cfgRemoverServico(${i})" title="Remover">
-            <svg width="13" height="13" viewBox="0 0 15 15" fill="none">
-              <path d="M2.5 4h10M5 4V3a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v1M6 7v4M9 7v4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M3.5 4l.5 8a1 1 0 0 0 1 1h5a1 1 0 0 0 1-1l.5-8" stroke="currentColor" stroke-width="1.3"/>
-            </svg>
-          </button>
+          <button class="cfg-act-btn cfg-act-edit" onclick="cfgAbrirModalEditar(${i})" title="Editar" type="button"><svg width="13" height="13" viewBox="0 0 15 15" fill="none"><path d="M10.5 2.5l2 2-8 8H2.5v-2l8-8Z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg></button>
+          <button class="cfg-act-btn cfg-act-del" onclick="cfgRemoverServico(${i})" title="Remover" type="button"><svg width="13" height="13" viewBox="0 0 15 15" fill="none"><path d="M2.5 4h10M5 4V3a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v1M6 7v4M9 7v4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M3.5 4l.5 8a1 1 0 0 0 1 1h5a1 1 0 0 0 1-1l.5-8" stroke="currentColor" stroke-width="1.3"/></svg></button>
         </div>
-      </div>`;
-    }).join('');
-  };
- 
-  /* ─── adicionar serviço ─── */
+      </div>`
+    }).join('')
+  }
+
   window.cfgAdicionarServico = function () {
-    const nomeEl  = document.getElementById('cfg-novo-servico');
-    const precoEl = document.getElementById('cfg-novo-preco');
-    const erroEl  = document.getElementById('cfg-add-erro');
-    const nome    = nomeEl.value.trim();
-    const preco   = parseFloat(precoEl.value);
- 
-    erroEl.textContent = '';
-    nomeEl.classList.remove('cfg-input-erro');
-    precoEl.classList.remove('cfg-input-erro');
- 
-    if (!nome) {
-      erroEl.textContent = '⚠ Digite o nome do serviço.';
-      nomeEl.classList.add('cfg-input-erro');
-      nomeEl.focus();
-      return;
-    }
-    if (!precoEl.value.trim() || isNaN(preco) || preco <= 0) {
-      erroEl.textContent = '⚠ O preço é obrigatório e deve ser maior que R$ 0,00.';
-      precoEl.classList.add('cfg-input-erro');
-      precoEl.focus();
-      return;
-    }
- 
-    window.servicosAtuais = window.servicosAtuais || [];
-    const jaExiste = window.servicosAtuais.some(s =>
-      (typeof s === 'object' ? s.nome : s).toLowerCase() === nome.toLowerCase()
-    );
-    if (jaExiste) {
-      erroEl.textContent = '⚠ Já existe um serviço com esse nome.';
-      nomeEl.classList.add('cfg-input-erro');
-      nomeEl.focus();
-      return;
-    }
- 
-    window.servicosAtuais.push({ nome, preco });
-    nomeEl.value = '';
-    precoEl.value = '';
-    nomeEl.focus();
-    window.cfgRenderServicos();
-    if (window.renderIntervalosServicos) window.renderIntervalosServicos();
-  };
- 
-  /* ─── remover serviço ─── */
+    const nomeEl  = document.getElementById('cfg-novo-servico')
+    const precoEl = document.getElementById('cfg-novo-preco')
+    const erroEl  = document.getElementById('cfg-add-erro')
+    const nome    = nomeEl.value.trim()
+    const preco   = parseFloat(precoEl.value)
+    erroEl.textContent = ''
+    nomeEl.classList.remove('cfg-input-erro')
+    precoEl.classList.remove('cfg-input-erro')
+    if (!nome) { erroEl.textContent = '⚠ Digite o nome do serviço.'; nomeEl.classList.add('cfg-input-erro'); nomeEl.focus(); return }
+    if (!precoEl.value.trim() || isNaN(preco) || preco <= 0) { erroEl.textContent = '⚠ O preço é obrigatório e deve ser maior que R$ 0,00.'; precoEl.classList.add('cfg-input-erro'); precoEl.focus(); return }
+    window.servicosAtuais = window.servicosAtuais || []
+    const jaExiste = window.servicosAtuais.some(s => (typeof s === 'object' ? s.nome : s).toLowerCase() === nome.toLowerCase())
+    if (jaExiste) { erroEl.textContent = '⚠ Já existe um serviço com esse nome.'; nomeEl.classList.add('cfg-input-erro'); nomeEl.focus(); return }
+    window.servicosAtuais.push({ nome, preco })
+    nomeEl.value = ''; precoEl.value = ''; nomeEl.focus()
+    window.cfgRenderServicos()
+    if (window.renderIntervalosServicos) window.renderIntervalosServicos()
+  }
+
   window.cfgRemoverServico = function (i) {
-    const nome = typeof window.servicosAtuais[i] === 'object'
-      ? window.servicosAtuais[i].nome
-      : window.servicosAtuais[i];
-    if (window.intervalosServicos) delete window.intervalosServicos[nome];
-    window.servicosAtuais.splice(i, 1);
-    window.cfgRenderServicos();
-    if (window.renderIntervalosServicos) window.renderIntervalosServicos();
-  };
- 
-  /* ─── editar serviço (modal) ─── */
+    const nome = typeof window.servicosAtuais[i] === 'object' ? window.servicosAtuais[i].nome : window.servicosAtuais[i]
+    if (window.intervalosServicos) delete window.intervalosServicos[nome]
+    window.servicosAtuais.splice(i, 1)
+    window.cfgRenderServicos()
+    if (window.renderIntervalosServicos) window.renderIntervalosServicos()
+  }
+
   window.cfgAbrirModalEditar = function (i) {
-    cfgEditIdx = i;
-    const s = window.servicosAtuais[i] || {};
-    document.getElementById('cfg-edit-nome').value    = typeof s === 'object' ? s.nome  : s;
-    document.getElementById('cfg-edit-preco').value   = typeof s === 'object' ? (s.preco || '') : '';
-    document.getElementById('cfg-edit-desc').value    = typeof s === 'object' ? (s.desc || s.descricao || '') : '';
-    document.getElementById('cfg-edit-duracao').value = typeof s === 'object' ? (s.duracao || '') : '';
-    document.getElementById('cfg-modal-editar').style.display = 'flex';
-  };
+    cfgEditIdx = i
+    const s = window.servicosAtuais[i] || {}
+    document.getElementById('cfg-edit-nome').value    = typeof s === 'object' ? s.nome  : s
+    document.getElementById('cfg-edit-preco').value   = typeof s === 'object' ? (s.preco || '') : ''
+    document.getElementById('cfg-edit-desc').value    = typeof s === 'object' ? (s.desc || s.descricao || '') : ''
+    document.getElementById('cfg-edit-duracao').value = typeof s === 'object' ? (s.duracao || '') : ''
+    document.getElementById('cfg-modal-editar').style.display = 'flex'
+    document.body.classList.add('modal-open')
+  }
   window.cfgFecharModalEditar = function () {
-    document.getElementById('cfg-modal-editar').style.display = 'none';
-    cfgEditIdx = -1;
-  };
+    document.getElementById('cfg-modal-editar').style.display = 'none'
+    document.body.classList.remove('modal-open')
+    cfgEditIdx = -1
+  }
   window.cfgSalvarEdicao = function () {
-    if (cfgEditIdx < 0) return;
-    const nome    = document.getElementById('cfg-edit-nome').value.trim();
-    const preco   = parseFloat(document.getElementById('cfg-edit-preco').value) || 0;
-    const desc    = document.getElementById('cfg-edit-desc').value.trim();
-    const duracao = parseInt(document.getElementById('cfg-edit-duracao').value) || 0;
-    if (!nome) { alert('Digite o nome do serviço.'); return; }
-    window.servicosAtuais[cfgEditIdx] = { nome, preco, desc, duracao };
-    window.cfgRenderServicos();
-    if (window.renderIntervalosServicos) window.renderIntervalosServicos();
-    window.cfgFecharModalEditar();
-  };
- 
-  /* ─── salvar ─── */
+    if (cfgEditIdx < 0) return
+    const nome    = document.getElementById('cfg-edit-nome').value.trim()
+    const preco   = parseFloat(document.getElementById('cfg-edit-preco').value) || 0
+    const desc    = document.getElementById('cfg-edit-desc').value.trim()
+    const duracao = parseInt(document.getElementById('cfg-edit-duracao').value) || 0
+    if (!nome) { alert('Digite o nome do serviço.'); return }
+    window.servicosAtuais[cfgEditIdx] = { nome, preco, desc, duracao }
+    window.cfgRenderServicos()
+    if (window.renderIntervalosServicos) window.renderIntervalosServicos()
+    window.cfgFecharModalEditar()
+  }
+
   window.cfgSalvarServicos = async function () {
-    if (!window.negocioAtual) return;
-    const token = localStorage.getItem('token');
-    const btn   = document.getElementById('cfg-btn-salvar-servicos');
-    if (btn) { btn.disabled = true; btn.textContent = 'Salvando...'; }
+    if (!window.negocioAtual) return
+    const token = localStorage.getItem('token')
+    const btn   = document.getElementById('cfg-btn-salvar-servicos')
+    if (btn) { btn.disabled = true; btn.textContent = 'Salvando...' }
     try {
       await fetch(`${window.API}/auth/servicos`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify({ negocioId: window.negocioAtual._id, servicos: window.servicosAtuais }),
-      });
-      const msg = document.getElementById('cfg-salvo-msg');
-      if (msg) { msg.style.display = 'inline'; setTimeout(() => msg.style.display = 'none', 2500); }
+      })
+      const msg = document.getElementById('cfg-salvo-msg')
+      if (msg) { msg.style.display = 'inline'; setTimeout(() => msg.style.display = 'none', 2500) }
     } finally {
-      if (btn) {
-        btn.disabled = false;
-        btn.innerHTML = `<svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg> Salvar alterações`;
-      }
+      if (btn) { btn.disabled = false; btn.innerHTML = `<svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg> Salvar alterações` }
     }
-  };
- 
-  /* ─── abrir minha página ─── */
+  }
+
   window.abrirMinhaPagina = function (e) {
-    if (e) e.preventDefault();
-    if (!window.negocioAtual) return;
-    window.open(`https://agendorapido.com.br/agendar.html?id=${window.negocioAtual._id}`, '_blank');
-  };
- 
-  /* ─── hook: quando carregarServicos() terminar, renderizar a nova lista ─── */
-  const _origCarregarServicos = window.carregarServicos;
+    if (e) e.preventDefault()
+    if (!window.negocioAtual) return
+    window.open(`https://agendorapido.com.br/agendar.html?id=${window.negocioAtual._id}`, '_blank')
+  }
+
+  // Hook: quando carregarServicos() terminar, renderizar a nova lista
+  const _origCarregarServicos = window.carregarServicos
   window.carregarServicos = async function () {
-    if (_origCarregarServicos) await _origCarregarServicos.apply(this, arguments);
-    window.cfgRenderServicos();
-  };
- 
-  /* ─── inicializar se dados já carregados ─── */
-  if (window.servicosAtuais) window.cfgRenderServicos();
- 
-  /* ─── também sobrescreve o salvarServicos original ─── */
-  window.salvarServicos = window.cfgSalvarServicos;
- 
-  /* ─── drag & drop para reordenar ─── */
-  let dragSrc = null;
+    if (_origCarregarServicos) await _origCarregarServicos.apply(this, arguments)
+    window.cfgRenderServicos()
+  }
+
+  // Sobrescreve salvarServicos original
+  window.salvarServicos = window.cfgSalvarServicos
+
+  if (window.servicosAtuais) window.cfgRenderServicos()
+
+  // Drag & drop para reordenar
+  let dragSrc = null
   document.addEventListener('dragstart', e => {
-    const row = e.target.closest('.cfg-serv-row');
-    if (row) { dragSrc = row; row.classList.add('cfg-dragging'); }
-  });
-  document.addEventListener('dragend', e => {
-    document.querySelectorAll('.cfg-serv-row').forEach(r => r.classList.remove('cfg-dragging','cfg-drag-over'));
-    dragSrc = null;
-  });
+    const row = e.target.closest('.cfg-serv-row')
+    if (row) { dragSrc = row; row.classList.add('cfg-dragging') }
+  })
+  document.addEventListener('dragend', () => {
+    document.querySelectorAll('.cfg-serv-row').forEach(r => r.classList.remove('cfg-dragging','cfg-drag-over'))
+    dragSrc = null
+  })
   document.addEventListener('dragover', e => {
-    e.preventDefault();
-    const row = e.target.closest('.cfg-serv-row');
+    e.preventDefault()
+    const row = e.target.closest('.cfg-serv-row')
     if (row && row !== dragSrc) {
-      document.querySelectorAll('.cfg-serv-row').forEach(r => r.classList.remove('cfg-drag-over'));
-      row.classList.add('cfg-drag-over');
+      document.querySelectorAll('.cfg-serv-row').forEach(r => r.classList.remove('cfg-drag-over'))
+      row.classList.add('cfg-drag-over')
     }
-  });
+  })
   document.addEventListener('drop', e => {
-    e.preventDefault();
-    const rowDest = e.target.closest('.cfg-serv-row');
-    if (!rowDest || !dragSrc || rowDest === dragSrc) return;
-    const src  = parseInt(dragSrc.dataset.idx);
-    const dest = parseInt(rowDest.dataset.idx);
-    const tmp  = window.servicosAtuais.splice(src, 1)[0];
-    window.servicosAtuais.splice(dest, 0, tmp);
-    window.cfgRenderServicos();
-  });
- 
-})();
+    e.preventDefault()
+    const rowDest = e.target.closest('.cfg-serv-row')
+    if (!rowDest || !dragSrc || rowDest === dragSrc) return
+    const src  = parseInt(dragSrc.dataset.idx)
+    const dest = parseInt(rowDest.dataset.idx)
+    const tmp  = window.servicosAtuais.splice(src, 1)[0]
+    window.servicosAtuais.splice(dest, 0, tmp)
+    window.cfgRenderServicos()
+  })
+})()
+
+/* ═══════════════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════════════ */
+carregarTema()
+const _token = localStorage.getItem('token')
+if (_token) { mostrarPainel() } else { window.location.href = '/auth.html' }
