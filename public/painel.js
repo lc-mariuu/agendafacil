@@ -2309,14 +2309,11 @@ document.addEventListener('DOMContentLoaded', () => {
 })()
 
 // Fix: garantir que agAplicarFiltro rode após os dados chegarem
-const _fixCarregar = window.carregarAgendamentos
+const _origCarregar = window.carregarAgendamentos
 window.carregarAgendamentos = async function () {
-  await _fixCarregar.apply(this, arguments)
-  // Forçar re-render da tabela de agendamentos após dados carregados
-  if (typeof agFiltrar === 'function') {
-    const tab = document.querySelector('.ag-tab[data-filtro="todos"]')
-    if (tab) agFiltrar('todos', tab)
-  }
+  if (_origCarregar) await _origCarregar.apply(this, arguments)
+  // window.todosAgendamentos já estará atualizado
+  agAplicarFiltro()
 }
 
 /* ═══════════════════════════════════════════════════
