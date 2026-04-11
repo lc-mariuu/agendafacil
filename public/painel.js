@@ -192,6 +192,11 @@ function irPara(pagina, btn) {
     if (primTab) { primTab.classList.add('ativo'); primTab.setAttribute('aria-selected','true') }
     agAplicarFiltro()
   }
+
+  const mobileTitle = document.getElementById('topbar-mobile-title');
+  const mobileSub   = document.getElementById('topbar-mobile-sub');
+  if (mobileTitle && t) mobileTitle.textContent = t[0];
+  if (mobileSub   && t) mobileSub.textContent   = t[1];
 }
 
 /* ═══════════════════════════════════════════════════
@@ -320,6 +325,9 @@ async function carregarAgendamentos() {
 
   const dot = document.getElementById('notif-dot')
   if (dot) dot.style.display = todosAgendamentos.filter(a=>a.data===hoje).length>0 ? 'block' : 'none'
+
+  const dotMobile = document.getElementById('notif-dot-mobile');
+  if (dotMobile) dotMobile.style.display = todosAgendamentos.filter(a=>a.data===hoje).length > 0 ? 'block' : 'none';
 }
 
 /* dashboard tabela */
