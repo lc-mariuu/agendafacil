@@ -14,7 +14,6 @@ let todosNegocios      = []
 let pausasAtuais       = []
 let pagamentosConfig   = {}
 
-// Estado da tabela de agendamentos (global, sem IIFE)
 let agFiltroAtivo     = 'todos'
 let agFiltroDataAtivo = ''
 let agPagina          = 1
@@ -44,12 +43,9 @@ const servicosPorSegmento = {
   'Outro':     ['Serviço 1','Serviço 2','Serviço 3'],
 }
 
-/* ── Estilos utilitários ── */
 const srStyle = document.createElement('style')
 srStyle.textContent = `
   .sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
-  .skip-link{position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden}
-  .skip-link:focus{left:12px;top:12px;width:auto;height:auto;padding:8px 16px;background:var(--accent);color:white;border-radius:8px;font-weight:700;font-size:13px;z-index:9999;text-decoration:none}
   body.modal-open{overflow:hidden}
   :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
   button:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
@@ -64,7 +60,6 @@ document.head.appendChild(srStyle)
 function mesAtualChave() { return new Date().toISOString().slice(0, 7) }
 function lucroKey(id)    { return `lucro_val_${id}_${mesAtualChave()}` }
 function lucroIdsKey(id) { return `lucro_ids_${id}_${mesAtualChave()}` }
-
 function getLucroMes(id) { const v = localStorage.getItem(lucroKey(id)); return v !== null ? parseFloat(v) : null }
 function getLucroIds(id) { try { return JSON.parse(localStorage.getItem(lucroIdsKey(id)) || '[]') } catch { return [] } }
 function setLucroMes(id, v)   { localStorage.setItem(lucroKey(id), String(v)) }
@@ -120,6 +115,7 @@ document.addEventListener('keydown', e => {
     ['modal-agendamento','modal-negocio','modal-gerenciar-dias','cfg-modal-editar'].forEach(id => {
       const el = document.getElementById(id); if (el && el.style.display !== 'none') closeModal(id)
     })
+    if (buscaAberta) fecharBusca()
   }
 })
 
@@ -146,14 +142,21 @@ function toggleTema() { definirTema(localStorage.getItem('tema') === 'claro' ? '
    SIDEBAR / NAVEGAÇÃO
 ═══════════════════════════════════════════════════ */
 function toggleSidebar() {
-  const sidebar = document.getElementById('sidebar'); const overlay = document.getElementById('sidebar-overlay'); const btn = document.getElementById('btn-hamburger')
+  const sidebar = document.getElementById('sidebar')
+  const overlay = document.getElementById('sidebar-overlay')
+  const btn = document.getElementById('btn-hamburger')
   const aberta = sidebar.classList.toggle('aberta')
-  overlay.classList.toggle('visivel', aberta); overlay.setAttribute('aria-hidden', !aberta)
+  overlay.classList.toggle('visivel', aberta)
+  overlay.setAttribute('aria-hidden', !aberta)
   if (btn) btn.setAttribute('aria-expanded', aberta)
 }
 function fecharSidebar() {
-  const sidebar = document.getElementById('sidebar'); const overlay = document.getElementById('sidebar-overlay'); const btn = document.getElementById('btn-hamburger')
-  sidebar.classList.remove('aberta'); overlay.classList.remove('visivel'); overlay.setAttribute('aria-hidden','true')
+  const sidebar = document.getElementById('sidebar')
+  const overlay = document.getElementById('sidebar-overlay')
+  const btn = document.getElementById('btn-hamburger')
+  sidebar.classList.remove('aberta')
+  overlay.classList.remove('visivel')
+  overlay.setAttribute('aria-hidden','true')
   if (btn) btn.setAttribute('aria-expanded','false')
 }
 
@@ -181,6 +184,11 @@ function irPara(pagina, btn) {
     const el = document.getElementById('topbar-page-title'); const sub = document.getElementById('topbar-page-sub')
     if (el) el.textContent = t[0]; if (sub) sub.textContent = t[1]
     document.title = `AgendoRapido — ${t[0]}`
+    // Atualiza topbar mobile
+    const mobileTitle = document.getElementById('topbar-mobile-title')
+    const mobileSub   = document.getElementById('topbar-mobile-sub')
+    if (mobileTitle) mobileTitle.textContent = t[0]
+    if (mobileSub)   mobileSub.textContent   = t[1]
   }
   if (pagina === 'clientes') renderClientes('')
   if (pagina === 'horarios') setTimeout(() => renderHorariosDiasLateral(), 100)
@@ -192,20 +200,26 @@ function irPara(pagina, btn) {
     if (primTab) { primTab.classList.add('ativo'); primTab.setAttribute('aria-selected','true') }
     agAplicarFiltro()
   }
-
-  const mobileTitle = document.getElementById('topbar-mobile-title');
-  const mobileSub   = document.getElementById('topbar-mobile-sub');
-  if (mobileTitle && t) mobileTitle.textContent = t[0];
-  if (mobileSub   && t) mobileSub.textContent   = t[1];
 }
 
 /* ═══════════════════════════════════════════════════
    DROPDOWN DE NEGÓCIOS
 ═══════════════════════════════════════════════════ */
-function toggleDropdown() { document.getElementById('neg-dropdown').classList.toggle('show'); document.getElementById('neg-chevron').classList.toggle('open') }
+function toggleDropdown() {
+  document.getElementById('neg-dropdown').classList.toggle('show')
+  document.getElementById('neg-chevron').classList.toggle('open')
+}
 
 document.addEventListener('click', e => {
-  if (!e.target.closest('.negocio-selector')&&!e.target.closest('#notif-panel')&&!e.target.closest('#msg-panel')&&!e.target.closest('#avatar-menu')&&!e.target.closest('.topbar-icon-btn')&&!e.target.closest('#topbar-avatar-btn')) fecharTodosDropdowns()
+  if (!e.target.closest('.negocio-selector') &&
+      !e.target.closest('#notif-panel') &&
+      !e.target.closest('#msg-panel') &&
+      !e.target.closest('#avatar-menu') &&
+      !e.target.closest('.topbar-icon-btn') &&
+      !e.target.closest('#topbar-avatar-btn') &&
+      !e.target.closest('.topbar-mobile-btn')) {
+    fecharTodosDropdowns()
+  }
 })
 
 function renderDropdown() {
@@ -293,7 +307,6 @@ function copiarLinkWpp() {
 }
 function copiarMensagemWpp() { const el = document.getElementById('wpp-mensagem-preview'); if (!el) return; navigator.clipboard.writeText(el.textContent).then(()=>flashBtn('btn-copiar-msg','✓ Mensagem copiada!')) }
 
-
 /* ═══════════════════════════════════════════════════
    AGENDAMENTOS
 ═══════════════════════════════════════════════════ */
@@ -302,35 +315,28 @@ async function carregarAgendamentos() {
   const token = localStorage.getItem('token')
   const res = await fetch(`${API}/agendamentos?negocioId=${negocioAtual._id}`,{headers:{'Authorization':`Bearer ${token}`}})
   todosAgendamentos = await res.json()
-
   const agora = new Date()
   const passados = todosAgendamentos.filter(a => {
     if (a.status!=='confirmado'||!a.data||!a.hora) return false
     const [ano,mes,dia] = a.data.split('-').map(Number); const [h,m] = a.hora.split(':').map(Number)
     return new Date(ano,mes-1,dia,h,m).getTime() < agora.getTime()
   })
-
   if (passados.length>0) {
     await Promise.all(passados.map(a=>fetch(`${API}/agendamentos/${a._id}`,{method:'PATCH',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({status:'concluido'})})))
     todosAgendamentos = todosAgendamentos.map(a => { const foi=passados.find(p=>p._id===a._id); if (!foi) return a; const c={...a,status:'concluido'}; registrarLucro(c); return c })
   }
-
   const hoje = new Date().toISOString().split('T')[0]
   const semana = new Date(Date.now()+7*86400000).toISOString().split('T')[0]
   const elH = document.getElementById('stat-hoje'); const elS = document.getElementById('stat-semana')
   if (elH) elH.textContent = todosAgendamentos.filter(a=>a.data===hoje).length
   if (elS) elS.textContent = todosAgendamentos.filter(a=>a.data>=hoje&&a.data<=semana).length
-
   seedLucroDoMes(todosAgendamentos); exibirLucro(); renderHistorico(); filtrarData(); atualizarInsights(); agAplicarFiltro(); renderDashboardHoje()
-
   const dot = document.getElementById('notif-dot')
   if (dot) dot.style.display = todosAgendamentos.filter(a=>a.data===hoje).length>0 ? 'block' : 'none'
-
-  const dotMobile = document.getElementById('notif-dot-mobile');
-  if (dotMobile) dotMobile.style.display = todosAgendamentos.filter(a=>a.data===hoje).length > 0 ? 'block' : 'none';
+  const dotMobile = document.getElementById('notif-dot-mobile')
+  if (dotMobile) dotMobile.style.display = todosAgendamentos.filter(a=>a.data===hoje).length>0 ? 'block' : 'none'
 }
 
-/* dashboard tabela */
 const POR_PAGINA = 8
 let paginaAtual = 1; let listaFiltrada = []
 
@@ -455,7 +461,6 @@ async function salvarAgendamentoManual() {
   if (res.ok) { fecharModal(); carregarAgendamentos() } else erro.textContent=resposta.erro||'Erro ao criar agendamento'
 }
 
-
 /* ═══════════════════════════════════════════════════
    SERVIÇOS
 ═══════════════════════════════════════════════════ */
@@ -484,9 +489,6 @@ async function salvarServicos() {
   await fetch(`${API}/auth/servicos`,{method:'PATCH',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({negocioId:negocioAtual._id,servicos:servicosAtuais})})
   mostrarSalvo('salvo-msg')
 }
-document.addEventListener('DOMContentLoaded',()=>{
-  ;['novo-servico','novo-preco'].forEach(id=>{const el=document.getElementById(id);if(el)el.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();adicionarServico()}})})
-})
 
 /* ═══════════════════════════════════════════════════
    INTERVALO PADRÃO
@@ -527,7 +529,6 @@ function alterarIntervaloServico(select) {
 }
 async function salvarIntervalosServicos() { if (!negocioAtual) return; await patchHorarios(); mostrarSalvo('salvo-intervalos-servicos') }
 
-
 /* ═══════════════════════════════════════════════════
    HORÁRIOS
 ═══════════════════════════════════════════════════ */
@@ -562,7 +563,6 @@ function toggleDiaLateral(idx,toggleEl) { const cfg=horariosConfig[idx]||{ativo:
 function abrirGerenciarDias() { renderDias(); const modal=document.getElementById('modal-gerenciar-dias'); if(modal){modal.style.display='flex';document.body.classList.add('modal-open')} }
 function fecharGerenciarDias() { const modal=document.getElementById('modal-gerenciar-dias'); if(modal){modal.style.display='none';document.body.classList.remove('modal-open')} }
 
-/* ── Pausas ── */
 function mascaraHora(inp) { let v=inp.value.replace(/\D/g,'').slice(0,4); if(v.length>=3)v=v.slice(0,2)+':'+v.slice(2); inp.value=v }
 function renderPausas() {
   const lista=document.getElementById('pausas-lista'); if (!lista) return
@@ -623,7 +623,6 @@ async function carregarLembretes() {
   if(checkbox)checkbox.checked=!!lembrete.ativo
   atualizarToggleVisual(!!lembrete.ativo)
   if(lembrete.mensagem){const msgEl=document.getElementById('lembrete-msg');if(msgEl)msgEl.value=lembrete.mensagem}
-  // Sincronizar UI de automação
   const toggleEditor=document.getElementById('toggle-editor-main'); const labelAtivo=document.querySelector('.auto-ativo-label'); const toggle24h=document.getElementById('toggle-24h')
   if(checkbox&&toggleEditor){const isOn=checkbox.checked;toggleEditor.className='auto-tipo-toggle '+(isOn?'on':'off');if(labelAtivo){labelAtivo.textContent=isOn?'Ativo':'Inativo';labelAtivo.style.color=isOn?'#34d399':'var(--text3)'};if(toggle24h){toggle24h.className='auto-tipo-toggle '+(isOn?'on':'off');const card=toggle24h.closest('.auto-tipo-card');if(card){const badge=card.querySelector('.auto-tipo-badge');if(badge){badge.textContent=isOn?'Ativo':'Inativo';badge.className='auto-tipo-badge '+(isOn?'ativo':'inativo')}}}}
   const msgEl2=document.getElementById('lembrete-msg');const taAuto=document.getElementById('auto-mensagem-textarea')
@@ -650,7 +649,6 @@ async function verificarAcesso() {
   if(!data.temAcesso){document.getElementById('bloqueio').style.display='flex';return}
   if(data.plano==='trial'&&data.diasRestantes<=7){const banner=document.createElement('div');banner.className='trial-banner';banner.innerHTML=`<p>⏰ Seu trial expira em <strong>${data.diasRestantes} dias</strong>. Assine para não perder o acesso.</p><button class="btn-assinar-banner" onclick="window.location.href='/planos.html'" type="button">Ver planos</button>`;const main=document.querySelector('.main');if(main)main.prepend(banner)}
 }
-
 
 /* ═══════════════════════════════════════════════════
    HISTÓRICO MENSAL
@@ -743,13 +741,28 @@ function renderClientes(filtro) {
 }
 function filtrarClientes(v){renderClientes(v)}
 
-
 /* ═══════════════════════════════════════════════════
-   BUSCA GLOBAL
+   BUSCA GLOBAL — CORRIGIDA
 ═══════════════════════════════════════════════════ */
 let buscaAberta=false
-function abrirBusca(){const overlay=document.getElementById('busca-overlay');if(!overlay)return;overlay.classList.add('aberta');overlay.removeAttribute('aria-hidden');buscaAberta=true;document.body.classList.add('modal-open');const inp=document.getElementById('busca-input');if(inp){inp.value='';setTimeout(()=>{inp.focus();executarBusca('')},60)}}
-function fecharBusca(){const overlay=document.getElementById('busca-overlay');if(overlay){overlay.classList.remove('aberta');overlay.setAttribute('aria-hidden','true')};buscaAberta=false;document.body.classList.remove('modal-open')}
+
+function abrirBusca(){
+  const overlay=document.getElementById('busca-overlay');if(!overlay)return
+  overlay.classList.add('aberta')
+  overlay.removeAttribute('aria-hidden')
+  buscaAberta=true
+  document.body.classList.add('modal-open')
+  const inp=document.getElementById('busca-input')
+  if(inp){inp.value='';setTimeout(()=>{inp.focus();executarBusca('')},60)}
+}
+
+function fecharBusca(){
+  const overlay=document.getElementById('busca-overlay')
+  if(overlay){overlay.classList.remove('aberta');overlay.setAttribute('aria-hidden','true')}
+  buscaAberta=false
+  document.body.classList.remove('modal-open')
+}
+
 function executarBusca(q){
   const res=document.getElementById('busca-resultados');if(!res)return; const ags=todosAgendamentos||[]
   if(!q||!q.trim()){const hoje=new Date().toISOString().split('T')[0];const deHoje=ags.filter(a=>a.data===hoje).slice(0,6);if(!deHoje.length){res.innerHTML='<div style="text-align:center;color:var(--text3);padding:28px;font-size:13px">Digite para buscar por nome, serviço ou data</div>';return};res.innerHTML='<div class="busca-secao-label">Agendamentos de hoje</div>'+deHoje.map(buscaItemHTML).join('');return}
@@ -764,12 +777,16 @@ function buscaItemHTML(a){
   return `<div class="busca-item" onclick="buscaSelecionarAgendamento('${a._id}','${a.data||''}')" role="option" tabindex="0"><div class="busca-avatar-mini" style="background:linear-gradient(135deg,${c1},${c2})">${ini}</div><div class="busca-item-info"><div class="busca-item-nome">${a.pacienteNome||'—'}</div><div class="busca-item-sub">${a.servico||''} · ${dataFmt} às ${a.hora||''}${preco}</div></div><span class="busca-item-badge" style="background:${statusCor}22;color:${statusCor};border:1px solid ${statusCor}44">${a.status}</span></div>`
 }
 function buscaSelecionarAgendamento(id,data){fecharBusca();irPara('agendamentos',document.getElementById('menu-agendamentos'));if(data){const inp=document.getElementById('ag-filtro-data');if(inp){inp.value=data;agFiltrarData(data)}}}
-document.addEventListener('keydown',e=>{if((e.metaKey||e.ctrlKey)&&e.key==='k'){e.preventDefault();buscaAberta?fecharBusca():abrirBusca()};if(e.key==='Escape'&&buscaAberta)fecharBusca()})
+
+document.addEventListener('keydown',e=>{
+  if((e.metaKey||e.ctrlKey)&&e.key==='k'){e.preventDefault();buscaAberta?fecharBusca():abrirBusca()}
+})
 
 /* ═══════════════════════════════════════════════════
    TOPBAR — notificações, mensagens, avatar
 ═══════════════════════════════════════════════════ */
 function abrirNotificacoes(){fecharTodosDropdowns();const panel=document.getElementById('notif-panel');if(!panel)return;renderNotificacoes();panel.classList.add('aberto')}
+
 function renderNotificacoes(){
   const panel=document.getElementById('notif-panel');if(!panel)return
   const ags=todosAgendamentos||[];const hoje=new Date().toISOString().split('T')[0]
@@ -782,8 +799,8 @@ function renderNotificacoes(){
   if(proximos.length){html+=`<div class="busca-secao-label" style="padding:12px 18px 6px">Próximos</div>`;html+=proximos.map(a=>{const dt=a.data?a.data.split('-').reverse().join('/'):'';return `<div class="notif-item"><div class="notif-icon blue"><svg width="14" height="14" viewBox="0 0 15 15" fill="none"><rect x="1.5" y="2.5" width="12" height="11" rx="1.5" stroke="#3b82f6" stroke-width="1.3"/><path d="M5 1.5v2M10 1.5v2M1.5 5.5h12" stroke="#3b82f6" stroke-width="1.3" stroke-linecap="round"/></svg></div><div class="notif-item-texto"><div class="notif-item-titulo">${a.pacienteNome}</div><div class="notif-item-sub">${a.servico}</div><div class="notif-item-hora">${dt} às ${a.hora}</div></div></div>`}).join('')}
   html+=`</div><div class="notif-ver-todos" onclick="irPara('agendamentos',document.getElementById('menu-agendamentos'));fecharTodosDropdowns()">Ver todos os agendamentos</div>`
   panel.innerHTML=html
-  const dot=document.getElementById('notif-dot');if(dot)dot.style.display=deHoje.length>0?'block':'none'
 }
+
 function abrirMensagens(){
   fecharTodosDropdowns();const panel=document.getElementById('msg-panel');if(!panel)return
   const ags=todosAgendamentos||[];const vistos={};const cutoff=new Date(Date.now()-30*864e5).toISOString().split('T')[0]
@@ -794,6 +811,7 @@ function abrirMensagens(){
   else html+=lista.map(c=>{const [c1,c2]=avatarColor(c.nome);const ini=c.nome[0].toUpperCase();const tel=c.tel.replace(/\D/g,'');const msg=encodeURIComponent(`Olá ${c.nome}! Tudo bem? Aqui é da ${negNome}. 😊`);const link=`https://wa.me/55${tel}?text=${msg}`;return `<div class="msg-item" onclick="window.open('${link}','_blank');fecharTodosDropdowns()"><div class="msg-avatar-mini" style="background:linear-gradient(135deg,${c1},${c2})">${ini}</div><div class="msg-item-info"><div class="msg-item-nome">${c.nome}</div><div class="msg-item-tel">${c.tel}</div></div><div class="msg-wpp-btn">WhatsApp</div></div>`}).join('')
   panel.innerHTML=html; panel.classList.add('aberto')
 }
+
 function abrirAvatarMenu(){
   const menu=document.getElementById('avatar-menu');if(!menu)return
   const aberto=menu.style.display!=='none'&&menu.style.display!==''; fecharTodosDropdowns()
@@ -804,6 +822,7 @@ function abrirAvatarMenu(){
     menu.style.display='block'; menu.removeAttribute('aria-hidden')
   }
 }
+
 function fecharTodosDropdowns(){
   const notif=document.getElementById('notif-panel');const msg=document.getElementById('msg-panel');const avatar=document.getElementById('avatar-menu');const neg=document.getElementById('neg-dropdown')
   if(notif)notif.classList.remove('aberto'); if(msg)msg.classList.remove('aberto')
@@ -812,10 +831,11 @@ function fecharTodosDropdowns(){
 }
 window.fecharTodosDropdowns=fecharTodosDropdowns
 
-/* ── PIX ── */
 function atualizarPix(){const elPix=document.getElementById('finance-pix');if(!elPix)return;const mes=mesAtualChave();const doMes=todosAgendamentos.filter(a=>a.data?.startsWith(mes));const pagos=doMes.filter(a=>a.pagamento?.status==='pago').length;const pct=doMes.length>0?Math.round((pagos/doMes.length)*100):0;elPix.textContent=`${pct}%`}
 
-/* ── PWA ── */
+/* ═══════════════════════════════════════════════════
+   PWA
+═══════════════════════════════════════════════════ */
 let deferredPrompt=null
 if('serviceWorker'in navigator)navigator.serviceWorker.register('/sw.js').catch(()=>{})
 function isAppInstalled(){return window.navigator.standalone===true||window.matchMedia('(display-mode: standalone)').matches}
@@ -827,25 +847,80 @@ window.addEventListener('appinstalled',()=>{deferredPrompt=null;const btn=docume
 const _installBtn=document.getElementById('btn-instalar-app')
 if(_installBtn)_installBtn.onclick=function(){if(isAppInstalled()){this.style.display='none';return};if(deferredPrompt){deferredPrompt.prompt();deferredPrompt.userChoice.then(()=>{deferredPrompt=null})}}
 
-/* ── Topbar DOMContentLoaded ── */
-document.addEventListener('DOMContentLoaded',()=>{
-  const btnBusca=document.querySelector('.main-topbar-search');const sinoBtn=document.getElementById('btn-notif');const envBtn=document.getElementById('btn-msg');const avatarBtn=document.getElementById('topbar-avatar-btn')
-  if(btnBusca)btnBusca.addEventListener('click',abrirBusca)
-  if(sinoBtn){sinoBtn.onclick=function(){fecharTodosDropdowns();abrirNotificacoes()};const dot=document.createElement('div');dot.id='notif-dot';dot.className='notif-dot-badge';dot.style.display='none';dot.setAttribute('aria-hidden','true');sinoBtn.appendChild(dot)}
-  if(envBtn)envBtn.onclick=function(){fecharTodosDropdowns();abrirMensagens()}
-  if(avatarBtn)avatarBtn.onclick=e=>{e.stopPropagation();abrirAvatarMenu()}
-  const isMac=navigator.platform.toUpperCase().includes('MAC');const searchSpan=document.querySelector('.main-topbar-search span');if(searchSpan)searchSpan.textContent=`Buscar... (${isMac?'⌘K':'Ctrl+K'})`
+/* ═══════════════════════════════════════════════════
+   DOMContentLoaded — BINDINGS COMPLETOS (mobile + desktop)
+═══════════════════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded', () => {
+
+  // ── Serviços (legado) ──
+  ;['novo-servico','novo-preco'].forEach(id=>{const el=document.getElementById(id);if(el)el.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();adicionarServico()}})})
+
+  // ── Desktop topbar ──
+  const btnBusca = document.querySelector('.main-topbar-search')
+  if(btnBusca) btnBusca.addEventListener('click', abrirBusca)
+
+  const sinoBtn = document.getElementById('btn-notif')
+  if(sinoBtn){
+    sinoBtn.onclick = function(e){ e.stopPropagation(); fecharTodosDropdowns(); abrirNotificacoes() }
+    const dot=document.createElement('div'); dot.id='notif-dot'; dot.className='notif-dot-badge'; dot.style.display='none'; dot.setAttribute('aria-hidden','true'); sinoBtn.appendChild(dot)
+  }
+
+  const envBtn = document.getElementById('btn-msg')
+  if(envBtn) envBtn.onclick = function(e){ e.stopPropagation(); fecharTodosDropdowns(); abrirMensagens() }
+
+  const avatarBtn = document.getElementById('topbar-avatar-btn')
+  if(avatarBtn) avatarBtn.onclick = e => { e.stopPropagation(); abrirAvatarMenu() }
+
+  const isMac = navigator.platform.toUpperCase().includes('MAC')
+  const searchSpan = document.querySelector('.main-topbar-search span')
+  if(searchSpan) searchSpan.textContent = `Buscar... (${isMac?'⌘K':'Ctrl+K'})`
+
+  // ── Mobile topbar — CORRIGIDO ──
+  // Busca mobile
+  const btnBuscaMobile = document.querySelector('.topbar-mobile-btn[aria-label="Buscar"]')
+  if(btnBuscaMobile) btnBuscaMobile.onclick = function(e){ e.stopPropagation(); abrirBusca() }
+
+  // Notificações mobile
+  const btnNotifMobile = document.getElementById('btn-notif-mobile')
+  if(btnNotifMobile) btnNotifMobile.onclick = function(e){ e.stopPropagation(); fecharTodosDropdowns(); abrirNotificacoes() }
+
+  // Mensagens mobile
+  const btnMsgMobile = document.querySelector('.topbar-mobile-btn[aria-label="Mensagens"]')
+  if(btnMsgMobile) btnMsgMobile.onclick = function(e){ e.stopPropagation(); fecharTodosDropdowns(); abrirMensagens() }
+
+  // Tema mobile
+  const btnTemaMobile = document.querySelector('.topbar-mobile-btn[aria-label="Tema"]')
+  if(btnTemaMobile) btnTemaMobile.onclick = function(e){ e.stopPropagation(); toggleTema() }
+
+  // ── Fechar busca ao clicar no overlay (fora do modal) ──
+  const buscaOverlay = document.getElementById('busca-overlay')
+  if(buscaOverlay){
+    buscaOverlay.addEventListener('click', function(e){
+      if(e.target === buscaOverlay) fecharBusca()
+    })
+  }
+
+  // ── Accessibility ──
   document.querySelectorAll('.page').forEach(p=>{if(!p.classList.contains('ativo'))p.setAttribute('aria-hidden','true')})
 })
-
 
 /* ═══════════════════════════════════════════════════
    AUTOMAÇÃO
 ═══════════════════════════════════════════════════ */
 ;(function(){
   let tipoSelecionado='24h'
-  const mensagensAuto={'24h':'Olá {nome}! 👋\nLembramos que você tem um agendamento amanhã, {data}, às {hora} — {servico}.\nEstamos te esperando! 🙏','1h':'Olá {nome}! ⏰\nSeu agendamento é em 1 hora — {hora}. Serviço: {servico}.\nTe esperamos em breve! 😊','pos':'Olá {nome}! 🙏\nObrigado por nos visitar hoje! Foi um prazer te atender.\nAgende seu próximo horário: {link}','aniversario':'Feliz aniversário, {nome}! 🎉\nA equipe da {negocio} deseja tudo de melhor para você!\nTemos um presente especial esperando por você. 🎁'}
-  const titulos={'24h':'Editar lembrete 24h antes','1h':'Editar lembrete 1h antes','pos':'Editar mensagem pós-atendimento','aniversario':'Editar mensagem de aniversário'}
+  const mensagensAuto={
+    '24h':'Olá {nome}! 👋\nLembramos que você tem um agendamento amanhã, {data}, às {hora} — {servico}.\nEstamos te esperando! 🙏',
+    '1h':'Olá {nome}! ⏰\nSeu agendamento é em 1 hora — {hora}. Serviço: {servico}.\nTe esperamos em breve! 😊',
+    'pos':'Olá {nome}! 🙏\nObrigado por nos visitar hoje! Foi um prazer te atender.\nAgende seu próximo horário: {link}',
+    'aniversario':'Feliz aniversário, {nome}! 🎉\nA equipe da {negocio} deseja tudo de melhor para você!\nTemos um presente especial esperando por você. 🎁'
+  }
+  const titulos={
+    '24h':'Editar lembrete 24h antes',
+    '1h':'Editar lembrete 1h antes',
+    'pos':'Editar mensagem pós-atendimento',
+    'aniversario':'Editar mensagem de aniversário'
+  }
 
   window.selecionarTipoAuto=function(tipo,card){
     tipoSelecionado=tipo; document.querySelectorAll('.auto-tipo-card').forEach(c=>c.classList.remove('ativo-selected')); card.classList.add('ativo-selected')
@@ -943,7 +1018,6 @@ function agFiltrarData(val){
 function agIrPagina(n){const total=Math.ceil(agListaFiltrada.length/agPorPagina);if(n<1||n>total)return;agPagina=n;agRenderTabela()}
 function agMudarPorPagina(val){agPorPagina=parseInt(val);agPagina=1;agRenderTabela()}
 
-
 /* ═══════════════════════════════════════════════════
    CONFIGURAÇÕES — lista de serviços avançada
 ═══════════════════════════════════════════════════ */
@@ -976,7 +1050,7 @@ function agMudarPorPagina(val){agPorPagina=parseInt(val);agPagina=1;agRenderTabe
   window.cfgAbrirModalEditar=function(i){
     cfgEditIdx=i;const s=window.servicosAtuais[i]||{}
     document.getElementById('cfg-edit-nome').value=typeof s==='object'?s.nome:s
-    document.getElementById('cfg-edit-preco').value=typeof s==='object'?(s.preco||''):'';
+    document.getElementById('cfg-edit-preco').value=typeof s==='object'?(s.preco||''):''
     document.getElementById('cfg-edit-desc').value=typeof s==='object'?(s.desc||s.descricao||''):''
     document.getElementById('cfg-edit-duracao').value=typeof s==='object'?(s.duracao||''):''
     document.getElementById('cfg-modal-editar').style.display='flex';document.body.classList.add('modal-open')
@@ -996,7 +1070,7 @@ function agMudarPorPagina(val){agPorPagina=parseInt(val);agPagina=1;agRenderTabe
     if(!window.negocioAtual)return;const token=localStorage.getItem('token')
     const btn=document.getElementById('cfg-btn-salvar-servicos');if(btn){btn.disabled=true;btn.textContent='Salvando...'}
     try{
-      const res=await fetch(`${API}/auth/servicos`,{method:'PATCH',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({negocioId:window.negocioAtual._id,servicos:window.servicosAtuais})});
+      const res=await fetch(`${API}/auth/servicos`,{method:'PATCH',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({negocioId:window.negocioAtual._id,servicos:window.servicosAtuais})})
       if(!res.ok){const err=await res.json();console.error('Erro ao salvar:',err);return}
       const msg=document.getElementById('cfg-salvo-msg');if(msg){msg.style.display='inline';setTimeout(()=>msg.style.display='none',2500)}
     }catch(e){console.error('Erro na requisição:',e)}
@@ -1006,14 +1080,14 @@ function agMudarPorPagina(val){agPorPagina=parseInt(val);agPagina=1;agRenderTabe
 
   window.abrirMinhaPagina=function(e){if(e)e.preventDefault();if(!window.negocioAtual)return;window.open(`https://agendorapido.com.br/agendar.html?id=${window.negocioAtual._id}`,'_blank')}
 
-  // Drag & drop para reordenar
+  // Drag & drop
   let dragSrc=null
   document.addEventListener('dragstart',e=>{const row=e.target.closest('.cfg-serv-row');if(row){dragSrc=row;row.classList.add('cfg-dragging')}})
   document.addEventListener('dragend',()=>{document.querySelectorAll('.cfg-serv-row').forEach(r=>r.classList.remove('cfg-dragging','cfg-drag-over'));dragSrc=null})
   document.addEventListener('dragover',e=>{e.preventDefault();const row=e.target.closest('.cfg-serv-row');if(row&&row!==dragSrc){document.querySelectorAll('.cfg-serv-row').forEach(r=>r.classList.remove('cfg-drag-over'));row.classList.add('cfg-drag-over')}})
   document.addEventListener('drop',e=>{e.preventDefault();const rowDest=e.target.closest('.cfg-serv-row');if(!rowDest||!dragSrc||rowDest===dragSrc)return;const src=parseInt(dragSrc.dataset.idx);const dest=parseInt(rowDest.dataset.idx);const tmp=window.servicosAtuais.splice(src,1)[0];window.servicosAtuais.splice(dest,0,tmp);window.cfgRenderServicos()})
 
-  // DOMContentLoaded: Enter nos campos de configuração
+  // Enter nos campos
   document.addEventListener('DOMContentLoaded',()=>{
     const nEl=document.getElementById('cfg-novo-servico');const pEl=document.getElementById('cfg-novo-preco')
     if(nEl)nEl.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();window.cfgAdicionarServico()}})
@@ -1025,5 +1099,5 @@ function agMudarPorPagina(val){agPorPagina=parseInt(val);agPagina=1;agRenderTabe
    INIT
 ═══════════════════════════════════════════════════ */
 carregarTema()
-const _token=localStorage.getItem('token')
-if(_token){mostrarPainel()}else{window.location.href='/auth.html'}
+const _token = localStorage.getItem('token')
+if(_token){ mostrarPainel() } else { window.location.href = '/auth.html' }
