@@ -987,7 +987,11 @@ function agMudarPorPagina(val){agPorPagina=parseInt(val);agPagina=1;agRenderTabe
   window.cfgSalvarServicos=async function(){
     if(!window.negocioAtual)return;const token=localStorage.getItem('token')
     const btn=document.getElementById('cfg-btn-salvar-servicos');if(btn){btn.disabled=true;btn.textContent='Salvando...'}
-    try{await fetch(`${window.API}/auth/servicos`,{method:'PATCH',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({negocioId:window.negocioAtual._id,servicos:window.servicosAtuais})});const msg=document.getElementById('cfg-salvo-msg');if(msg){msg.style.display='inline';setTimeout(()=>msg.style.display='none',2500)}}
+    try{
+      const res=await fetch(`${API}/auth/servicos`,{method:'PATCH',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({negocioId:window.negocioAtual._id,servicos:window.servicosAtuais})});
+      if(!res.ok){const err=await res.json();console.error('Erro ao salvar:',err);return}
+      const msg=document.getElementById('cfg-salvo-msg');if(msg){msg.style.display='inline';setTimeout(()=>msg.style.display='none',2500)}
+    }catch(e){console.error('Erro na requisição:',e)}
     finally{if(btn){btn.disabled=false;btn.innerHTML='<svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg> Salvar alterações'}}
   }
   window.salvarServicos=window.cfgSalvarServicos
