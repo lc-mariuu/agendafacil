@@ -1083,3 +1083,149 @@ body.light-mode .negocio-nome { color: rgba(255,255,255,0.85); }
   .horarios-hero,
   .auto-hero { padding: 16px 14px; }
 }
+
+/* ════════════════════════════════════════════════════
+   AUTOMAÇÃO — RESPONSIVIDADE E ESPAÇAMENTO
+════════════════════════════════════════════════════ */
+
+/* Reduz espaços exagerados entre seções */
+#page-lembretes .auto-hero        { margin-bottom: 12px; }
+#page-lembretes .auto-info-banner { margin-bottom: 12px; }
+#page-lembretes .auto-tipos-grid  { margin-bottom: 12px; }
+
+@media (max-width: 768px) {
+
+  /* Hero compacto */
+  #page-lembretes .auto-hero {
+    padding: 18px 16px;
+    min-height: unset;
+    flex-direction: column;
+    gap: 0;
+    margin-bottom: 10px;
+  }
+  #page-lembretes .auto-hero-right { display: none; }
+  #page-lembretes .auto-hero-left  { gap: 10px; }
+  #page-lembretes .auto-hero-title { font-size: 22px; line-height: 1.2; }
+  #page-lembretes .auto-hero-sub   { font-size: 12px; }
+
+  /* Info banner */
+  #page-lembretes .auto-info-banner {
+    padding: 10px 14px;
+    margin-bottom: 10px;
+    border-radius: 10px;
+  }
+  #page-lembretes .auto-info-banner-text { font-size: 12px; }
+
+  /* Cards de tipo — layout horizontal no mobile */
+  #page-lembretes .auto-tipos-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  #page-lembretes .auto-tipo-card {
+    padding: 12px 16px;
+    border-radius: 12px;
+    display: grid;
+    grid-template-columns: 34px 1fr 42px;
+    grid-template-rows: auto auto;
+    align-items: center;
+    column-gap: 12px;
+    row-gap: 0;
+  }
+  #page-lembretes .auto-tipo-icon {
+    width: 34px;
+    height: 34px;
+    margin-bottom: 0;
+    grid-row: 1 / 3;
+    grid-column: 1;
+    font-size: 16px;
+  }
+  #page-lembretes .auto-tipo-nome {
+    font-size: 13px;
+    margin-bottom: 2px;
+    grid-column: 2;
+    grid-row: 1;
+    gap: 6px;
+    flex-wrap: nowrap;
+    align-items: center;
+  }
+  #page-lembretes .auto-tipo-desc {
+    font-size: 11.5px;
+    margin-bottom: 0;
+    grid-column: 2;
+    grid-row: 2;
+  }
+  #page-lembretes .auto-tipo-toggle {
+    grid-column: 3;
+    grid-row: 1 / 3;
+    width: 40px;
+    height: 22px;
+    align-self: center;
+  }
+  #page-lembretes .auto-tipo-toggle-thumb {
+    width: 16px;
+    height: 16px;
+    top: 3px;
+  }
+  #page-lembretes .auto-tipo-toggle.on  .auto-tipo-toggle-thumb { left: 21px; }
+  #page-lembretes .auto-tipo-toggle.off .auto-tipo-toggle-thumb { left: 3px; }
+
+  /* Grid editor + dicas empilhado */
+  #page-lembretes .auto-content-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  /* Editor card */
+  #page-lembretes .auto-editor-card   { border-radius: 12px; }
+  #page-lembretes .auto-editor-header { padding: 14px 16px; flex-wrap: wrap; gap: 8px; }
+  #page-lembretes .auto-editor-header-title { font-size: 14px; }
+  #page-lembretes .auto-editor-header-sub   { font-size: 11.5px; }
+  #page-lembretes .auto-editor-body   { padding: 14px 16px; }
+  #page-lembretes .auto-msg-label,
+  #page-lembretes .auto-preview-label { font-size: 9px; margin-bottom: 8px; }
+  #page-lembretes .auto-msg-textarea  { min-height: 90px; font-size: 13px; padding: 11px 13px; }
+  #page-lembretes .auto-vars-row      { gap: 5px; margin-bottom: 14px; }
+  #page-lembretes .auto-vars-label    { font-size: 11px; }
+  #page-lembretes .auto-var-chip      { font-size: 11px; padding: 3px 8px; }
+  #page-lembretes .auto-preview-box   { border-radius: 10px; padding: 14px 14px 12px; margin-bottom: 0; }
+  #page-lembretes .auto-wpp-bubble    { font-size: 13px; max-width: 95%; }
+
+  /* Footer do editor — botões lado a lado */
+  #page-lembretes .auto-editor-footer {
+    padding: 12px 16px;
+    gap: 8px;
+    flex-direction: row;
+    flex-wrap: nowrap;
+  }
+  #page-lembretes .auto-btn-salvar,
+  #page-lembretes .auto-btn-teste {
+    flex: 1;
+    justify-content: center;
+    padding: 10px 12px;
+    font-size: 12.5px;
+    width: auto;
+  }
+
+  /* Dicas card */
+  #page-lembretes .auto-dicas-card  { border-radius: 12px; }
+  #page-lembretes .auto-dicas-title { font-size: 13px; padding: 12px 16px; }
+  #page-lembretes .auto-dica-item   { padding: 11px 16px; gap: 10px; }
+  #page-lembretes .auto-dica-icon   { width: 28px; height: 28px; flex-shrink: 0; }
+  #page-lembretes .auto-dica-nome   { font-size: 12px; }
+  #page-lembretes .auto-dica-desc   { font-size: 11px; }
+}
+
+@media (max-width: 480px) {
+  #page-lembretes .auto-tipo-card {
+    padding: 11px 14px;
+    column-gap: 10px;
+  }
+  #page-lembretes .auto-editor-footer {
+    flex-wrap: wrap;
+  }
+  #page-lembretes .auto-btn-salvar,
+  #page-lembretes .auto-btn-teste {
+    flex: 1 1 140px;
+  }
+}
