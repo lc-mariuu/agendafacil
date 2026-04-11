@@ -507,9 +507,11 @@ body.light-mode .ag-info-banner-text { color: var(--accent); }
 
 /* Hero da página de agendamentos */
 body.light-mode .ag-page-hero {
-  background: linear-gradient(135deg, #1e3a8a 0%, #1d4ed8 50%, #2563eb 100%);
-  border-color: rgba(37,99,235,0.3);
+  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 50%, #e0f2fe 100%);
+  border-color: rgba(37,99,235,0.18);
 }
+body.light-mode .ag-hero-title { color: #1e3a8a; }
+body.light-mode .ag-hero-sub   { color: #3b5998; opacity: 0.85; }
 body.light-mode .ag-stat-top {
   background: #ffffff;
   border-color: rgba(15,23,42,0.1);
@@ -520,9 +522,18 @@ body.light-mode .ag-stat-desc   { color: var(--text2); }
 
 /* ── 22. HORÁRIOS ── */
 body.light-mode .horarios-hero {
-  background: linear-gradient(135deg, #1e3a8a 0%, #1d4ed8 50%, #1e40af 100%);
-  border-color: rgba(37,99,235,0.3);
+  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 50%, #e0f2fe 100%);
+  border-color: rgba(37,99,235,0.18);
 }
+body.light-mode .horarios-hero-title { color: #1e3a8a; }
+body.light-mode .horarios-hero-sub  { color: #3b5998; opacity: 0.85; }
+body.light-mode .horarios-hero-sub2 { color: #3b5998; opacity: 0.6; }
+body.light-mode .horarios-tip-card {
+  background: rgba(255,255,255,0.75);
+  border-color: rgba(37,99,235,0.18);
+}
+body.light-mode .horarios-tip-title { color: #1e3a8a; }
+body.light-mode .horarios-tip-text  { color: #3b5998; }
 body.light-mode .horarios-dias-card {
   background: #ffffff;
   border-color: rgba(15,23,42,0.1);
@@ -637,9 +648,17 @@ body.light-mode .dia-inativo .dia-toggle label { color: var(--text3); }
 
 /* ── 23. AUTOMAÇÃO ── */
 body.light-mode .auto-hero {
-  background: linear-gradient(135deg, #1e3a8a 0%, #1d4ed8 50%, #1e40af 100%);
-  border-color: rgba(37,99,235,0.3);
+  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 50%, #e0f2fe 100%);
+  border-color: rgba(37,99,235,0.18);
 }
+body.light-mode .auto-hero-title { color: #1e3a8a; }
+body.light-mode .auto-hero-sub   { color: #3b5998; opacity: 0.85; }
+body.light-mode .auto-hero-badge {
+  background: rgba(255,255,255,0.8);
+  border-color: rgba(37,99,235,0.18);
+}
+body.light-mode .auto-hero-badge-title { color: #15803d; }
+body.light-mode .auto-hero-badge-text  { color: #3b5998; }
 body.light-mode .auto-info-banner {
   background: rgba(37,99,235,0.06);
   border-color: rgba(37,99,235,0.18);
@@ -1006,3 +1025,61 @@ body.light-mode .negocio-atual:hover { background: rgba(255,255,255,0.07); }
 body.light-mode .negocio-nome { color: rgba(255,255,255,0.85); }
 
 /* ── FIM DO PATCH ── */
+
+/* ════════════════════════════════════════════════════
+   HEROES — MOBILE FIX (dark + light mode)
+════════════════════════════════════════════════════ */
+
+/* Tamanho base dos heroes no mobile */
+@media (max-width: 768px) {
+
+  /* Hero Agendamentos */
+  .ag-page-hero {
+    min-height: unset;
+    padding: 20px 18px;
+    border-radius: 12px;
+    flex-direction: column;
+    gap: 0;
+  }
+  .ag-hero-right { display: none; }
+  .ag-hero-title { font-size: 24px; margin-bottom: 4px; }
+  .ag-hero-sub   { font-size: 12.5px; }
+
+  /* Hero Horários */
+  .horarios-hero {
+    min-height: unset;
+    padding: 20px 18px;
+    border-radius: 12px;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .horarios-hero-right { display: none; }
+  .horarios-hero-title { font-size: 24px; }
+  .horarios-hero-sub   { font-size: 12.5px; }
+  .horarios-hero-sub2  { font-size: 11.5px; }
+
+  /* Hero Automação */
+  .auto-hero {
+    min-height: unset;
+    padding: 20px 18px;
+    border-radius: 12px;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .auto-hero-right  { display: none; }
+  .auto-hero-left   { gap: 10px; }
+  .auto-hero-title  { font-size: 24px; }
+  .auto-hero-sub    { font-size: 12px; }
+  .auto-hero-text   { flex: 1; }
+}
+
+/* Telas muito pequenas */
+@media (max-width: 480px) {
+  .ag-hero-title    { font-size: 22px; }
+  .horarios-hero-title { font-size: 22px; }
+  .auto-hero-title  { font-size: 22px; }
+
+  .ag-page-hero,
+  .horarios-hero,
+  .auto-hero { padding: 16px 14px; }
+}
