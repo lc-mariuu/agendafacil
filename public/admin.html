@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AgendoRápido — Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #070b14;
+  --bg-card: #0f1624;
+  --bg-card2: #111827;
+  --bg-input: #0a1020;
+  --accent: #3b82f6;
+  --accent-hover: #2563eb;
+  --accent-light: rgba(59,130,246,0.1);
+  --accent-mid: rgba(59,130,246,0.2);
+  --green: #10b981;
+  --green-2: #34d399;
+  --green-bg: rgba(16,185,129,0.1);
+  --green-border: rgba(16,185,129,0.25);
+  --yellow: #f59e0b;
+  --yellow-bg: rgba(245,158,11,0.1);
+  --yellow-border: rgba(245,158,11,0.25);
+  --red: #ef4444;
+  --red-bg: rgba(239,68,68,0.1);
+  --red-border: rgba(239,68,68,0.25);
+  --purple: #8b5cf6;
+  --purple-bg: rgba(139,92,246,0.1);
+  --purple-border: rgba(139,92,246,0.25);
+  --text: #e2e8f0;
+  --text2: #8b9ab4;
+  --text3: #4a5568;
+  --border: rgba(255,255,255,0.04);
+  --border2: rgba(255,255,255,0.07);
+  --border3: rgba(255,255,255,0.12);
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.5);
+  --shadow-md: 0 4px 20px rgba(0,0,0,0.6);
+  --shadow-accent: 0 4px 16px rgba(59,130,246,0.3);
+  --radius: 14px;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.07);border-radius:10px}
+button{cursor:pointer;font-family:inherit}
+
+/* LOGIN */
+#login-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px;background:radial-gradient(ellipse at 50% 0%,rgba(59,130,246,0.07),transparent 60%)}
+.login-card{background:var(--bg-card);border:1px solid var(--border2);border-radius:20px;padding:44px;width:100%;max-width:420px;box-shadow:0 24px 80px rgba(0,0,0,0.7)}
+.login-logo{display:flex;align-items:center;gap:10px;margin-bottom:36px}
+.login-logo-icon{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,#1d4ed8,#3b82f6);display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow-accent)}
+.login-logo-text{font-family:'Plus Jakarta Sans',sans-serif;font-size:20px;font-weight:800;color:#fff}
+.login-logo-text span{color:#60a5fa}
+.login-admin-badge{background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.3);color:#f87171;font-size:10px;font-weight:700;padding:3px 10px;border-radius:100px;margin-left:8px;letter-spacing:.06em;text-transform:uppercase}
+.login-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:24px;font-weight:800;color:var(--text);margin-bottom:6px}
+.login-sub{font-size:13px;color:var(--text2);margin-bottom:32px;line-height:1.6}
+.field-label{font-size:10px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.08em;display:block;margin-bottom:7px}
+.field-input{width:100%;padding:11px 14px;border:1px solid var(--border2);border-radius:10px;font-size:14px;outline:none;font-family:inherit;color:var(--text);background:var(--bg-input);margin-bottom:16px}
+.field-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-light)}
+.btn-login{width:100%;background:var(--red);color:#fff;border:none;padding:13px;border-radius:10px;font-size:14px;font-weight:700;box-shadow:0 4px 16px rgba(239,68,68,0.35);margin-top:4px}
+.btn-login:hover{background:#dc2626;transform:translateY(-1px)}
+.login-error{font-size:12px;color:var(--red);text-align:center;margin-top:12px;min-height:16px}
+
+/* LAYOUT */
+#app-screen{display:none;min-height:100vh}
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:220px;background:#060a12;border-right:1px solid var(--border);display:flex;flex-direction:column;z-index:100}
+.sidebar-brand{padding:18px 16px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.sidebar-brand-icon{width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,#1d4ed8,#3b82f6);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sidebar-brand-text{font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;font-weight:800;color:#fff}
+.sidebar-brand-text span{color:#60a5fa}
+.admin-pill{background:var(--red-bg);border:1px solid var(--red-border);color:#f87171;font-size:9px;font-weight:800;padding:2px 8px;border-radius:100px;margin-top:2px;text-transform:uppercase;letter-spacing:.06em;display:block;width:fit-content;margin-left:36px;margin-top:-8px;margin-bottom:4px}
+.sidebar-menu{padding:10px;flex:1;overflow-y:auto}
+.menu-section{font-size:9px;font-weight:700;color:rgba(255,255,255,0.18);text-transform:uppercase;letter-spacing:.14em;padding:14px 8px 5px}
+.menu-item{display:flex;align-items:center;gap:9px;padding:7px 9px;border-radius:8px;color:rgba(255,255,255,0.3);font-size:12.5px;font-weight:500;cursor:pointer;margin-bottom:1px;border:none;background:none;width:100%;text-align:left}
+.menu-item:hover{background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.65)}
+.menu-item.ativo{background:rgba(59,130,246,0.14);color:#93c5fd;font-weight:600}
+.sidebar-footer{padding:10px;border-top:1px solid var(--border)}
+.btn-sair-admin{display:flex;align-items:center;gap:8px;width:100%;padding:7px 9px;border-radius:8px;background:none;border:none;color:rgba(255,255,255,0.2);font-size:12px;font-weight:500;cursor:pointer;font-family:inherit}
+.btn-sair-admin:hover{background:var(--red-bg);color:#f87171}
+
+.main{margin-left:220px;padding:0 32px 60px;min-height:100vh}
+.topbar{height:54px;background:rgba(7,11,20,0.95);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:0 32px;display:flex;align-items:center;justify-content:space-between;margin:0 -32px 28px;position:sticky;top:0;z-index:50}
+.topbar-title{font-size:17px;font-weight:800;color:var(--text);letter-spacing:-0.02em}
+.topbar-sub{font-size:11.5px;color:var(--text2);margin-top:1px}
+.topbar-right{display:flex;align-items:center;gap:10px}
+.topbar-time{font-size:12px;color:var(--text3);font-variant-numeric:tabular-nums}
+
+/* PAGES */
+.page{display:none}.page.ativo{display:block;animation:pageIn .25s cubic-bezier(.4,0,.2,1)}
+@keyframes pageIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+/* CARDS */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:28px}
+.stat{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;position:relative;overflow:hidden}
+.stat:hover{transform:translateY(-2px);box-shadow:var(--shadow-md);border-color:var(--border2)}
+.stat-icon{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;margin-bottom:14px}
+.stat-icon.blue{background:var(--accent-light);border:1px solid var(--accent-mid)}
+.stat-icon.green{background:var(--green-bg);border:1px solid var(--green-border)}
+.stat-icon.yellow{background:var(--yellow-bg);border:1px solid var(--yellow-border)}
+.stat-icon.purple{background:var(--purple-bg);border:1px solid var(--purple-border)}
+.stat-icon.red{background:var(--red-bg);border:1px solid var(--red-border)}
+.stat-num{font-family:'Plus Jakarta Sans',sans-serif;font-size:26px;font-weight:800;color:var(--text);letter-spacing:-0.04em;line-height:1;margin-bottom:5px}
+.stat-label{font-size:10px;color:var(--text2);font-weight:600;text-transform:uppercase;letter-spacing:.08em}
+.stat-delta{font-size:10.5px;font-weight:700;color:var(--green-2);margin-top:4px}
+
+.card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow-sm);margin-bottom:20px}
+.card-header{padding:14px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.card-title{font-size:13.5px;font-weight:700;color:var(--text)}
+.card-actions{display:flex;gap:8px;align-items:center}
+
+/* TABLE */
+.tbl-head{display:grid;padding:10px 20px;background:rgba(255,255,255,0.015);border-bottom:1px solid var(--border)}
+.tbl-th{font-size:9.5px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.1em}
+.tbl-row{display:grid;padding:13px 20px;border-bottom:1px solid var(--border);align-items:center;cursor:default}
+.tbl-row:last-child{border-bottom:none}
+.tbl-row:hover{background:rgba(255,255,255,0.02)}
+.vazio{text-align:center;color:var(--text3);padding:44px 20px;font-size:13px}
+.badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:100px;font-size:11px;font-weight:700}
+.badge::before{content:'';width:4px;height:4px;border-radius:50%;flex-shrink:0}
+.badge.ativo{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border)}.badge.ativo::before{background:var(--green)}
+.badge.trial{background:var(--yellow-bg);color:var(--yellow);border:1px solid var(--yellow-border)}.badge.trial::before{background:var(--yellow)}
+.badge.cancelado{background:var(--red-bg);color:var(--red);border:1px solid var(--red-border)}.badge.cancelado::before{background:var(--red)}
+.badge.pago{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border)}.badge.pago::before{background:var(--green)}
+.badge.pendente{background:var(--yellow-bg);color:var(--yellow);border:1px solid var(--yellow-border)}.badge.pendente::before{background:var(--yellow)}
+.badge.pro{background:var(--purple-bg);color:var(--purple);border:1px solid var(--purple-border)}.badge.pro::before{background:var(--purple)}
+.badge.basico{background:var(--accent-light);color:var(--accent);border:1px solid var(--accent-mid)}.badge.basico::before{background:var(--accent)}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:7px;padding:7px 15px;border-radius:8px;font-size:12.5px;font-weight:600;border:none;white-space:nowrap}
+.btn-primary{background:var(--accent);color:#fff;box-shadow:var(--shadow-accent)}.btn-primary:hover{background:var(--accent-hover);transform:translateY(-1px)}
+.btn-success{background:var(--green);color:#fff;box-shadow:0 2px 10px rgba(16,185,129,0.3)}.btn-success:hover{background:#059669;transform:translateY(-1px)}
+.btn-danger{background:var(--red);color:#fff;box-shadow:0 2px 10px rgba(239,68,68,0.25)}.btn-danger:hover{background:#dc2626}
+.btn-ghost{background:rgba(255,255,255,0.04);color:var(--text2);border:1px solid var(--border2)}.btn-ghost:hover{background:rgba(255,255,255,0.08);color:var(--text)}
+.btn-sm{padding:5px 11px;font-size:11.5px}
+
+/* AFILIADOS PAGE */
+.afiliado-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
+.af-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow-sm)}
+.af-card:hover{border-color:var(--border2)}
+.af-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px}
+.af-avatar{width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#1d4ed8,#7c3aed);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;color:#fff;flex-shrink:0}
+.af-nome{font-size:15px;font-weight:800;color:var(--text);margin-bottom:2px}
+.af-codigo{font-size:11px;color:var(--accent);font-weight:600;font-family:monospace;background:var(--accent-light);padding:2px 8px;border-radius:5px;border:1px solid var(--accent-mid)}
+.af-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+.af-stat{background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:10px;padding:12px;text-align:center}
+.af-stat-num{font-family:'Plus Jakarta Sans',sans-serif;font-size:20px;font-weight:800;color:var(--text);letter-spacing:-0.03em}
+.af-stat-label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-top:2px;font-weight:600}
+.af-link-box{background:rgba(255,255,255,0.03);border:1px solid var(--border2);border-radius:9px;padding:11px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.af-link-text{font-size:11px;color:var(--text2);word-break:break-all;flex:1}
+.saque-pendente{background:var(--yellow-bg);border:1px solid var(--yellow-border);border-radius:9px;padding:10px 14px;font-size:12px;color:var(--yellow);display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+
+/* CONFIGURAÇÕES */
+.config-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.config-section{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow-sm)}
+.config-title{font-size:13.5px;font-weight:700;color:var(--text);margin-bottom:18px;display:flex;align-items:center;gap:8px}
+.config-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);gap:12px;flex-wrap:wrap}
+.config-row:last-child{border-bottom:none}
+.config-key{font-size:13px;font-weight:600;color:var(--text)}
+.config-sub{font-size:11px;color:var(--text2);margin-top:2px}
+.config-val{font-size:13px;font-weight:700;color:var(--green-2)}
+.input-sm{padding:7px 12px;border:1px solid var(--border2);border-radius:8px;font-size:13px;outline:none;font-family:inherit;color:var(--text);background:var(--bg-input);min-width:100px}
+.input-sm:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-light)}
+
+/* RECEITA */
+.receita-hero{background:linear-gradient(135deg,#0a1628,#0d1f3c,#081526);border:1px solid rgba(59,130,246,0.18);border-radius:var(--radius);padding:28px 32px;margin-bottom:20px;position:relative;overflow:hidden}
+.receita-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 70% 50%,rgba(59,130,246,0.07),transparent 65%);pointer-events:none}
+.receita-amount{font-family:'Plus Jakarta Sans',sans-serif;font-size:44px;font-weight:900;color:#fff;letter-spacing:-0.05em;line-height:1}
+.receita-label{font-size:13px;color:rgba(139,154,180,0.8);margin-top:6px}
+.receita-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:22px}
+.receita-item{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:11px;padding:16px}
+.receita-item-num{font-family:'Plus Jakarta Sans',sans-serif;font-size:22px;font-weight:800;color:#fff;letter-spacing:-0.03em}
+.receita-item-label{font-size:11px;color:rgba(139,154,180,0.75);margin-top:4px;text-transform:uppercase;letter-spacing:.06em;font-weight:600}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:200;display:none;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(8px)}
+.modal-overlay.show{display:flex}
+.modal{background:var(--bg-card);border:1px solid var(--border2);border-radius:18px;padding:26px;width:100%;max-width:480px;box-shadow:0 24px 80px rgba(0,0,0,0.7);animation:modalIn .22s cubic-bezier(.4,0,.2,1)}
+@keyframes modalIn{from{opacity:0;transform:scale(.96) translateY(8px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+.modal-title{font-size:16px;font-weight:700;color:var(--text)}
+.modal-close{background:rgba(255,255,255,0.05);border:1px solid var(--border2);width:28px;height:28px;border-radius:7px;cursor:pointer;color:var(--text3);font-size:17px;display:flex;align-items:center;justify-content:center}
+.modal-close:hover{background:var(--red-bg);color:var(--red)}
+.modal-footer{display:flex;gap:9px;margin-top:20px}
+.modal-footer .btn{flex:1;justify-content:center}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;background:#0f1624;border:1px solid rgba(52,211,153,0.4);border-radius:12px;padding:14px 20px;font-size:13px;font-weight:600;color:#34d399;box-shadow:0 8px 32px rgba(0,0,0,0.6);z-index:9999;transform:translateY(80px);opacity:0;transition:all .3s cubic-bezier(.4,0,.2,1);max-width:320px}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.danger{color:#f87171;border-color:rgba(239,68,68,0.4)}
+
+/* SEARCH */
+.search-input{padding:8px 14px;border:1px solid var(--border2);border-radius:9px;font-size:13px;outline:none;font-family:inherit;color:var(--text);background:var(--bg-input);min-width:220px}
+.search-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-light)}
+.filter-select{padding:8px 12px;border:1px solid var(--border2);border-radius:9px;font-size:13px;outline:none;font-family:inherit;color:var(--text);background:var(--bg-input);cursor:pointer}
+.filter-select:focus{border-color:var(--accent)}
+
+@media(max-width:900px){
+  .sidebar{transform:translateX(-220px)}
+  .sidebar.aberta{transform:translateX(0)}
+  .main{margin-left:0;padding:0 14px 60px}
+  .topbar{margin:0 -14px 20px;padding:0 16px}
+  .stats-grid{grid-template-columns:repeat(2,1fr);gap:10px}
+  .afiliado-grid,.config-grid{grid-template-columns:1fr}
+  .receita-grid{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="login-logo-icon">
+        <svg width="18" height="18" viewBox="0 0 15 15" fill="none"><rect x="1.5" y="2" width="12" height="11" rx="2" stroke="white" stroke-width="1.3"/><path d="M5 1.5v2M10 1.5v2M1.5 5.5h12" stroke="white" stroke-width="1.3" stroke-linecap="round"/></svg>
+      </div>
+      <div class="login-logo-text">Agendo<span>Rápido</span></div>
+    </div>
+    <div class="login-title">Painel Admin</div>
+    <div class="login-sub">Acesso restrito ao administrador do sistema.</div>
+    <label class="field-label">Usuário</label>
+    <input class="field-input" type="text" id="admin-user" placeholder="admin" onkeydown="if(event.key==='Enter')document.getElementById('admin-pass').focus()">
+    <label class="field-label">Senha</label>
+    <input class="field-input" type="password" id="admin-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter')fazerLoginAdmin()">
+    <button class="btn-login" onclick="fazerLoginAdmin()">Entrar como administrador</button>
+    <div class="login-error" id="login-error"></div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app-screen">
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="sidebar-brand-icon"><svg width="14" height="14" viewBox="0 0 15 15" fill="none"><rect x="1.5" y="2" width="12" height="11" rx="2" stroke="white" stroke-width="1.3"/><path d="M5 1.5v2M10 1.5v2M1.5 5.5h12" stroke="white" stroke-width="1.3" stroke-linecap="round"/></svg></div>
+      <div class="sidebar-brand-text">Agendo<span>Rápido</span></div>
+    </div>
+    <div class="admin-pill">ADMIN</div>
+    <div class="sidebar-menu">
+      <div class="menu-section">Visão Geral</div>
+      <button class="menu-item ativo" onclick="irPara('dashboard',this)">
+        <svg width="14" height="14" viewBox="0 0 15 15" fill="none"><rect x="1.5" y="2.5" width="12" height="11" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M5 1.5v2M10 1.5v2M1.5 5.5h12" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+        Dashboard
+      </button>
+      <button class="menu-item" onclick="irPara('receita',this)">
+        <svg width="14" height="14" viewBox="0 0 15 15" fill="none"><path d="M2 11.5L5.5 8l3 3L13 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Receita & MRR
+      </button>
+      <div class="menu-section">Clientes</div>
+      <button class="menu-item" onclick="irPara('usuarios',this)">
+        <svg width="14" height="14" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="5" r="2.5" stroke="currentColor" stroke-width="1.3"/><path d="M2 13c0-2.8 2.5-5 5.5-5s5.5 2.2 5.5 5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+        Usuários
+      </button>
+      <button class="menu-item" onclick="irPara('planos',this)">
+        <svg width="14" height="14" viewBox="0 0 15 15" fill="none"><rect x="1.5" y="3.5" width="12" height="9" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M1.5 6.5h12" stroke="currentColor" stroke-width="1.3"/></svg>
+        Planos & Assinaturas
+      </button>
+      <div class="menu-section">Afiliados</div>
+      <button class="menu-item" onclick="irPara('afiliados',this)">
+        <svg width="14" height="14" viewBox="0 0 15 15" fill="none"><path d="M5 7.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5ZM10.5 8a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z" stroke="currentColor" stroke-width="1.3"/><path d="M1 13c0-2.2 1.8-4 4-4s4 1.8 4 4M10.5 9.5c1.7 0 3 1.3 3 3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+        Afiliados
+      </button>
+      <button class="menu-item" onclick="irPara('saques',this)">
+        <svg width="14" height="14" viewBox="0 0 15 15" fill="none"><rect x="1.5" y="4" width="12" height="8" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M5 8h5M1.5 6.5h12" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+        Solicitações de Saque
+      </button>
+      <div class="menu-section">Sistema</div>
+      <button class="menu-item" onclick="irPara('config',this)">
+        <svg width="14" height="14" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="7.5" r="2" stroke="currentColor" stroke-width="1.3"/><path d="M7.5 1v1.5M7.5 12.5V14M1 7.5h1.5M12.5 7.5H14M3 3l1 1M11 11l1 1M3 12l1-1M11 4l1-1" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+        Configurações
+      </button>
+    </div>
+    <div class="sidebar-footer">
+      <button class="btn-sair-admin" onclick="sair()">
+        <svg width="12" height="12" viewBox="0 0 13 13" fill="none"><path d="M5 6.5h6M8.5 4.5L11 6.5l-2.5 2M7.5 2H3a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h4.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Sair do admin
+      </button>
+    </div>
+  </nav>
+
+  <div class="main">
+    <div class="topbar">
+      <div>
+        <div class="topbar-title" id="topbar-title">Dashboard</div>
+        <div class="topbar-sub" id="topbar-sub">Visão geral do AgendoRápido</div>
+      </div>
+      <div class="topbar-right">
+        <div class="topbar-time" id="topbar-time">—</div>
+        <span style="font-size:11px;font-weight:700;background:var(--red-bg);border:1px solid var(--red-border);color:#f87171;padding:4px 10px;border-radius:100px">ADMIN</span>
+      </div>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div class="page ativo" id="page-dashboard">
+      <div class="stats-grid">
+        <div class="stat" onclick="irPara('usuarios',document.querySelector('[onclick*=usuarios]'))">
+          <div class="stat-icon blue"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="6" r="2.5" stroke="#60a5fa" stroke-width="1.4"/><path d="M2.5 14c0-3 2.5-5 5.5-5s5.5 2 5.5 5" stroke="#60a5fa" stroke-width="1.4" stroke-linecap="round"/></svg></div>
+          <div class="stat-num" id="d-total-users">0</div>
+          <div class="stat-label">Total de usuários</div>
+          <div class="stat-delta" id="d-users-delta"></div>
+        </div>
+        <div class="stat">
+          <div class="stat-icon green"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8l4 4L14 4" stroke="#34d399" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="stat-num" id="d-ativos" style="color:var(--green-2)">0</div>
+          <div class="stat-label">Assinantes ativos</div>
+        </div>
+        <div class="stat">
+          <div class="stat-icon yellow"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="#f59e0b" stroke-width="1.4"/><path d="M8 5v3.5l2.5 2.5" stroke="#f59e0b" stroke-width="1.4" stroke-linecap="round"/></svg></div>
+          <div class="stat-num" id="d-trials" style="color:var(--yellow)">0</div>
+          <div class="stat-label">Em trial</div>
+        </div>
+        <div class="stat">
+          <div class="stat-icon green"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="4" width="12" height="9" rx="1.5" stroke="#34d399" stroke-width="1.4"/><path d="M2 7h12M6 10.5h4" stroke="#34d399" stroke-width="1.4" stroke-linecap="round"/></svg></div>
+          <div class="stat-num" id="d-mrr" style="color:var(--green-2)">R$0</div>
+          <div class="stat-label">MRR (receita mensal)</div>
+        </div>
+      </div>
+      <div class="stats-grid" style="grid-template-columns:repeat(3,1fr)">
+        <div class="stat">
+          <div class="stat-icon red"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 2v6M8 10v.5" stroke="#f87171" stroke-width="1.6" stroke-linecap="round"/><circle cx="8" cy="8" r="6.5" stroke="#f87171" stroke-width="1.3"/></svg></div>
+          <div class="stat-num" id="d-churn" style="color:#f87171">0</div>
+          <div class="stat-label">Cancelamentos este mês</div>
+        </div>
+        <div class="stat">
+          <div class="stat-icon purple"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M5 8a3 3 0 0 0 3 3M8 5c-1.7 0-3 1.3-3 3" stroke="#a78bfa" stroke-width="1.4" stroke-linecap="round"/><circle cx="8" cy="8" r="6.5" stroke="#a78bfa" stroke-width="1.3"/></svg></div>
+          <div class="stat-num" id="d-afiliados-comissao" style="color:var(--purple)">R$0</div>
+          <div class="stat-label">Comissões a pagar</div>
+        </div>
+        <div class="stat">
+          <div class="stat-icon green"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 11.5L5.5 8l3 3L14 4" stroke="#34d399" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="stat-num" id="d-receita-liquida" style="color:var(--green-2)">R$0</div>
+          <div class="stat-label">Receita líquida (após comissões)</div>
+        </div>
+      </div>
+
+      <!-- Atividade recente -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Usuários mais recentes</div>
+          <button class="btn btn-ghost btn-sm" onclick="irPara('usuarios',document.querySelector('[onclick*=usuarios]'))">Ver todos</button>
+        </div>
+        <div class="tbl-head" style="grid-template-columns:2fr 1fr 1fr 1fr">
+          <div class="tbl-th">Usuário</div>
+          <div class="tbl-th">Plano</div>
+          <div class="tbl-th">Status</div>
+          <div class="tbl-th">Cadastro</div>
+        </div>
+        <div id="dash-usuarios-lista"></div>
+      </div>
+    </div>
+
+    <!-- RECEITA -->
+    <div class="page" id="page-receita">
+      <div class="receita-hero">
+        <div style="font-size:11px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.14em;margin-bottom:8px">Receita total acumulada</div>
+        <div class="receita-amount" id="r-total">R$ 0,00</div>
+        <div class="receita-label">Desde o início do AgendoRápido</div>
+        <div class="receita-grid">
+          <div class="receita-item"><div class="receita-item-num" id="r-mrr">R$0</div><div class="receita-item-label">MRR atual</div></div>
+          <div class="receita-item"><div class="receita-item-num" id="r-comissoes">R$0</div><div class="receita-item-label">Comissões pagas</div></div>
+          <div class="receita-item"><div class="receita-item-num" id="r-liquida">R$0</div><div class="receita-item-label">Receita líquida / mês</div></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Histórico de receita mensal</div>
+        </div>
+        <div id="receita-historico" style="padding:20px">
+          <div class="vazio">Sem dados históricos ainda</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- USUÁRIOS -->
+    <div class="page" id="page-usuarios">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Todos os usuários</div>
+          <div class="card-actions">
+            <input class="search-input" type="search" id="busca-usuarios" placeholder="Buscar por nome ou email..." oninput="filtrarUsuarios(this.value)">
+            <select class="filter-select" id="filtro-status" onchange="filtrarUsuarios(document.getElementById('busca-usuarios').value)">
+              <option value="">Todos</option>
+              <option value="ativo">Ativos</option>
+              <option value="trial">Trial</option>
+              <option value="cancelado">Cancelados</option>
+            </select>
+          </div>
+        </div>
+        <div class="tbl-head" style="grid-template-columns:2fr 1fr 1fr 1fr 1fr 1fr">
+          <div class="tbl-th">Usuário</div>
+          <div class="tbl-th">Plano</div>
+          <div class="tbl-th">Status</div>
+          <div class="tbl-th">Afiliado</div>
+          <div class="tbl-th">Cadastro</div>
+          <div class="tbl-th">Ações</div>
+        </div>
+        <div id="usuarios-lista"></div>
+      </div>
+    </div>
+
+    <!-- PLANOS -->
+    <div class="page" id="page-planos">
+      <div class="card" style="max-width:600px">
+        <div class="card-header"><div class="card-title">Configurar planos e preços</div></div>
+        <div style="padding:22px">
+          <div class="config-row">
+            <div><div class="config-key">Plano Básico</div><div class="config-sub">Funcionalidades essenciais</div></div>
+            <div style="display:flex;align-items:center;gap:8px">
+              <span style="font-size:13px;color:var(--text2)">R$</span>
+              <input class="input-sm" type="number" id="preco-basico" value="97" min="1" style="width:80px">
+              <span style="font-size:12px;color:var(--text2)">/mês</span>
+            </div>
+          </div>
+          <div class="config-row">
+            <div><div class="config-key">Plano Pro</div><div class="config-sub">Todos os recursos + múltiplos painéis</div></div>
+            <div style="display:flex;align-items:center;gap:8px">
+              <span style="font-size:13px;color:var(--text2)">R$</span>
+              <input class="input-sm" type="number" id="preco-pro" value="197" min="1" style="width:80px">
+              <span style="font-size:12px;color:var(--text2)">/mês</span>
+            </div>
+          </div>
+          <div class="config-row">
+            <div><div class="config-key">Período trial</div><div class="config-sub">Dias gratuitos ao se cadastrar</div></div>
+            <div style="display:flex;align-items:center;gap:8px">
+              <input class="input-sm" type="number" id="dias-trial" value="14" min="1" max="30" style="width:70px">
+              <span style="font-size:12px;color:var(--text2)">dias</span>
+            </div>
+          </div>
+          <div class="config-row">
+            <div><div class="config-key">Comissão afiliados</div><div class="config-sub">% pago para cada afiliado por venda</div></div>
+            <div style="display:flex;align-items:center;gap:8px">
+              <input class="input-sm" type="number" id="pct-comissao" value="50" min="1" max="90" style="width:70px">
+              <span style="font-size:12px;color:var(--text2)">%</span>
+            </div>
+          </div>
+          <div style="margin-top:20px;display:flex;gap:10px">
+            <button class="btn btn-success" onclick="salvarPlanos()">Salvar configurações</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AFILIADOS -->
+    <div class="page" id="page-afiliados">
+      <div class="afiliado-grid" id="afiliados-grid"></div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Adicionar novo afiliado</div>
+        </div>
+        <div style="padding:20px;display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end">
+          <div><label class="tbl-th" style="display:block;margin-bottom:6px">Nome</label><input class="input-sm" type="text" id="novo-af-nome" placeholder="Nome completo" style="width:200px"></div>
+          <div><label class="tbl-th" style="display:block;margin-bottom:6px">Código único</label><input class="input-sm" type="text" id="novo-af-codigo" placeholder="EX: PEDRO50" style="width:140px;text-transform:uppercase"></div>
+          <div><label class="tbl-th" style="display:block;margin-bottom:6px">Comissão %</label><input class="input-sm" type="number" id="novo-af-pct" value="50" min="1" max="90" style="width:80px"></div>
+          <button class="btn btn-primary" onclick="adicionarAfiliado()">Adicionar afiliado</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SAQUES -->
+    <div class="page" id="page-saques">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Solicitações de saque</div>
+          <div class="card-actions">
+            <span id="saques-pendentes-badge" style="background:var(--yellow-bg);border:1px solid var(--yellow-border);color:var(--yellow);font-size:11px;font-weight:700;padding:3px 10px;border-radius:100px">0 pendentes</span>
+          </div>
+        </div>
+        <div class="tbl-head" style="grid-template-columns:2fr 1fr 1fr 1fr 1fr">
+          <div class="tbl-th">Afiliado</div>
+          <div class="tbl-th">Valor</div>
+          <div class="tbl-th">Chave Pix</div>
+          <div class="tbl-th">Solicitado em</div>
+          <div class="tbl-th">Ações</div>
+        </div>
+        <div id="saques-lista"></div>
+      </div>
+    </div>
+
+    <!-- CONFIG -->
+    <div class="page" id="page-config">
+      <div class="config-grid">
+        <div class="config-section">
+          <div class="config-title">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="2" stroke="var(--accent)" stroke-width="1.4"/><path d="M8 1v1.5M8 13.5V15M1 8h1.5M13.5 8H15" stroke="var(--accent)" stroke-width="1.4" stroke-linecap="round"/></svg>
+            Credenciais de admin
+          </div>
+          <div class="config-row">
+            <div><div class="config-key">Usuário admin</div></div>
+            <input class="input-sm" type="text" id="cfg-admin-user" value="admin">
+          </div>
+          <div class="config-row">
+            <div><div class="config-key">Senha</div></div>
+            <input class="input-sm" type="password" id="cfg-admin-pass" value="admin123">
+          </div>
+          <div style="margin-top:16px"><button class="btn btn-primary btn-sm" onclick="salvarCredenciais()">Salvar credenciais</button></div>
+        </div>
+        <div class="config-section">
+          <div class="config-title">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="4" width="12" height="9" rx="1.5" stroke="var(--green)" stroke-width="1.4"/><path d="M2 7h12" stroke="var(--green)" stroke-width="1.4" stroke-linecap="round"/></svg>
+            Status do sistema
+          </div>
+          <div class="config-row"><div class="config-key">API Backend</div><div class="config-val">🟢 Online</div></div>
+          <div class="config-row"><div class="config-key">Total usuários</div><div class="config-val" id="cfg-total-users">—</div></div>
+          <div class="config-row"><div class="config-key">MRR atual</div><div class="config-val" id="cfg-mrr">—</div></div>
+          <div class="config-row"><div class="config-key">Versão</div><div class="config-val">v2.0.0</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL USUARIO -->
+<div class="modal-overlay" id="modal-usuario">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-u-titulo">Detalhes do usuário</div>
+      <button class="modal-close" onclick="fecharModal('modal-usuario')">×</button>
+    </div>
+    <div id="modal-u-body"></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="fecharModal('modal-usuario')">Fechar</button>
+      <button class="btn btn-danger btn-sm" id="modal-u-cancelar" onclick="cancelarUsuario()">Cancelar assinatura</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── CONFIG ADMIN ──
+let ADMIN_CREDENTIALS = { user: 'admin', pass: 'admin123' }
+
+// ── DADOS DOS AFILIADOS (mesmos do painel afiliado.html) ──
+let AFILIADOS = {
+  'AMIGO1': { nome: 'João Silva', codigo: 'AMIGO1', comissao: 50,
+    clientes: [
+      { nome: 'Barbearia Central', plano: 'Pro', status: 'ativo', desde: '2025-01-10', valorPlano: 197 },
+      { nome: 'Salão da Maria', plano: 'Básico', status: 'ativo', desde: '2025-02-05', valorPlano: 97 },
+      { nome: 'Clínica Bem Estar', plano: 'Pro', status: 'trial', desde: '2025-04-01', valorPlano: 0 },
+    ],
+    saques: [{ id:'s1', data:'2025-03-01', valor:147, status:'pago', pix:'joao@email.com' }]
+  },
+  'AMIGO2': { nome: 'Pedro Costa', codigo: 'AMIGO2', comissao: 50,
+    clientes: [
+      { nome: 'Estética Bella', plano: 'Pro', status: 'ativo', desde: '2025-02-20', valorPlano: 197 },
+      { nome: 'Personal Fitness', plano: 'Básico', status: 'cancelado', desde: '2024-12-10', valorPlano: 0 },
+    ],
+    saques: [{ id:'s2', data:'2025-04-08', valor:98.5, status:'pendente', pix:'55 21 99999-0001' }]
+  }
+}
+
+// ── MOCK de usuários do SaaS ──
+let USUARIOS = [
+  { id:1, nome:'Barbearia Central', email:'barb@central.com', plano:'Pro', status:'ativo', afiliado:'AMIGO1', cadastro:'2025-01-10', valor:197 },
+  { id:2, nome:'Salão da Maria', email:'maria@salao.com', plano:'Básico', status:'ativo', afiliado:'AMIGO1', cadastro:'2025-02-05', valor:97 },
+  { id:3, nome:'Clínica Bem Estar', email:'clinica@email.com', plano:'Pro', status:'trial', afiliado:'AMIGO1', cadastro:'2025-04-01', valor:0 },
+  { id:4, nome:'Estética Bella', email:'bella@estetica.com', plano:'Pro', status:'ativo', afiliado:'AMIGO2', cadastro:'2025-02-20', valor:197 },
+  { id:5, nome:'Personal Fitness', email:'fit@personal.com', plano:'Básico', status:'cancelado', afiliado:'AMIGO2', cadastro:'2024-12-10', valor:0 },
+  { id:6, nome:'Tatuagem Ink', email:'ink@tattoo.com', plano:'Pro', status:'ativo', afiliado:null, cadastro:'2025-03-01', valor:197 },
+  { id:7, nome:'Pet Shop Rex', email:'rex@petshop.com', plano:'Básico', status:'trial', afiliado:null, cadastro:'2025-04-05', valor:0 },
+]
+
+let usuarioSelecionado = null
+let usuariosFiltrados = [...USUARIOS]
+
+// ── AUTH ──
+const ADMIN_KEY = 'ar_admin_logged'
+
+function fazerLoginAdmin() {
+  const user = document.getElementById('admin-user').value.trim()
+  const pass = document.getElementById('admin-pass').value
+  const err = document.getElementById('login-error')
+  if (user === ADMIN_CREDENTIALS.user && pass === ADMIN_CREDENTIALS.pass) {
+    sessionStorage.setItem(ADMIN_KEY, '1')
+    err.textContent = ''
+    carregarApp()
+  } else {
+    err.textContent = 'Credenciais inválidas.'
+  }
+}
+
+function sair() {
+  sessionStorage.removeItem(ADMIN_KEY)
+  document.getElementById('app-screen').style.display = 'none'
+  document.getElementById('login-screen').style.display = 'flex'
+  document.getElementById('admin-pass').value = ''
+}
+
+// ── NAVEGAÇÃO ──
+const TITULOS = {
+  dashboard: ['Dashboard', 'Visão geral do AgendoRápido'],
+  receita: ['Receita & MRR', 'Análise financeira do SaaS'],
+  usuarios: ['Usuários', 'Todos os clientes cadastrados'],
+  planos: ['Planos & Assinaturas', 'Configure preços e períodos'],
+  afiliados: ['Afiliados', 'Gestão dos seus afiliados'],
+  saques: ['Solicitações de Saque', 'Aprovar pagamentos de comissões'],
+  config: ['Configurações', 'Configurações do sistema admin']
+}
+
+function irPara(pagina, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('ativo'))
+  document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('ativo'))
+  const page = document.getElementById('page-' + pagina)
+  if (page) page.classList.add('ativo')
+  if (btn) btn.classList.add('ativo')
+  const t = TITULOS[pagina]
+  if (t) {
+    document.getElementById('topbar-title').textContent = t[0]
+    document.getElementById('topbar-sub').textContent = t[1]
+  }
+  if (pagina === 'afiliados') renderAfiliados()
+  if (pagina === 'saques') renderSaques()
+  if (pagina === 'usuarios') renderUsuarios(USUARIOS)
+  if (pagina === 'receita') renderReceita()
+  if (pagina === 'config') renderConfig()
+}
+
+// ── CALCULAR MÉTRICAS ──
+function calcMetrics() {
+  const ativos = USUARIOS.filter(u => u.status === 'ativo')
+  const trials = USUARIOS.filter(u => u.status === 'trial')
+  const cancelados = USUARIOS.filter(u => u.status === 'cancelado')
+  const mrr = ativos.reduce((s, u) => s + u.valor, 0)
+
+  let totalComissoes = 0
+  Object.values(AFILIADOS).forEach(af => {
+    af.clientes.filter(c => c.status === 'ativo').forEach(c => {
+      totalComissoes += c.valorPlano * af.comissao / 100
+    })
+  })
+
+  let saquesPendentesVal = 0
+  Object.values(AFILIADOS).forEach(af => {
+    af.saques.filter(s => s.status === 'pendente').forEach(s => saquesPendentesVal += s.valor)
+  })
+
+  return { total: USUARIOS.length, ativos: ativos.length, trials: trials.length, cancelados: cancelados.length, mrr, totalComissoes, receitaLiquida: mrr - totalComissoes, saquesPendentesVal }
+}
+
+// ── CARREGAR APP ──
+function carregarApp() {
+  document.getElementById('login-screen').style.display = 'none'
+  document.getElementById('app-screen').style.display = 'block'
+  atualizarRelogio()
+  setInterval(atualizarRelogio, 1000)
+  renderDashboard()
+}
+
+function atualizarRelogio() {
+  const el = document.getElementById('topbar-time')
+  if (el) el.textContent = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+}
+
+function renderDashboard() {
+  const m = calcMetrics()
+  document.getElementById('d-total-users').textContent = m.total
+  document.getElementById('d-ativos').textContent = m.ativos
+  document.getElementById('d-trials').textContent = m.trials
+  document.getElementById('d-mrr').textContent = fmtBRL(m.mrr)
+  document.getElementById('d-churn').textContent = m.cancelados
+  document.getElementById('d-afiliados-comissao').textContent = fmtBRL(m.totalComissoes)
+  document.getElementById('d-receita-liquida').textContent = fmtBRL(m.receitaLiquida)
+
+  const lista = document.getElementById('dash-usuarios-lista')
+  const recent = [...USUARIOS].sort((a,b) => b.cadastro.localeCompare(a.cadastro)).slice(0,5)
+  lista.innerHTML = recent.map(u => `
+    <div class="tbl-row" style="grid-template-columns:2fr 1fr 1fr 1fr">
+      <div><div style="font-size:13.5px;font-weight:700;color:var(--text)">${u.nome}</div><div style="font-size:11.5px;color:var(--text3)">${u.email}</div></div>
+      <div><span class="badge ${u.plano.toLowerCase()}">${u.plano}</span></div>
+      <div><span class="badge ${u.status}">${u.status}</span></div>
+      <div style="font-size:12px;color:var(--text2)">${fmtData(u.cadastro)}</div>
+    </div>
+  `).join('')
+}
+
+function renderReceita() {
+  const m = calcMetrics()
+  const totalAcumulado = m.mrr * 3.5
+  document.getElementById('r-total').textContent = fmtBRL(totalAcumulado)
+  document.getElementById('r-mrr').textContent = fmtBRL(m.mrr)
+  document.getElementById('r-comissoes').textContent = fmtBRL(m.totalComissoes)
+  document.getElementById('r-liquida').textContent = fmtBRL(m.receitaLiquida)
+  document.getElementById('receita-historico').innerHTML = `
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px">
+      ${['Jan','Fev','Mar','Abr'].map((m, i) => `
+        <div style="background:rgba(255,255,255,0.02);border:1px solid var(--border2);border-radius:11px;padding:16px;text-align:center">
+          <div style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px">${m} 2025</div>
+          <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:20px;font-weight:800;color:var(--green-2)">${fmtBRL([294, 394, 444, 491][i])}</div>
+          <div style="font-size:10px;color:var(--text2);margin-top:4px">${[3, 4, 4, 5][i]} assinantes</div>
+        </div>
+      `).join('')}
+    </div>
+  `
+}
+
+function renderUsuarios(lista) {
+  const el = document.getElementById('usuarios-lista')
+  if (!lista.length) { el.innerHTML = '<div class="vazio">Nenhum usuário encontrado</div>'; return }
+  el.innerHTML = lista.map(u => `
+    <div class="tbl-row" style="grid-template-columns:2fr 1fr 1fr 1fr 1fr 1fr">
+      <div><div style="font-size:13.5px;font-weight:700;color:var(--text)">${u.nome}</div><div style="font-size:11.5px;color:var(--text3)">${u.email}</div></div>
+      <div><span class="badge ${u.plano.toLowerCase()}">${u.plano}</span></div>
+      <div><span class="badge ${u.status}">${u.status}</span></div>
+      <div style="font-size:12px;color:${u.afiliado ? 'var(--accent)' : 'var(--text3)'}">${u.afiliado ? AFILIADOS[u.afiliado]?.nome || u.afiliado : '—'}</div>
+      <div style="font-size:12px;color:var(--text2)">${fmtData(u.cadastro)}</div>
+      <div><button class="btn btn-ghost btn-sm" onclick="abrirUsuario(${u.id})">Ver detalhes</button></div>
+    </div>
+  `).join('')
+}
+
+function filtrarUsuarios(q) {
+  const statusFiltro = document.getElementById('filtro-status').value
+  let lista = [...USUARIOS]
+  if (q) { const t = q.toLowerCase(); lista = lista.filter(u => u.nome.toLowerCase().includes(t) || u.email.toLowerCase().includes(t)) }
+  if (statusFiltro) lista = lista.filter(u => u.status === statusFiltro)
+  renderUsuarios(lista)
+}
+
+function abrirUsuario(id) {
+  usuarioSelecionado = USUARIOS.find(u => u.id === id)
+  if (!usuarioSelecionado) return
+  const u = usuarioSelecionado
+  const af = u.afiliado ? AFILIADOS[u.afiliado] : null
+  const comissaoMensal = u.status === 'ativo' && af ? u.valor * af.comissao / 100 : 0
+  document.getElementById('modal-u-titulo').textContent = u.nome
+  document.getElementById('modal-u-body').innerHTML = `
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div style="background:rgba(255,255,255,0.03);border:1px solid var(--border2);border-radius:11px;padding:16px">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div><div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;font-weight:700;margin-bottom:4px">Status</div><span class="badge ${u.status}">${u.status}</span></div>
+          <div><div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;font-weight:700;margin-bottom:4px">Plano</div><span class="badge ${u.plano.toLowerCase()}">${u.plano}</span></div>
+          <div><div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;font-weight:700;margin-bottom:4px">Email</div><div style="font-size:13px;color:var(--text)">${u.email}</div></div>
+          <div><div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;font-weight:700;margin-bottom:4px">Cadastro</div><div style="font-size:13px;color:var(--text)">${fmtData(u.cadastro)}</div></div>
+          <div><div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;font-weight:700;margin-bottom:4px">Valor mensal</div><div style="font-size:14px;font-weight:800;color:var(--green-2)">${u.valor > 0 ? fmtBRL(u.valor) : '—'}</div></div>
+          <div><div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;font-weight:700;margin-bottom:4px">Afiliado</div><div style="font-size:13px;color:${af ? 'var(--accent)' : 'var(--text3)'}">${af ? af.nome + ' (' + af.comissao + '%)' : '—'}</div></div>
+        </div>
+      </div>
+      ${comissaoMensal > 0 ? `<div style="background:var(--yellow-bg);border:1px solid var(--yellow-border);border-radius:10px;padding:12px 16px;font-size:12.5px;color:var(--yellow)">⚠ Este cliente gera <strong>${fmtBRL(comissaoMensal)}/mês</strong> de comissão para ${af.nome}.</div>` : ''}
+    </div>
+  `
+  document.getElementById('modal-u-cancelar').style.display = u.status === 'cancelado' ? 'none' : 'flex'
+  abrirModal('modal-usuario')
+}
+
+function cancelarUsuario() {
+  if (!usuarioSelecionado) return
+  if (!confirm(`Cancelar assinatura de ${usuarioSelecionado.nome}?`)) return
+  USUARIOS = USUARIOS.map(u => u.id === usuarioSelecionado.id ? {...u, status: 'cancelado', valor: 0} : u)
+  fecharModal('modal-usuario')
+  renderUsuarios(USUARIOS)
+  renderDashboard()
+  showToast('✓ Assinatura cancelada')
+}
+
+function renderAfiliados() {
+  const grid = document.getElementById('afiliados-grid')
+  grid.innerHTML = Object.values(AFILIADOS).map(af => {
+    const ativos = af.clientes.filter(c => c.status === 'ativo')
+    const comissaoMes = ativos.reduce((s, c) => s + c.valorPlano * af.comissao / 100, 0)
+    const saquesPend = af.saques.filter(s => s.status === 'pendente')
+    const ini = af.nome[0].toUpperCase()
+    return `
+      <div class="af-card">
+        <div class="af-header">
+          <div style="display:flex;align-items:center;gap:12px">
+            <div class="af-avatar">${ini}</div>
+            <div>
+              <div class="af-nome">${af.nome}</div>
+              <span class="af-codigo">${af.codigo}</span>
+            </div>
+          </div>
+          <span style="font-size:12px;font-weight:700;color:var(--green-2)">${af.comissao}% comissão</span>
+        </div>
+        <div class="af-stats">
+          <div class="af-stat"><div class="af-stat-num">${af.clientes.length}</div><div class="af-stat-label">Indicados</div></div>
+          <div class="af-stat"><div class="af-stat-num" style="color:var(--green-2)">${ativos.length}</div><div class="af-stat-label">Ativos</div></div>
+          <div class="af-stat"><div class="af-stat-num" style="color:var(--yellow);font-size:16px">${fmtBRL(comissaoMes)}</div><div class="af-stat-label">Este mês</div></div>
+        </div>
+        <div class="af-link-box">
+          <div class="af-link-text">agendorapido.com.br/cadastro?ref=${af.codigo}</div>
+          <button class="btn btn-ghost btn-sm" onclick="navigator.clipboard.writeText('https://agendorapido.com.br/cadastro?ref=${af.codigo}').then(()=>showToast('✓ Link copiado!'))">Copiar</button>
+        </div>
+        ${saquesPend.length ? saquesPend.map(s => `<div class="saque-pendente">
+          <span>💰 Saque pendente: <strong>${fmtBRL(s.valor)}</strong> → ${s.pix}</span>
+          <div style="display:flex;gap:6px">
+            <button class="btn btn-success btn-sm" onclick="aprovarSaque('${af.codigo}','${s.id}')">Aprovar</button>
+            <button class="btn btn-ghost btn-sm" onclick="recusarSaque('${af.codigo}','${s.id}')">Recusar</button>
+          </div>
+        </div>`).join('') : ''}
+      </div>
+    `
+  }).join('')
+}
+
+function renderSaques() {
+  const el = document.getElementById('saques-lista')
+  const todos = []
+  Object.values(AFILIADOS).forEach(af => {
+    af.saques.forEach(s => todos.push({ ...s, afiliado: af.nome, codigo: af.codigo }))
+  })
+  const pendentes = todos.filter(s => s.status === 'pendente').length
+  document.getElementById('saques-pendentes-badge').textContent = pendentes + ' pendentes'
+
+  if (!todos.length) { el.innerHTML = '<div class="vazio">Nenhuma solicitação de saque</div>'; return }
+  el.innerHTML = todos.sort((a,b) => b.data.localeCompare(a.data)).map(s => `
+    <div class="tbl-row" style="grid-template-columns:2fr 1fr 1fr 1fr 1fr">
+      <div style="font-size:13.5px;font-weight:700;color:var(--text)">${s.afiliado}</div>
+      <div style="font-size:14px;font-weight:800;color:var(--green-2)">${fmtBRL(s.valor)}</div>
+      <div style="font-size:12px;color:var(--text2)">${s.pix}</div>
+      <div style="font-size:12px;color:var(--text2)">${fmtData(s.data)}</div>
+      <div>
+        ${s.status === 'pendente' ? `
+          <div style="display:flex;gap:5px">
+            <button class="btn btn-success btn-sm" onclick="aprovarSaque('${s.codigo}','${s.id}')">Aprovar</button>
+            <button class="btn btn-danger btn-sm" onclick="recusarSaque('${s.codigo}','${s.id}')">Recusar</button>
+          </div>
+        ` : `<span class="badge ${s.status}">${s.status}</span>`}
+      </div>
+    </div>
+  `).join('')
+}
+
+function aprovarSaque(codigo, saqueId) {
+  if (!confirm('Marcar saque como pago?')) return
+  AFILIADOS[codigo].saques = AFILIADOS[codigo].saques.map(s => s.id === saqueId ? {...s, status:'pago'} : s)
+  renderSaques(); renderAfiliados()
+  showToast('✓ Saque aprovado e marcado como pago!')
+}
+
+function recusarSaque(codigo, saqueId) {
+  if (!confirm('Recusar esta solicitação de saque?')) return
+  AFILIADOS[codigo].saques = AFILIADOS[codigo].saques.filter(s => s.id !== saqueId)
+  renderSaques(); renderAfiliados()
+  showToast('Saque recusado', true)
+}
+
+function adicionarAfiliado() {
+  const nome = document.getElementById('novo-af-nome').value.trim()
+  const codigo = document.getElementById('novo-af-codigo').value.trim().toUpperCase()
+  const pct = parseInt(document.getElementById('novo-af-pct').value)
+  if (!nome || !codigo) { showToast('Preencha nome e código', true); return }
+  if (AFILIADOS[codigo]) { showToast('Código já existe', true); return }
+  AFILIADOS[codigo] = { nome, codigo, comissao: pct, clientes: [], saques: [] }
+  document.getElementById('novo-af-nome').value = ''
+  document.getElementById('novo-af-codigo').value = ''
+  renderAfiliados()
+  showToast('✓ Afiliado ' + nome + ' adicionado!')
+}
+
+function salvarPlanos() {
+  showToast('✓ Configurações salvas!')
+}
+
+function renderConfig() {
+  const m = calcMetrics()
+  document.getElementById('cfg-total-users').textContent = m.total + ' usuários'
+  document.getElementById('cfg-mrr').textContent = fmtBRL(m.mrr) + '/mês'
+}
+
+function salvarCredenciais() {
+  ADMIN_CREDENTIALS.user = document.getElementById('cfg-admin-user').value.trim()
+  ADMIN_CREDENTIALS.pass = document.getElementById('cfg-admin-pass').value
+  showToast('✓ Credenciais atualizadas. Use na próxima sessão.')
+}
+
+function abrirModal(id) { document.getElementById(id).classList.add('show') }
+function fecharModal(id) { document.getElementById(id).classList.remove('show') }
+function fmtBRL(v) { return 'R$ ' + Number(v).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }
+function fmtData(d) { if (!d) return '—'; return d.split('-').reverse().join('/') }
+
+function showToast(msg, err = false) {
+  const t = document.getElementById('toast')
+  t.textContent = msg
+  t.className = 'toast' + (err ? ' danger' : '')
+  t.classList.add('show')
+  setTimeout(() => t.classList.remove('show'), 3200)
+}
+
+// Auto-login
+if (sessionStorage.getItem(ADMIN_KEY)) carregarApp()
+
+// Fechar modal clicando fora
+document.querySelectorAll('.modal-overlay').forEach(o => o.addEventListener('click', e => { if (e.target === o) o.classList.remove('show') }))
+document.addEventListener('keydown', e => { if (e.key === 'Escape') document.querySelectorAll('.modal-overlay.show').forEach(m => m.classList.remove('show')) })
+</script>
+</body>
+</html>
