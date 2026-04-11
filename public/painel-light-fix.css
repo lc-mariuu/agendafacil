@@ -1,0 +1,1008 @@
+/* ════════════════════════════════════════════════════
+   AGENDORAPIDO — LIGHT MODE FIX (adicione após painel.css)
+   Corrige todos os problemas visuais do modo claro
+════════════════════════════════════════════════════ */
+
+/* ── 1. TOKENS DO LIGHT MODE ── */
+body.light-mode {
+  --bg:           #f0f4f8;
+  --bg-card:      #ffffff;
+  --bg-card2:     #f8fafc;
+  --bg-hover:     #f1f5f9;
+  --bg-input:     #ffffff;
+  --bg-row:       #f8fafc;
+  --bg-row-hover: #f1f5f9;
+
+  --sidebar-bg:     #0a0f1e;
+  --sidebar-border: rgba(255,255,255,0.06);
+
+  --accent:       #2563eb;
+  --accent-2:     #3b82f6;
+  --accent-hover: #1d4ed8;
+  --accent-light: rgba(37,99,235,0.08);
+  --accent-mid:   rgba(37,99,235,0.18);
+  --accent-glow:  rgba(37,99,235,0.2);
+
+  --text:  #0f172a;
+  --text2: #475569;
+  --text3: #94a3b8;
+  --text4: #cbd5e1;
+
+  --border:  rgba(15,23,42,0.08);
+  --border2: rgba(15,23,42,0.12);
+  --border3: rgba(15,23,42,0.18);
+
+  --green:        #16a34a;
+  --green-2:      #22c55e;
+  --green-bg:     rgba(22,163,74,0.08);
+  --green-border: rgba(22,163,74,0.22);
+
+  --red:        #dc2626;
+  --red-bg:     rgba(220,38,38,0.08);
+  --red-border: rgba(220,38,38,0.22);
+
+  --yellow:        #d97706;
+  --yellow-bg:     rgba(217,119,6,0.09);
+  --yellow-border: rgba(217,119,6,0.25);
+
+  --purple:        #7c3aed;
+  --purple-bg:     rgba(124,58,237,0.08);
+  --purple-border: rgba(124,58,237,0.22);
+
+  --teal:        #0891b2;
+  --teal-bg:     rgba(8,145,178,0.08);
+  --teal-border: rgba(8,145,178,0.22);
+
+  --shadow-xs:     0 1px 2px rgba(0,0,0,0.04);
+  --shadow-sm:     0 2px 8px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md:     0 4px 24px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.04);
+  --shadow-lg:     0 8px 40px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.05);
+  --shadow-accent: 0 4px 20px rgba(37,99,235,0.25);
+}
+
+/* ── 2. BODY / BASE ── */
+body.light-mode {
+  background: var(--bg);
+  color: var(--text);
+}
+
+body.light-mode ::-webkit-scrollbar-thumb {
+  background: rgba(15,23,42,0.12);
+}
+body.light-mode ::-webkit-scrollbar-thumb:hover {
+  background: var(--accent);
+}
+
+/* ── 3. MAIN ── */
+body.light-mode .main {
+  background: var(--bg);
+}
+
+/* ── 4. TOPBAR DESKTOP ── */
+body.light-mode .main-topbar {
+  background: rgba(240,244,248,0.97);
+  border-bottom: 1px solid rgba(15,23,42,0.1);
+}
+
+body.light-mode .main-topbar-title { color: var(--text); }
+body.light-mode .main-topbar-sub   { color: var(--text2); }
+
+body.light-mode .main-topbar-search {
+  background: #ffffff;
+  border-color: rgba(15,23,42,0.14);
+}
+body.light-mode .main-topbar-search:hover {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-light);
+}
+
+body.light-mode .topbar-icon-btn {
+  background: #ffffff;
+  border-color: rgba(15,23,42,0.12);
+  color: var(--text2);
+}
+body.light-mode .topbar-icon-btn:hover {
+  background: var(--bg-hover);
+  color: var(--text);
+  border-color: rgba(15,23,42,0.2);
+}
+
+/* ── 5. LINK CARD ── */
+body.light-mode .link-card {
+  background: #ffffff;
+  border-color: rgba(15,23,42,0.1);
+}
+body.light-mode .link-card-url { color: var(--text2); }
+
+/* ── 6. STAT CARDS ── */
+body.light-mode .stat-card {
+  background: #ffffff;
+  border-color: rgba(15,23,42,0.1);
+}
+body.light-mode .stat-card:hover {
+  border-color: rgba(15,23,42,0.18);
+}
+body.light-mode .stat-card.card-lucro-semana {
+  background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 50%, #d1fae5 100%);
+  border-color: rgba(22,163,74,0.22);
+}
+body.light-mode .stat-card.card-lucro-semana .stat-valor { color: #15803d; }
+body.light-mode .stat-card.card-lucro-semana .stat-label { color: rgba(21,128,61,0.65); }
+body.light-mode .stat-valor { color: var(--text); }
+body.light-mode .stat-label { color: var(--text2); }
+
+/* ── 7. ALERT BANNER ── */
+body.light-mode .alert-banner {
+  background: #fffbeb;
+  border-color: rgba(217,119,6,0.2);
+  border-left-color: var(--yellow);
+}
+body.light-mode .alert-banner-text { color: var(--text2); }
+body.light-mode .alert-banner-text strong { color: var(--text); }
+body.light-mode .alert-banner-btn {
+  background: #ffffff;
+  border-color: rgba(15,23,42,0.12);
+  color: var(--text);
+}
+body.light-mode .alert-banner-btn:hover {
+  background: var(--bg-hover);
+}
+
+/* ── 8. CARD GENÉRICO ── */
+body.light-mode .card {
+  background: #ffffff;
+  border-color: rgba(15,23,42,0.1);
+}
+body.light-mode .card-header {
+  background: #ffffff;
+  border-bottom-color: rgba(15,23,42,0.08);
+}
+body.light-mode .card-title { color: var(--text); }
+
+/* Linhas da tabela */
+body.light-mode .ag-row:hover { background: var(--bg-row-hover); }
+body.light-mode .ag-card { border-bottom-color: rgba(15,23,42,0.08); }
+body.light-mode .ag-card:hover { background: var(--bg-row-hover); }
+body.light-mode .ag-card-nome { color: var(--text); }
+body.light-mode .ag-nome { color: var(--text); }
+body.light-mode .ag-servico { color: var(--text2); }
+body.light-mode .ag-hora { color: var(--text); }
+body.light-mode .ag-data { color: var(--text3); }
+body.light-mode .ag-preco { color: var(--text); }
+body.light-mode .ag-chip {
+  background: var(--bg-hover);
+  border-color: rgba(15,23,42,0.1);
+  color: var(--text2);
+}
+
+/* ── 9. BADGES ── */
+body.light-mode .badge.confirmado { background: rgba(22,163,74,0.1);  color: #15803d; border-color: rgba(22,163,74,0.25); }
+body.light-mode .badge.pendente   { background: rgba(217,119,6,0.1);  color: #b45309; border-color: rgba(217,119,6,0.25); }
+body.light-mode .badge.cancelado  { background: rgba(220,38,38,0.1);  color: #b91c1c; border-color: rgba(220,38,38,0.25); }
+body.light-mode .badge.concluido  { background: rgba(124,58,237,0.1); color: #6d28d9; border-color: rgba(124,58,237,0.25); }
+body.light-mode .badge.agendado   { background: rgba(37,99,235,0.1);  color: #1d4ed8; border-color: rgba(37,99,235,0.25); }
+
+/* ── 10. BOTÕES DE AÇÃO ── */
+body.light-mode .btn-acao {
+  background: #ffffff;
+  border-color: rgba(15,23,42,0.12);
+  color: var(--text2);
+}
+body.light-mode .btn-acao.concluir:hover { background: rgba(22,163,74,0.08);  color: #15803d; border-color: rgba(22,163,74,0.3); }
+body.light-mode .btn-acao.cancelar:hover { background: rgba(220,38,38,0.08);  color: #b91c1c; border-color: rgba(220,38,38,0.3); }
+
+/* ── 11. PAGINAÇÃO ── */
+body.light-mode .paginacao,
+body.light-mode .ag-nova-pag {
+  background: var(--bg-card2);
+  border-top-color: rgba(15,23,42,0.08);
+}
+body.light-mode .pg-btn,
+body.light-mode .ag-pag-btn {
+  background: #ffffff;
+  border-color: rgba(15,23,42,0.12);
+  color: var(--text2);
+}
+body.light-mode .pg-btn:hover:not(:disabled),
+body.light-mode .ag-pag-btn:hover:not(:disabled) {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: rgba(37,99,235,0.06);
+}
+body.light-mode .pg-btn.ativo,
+body.light-mode .ag-pag-btn.ativo {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #ffffff;
+}
+body.light-mode .paginacao-info,
+body.light-mode .ag-pag-info { color: var(--text2); }
+
+/* ── 12. SECTION BLOCK ── */
+body.light-mode .section-block {
+  background: #ffffff;
+  border-color: rgba(15,23,42,0.1);
+}
+body.light-mode .section-block:hover {
+  border-color: rgba(15,23,42,0.16);
+}
+body.light-mode .section-block-header {
+  background: #ffffff;
+  border-bottom-color: rgba(15,23,42,0.08);
+}
+body.light-mode .section-block-title { color: var(--text); }
+body.light-mode .section-block-sub   { color: var(--text2); }
+
+/* ── 13. HISTÓRICO MENSAL ── */
+body.light-mode .hist-stat {
+  background: var(--bg-card2);
+  border-color: rgba(15,23,42,0.1);
+}
+body.light-mode .hist-stat:hover {
+  border-color: rgba(37,99,235,0.25);
+}
+body.light-mode .hist-stat-valor { color: var(--text); }
+body.light-mode .hist-stat-label { color: var(--text3); }
+body.light-mode .hist-grafico-wrap {
+  background: var(--bg-card2);
+  border-color: rgba(15,23,42,0.08);
+}
+body.light-mode .hist-grafico-title { color: var(--text3); }
+body.light-mode .hist-grafico-label { color: var(--text3); }
+body.light-mode .hist-grafico-label.ativo { color: var(--accent); }
+body.light-mode .hist-nav-btn {
+  background: #ffffff;
+  border-color: rgba(15,23,42,0.12);
+  color: var(--text2);
+}
+body.light-mode .hist-mes-label { color: var(--text); }
+
+/* ── 14. INSIGHT CARD ── */
+body.light-mode .insight-card,
+body.light-mode .finance-card {
+  background: #ffffff;
+  border-color: rgba(15,23,42,0.1);
+}
+body.light-mode .insight-header { border-bottom-color: rgba(15,23,42,0.08); }
+body.light-mode .insight-title  { color: var(--text); }
+body.light-mode .insight-dot    { background: rgba(15,23,42,0.1); }
+body.light-mode .insight-item   { border-top-color: rgba(15,23,42,0.08); }
+body.light-mode .insight-item:hover { background: var(--bg-hover); }
+body.light-mode .insight-item-label { color: var(--text2); }
+body.light-mode .insight-item-value { color: var(--text); }
+body.light-mode .insight-item-sub   { color: var(--green); }
+body.light-mode .insight-item-sub.warning { color: var(--yellow); }
+
+body.light-mode .finance-header { border-bottom-color: rgba(15,23,42,0.08); }
+body.light-mode .finance-title  { color: var(--text); }
+body.light-mode .finance-period { color: var(--text2); }
+body.light-mode .finance-amount { color: var(--text); }
+body.light-mode .finance-amount span { color: var(--text3); }
+body.light-mode .finance-meta   { color: var(--text2); }
+body.light-mode .finance-stats  { border-top-color: rgba(15,23,42,0.08); }
+body.light-mode .finance-stat-label { color: var(--text3); }
+body.light-mode .finance-stat-value { color: var(--text); }
+body.light-mode .finance-mini-chart path[stroke="#3b82f6"] { stroke: #2563eb; }
+
+/* ── 15. FORMS / INPUTS ── */
+body.light-mode .form-group label { color: var(--text2); }
+body.light-mode .form-group input,
+body.light-mode .form-group select,
+body.light-mode .form-group textarea {
+  background: #ffffff;
+  border-color: rgba(15,23,42,0.15);
+  color: var(--text);
+}
+body.light-mode .form-group input::placeholder,
+body.light-mode .form-group textarea::placeholder { color: var(--text3); }
+body.light-mode .form-group input:focus,
+body.light-mode .form-group select:focus,
+body.light-mode .form-group textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+}
+
+body.light-mode .filtro-data {
+  background: #ffffff;
+  border-color: rgba(15,23,42,0.15);
+  color: var(--text);
+}
+
+/* ── 16. MODAIS ── */
+body.light-mode .modal,
+body.light-mode .modal-neg {
+  background: #ffffff;
+  border-color: rgba(15,23,42,0.1);
+}
+body.light-mode .modal-header h2 { color: var(--text); }
+body.light-mode .modal-close {
+  background: var(--bg-hover);
+  border-color: rgba(15,23,42,0.1);
+  color: var(--text3);
+}
+body.light-mode .modal-close:hover {
+  background: rgba(220,38,38,0.08);
+  color: var(--red);
+}
+body.light-mode .btn-cancelar-modal {
+  background: var(--bg-hover);
+  border-color: rgba(15,23,42,0.12);
+  color: var(--text2);
+}
+body.light-mode .btn-cancelar-modal:hover { background: rgba(15,23,42,0.07); }
+body.light-mode .modal-overlay { background: rgba(15,23,42,0.55); }
+
+/* ── 17. BUSCA GLOBAL ── */
+body.light-mode .busca-modal {
+  background: #ffffff;
+  border-color: rgba(15,23,42,0.1);
+}
+body.light-mode .busca-header {
+  border-bottom-color: rgba(15,23,42,0.08);
+}
+body.light-mode .busca-input {
+  color: var(--text);
+  background: transparent;
+}
+body.light-mode .busca-input::placeholder { color: var(--text3); }
+body.light-mode .busca-esc {
+  background: var(--bg-hover);
+  border-color: rgba(15,23,42,0.12);
+  color: var(--text3);
+}
+body.light-mode .busca-secao-label { color: var(--text3); }
+body.light-mode .busca-item:hover  { background: var(--bg-hover); }
+body.light-mode .busca-item-nome   { color: var(--text); }
+body.light-mode .busca-item-sub    { color: var(--text2); }
+body.light-mode .busca-overlay     { background: rgba(15,23,42,0.5); }
+
+/* ── 18. NOTIFICAÇÕES / MENSAGENS ── */
+body.light-mode .topbar-dropdown-panel {
+  background: #ffffff;
+  border-color: rgba(15,23,42,0.1);
+}
+body.light-mode .notif-header,
+body.light-mode .msg-header {
+  border-bottom-color: rgba(15,23,42,0.08);
+}
+body.light-mode .notif-title,
+body.light-mode .msg-title { color: var(--text); }
+body.light-mode .notif-item { border-bottom-color: rgba(15,23,42,0.06); }
+body.light-mode .notif-item:hover { background: var(--bg-hover); }
+body.light-mode .notif-item-titulo { color: var(--text); }
+body.light-mode .notif-item-sub,
+body.light-mode .notif-item-hora  { color: var(--text2); }
+body.light-mode .notif-vazio,
+body.light-mode .msg-vazio { color: var(--text3); }
+body.light-mode .notif-ver-todos {
+  border-top-color: rgba(15,23,42,0.08);
+  color: var(--accent);
+}
+body.light-mode .notif-ver-todos:hover { background: rgba(37,99,235,0.06); }
+body.light-mode .msg-sub  { color: var(--text3); }
+body.light-mode .msg-item { border-bottom-color: rgba(15,23,42,0.06); }
+body.light-mode .msg-item:hover { background: var(--bg-hover); }
+body.light-mode .msg-item-nome { color: var(--text); }
+body.light-mode .msg-item-tel  { color: var(--text3); }
+
+/* ── 19. AVATAR MENU ── */
+body.light-mode .avatar-menu-dropdown {
+  background: #ffffff;
+  border-color: rgba(15,23,42,0.1);
+}
+body.light-mode .avatar-menu-header {
+  border-bottom-color: rgba(15,23,42,0.08);
+}
+body.light-mode .avatar-menu-nome { color: var(--text); }
+body.light-mode .avatar-menu-item { color: var(--text2); }
+body.light-mode .avatar-menu-item:hover {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+body.light-mode .avatar-menu-item.danger:hover {
+  background: rgba(220,38,38,0.07);
+  color: var(--red);
+}
+
+/* ── 20. NEGÓCIO DROPDOWN ── */
+body.light-mode .negocio-dropdown {
+  background: #ffffff;
+  border-color: rgba(15,23,42,0.12);
+}
+body.light-mode .negocio-opt { color: var(--text2); }
+body.light-mode .negocio-opt:hover { background: var(--bg-hover); }
+body.light-mode .negocio-opt.ativo {
+  color: var(--accent);
+  background: rgba(37,99,235,0.06);
+}
+body.light-mode .negocio-add {
+  border-top-color: rgba(15,23,42,0.08);
+  color: var(--text3);
+}
+body.light-mode .negocio-add:hover {
+  background: var(--bg-hover);
+  color: var(--text2);
+}
+
+/* ── 21. AGENDAMENTOS — nova tabela ── */
+body.light-mode .ag-nova-tabela {
+  background: #ffffff;
+  border-color: rgba(15,23,42,0.1);
+}
+body.light-mode .ag-nova-thead {
+  background: var(--bg-card2);
+  border-bottom-color: rgba(15,23,42,0.08);
+}
+body.light-mode .ag-nova-th { color: var(--text3); }
+body.light-mode .ag-nova-row { border-bottom-color: rgba(15,23,42,0.07); }
+body.light-mode .ag-nova-row:hover { background: var(--bg-hover); }
+body.light-mode .ag-nova-nome { color: var(--text); }
+body.light-mode .ag-nova-tel  { color: var(--text3); }
+body.light-mode .ag-nova-serv-nome  { color: var(--text); }
+body.light-mode .ag-nova-serv-dur   { color: var(--text3); }
+body.light-mode .ag-nova-data-row   { color: var(--text2); }
+
+body.light-mode .ag-ver-btn {
+  background: #ffffff;
+  border-color: rgba(15,23,42,0.12);
+  color: var(--text2);
+}
+body.light-mode .ag-ver-btn:hover {
+  background: var(--bg-hover);
+  color: var(--text);
+  border-color: rgba(15,23,42,0.2);
+}
+body.light-mode .ag-dots-btn {
+  background: #ffffff;
+  border-color: rgba(15,23,42,0.12);
+  color: var(--text3);
+}
+body.light-mode .ag-dots-btn:hover {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+
+body.light-mode .ag-mobile-card { border-bottom-color: rgba(15,23,42,0.08); }
+body.light-mode .ag-mobile-chip {
+  background: var(--bg-card2);
+  border-color: rgba(15,23,42,0.1);
+  color: var(--text2);
+}
+
+body.light-mode .ag-filter-bar {
+  background: #ffffff;
+  border-color: rgba(15,23,42,0.1);
+}
+body.light-mode .ag-tabs {
+  background: var(--bg-card2);
+  border-color: rgba(15,23,42,0.1);
+}
+body.light-mode .ag-tab { color: var(--text2); }
+body.light-mode .ag-tab:hover {
+  background: rgba(15,23,42,0.04);
+  color: var(--text);
+}
+body.light-mode .ag-tab.ativo {
+  background: var(--accent);
+  color: #ffffff;
+}
+body.light-mode .ag-date-input {
+  background: #ffffff;
+  border-color: rgba(15,23,42,0.12);
+  color: var(--text3);
+}
+body.light-mode .ag-date-input input[type=date] { color: var(--text); }
+body.light-mode .ag-date-input:hover { border-color: var(--accent); }
+
+body.light-mode .ag-pag-select {
+  background-color: #ffffff;
+  border-color: rgba(15,23,42,0.12);
+  color: var(--text);
+}
+body.light-mode .ag-info-banner {
+  background: rgba(37,99,235,0.05);
+  border-color: rgba(37,99,235,0.18);
+}
+body.light-mode .ag-info-banner-text { color: var(--accent); }
+
+/* Hero da página de agendamentos */
+body.light-mode .ag-page-hero {
+  background: linear-gradient(135deg, #1e3a8a 0%, #1d4ed8 50%, #2563eb 100%);
+  border-color: rgba(37,99,235,0.3);
+}
+body.light-mode .ag-stat-top {
+  background: #ffffff;
+  border-color: rgba(15,23,42,0.1);
+}
+body.light-mode .ag-stat-top:hover { border-color: rgba(15,23,42,0.18); }
+body.light-mode .ag-stat-number { color: var(--text); }
+body.light-mode .ag-stat-desc   { color: var(--text2); }
+
+/* ── 22. HORÁRIOS ── */
+body.light-mode .horarios-hero {
+  background: linear-gradient(135deg, #1e3a8a 0%, #1d4ed8 50%, #1e40af 100%);
+  border-color: rgba(37,99,235,0.3);
+}
+body.light-mode .horarios-dias-card {
+  background: #ffffff;
+  border-color: rgba(15,23,42,0.1);
+}
+body.light-mode .horarios-dias-card-header {
+  border-bottom-color: rgba(15,23,42,0.08);
+}
+body.light-mode .horarios-dias-card-title { color: var(--text); }
+body.light-mode .horarios-dias-card-sub   { color: var(--text2); }
+body.light-mode .horarios-dia-row {
+  border-bottom-color: rgba(15,23,42,0.08);
+}
+body.light-mode .horarios-dia-row:hover { background: var(--bg-hover); }
+body.light-mode .horarios-dia-nome  { color: var(--text); }
+body.light-mode .horarios-dia-horas { color: var(--text2); }
+body.light-mode .horarios-dia-fechado { color: var(--text3); }
+
+body.light-mode .horarios-dia-toggle.off {
+  background: rgba(15,23,42,0.14);
+}
+
+body.light-mode .horarios-gerenciar-btn {
+  background: #ffffff;
+  border-color: rgba(15,23,42,0.12);
+  color: var(--text2);
+}
+body.light-mode .horarios-gerenciar-btn:hover {
+  background: rgba(37,99,235,0.06);
+  color: var(--accent);
+  border-color: var(--accent-mid);
+}
+
+body.light-mode .horarios-save-row {
+  background: var(--bg-card2);
+  border-top-color: rgba(15,23,42,0.08);
+}
+body.light-mode .horarios-autosave { color: var(--text2); }
+body.light-mode .horarios-servico-table-head {
+  border-color: rgba(15,23,42,0.08);
+  background: var(--bg-card2);
+}
+body.light-mode .horarios-servico-table-head span { color: var(--text3); }
+
+body.light-mode .intervalo-btn {
+  background: #ffffff;
+  border-color: rgba(15,23,42,0.14);
+  color: var(--text2);
+}
+body.light-mode .intervalo-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: rgba(37,99,235,0.06);
+}
+body.light-mode .intervalo-btn.selecionado {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #ffffff;
+}
+
+body.light-mode .intervalo-custom-wrap {
+  background: rgba(37,99,235,0.06);
+  border-color: rgba(37,99,235,0.2);
+}
+body.light-mode .intervalo-custom-label { color: var(--accent); }
+body.light-mode #intervalo-custom {
+  background: #ffffff;
+  border-color: rgba(37,99,235,0.25);
+  color: var(--text);
+}
+
+body.light-mode .intervalo-info-box {
+  background: rgba(37,99,235,0.06);
+  border-color: rgba(37,99,235,0.15);
+  color: #1d4ed8;
+}
+
+body.light-mode .servico-intervalo-card {
+  border-bottom-color: rgba(15,23,42,0.08);
+}
+body.light-mode .servico-intervalo-card:hover { background: var(--bg-hover); }
+body.light-mode .servico-intervalo-nome  { color: var(--text); }
+body.light-mode .servico-intervalo-preco { color: var(--text3); }
+body.light-mode .servico-intervalo-select {
+  background: #ffffff;
+  border-color: rgba(15,23,42,0.14);
+  color: var(--text);
+}
+body.light-mode .servico-intervalo-act-btn {
+  background: #ffffff;
+  border-color: rgba(15,23,42,0.12);
+  color: var(--text2);
+}
+body.light-mode .servico-intervalo-act-btn:hover {
+  background: rgba(220,38,38,0.07);
+  color: var(--red);
+}
+body.light-mode .servico-intervalo-act-btn.edit:hover {
+  background: rgba(37,99,235,0.07);
+  color: var(--accent);
+}
+
+/* Dias do modal */
+body.light-mode .dia-row { border-bottom-color: rgba(15,23,42,0.08); }
+body.light-mode .dia-toggle label { color: var(--text); }
+body.light-mode .dia-horarios span { color: var(--text3); }
+body.light-mode .dia-horarios input[type=time] {
+  background: #ffffff;
+  border-color: rgba(15,23,42,0.14);
+  color: var(--text);
+}
+body.light-mode .dia-inativo .dia-toggle label { color: var(--text3); }
+
+/* ── 23. AUTOMAÇÃO ── */
+body.light-mode .auto-hero {
+  background: linear-gradient(135deg, #1e3a8a 0%, #1d4ed8 50%, #1e40af 100%);
+  border-color: rgba(37,99,235,0.3);
+}
+body.light-mode .auto-info-banner {
+  background: rgba(37,99,235,0.06);
+  border-color: rgba(37,99,235,0.18);
+}
+body.light-mode .auto-info-banner-text { color: var(--accent); }
+
+body.light-mode .auto-tipo-card {
+  background: #ffffff;
+  border-color: rgba(15,23,42,0.1);
+}
+body.light-mode .auto-tipo-card:hover {
+  border-color: rgba(15,23,42,0.18);
+}
+body.light-mode .auto-tipo-card.ativo-selected {
+  background: rgba(37,99,235,0.04);
+  border-color: rgba(37,99,235,0.28);
+}
+body.light-mode .auto-tipo-nome { color: var(--text); }
+body.light-mode .auto-tipo-desc { color: var(--text2); }
+
+body.light-mode .auto-tipo-toggle.off { background: rgba(15,23,42,0.14); }
+
+body.light-mode .auto-editor-card {
+  background: #ffffff;
+  border-color: rgba(15,23,42,0.1);
+}
+body.light-mode .auto-editor-header {
+  border-bottom-color: rgba(15,23,42,0.08);
+}
+body.light-mode .auto-editor-header-title { color: var(--text); }
+body.light-mode .auto-editor-header-sub   { color: var(--text2); }
+body.light-mode .auto-msg-label,
+body.light-mode .auto-preview-label { color: var(--text3); }
+body.light-mode .auto-msg-textarea {
+  background: #ffffff;
+  border-color: rgba(15,23,42,0.14);
+  color: var(--text);
+}
+body.light-mode .auto-vars-label { color: var(--text3); }
+body.light-mode .auto-preview-box {
+  background: #1e3a5f;
+  border-color: rgba(255,255,255,0.1);
+}
+body.light-mode .auto-editor-footer { border-top-color: rgba(15,23,42,0.08); }
+body.light-mode .auto-btn-teste {
+  background: #ffffff;
+  border-color: rgba(15,23,42,0.14);
+  color: var(--text2);
+}
+body.light-mode .auto-btn-teste:hover {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+
+body.light-mode .auto-dicas-card {
+  background: #ffffff;
+  border-color: rgba(15,23,42,0.1);
+}
+body.light-mode .auto-dicas-title {
+  color: var(--text);
+  border-bottom-color: rgba(15,23,42,0.08);
+}
+body.light-mode .auto-dica-item:hover { background: var(--bg-hover); }
+body.light-mode .auto-dica-item { border-bottom-color: rgba(15,23,42,0.08); }
+body.light-mode .auto-dica-nome { color: var(--text); }
+body.light-mode .auto-dica-desc { color: var(--text2); }
+
+/* ── 24. CONFIGURAÇÕES ── */
+body.light-mode .cfg-card {
+  background: #ffffff;
+  border-color: rgba(15,23,42,0.1);
+}
+body.light-mode .cfg-card-header {
+  background: #ffffff;
+  border-bottom-color: rgba(15,23,42,0.08);
+}
+body.light-mode .cfg-card-title { color: var(--text); }
+body.light-mode .cfg-card-sub   { color: var(--text2); }
+
+body.light-mode .cfg-input {
+  background: #ffffff;
+  border-color: rgba(15,23,42,0.15);
+  color: var(--text);
+}
+body.light-mode .cfg-input::placeholder { color: var(--text3); }
+body.light-mode .cfg-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+}
+body.light-mode .cfg-preco-input-row {
+  background: #ffffff;
+  border-color: rgba(15,23,42,0.15);
+}
+body.light-mode .cfg-preco-prefix {
+  background: var(--bg-card2);
+  border-right-color: rgba(15,23,42,0.1);
+  color: var(--text2);
+}
+body.light-mode .cfg-add-hint     { color: var(--text3); }
+body.light-mode .cfg-add-hint kbd {
+  background: var(--bg-card2);
+  border-color: rgba(15,23,42,0.12);
+  color: var(--text3);
+}
+body.light-mode .cfg-field-label { color: var(--text2); }
+
+body.light-mode .cfg-serv-row { border-bottom-color: rgba(15,23,42,0.08); }
+body.light-mode .cfg-serv-row:hover { background: var(--bg-hover); }
+body.light-mode .cfg-serv-nome  { color: var(--text); }
+body.light-mode .cfg-serv-desc,
+body.light-mode .cfg-serv-dur   { color: var(--text3); }
+body.light-mode .cfg-serv-preco { color: var(--text); }
+body.light-mode .cfg-drag-handle { color: var(--text3); }
+
+body.light-mode .cfg-act-btn {
+  background: #ffffff;
+  border-color: rgba(15,23,42,0.12);
+  color: var(--text2);
+}
+body.light-mode .cfg-act-edit:hover {
+  background: rgba(37,99,235,0.07);
+  color: var(--accent);
+  border-color: rgba(37,99,235,0.2);
+}
+body.light-mode .cfg-act-del:hover {
+  background: rgba(220,38,38,0.07);
+  color: var(--red);
+  border-color: rgba(220,38,38,0.2);
+}
+
+body.light-mode .cfg-dicas-section {
+  background: var(--bg-card2);
+  border-top-color: rgba(15,23,42,0.08);
+}
+body.light-mode .cfg-dicas-title { color: var(--text2); }
+body.light-mode .cfg-dica-item {
+  background: #ffffff;
+  border-color: rgba(15,23,42,0.1);
+}
+body.light-mode .cfg-dica-item:hover { border-color: rgba(15,23,42,0.18); }
+body.light-mode .cfg-dica-nome { color: var(--text); }
+body.light-mode .cfg-dica-desc { color: var(--text2); }
+
+body.light-mode .cfg-card-footer {
+  background: var(--bg-card2);
+  border-top-color: rgba(15,23,42,0.08);
+}
+body.light-mode .cfg-salvo-msg { color: var(--green); }
+
+body.light-mode .cfg-lista-vazia { color: var(--text3); }
+
+body.light-mode .cfg-hero {
+  background: #ffffff;
+  border-color: rgba(15,23,42,0.1);
+}
+body.light-mode .cfg-hero-col { border-right-color: rgba(15,23,42,0.08); }
+body.light-mode .cfg-hero-title { color: var(--text); }
+body.light-mode .cfg-hero-sub   { color: var(--text2); }
+body.light-mode .cfg-hero-close { color: var(--text3); }
+body.light-mode .cfg-hero-close:hover { background: var(--bg-hover); color: var(--text); }
+
+/* ── 25. BIO ── */
+body.light-mode .foto-wrap {
+  background: var(--bg-card2);
+  border-color: rgba(15,23,42,0.1);
+}
+body.light-mode .foto-status { color: var(--text3); }
+
+/* ── 26. SUPORTE ── */
+body.light-mode .suporte-divider { background: rgba(15,23,42,0.08); }
+body.light-mode .suporte-horarios-title { color: var(--text3); }
+body.light-mode .horario-item {
+  background: var(--bg-card2);
+  border-color: rgba(15,23,42,0.1);
+}
+body.light-mode .horario-item:hover { border-color: rgba(37,99,235,0.25); }
+body.light-mode .horario-item-dia  { color: var(--text3); }
+body.light-mode .horario-item-hora { color: var(--text); }
+
+/* ── 27. WHATSAPP AUTO ── */
+body.light-mode .passo { border-bottom-color: rgba(15,23,42,0.08); }
+body.light-mode .passo-titulo { color: var(--text); }
+body.light-mode .passo-desc   { color: var(--text2); }
+body.light-mode .passo-steps {
+  background: var(--bg-card2);
+  border-color: rgba(15,23,42,0.1);
+}
+body.light-mode .passo-step { color: var(--text2); }
+
+/* ── 28. PAGAMENTOS ── */
+body.light-mode .pag-empty-icon {
+  background: rgba(37,99,235,0.07);
+  border-color: rgba(37,99,235,0.15);
+}
+
+/* ── 29. TRIAL BANNER ── */
+body.light-mode .trial-banner {
+  background: rgba(217,119,6,0.08);
+  border-color: rgba(217,119,6,0.2);
+}
+body.light-mode .trial-banner p { color: #b45309; }
+
+/* ── 30. PAUSAS ── */
+body.light-mode .pausa-item {
+  background: var(--bg-card2);
+  border-color: rgba(15,23,42,0.1);
+}
+body.light-mode .pausa-item-label { color: var(--text); }
+body.light-mode #pausa-inicio,
+body.light-mode #pausa-fim,
+body.light-mode #pausa-label {
+  background: #ffffff;
+  border-color: rgba(15,23,42,0.14);
+  color: var(--text);
+}
+
+/* ── 31. SERVICO TAGS (legado) ── */
+body.light-mode .servico-tag {
+  background: rgba(37,99,235,0.08);
+  border-color: rgba(37,99,235,0.2);
+  color: var(--accent);
+}
+
+/* ── 32. CLIENTES — linha WhatsApp ── */
+body.light-mode #clientes-lista a[href*="wa.me"] {
+  background: rgba(22,163,74,0.08) !important;
+  color: #15803d !important;
+  border-color: rgba(22,163,74,0.22) !important;
+}
+body.light-mode #clientes-lista a[href*="wa.me"]:hover {
+  background: var(--green) !important;
+  color: #ffffff !important;
+}
+
+/* ── 33. TOGGLE SWITCHES (configurações) ── */
+body.light-mode .toggle-track { background: rgba(15,23,42,0.14); }
+body.light-mode input:checked + .toggle-track { background: var(--accent); }
+
+/* ── 34. BOTÕES GLOBAIS ── */
+body.light-mode .btn-copiar,
+body.light-mode .btn-novo,
+body.light-mode .ag-btn-novo {
+  box-shadow: 0 2px 8px rgba(37,99,235,0.2);
+}
+body.light-mode .btn-salvar {
+  box-shadow: 0 2px 8px rgba(22,163,74,0.2);
+}
+body.light-mode .btn-sair {
+  color: rgba(15,23,42,0.3);
+}
+body.light-mode .btn-sair:hover {
+  background: rgba(220,38,38,0.07);
+  color: var(--red);
+}
+body.light-mode .btn-instalar {
+  background: rgba(37,99,235,0.1);
+  color: var(--accent);
+}
+body.light-mode .btn-instalar:hover { background: rgba(37,99,235,0.18); }
+
+/* ── 35. MINI GRÁFICO (stat card lucro) ── */
+body.light-mode .stat-mini-chart path[stroke="#10b981"] { stroke: #16a34a; }
+
+/* ── 36. VER TODOS / MISCELÂNEA ── */
+body.light-mode .vazio { color: var(--text3); }
+body.light-mode .salvo-msg { color: var(--green); }
+body.light-mode .erro-msg  { color: var(--red); }
+body.light-mode .add-servico-erro { color: var(--red); }
+body.light-mode .add-field-group input {
+  background: #ffffff;
+  border-color: rgba(15,23,42,0.14);
+  color: var(--text);
+}
+body.light-mode .add-field-group label { color: var(--text2); }
+
+/* info-box */
+body.light-mode .info-box.green {
+  background: rgba(22,163,74,0.07);
+  border-color: rgba(22,163,74,0.2);
+  color: #15803d;
+}
+body.light-mode .info-box.blue {
+  background: rgba(37,99,235,0.07);
+  border-color: rgba(37,99,235,0.18);
+  color: #1d4ed8;
+}
+
+/* alerta-verde / alerta-azul */
+body.light-mode .alerta-verde {
+  background: rgba(22,163,74,0.07);
+  border-color: rgba(22,163,74,0.2);
+  color: #15803d;
+}
+body.light-mode .alerta-azul {
+  background: rgba(37,99,235,0.07);
+  border-color: rgba(37,99,235,0.18);
+  color: #1d4ed8;
+}
+
+/* passo-step-num */
+body.light-mode .passo-step-num {
+  background: rgba(37,99,235,0.08);
+  border-color: rgba(37,99,235,0.18);
+  color: var(--accent);
+}
+
+/* badge do plano */
+body.light-mode .plano-badge {
+  background: rgba(37,99,235,0.08);
+  border-color: rgba(37,99,235,0.2);
+  color: var(--accent);
+}
+
+/* cfg-servicos-badge */
+body.light-mode .cfg-servicos-badge {
+  background: rgba(22,163,74,0.08);
+  border-color: rgba(22,163,74,0.2);
+  color: #15803d;
+}
+body.light-mode .cfg-badge-dot { background: #16a34a; }
+
+/* auto tipo badges */
+body.light-mode .auto-tipo-badge.ativo {
+  background: rgba(22,163,74,0.1);
+  color: #15803d;
+  border-color: rgba(22,163,74,0.22);
+}
+body.light-mode .auto-tipo-badge.inativo {
+  background: rgba(15,23,42,0.07);
+  color: var(--text3);
+  border-color: rgba(15,23,42,0.12);
+}
+
+/* ag stat badges */
+body.light-mode .ag-stat-badge.blue-b   { background: rgba(37,99,235,0.1);  color: #1d4ed8; }
+body.light-mode .ag-stat-pct            { background: rgba(22,163,74,0.1);  color: #15803d; }
+body.light-mode .ag-stat-pct.red        { background: rgba(220,38,38,0.1);  color: #b91c1c; }
+
+/* hist-stat-icon backgrounds já herdam via variável, ok */
+body.light-mode .hist-stat-icon { background: rgba(37,99,235,0.08); border-color: rgba(37,99,235,0.18); }
+
+/* wpp-link box */
+body.light-mode #wpp-link-agendamento { color: #1d4ed8; opacity: 1; }
+
+/* mensagem preview WhatsApp */
+body.light-mode #wpp-mensagem-preview { color: var(--text2); }
+
+/* ── 37. TOPBAR MOBILE — em light mode mantém escuro por padrão (sidebar dark) ── */
+/* Topbar mobile SEMPRE escuro para contrastar com qualquer tema de página */
+.topbar-mobile {
+  background: rgba(8,12,22,0.97);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+/* ── 38. SIDEBAR (sempre escura) ── */
+body.light-mode .sidebar { background: var(--sidebar-bg); }
+body.light-mode .sidebar-brand-text span { color: #60a5fa; }
+body.light-mode .menu-item { color: rgba(255,255,255,0.35); }
+body.light-mode .menu-item:hover { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.7); }
+body.light-mode .menu-item.ativo { background: rgba(59,130,246,0.15); color: #93c5fd; }
+body.light-mode .menu-section { color: rgba(255,255,255,0.2); }
+body.light-mode .negocio-atual { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.07); }
+body.light-mode .negocio-atual:hover { background: rgba(255,255,255,0.07); }
+body.light-mode .negocio-nome { color: rgba(255,255,255,0.85); }
+
+/* ── FIM DO PATCH ── */
