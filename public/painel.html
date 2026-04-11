@@ -66,10 +66,22 @@
   </div>
 
   <div class="topbar-mobile-right">
+    <button class="topbar-mobile-btn" onclick="toggleTema()" type="button" aria-label="Tema">
+      <svg width="14" height="14" viewBox="0 0 15 15" fill="none">
+        <path d="M7.5 1v1.5M7.5 12.5V14M1 7.5h1.5M12.5 7.5H14M3 3l1 1M11 11l1 1M3 12l1-1M11 4l1-1" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+        <circle cx="7.5" cy="7.5" r="2.5" stroke="currentColor" stroke-width="1.3"/>
+      </svg>
+    </button>
     <button class="topbar-mobile-btn" onclick="abrirBusca()" type="button" aria-label="Buscar">
       <svg width="14" height="14" viewBox="0 0 15 15" fill="none">
         <circle cx="6.5" cy="6.5" r="4.5" stroke="currentColor" stroke-width="1.4"/>
         <path d="M10 10l3 3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+      </svg>
+    </button>
+    <button class="topbar-mobile-btn" onclick="abrirMensagens()" type="button" aria-label="Mensagens">
+      <svg width="14" height="14" viewBox="0 0 15 15" fill="none">
+        <path d="M1.5 2.5h12v9h-12V2.5Z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/>
+        <path d="M1.5 2.5l6 5 6-5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
       </svg>
     </button>
     <button class="topbar-mobile-btn" id="btn-notif-mobile" onclick="abrirNotificacoes()" type="button" aria-label="Notificações" style="position:relative">
@@ -81,7 +93,6 @@
     </button>
   </div>
 </header>
-
 <div class="sidebar-overlay" id="sidebar-overlay" onclick="fecharSidebar()" aria-hidden="true"></div>
 
 <!-- ══════════════════════════════════════════

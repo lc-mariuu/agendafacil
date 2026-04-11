@@ -409,18 +409,65 @@ body {
    TOPBAR MOBILE
 ══════════════════════════════════════════════════ */
 .topbar-mobile {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 54px;
-  background: var(--sidebar-bg);
-  z-index: 99;
-  align-items: center;
+  height: 58px;
+  padding: 0 10px 0 14px;
+  gap: 8px;
   justify-content: space-between;
-  padding: 0 16px;
-  border-bottom: 1px solid var(--sidebar-border);
+}
+
+.topbar-mobile-info {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.topbar-mobile-page-title {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 15px;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.2;
+}
+
+.topbar-mobile-page-sub {
+  font-size: 10px;
+  color: rgba(255,255,255,0.38);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 1px;
+}
+
+.topbar-mobile-right {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.topbar-mobile-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: rgba(255,255,255,0.65);
+  position: relative;
+  flex-shrink: 0;
+}
+
+.topbar-mobile-btn:hover,
+.topbar-mobile-btn:active {
+  background: rgba(255,255,255,0.12);
+  color: #fff;
 }
 .topbar-brand {
   font-family: 'Plus Jakarta Sans', sans-serif;
@@ -3246,27 +3293,19 @@ body.light-mode .cfg-card-footer { background: var(--bg); }
 /* ══════════════════════════════════════════════════
    BUSCA GLOBAL
 ══════════════════════════════════════════════════ */
-.busca-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.7);
-  z-index: 300;
-  display: none; /* FIX: usar display none por padrão, JS adiciona .aberta */
-  align-items: flex-start;
-  justify-content: center;
-  padding: 80px 16px 16px;
-  backdrop-filter: blur(8px);
-}
-.busca-overlay.aberta { display: flex; }
-.busca-modal {
-  background: var(--bg-card);
-  border: 1px solid var(--border2);
-  border-radius: 16px;
-  width: 100%;
-  max-width: 560px;
-  box-shadow: var(--shadow-lg);
-  overflow: hidden;
-  animation: modalIn .2s ease;
+@media (max-width: 768px) {
+  .busca-overlay {
+    padding: 0;
+    align-items: flex-end;
+    padding-bottom: 0;
+  }
+  .busca-modal {
+    border-radius: 20px 20px 0 0;
+    max-width: 100%;
+    margin-top: 0;
+    max-height: 75vh;
+  }
+  .busca-resultados { max-height: 50vh; }
 }
 .busca-header {
   display: flex;
