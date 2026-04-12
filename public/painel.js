@@ -466,9 +466,13 @@ async function salvarAgendamentoManual() {
 ═══════════════════════════════════════════════════ */
 async function carregarServicos() {
   if (!negocioAtual) return
-  const res=await fetch(`${API}/auth/negocio/${negocioAtual._id}`); const data=await res.json()
-  servicosAtuais=(data.servicos||[]).map(s=>typeof s==='object'?s:{nome:s,preco:0}); pagamentosConfig=data.pagamentos||{}
-  renderServicos(); renderIntervalosServicos(); if (typeof cfgRenderServicos==='function') cfgRenderServicos()
+  const res = await fetch(`${API}/auth/negocio/${negocioAtual._id}`)
+  const data = await res.json()
+  servicosAtuais = (data.servicos || []).map(s => typeof s === 'object' ? s : { nome: s, preco: 0 })
+  pagamentosConfig = data.pagamentos || {}
+  renderServicos()
+  renderIntervalosServicos()
+  if (typeof cfgRenderServicos === 'function') cfgRenderServicos()  // ← esta linha deve existir
 }
 function renderServicos() {
   const el=document.getElementById('servicos-tags'); if (!el) return
