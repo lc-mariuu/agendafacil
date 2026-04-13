@@ -55,6 +55,65 @@ srStyle.textContent = `
 document.head.appendChild(srStyle)
 
 /* ═══════════════════════════════════════════════════
+   LINKS CURTOS — slug baseado no nome do negócio
+═══════════════════════════════════════════════════ */
+const BASE_URL = 'https://agendorapido.com.br'
+
+function gerarSlug(nome) {
+  return (nome || '')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')  // remove acentos: ã→a, ê→e...
+    .replace(/[^a-z0-9\s]/g, '')      // remove caracteres especiais
+    .trim()
+    .replace(/\s+/g, '-')             // espaços → hífen
+    .replace(/-+/g, '-')              // hífens duplos → um
+    .slice(0, 28)
+}
+
+function slugDoNegocio(negocio) {
+  if (!negocio) return ''
+  if (negocio.slug) return negocio.slug       // slug salvo/personalizado pelo usuário
+  const s = gerarSlug(negocio.nome)
+  return s || (negocio._id || '').slice(-6)   // fallback: 6 últimos chars do ID
+}
+
+function urlAgendamento(negocio) {
+  return `${BASE_URL}/${slugDoNegocio(negocio)}`
+}
+
+function urlBio(negocio) {
+  return `${BASE_URL}/bio/${slugDoNegocio(negocio)}`
+}
+
+// Atualiza todos os elementos de link no painel de uma vez
+function atualizarTodosLinks(negocio) {
+  if (!negocio) return
+  const ag  = urlAgendamento(negocio)
+  const bio = urlBio(negocio)
+
+  const elAg = document.getElementById('link-agendamento')
+  if (elAg) elAg.textContent = ag
+
+  const elBio = document.getElementById('link-bio')
+  if (elBio) elBio.textContent = bio
+
+  const elWppLink = document.getElementById('wpp-link-agendamento')
+  if (elWppLink) elWppLink.textContent = ag
+
+  const elMsg = document.getElementById('wpp-mensagem-preview')
+  if (elMsg) {
+    elMsg.textContent =
+      `Olá! 👋 Obrigado por entrar em contato com a *${negocio.nome}*.\n\n` +
+      `Para agendar seu horário, acesse:\n\n` +
+      `🔗 ${ag}\n\n` +
+      `Escolha o serviço, data e horário. Rápido e fácil! 😊`
+  }
+
+  if (typeof atualizarPreviewAuto === 'function') atualizarPreviewAuto()
+}
+
+/* ═══════════════════════════════════════════════════
    LUCRO — localStorage helpers
 ═══════════════════════════════════════════════════ */
 function mesAtualChave() { return new Date().toISOString().slice(0, 7) }
@@ -76,15 +135,10 @@ function registrarLucro(ag) {
   setLucroIds(nid, [...ids, ag._id])
 }
 
-/* ═══════════════════════════════════════════════════
-   FIX PRINCIPAL: seedLucroDoMes sempre reconstrói
-   sem o guard que impedia re-execução
-═══════════════════════════════════════════════════ */
 function seedLucroDoMes(ags) {
   if (!negocioAtual) return
   const nid = negocioAtual._id
   const mes = mesAtualChave()
-  // Usa o Set de IDs já salvos para não duplicar valores
   const idsJaSalvos = new Set(getLucroIds(nid))
   ags
     .filter(a => a.status === 'concluido' && a.data && a.data.startsWith(mes))
@@ -107,9 +161,6 @@ function exibirLucro() {
   if (el) el.textContent = fmtBRL(v)
 }
 
-/* ═══════════════════════════════════════════════════
-   FIX: persistência de stats entre reloads
-═══════════════════════════════════════════════════ */
 function salvarStatsPersistentes(qtdHoje, qtdSemana) {
   if (!negocioAtual) return
   const nid = negocioAtual._id
@@ -155,7 +206,7 @@ function closeModal(id) { const el = document.getElementById(id); if (el) { el.s
 
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') {
-    ['modal-agendamento','modal-negocio','modal-gerenciar-dias','cfg-modal-editar'].forEach(id => {
+    ['modal-agendamento','modal-negocio','modal-gerenciar-dias','cfg-modal-editar','modal-link-curto'].forEach(id => {
       const el = document.getElementById(id); if (el && el.style.display !== 'none') closeModal(id)
     })
     if (buscaAberta) fecharBusca()
@@ -234,9 +285,7 @@ function irPara(pagina, btn) {
   }
   if (pagina === 'clientes') renderClientes('')
   if (pagina === 'horarios') setTimeout(() => renderHorariosDiasLateral(), 100)
-  if (pagina === 'configuracoes') {
-    cfgRenderServicos()
-  }
+  if (pagina === 'configuracoes') cfgRenderServicos()
   if (pagina === 'agendamentos') {
     agFiltroAtivo = 'todos'; agFiltroDataAtivo = ''
     const di = document.getElementById('ag-filtro-data'); if (di) di.value = ''
@@ -282,13 +331,11 @@ function trocarNegocio(id) {
 }
 
 function atualizarSidebarNegocio() {
-  document.getElementById('neg-nome-sidebar').textContent = negocioAtual?.nome || ''
-  document.getElementById('neg-avatar').textContent = (negocioAtual?.nome||'A')[0].toUpperCase()
-  const link = `https://agendorapido.com.br/agendar.html?id=${negocioAtual?._id}`
-  const linkBio = `https://agendorapido.com.br/bio.html?id=${negocioAtual?._id}`
-  const elLink = document.getElementById('link-agendamento'); const elBio = document.getElementById('link-bio')
-  if (elLink) elLink.textContent = link; if (elBio) elBio.textContent = linkBio
-  atualizarLinkWpp()
+  if (!negocioAtual) return
+  document.getElementById('neg-nome-sidebar').textContent = negocioAtual.nome || ''
+  document.getElementById('neg-avatar').textContent = (negocioAtual.nome||'A')[0].toUpperCase()
+  // Usa links curtos em todos os lugares
+  atualizarTodosLinks(negocioAtual)
 }
 
 function abrirModalNegocio() {
@@ -330,9 +377,6 @@ async function mostrarPainel() {
   carregarDadosNegocio(); verificarAcesso()
 }
 
-/* ═══════════════════════════════════════════════════
-   FIX: carregarDadosNegocio agora chama carregarStatsSalvas primeiro
-═══════════════════════════════════════════════════ */
 function carregarDadosNegocio() {
   carregarStatsSalvas()
   carregarAgendamentos()
@@ -344,27 +388,163 @@ function carregarDadosNegocio() {
 }
 
 /* ═══════════════════════════════════════════════════
-   WHATSAPP
+   WHATSAPP — copiar funções usando link curto
 ═══════════════════════════════════════════════════ */
-function atualizarLinkWpp() {
+function copiarLink() {
   if (!negocioAtual) return
-  const link = `https://agendorapido.com.br/agendar.html?id=${negocioAtual._id}`
-  const el = document.getElementById('wpp-link-agendamento'); const msg = document.getElementById('wpp-mensagem-preview')
-  if (el) el.textContent = link
-  if (msg) msg.textContent = `Olá! 👋 Obrigado por entrar em contato com a *${negocioAtual.nome}*.\n\nPara agendar seu horário de forma rápida e fácil, acesse o link abaixo:\n\n🔗 ${link}\n\nEscolha o serviço, a data e o horário que preferir. É rápido e simples! 😊`
+  navigator.clipboard.writeText(urlAgendamento(negocioAtual))
+    .then(() => flashBtn('btn-copiar-agendamento', '✓ Copiado!'))
 }
-function copiarLink() { const el = document.getElementById('link-agendamento'); if (el) navigator.clipboard.writeText(el.textContent).then(()=>flashBtn('btn-copiar-agendamento','✓ Copiado!')) }
-function copiarLinkBio() { const el = document.getElementById('link-bio'); if (el) navigator.clipboard.writeText(el.textContent).then(()=>flashBtn('btn-copiar-bio','✓ Copiado!')) }
+
+function copiarLinkBio() {
+  if (!negocioAtual) return
+  navigator.clipboard.writeText(urlBio(negocioAtual))
+    .then(() => flashBtn('btn-copiar-bio', '✓ Copiado!'))
+}
+
 function copiarLinkWpp() {
   if (!negocioAtual) return
-  navigator.clipboard.writeText(`https://agendorapido.com.br/agendar.html?id=${negocioAtual._id}`).then(()=>{const btn=document.querySelector('[onclick="copiarLinkWpp()"]');if(btn)flash(btn,'✓ Copiado!')})
+  navigator.clipboard.writeText(urlAgendamento(negocioAtual))
+    .then(() => { const btn = document.querySelector('[onclick="copiarLinkWpp()"]'); if (btn) flash(btn, '✓ Copiado!') })
 }
-function copiarMensagemWpp() { const el = document.getElementById('wpp-mensagem-preview'); if (!el) return; navigator.clipboard.writeText(el.textContent).then(()=>flashBtn('btn-copiar-msg','✓ Mensagem copiada!')) }
+
+function copiarMensagemWpp() {
+  const el = document.getElementById('wpp-mensagem-preview'); if (!el) return
+  navigator.clipboard.writeText(el.textContent).then(() => flashBtn('btn-copiar-msg', '✓ Mensagem copiada!'))
+}
 
 /* ═══════════════════════════════════════════════════
-   AGENDAMENTOS — FIX PRINCIPAL AQUI
-   carregarAgendamentos agora persiste stats e reconstrói
-   lucro corretamente mesmo quando agendamentos somem
+   MODAL — PERSONALIZAR LINK CURTO
+═══════════════════════════════════════════════════ */
+function abrirModalPersonalizarLink() {
+  if (!negocioAtual) return
+  document.getElementById('modal-link-curto')?.remove()
+
+  const slugAtual = slugDoNegocio(negocioAtual)
+  const modal = document.createElement('div')
+  modal.id = 'modal-link-curto'
+  modal.className = 'modal-overlay'
+  modal.style.display = 'flex'
+  modal.setAttribute('role', 'dialog')
+  modal.setAttribute('aria-modal', 'true')
+  modal.innerHTML = `
+    <div class="modal" style="max-width:470px">
+      <div class="modal-header">
+        <h2 style="font-size:15px;font-weight:700;color:var(--text)">Personalizar link de agendamento</h2>
+        <button class="modal-close" onclick="fecharModalLink()" aria-label="Fechar">×</button>
+      </div>
+      <div style="background:var(--accent-light);border:1px solid var(--accent-mid);border-radius:11px;padding:13px 15px;margin-bottom:18px">
+        <div style="font-size:9px;font-weight:800;color:var(--accent);text-transform:uppercase;letter-spacing:.12em;margin-bottom:5px">Pré-visualização</div>
+        <div style="font-size:13.5px;font-weight:600;word-break:break-all">
+          <span style="color:var(--text3)">agendorapido.com.br/</span><span id="sl-preview" style="color:var(--accent)">${slugAtual}</span>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="sl-input" style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:7px;display:block">Apelido do link</label>
+        <div style="display:flex;align-items:stretch;border:1px solid var(--border2);border-radius:9px;overflow:hidden;background:var(--bg-input)">
+          <span style="padding:10px 11px;font-size:12px;color:var(--text3);background:var(--bg2);border-right:1px solid var(--border2);white-space:nowrap;display:flex;align-items:center">agendorapido.com.br/</span>
+          <input type="text" id="sl-input" value="${slugAtual}" maxlength="28" placeholder="barbearia-joao" autocomplete="off"
+            style="flex:1;padding:10px 12px;border:none;background:transparent;font-size:13px;color:var(--text);outline:none;font-family:inherit;font-weight:600"
+            oninput="slPreview(this.value)">
+        </div>
+        <div style="font-size:11px;color:var(--text3);margin-top:5px">Somente letras minúsculas, números e hífens. Máximo 28 caracteres.</div>
+      </div>
+      <div id="sl-status" style="min-height:18px;font-size:12px;margin:2px 0 14px"></div>
+      <div class="modal-footer">
+        <button class="btn-cancelar-modal" onclick="fecharModalLink()" type="button">Cancelar</button>
+        <button class="btn-salvar-modal" id="sl-btn-salvar" onclick="slSalvar()" type="button">Salvar link</button>
+      </div>
+    </div>
+  `
+  document.body.appendChild(modal)
+  document.body.classList.add('modal-open')
+  setTimeout(() => document.getElementById('sl-input')?.focus(), 60)
+}
+
+function fecharModalLink() {
+  document.getElementById('modal-link-curto')?.remove()
+  document.body.classList.remove('modal-open')
+}
+
+function slLimpar(val) {
+  return (val || '')
+    .toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9-]/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 28)
+}
+
+function slPreview(val) {
+  const limpo = slLimpar(val)
+  const prev = document.getElementById('sl-preview')
+  const status = document.getElementById('sl-status')
+  if (prev) prev.textContent = limpo || '...'
+  if (!limpo || limpo.length < 2) {
+    if (status) status.innerHTML = '<span style="color:#f87171">⚠ Mínimo 2 caracteres</span>'
+    return
+  }
+  if (status) status.innerHTML = '<span style="color:var(--text3)">Verificando...</span>'
+  clearTimeout(window._slTimer)
+  window._slTimer = setTimeout(async () => {
+    const ok = await slVerificar(limpo)
+    if (status) status.innerHTML = ok
+      ? '<span style="color:#34d399">✓ Disponível</span>'
+      : '<span style="color:#f87171">✗ Já em uso — escolha outro</span>'
+  }, 500)
+}
+
+async function slVerificar(slug) {
+  const token = localStorage.getItem('token')
+  try {
+    const res = await fetch(`${API}/auth/slug/check?slug=${encodeURIComponent(slug)}&negocioId=${negocioAtual._id}`,
+      { headers: { 'Authorization': `Bearer ${token}` } })
+    const data = await res.json()
+    return data.disponivel !== false
+  } catch { return true }
+}
+
+async function slSalvar() {
+  const input  = document.getElementById('sl-input')
+  const btn    = document.getElementById('sl-btn-salvar')
+  const status = document.getElementById('sl-status')
+  if (!input || !negocioAtual) return
+
+  const slug = slLimpar(input.value)
+  if (!slug || slug.length < 2) {
+    if (status) status.innerHTML = '<span style="color:#f87171">⚠ Link inválido</span>'
+    return
+  }
+  if (btn) { btn.disabled = true; btn.textContent = 'Salvando...' }
+
+  const ok = await slVerificar(slug)
+  if (!ok) {
+    if (status) status.innerHTML = '<span style="color:#f87171">✗ Link já em uso</span>'
+    if (btn) { btn.disabled = false; btn.textContent = 'Salvar link' }
+    return
+  }
+
+  const token = localStorage.getItem('token')
+  try {
+    await fetch(`${API}/auth/slug`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      body: JSON.stringify({ negocioId: negocioAtual._id, slug })
+    })
+  } catch { /* aplica localmente mesmo sem endpoint */ }
+
+  negocioAtual.slug = slug
+  const idx = todosNegocios.findIndex(n => n._id === negocioAtual._id)
+  if (idx >= 0) todosNegocios[idx].slug = slug
+
+  atualizarTodosLinks(negocioAtual)
+  if (btn) { btn.textContent = '✓ Salvo!' }
+  setTimeout(fecharModalLink, 700)
+}
+
+/* ═══════════════════════════════════════════════════
+   AGENDAMENTOS
 ═══════════════════════════════════════════════════ */
 async function carregarAgendamentos() {
   if (!negocioAtual) return
@@ -397,11 +577,9 @@ async function carregarAgendamentos() {
 
   const hoje = new Date().toISOString().split('T')[0]
   const semana = new Date(Date.now()+7*86400000).toISOString().split('T')[0]
-
   const qtdHoje   = todosAgendamentos.filter(a => a.data === hoje).length
   const qtdSemana = todosAgendamentos.filter(a => a.data >= hoje && a.data <= semana).length
 
-  // Persiste para sobreviver a reloads com lista vazia
   salvarStatsPersistentes(qtdHoje, qtdSemana)
 
   const elH = document.getElementById('stat-hoje')
@@ -409,7 +587,6 @@ async function carregarAgendamentos() {
   if (elH) elH.textContent = qtdHoje
   if (elS) elS.textContent = qtdSemana
 
-  // Reconstrói lucro sempre (não só quando é null)
   seedLucroDoMes(todosAgendamentos)
   exibirLucro()
   renderHistorico()
@@ -496,7 +673,6 @@ async function atualizar(id, status) {
   if (status==='concluido') { const ag=todosAgendamentos.find(a=>a._id===id); if (ag) registrarLucro(ag) }
   await fetch(`${API}/agendamentos/${id}`,{method:'PATCH',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({status})})
   todosAgendamentos = todosAgendamentos.map(a=>a._id===id?{...a,status}:a)
-  // Persiste stats atualizadas após mudança de status
   const hoje = new Date().toISOString().split('T')[0]
   const semana = new Date(Date.now()+7*86400000).toISOString().split('T')[0]
   salvarStatsPersistentes(
@@ -870,14 +1046,12 @@ function abrirBusca(){
   const inp=document.getElementById('busca-input')
   if(inp){inp.value='';setTimeout(()=>{inp.focus();executarBusca('')},60)}
 }
-
 function fecharBusca(){
   const overlay=document.getElementById('busca-overlay')
   if(overlay){overlay.classList.remove('aberta');overlay.setAttribute('aria-hidden','true')}
   buscaAberta=false
   document.body.classList.remove('modal-open')
 }
-
 function executarBusca(q){
   const res=document.getElementById('busca-resultados');if(!res)return; const ags=todosAgendamentos||[]
   if(!q||!q.trim()){const hoje=new Date().toISOString().split('T')[0];const deHoje=ags.filter(a=>a.data===hoje).slice(0,6);if(!deHoje.length){res.innerHTML='<div style="text-align:center;color:var(--text3);padding:28px;font-size:13px">Digite para buscar por nome, serviço ou data</div>';return};res.innerHTML='<div class="busca-secao-label">Agendamentos de hoje</div>'+deHoje.map(buscaItemHTML).join('');return}
@@ -1026,7 +1200,6 @@ document.addEventListener('DOMContentLoaded', () => {
     'pos':'Editar mensagem pós-atendimento',
     'aniversario':'Editar mensagem de aniversário'
   }
-
   window.selecionarTipoAuto=function(tipo,card){
     tipoSelecionado=tipo; document.querySelectorAll('.auto-tipo-card').forEach(c=>c.classList.remove('ativo-selected')); card.classList.add('ativo-selected')
     const headerTitle=document.querySelector('.auto-editor-header-title');if(headerTitle)headerTitle.textContent=titulos[tipo]||'Editar mensagem'
@@ -1048,7 +1221,9 @@ document.addEventListener('DOMContentLoaded', () => {
   window.atualizarPreviewAuto=function(){
     const ta=document.getElementById('auto-mensagem-textarea');const bubble=document.getElementById('auto-preview-bubble');if(!ta||!bubble)return
     const negNome=(window.negocioAtual&&window.negocioAtual.nome)?window.negocioAtual.nome:'sua empresa'
-    let txt=ta.value.replace(/\{nome\}/g,'Carlos').replace(/\{data\}/g,'23/05').replace(/\{hora\}/g,'15:00').replace(/\{servico\}/g,'Barba').replace(/\{negocio\}/g,negNome).replace(/\{link\}/g,'agendorapido.com.br/...')
+    // Usa link curto na preview da automação
+    const linkCurto=window.negocioAtual?urlAgendamento(window.negocioAtual):'agendorapido.com.br/seu-negocio'
+    let txt=ta.value.replace(/\{nome\}/g,'Carlos').replace(/\{data\}/g,'23/05').replace(/\{hora\}/g,'15:00').replace(/\{servico\}/g,'Barba').replace(/\{negocio\}/g,negNome).replace(/\{link\}/g,linkCurto)
     bubble.innerHTML=txt.split('\n').map(l=>l||'<br>').join('<br>')+`<div class="auto-wpp-bubble-time">10:30<svg width="14" height="10" viewBox="0 0 16 11" fill="none"><path d="M1 5.5l3.5 3.5L9 2M7 5.5l3.5 3.5L15 2" stroke="#4fc3f7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>`
   }
   window.salvarAutomacao=function(){
@@ -1127,9 +1302,7 @@ function agMudarPorPagina(val){agPorPagina=parseInt(val);agPagina=1;agRenderTabe
    CONFIGURAÇÕES — lista de serviços avançada
 ═══════════════════════════════════════════════════ */
 const CFG_PALETA=[{bg:'rgba(239,68,68,0.18)',bd:'rgba(239,68,68,0.35)',cor:'#f87171'},{bg:'rgba(249,115,22,0.18)',bd:'rgba(249,115,22,0.35)',cor:'#fb923c'},{bg:'rgba(234,179,8,0.18)',bd:'rgba(234,179,8,0.35)',cor:'#facc15'},{bg:'rgba(16,185,129,0.18)',bd:'rgba(16,185,129,0.35)',cor:'#34d399'},{bg:'rgba(59,130,246,0.18)',bd:'rgba(59,130,246,0.35)',cor:'#60a5fa'},{bg:'rgba(139,92,246,0.18)',bd:'rgba(139,92,246,0.35)',cor:'#a78bfa'},{bg:'rgba(236,72,153,0.18)',bd:'rgba(236,72,153,0.35)',cor:'#f472b6'},{bg:'rgba(6,182,212,0.18)',bd:'rgba(6,182,212,0.35)',cor:'#22d3ee'}]
-
 function cfgPaletaFor(nome){let h=0;for(const c of(nome||'A'))h=((h<<5)-h)+c.charCodeAt(0);return CFG_PALETA[Math.abs(h)%CFG_PALETA.length]}
-
 let cfgEditIdx=-1
 
 function cfgRenderServicos(){
@@ -1155,12 +1328,9 @@ function cfgRenderServicos(){
     return `<div class="cfg-serv-row" draggable="true" data-idx="${i}">
       <div class="cfg-drag-handle" title="Arrastar para reordenar">
         <svg width="12" height="14" viewBox="0 0 12 14" fill="none">
-          <circle cx="4" cy="3" r="1.2" fill="currentColor"/>
-          <circle cx="8" cy="3" r="1.2" fill="currentColor"/>
-          <circle cx="4" cy="7" r="1.2" fill="currentColor"/>
-          <circle cx="8" cy="7" r="1.2" fill="currentColor"/>
-          <circle cx="4" cy="11" r="1.2" fill="currentColor"/>
-          <circle cx="8" cy="11" r="1.2" fill="currentColor"/>
+          <circle cx="4" cy="3" r="1.2" fill="currentColor"/><circle cx="8" cy="3" r="1.2" fill="currentColor"/>
+          <circle cx="4" cy="7" r="1.2" fill="currentColor"/><circle cx="8" cy="7" r="1.2" fill="currentColor"/>
+          <circle cx="4" cy="11" r="1.2" fill="currentColor"/><circle cx="8" cy="11" r="1.2" fill="currentColor"/>
         </svg>
       </div>
       <div class="cfg-serv-avatar" style="background:${pal.bg};border-color:${pal.bd};color:${pal.cor}">${ini}</div>
@@ -1191,21 +1361,9 @@ function cfgAdicionarServico(){
   if(erroEl)erroEl.textContent=''
   if(nomeEl)nomeEl.classList.remove('cfg-input-erro')
   if(precoEl)precoEl.classList.remove('cfg-input-erro')
-  if(!nome){
-    if(erroEl)erroEl.textContent='⚠ Digite o nome do serviço.'
-    if(nomeEl){nomeEl.classList.add('cfg-input-erro');nomeEl.focus()}
-    return
-  }
-  if(!precoEl||!precoEl.value.trim()||isNaN(preco)||preco<=0){
-    if(erroEl)erroEl.textContent='⚠ O preço é obrigatório e deve ser maior que R$ 0,00.'
-    if(precoEl){precoEl.classList.add('cfg-input-erro');precoEl.focus()}
-    return
-  }
-  if(servicosAtuais.some(s=>(typeof s==='object'?s.nome:s).toLowerCase()===nome.toLowerCase())){
-    if(erroEl)erroEl.textContent='⚠ Já existe um serviço com esse nome.'
-    if(nomeEl){nomeEl.classList.add('cfg-input-erro');nomeEl.focus()}
-    return
-  }
+  if(!nome){if(erroEl)erroEl.textContent='⚠ Digite o nome do serviço.';if(nomeEl){nomeEl.classList.add('cfg-input-erro');nomeEl.focus()};return}
+  if(!precoEl||!precoEl.value.trim()||isNaN(preco)||preco<=0){if(erroEl)erroEl.textContent='⚠ O preço é obrigatório e deve ser maior que R$ 0,00.';if(precoEl){precoEl.classList.add('cfg-input-erro');precoEl.focus()};return}
+  if(servicosAtuais.some(s=>(typeof s==='object'?s.nome:s).toLowerCase()===nome.toLowerCase())){if(erroEl)erroEl.textContent='⚠ Já existe um serviço com esse nome.';if(nomeEl){nomeEl.classList.add('cfg-input-erro');nomeEl.focus()};return}
   servicosAtuais.push({nome,preco})
   if(nomeEl)nomeEl.value=''
   if(precoEl)precoEl.value=''
@@ -1272,10 +1430,7 @@ async function cfgSalvarServicos(){
     if(msg){msg.style.display='inline';setTimeout(()=>msg.style.display='none',2500)}
   }catch(e){console.error('Erro na requisição:',e)}
   finally{
-    if(btn){
-      btn.disabled=false
-      btn.innerHTML='<svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg> Salvar alterações'
-    }
+    if(btn){btn.disabled=false;btn.innerHTML='<svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg> Salvar alterações'}
   }
 }
 
@@ -1284,7 +1439,7 @@ window.salvarServicos = cfgSalvarServicos
 function abrirMinhaPagina(e){
   if(e)e.preventDefault()
   if(!negocioAtual)return
-  window.open(`https://agendorapido.com.br/agendar.html?id=${negocioAtual._id}`,'_blank')
+  window.open(urlAgendamento(negocioAtual),'_blank')
 }
 
 function cfgInitDragDrop(){
