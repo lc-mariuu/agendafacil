@@ -3,7 +3,6 @@
 ═══════════════════════════════════════════════════ */
 const API = 'https://agendafacil-wf3q.onrender.com/api'
 
-// CORREÇÃO: usar var (não let) para que window.servicosAtuais funcione dentro do IIFE
 var todosAgendamentos  = []
 var servicosAtuais     = []
 var intervaloAtual     = 30
@@ -68,23 +67,66 @@ function setLucroIds(id, ids) { localStorage.setItem(lucroIdsKey(id), JSON.strin
 
 function registrarLucro(ag) {
   if (!negocioAtual || !ag || !ag._id) return
-  const nid = negocioAtual._id; const ids = getLucroIds(nid)
+  const nid = negocioAtual._id
+  const ids = getLucroIds(nid)
   if (ids.includes(ag._id)) return
-  const preco = Number(ag.preco) || 0; if (preco <= 0) return
+  const preco = Number(ag.preco) || 0
+  if (preco <= 0) return
   setLucroMes(nid, (getLucroMes(nid) || 0) + preco)
   setLucroIds(nid, [...ids, ag._id])
 }
+
+/* ═══════════════════════════════════════════════════
+   FIX PRINCIPAL: seedLucroDoMes sempre reconstrói
+   sem o guard que impedia re-execução
+═══════════════════════════════════════════════════ */
 function seedLucroDoMes(ags) {
   if (!negocioAtual) return
-  const nid = negocioAtual._id; const mes = mesAtualChave()
-  if (getLucroMes(nid) !== null) return
-  setLucroMes(nid, 0)
-  ags.filter(a => a.status === 'concluido' && a.data?.startsWith(mes)).forEach(registrarLucro)
+  const nid = negocioAtual._id
+  const mes = mesAtualChave()
+  // Usa o Set de IDs já salvos para não duplicar valores
+  const idsJaSalvos = new Set(getLucroIds(nid))
+  ags
+    .filter(a => a.status === 'concluido' && a.data && a.data.startsWith(mes))
+    .forEach(a => {
+      if (!idsJaSalvos.has(a._id)) {
+        const preco = Number(a.preco) || 0
+        if (preco > 0) {
+          setLucroMes(nid, (getLucroMes(nid) || 0) + preco)
+          idsJaSalvos.add(a._id)
+          setLucroIds(nid, [...idsJaSalvos])
+        }
+      }
+    })
 }
+
 function exibirLucro() {
   if (!negocioAtual) return
   const v = getLucroMes(negocioAtual._id) || 0
-  const el = document.getElementById('stat-lucro'); if (el) el.textContent = fmtBRL(v)
+  const el = document.getElementById('stat-lucro')
+  if (el) el.textContent = fmtBRL(v)
+}
+
+/* ═══════════════════════════════════════════════════
+   FIX: persistência de stats entre reloads
+═══════════════════════════════════════════════════ */
+function salvarStatsPersistentes(qtdHoje, qtdSemana) {
+  if (!negocioAtual) return
+  const nid = negocioAtual._id
+  localStorage.setItem(`stat_hoje_${nid}`, String(qtdHoje))
+  localStorage.setItem(`stat_semana_${nid}`, String(qtdSemana))
+}
+
+function carregarStatsSalvas() {
+  if (!negocioAtual) return
+  const nid = negocioAtual._id
+  const elH = document.getElementById('stat-hoje')
+  const elS = document.getElementById('stat-semana')
+  const qtdH = localStorage.getItem(`stat_hoje_${nid}`)
+  const qtdS = localStorage.getItem(`stat_semana_${nid}`)
+  if (elH && qtdH !== null) elH.textContent = qtdH
+  if (elS && qtdS !== null) elS.textContent = qtdS
+  exibirLucro()
 }
 
 /* ═══════════════════════════════════════════════════
@@ -193,7 +235,6 @@ function irPara(pagina, btn) {
   if (pagina === 'clientes') renderClientes('')
   if (pagina === 'horarios') setTimeout(() => renderHorariosDiasLateral(), 100)
   if (pagina === 'configuracoes') {
-    // CORREÇÃO: sempre re-renderiza a lista de serviços ao entrar na página
     cfgRenderServicos()
   }
   if (pagina === 'agendamentos') {
@@ -289,8 +330,17 @@ async function mostrarPainel() {
   carregarDadosNegocio(); verificarAcesso()
 }
 
+/* ═══════════════════════════════════════════════════
+   FIX: carregarDadosNegocio agora chama carregarStatsSalvas primeiro
+═══════════════════════════════════════════════════ */
 function carregarDadosNegocio() {
-  carregarAgendamentos(); carregarServicos(); carregarHorariosConfig(); carregarBioConfig(); carregarLembretes(); carregarInsights()
+  carregarStatsSalvas()
+  carregarAgendamentos()
+  carregarServicos()
+  carregarHorariosConfig()
+  carregarBioConfig()
+  carregarLembretes()
+  carregarInsights()
 }
 
 /* ═══════════════════════════════════════════════════
@@ -312,33 +362,66 @@ function copiarLinkWpp() {
 function copiarMensagemWpp() { const el = document.getElementById('wpp-mensagem-preview'); if (!el) return; navigator.clipboard.writeText(el.textContent).then(()=>flashBtn('btn-copiar-msg','✓ Mensagem copiada!')) }
 
 /* ═══════════════════════════════════════════════════
-   AGENDAMENTOS
+   AGENDAMENTOS — FIX PRINCIPAL AQUI
+   carregarAgendamentos agora persiste stats e reconstrói
+   lucro corretamente mesmo quando agendamentos somem
 ═══════════════════════════════════════════════════ */
 async function carregarAgendamentos() {
   if (!negocioAtual) return
   const token = localStorage.getItem('token')
   const res = await fetch(`${API}/agendamentos?negocioId=${negocioAtual._id}`,{headers:{'Authorization':`Bearer ${token}`}})
   todosAgendamentos = await res.json()
+
   const agora = new Date()
   const passados = todosAgendamentos.filter(a => {
     if (a.status!=='confirmado'||!a.data||!a.hora) return false
-    const [ano,mes,dia] = a.data.split('-').map(Number); const [h,m] = a.hora.split(':').map(Number)
+    const [ano,mes,dia] = a.data.split('-').map(Number)
+    const [h,m] = a.hora.split(':').map(Number)
     return new Date(ano,mes-1,dia,h,m).getTime() < agora.getTime()
   })
-  if (passados.length>0) {
-    await Promise.all(passados.map(a=>fetch(`${API}/agendamentos/${a._id}`,{method:'PATCH',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({status:'concluido'})})))
-    todosAgendamentos = todosAgendamentos.map(a => { const foi=passados.find(p=>p._id===a._id); if (!foi) return a; const c={...a,status:'concluido'}; registrarLucro(c); return c })
+
+  if (passados.length > 0) {
+    await Promise.all(passados.map(a=>fetch(`${API}/agendamentos/${a._id}`,{
+      method:'PATCH',
+      headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},
+      body:JSON.stringify({status:'concluido'})
+    })))
+    todosAgendamentos = todosAgendamentos.map(a => {
+      const foi = passados.find(p => p._id === a._id)
+      if (!foi) return a
+      const c = {...a, status:'concluido'}
+      registrarLucro(c)
+      return c
+    })
   }
+
   const hoje = new Date().toISOString().split('T')[0]
   const semana = new Date(Date.now()+7*86400000).toISOString().split('T')[0]
-  const elH = document.getElementById('stat-hoje'); const elS = document.getElementById('stat-semana')
-  if (elH) elH.textContent = todosAgendamentos.filter(a=>a.data===hoje).length
-  if (elS) elS.textContent = todosAgendamentos.filter(a=>a.data>=hoje&&a.data<=semana).length
-  seedLucroDoMes(todosAgendamentos); exibirLucro(); renderHistorico(); filtrarData(); atualizarInsights(); agAplicarFiltro(); renderDashboardHoje()
+
+  const qtdHoje   = todosAgendamentos.filter(a => a.data === hoje).length
+  const qtdSemana = todosAgendamentos.filter(a => a.data >= hoje && a.data <= semana).length
+
+  // Persiste para sobreviver a reloads com lista vazia
+  salvarStatsPersistentes(qtdHoje, qtdSemana)
+
+  const elH = document.getElementById('stat-hoje')
+  const elS = document.getElementById('stat-semana')
+  if (elH) elH.textContent = qtdHoje
+  if (elS) elS.textContent = qtdSemana
+
+  // Reconstrói lucro sempre (não só quando é null)
+  seedLucroDoMes(todosAgendamentos)
+  exibirLucro()
+  renderHistorico()
+  filtrarData()
+  atualizarInsights()
+  agAplicarFiltro()
+  renderDashboardHoje()
+
   const dot = document.getElementById('notif-dot')
-  if (dot) dot.style.display = todosAgendamentos.filter(a=>a.data===hoje).length>0 ? 'block' : 'none'
+  if (dot) dot.style.display = qtdHoje > 0 ? 'block' : 'none'
   const dotMobile = document.getElementById('notif-dot-mobile')
-  if (dotMobile) dotMobile.style.display = todosAgendamentos.filter(a=>a.data===hoje).length>0 ? 'block' : 'none'
+  if (dotMobile) dotMobile.style.display = qtdHoje > 0 ? 'block' : 'none'
 }
 
 const POR_PAGINA = 8
@@ -413,6 +496,13 @@ async function atualizar(id, status) {
   if (status==='concluido') { const ag=todosAgendamentos.find(a=>a._id===id); if (ag) registrarLucro(ag) }
   await fetch(`${API}/agendamentos/${id}`,{method:'PATCH',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({status})})
   todosAgendamentos = todosAgendamentos.map(a=>a._id===id?{...a,status}:a)
+  // Persiste stats atualizadas após mudança de status
+  const hoje = new Date().toISOString().split('T')[0]
+  const semana = new Date(Date.now()+7*86400000).toISOString().split('T')[0]
+  salvarStatsPersistentes(
+    todosAgendamentos.filter(a=>a.data===hoje).length,
+    todosAgendamentos.filter(a=>a.data>=hoje&&a.data<=semana).length
+  )
   exibirLucro(); renderHistorico(); filtrarData(); atualizarInsights(); renderDashboardHoje(); agAplicarFiltro()
 }
 
@@ -467,19 +557,14 @@ async function salvarAgendamentoManual() {
 
 /* ═══════════════════════════════════════════════════
    SERVIÇOS
-   CORREÇÃO PRINCIPAL: carregarServicos agora chama cfgRenderServicos
-   e popula a variável global servicosAtuais corretamente
 ═══════════════════════════════════════════════════ */
 async function carregarServicos() {
   if (!negocioAtual) return
   const res=await fetch(`${API}/auth/negocio/${negocioAtual._id}`); const data=await res.json()
-  // Normaliza sempre para array de objetos {nome, preco}
   servicosAtuais = (data.servicos||[]).map(s => typeof s==='object' ? s : {nome:s, preco:0})
   pagamentosConfig = data.pagamentos||{}
-  // Renderiza em todas as partes que dependem dos serviços
   renderServicos()
   renderIntervalosServicos()
-  // CORREÇÃO: chama cfgRenderServicos diretamente (não via window)
   cfgRenderServicos()
 }
 
@@ -740,7 +825,14 @@ async function carregarInsights() {
     if(elAmount)elAmount.textContent=(fin.lucroMes||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})
     if(elMeta)elMeta.textContent=`Movidas: ${fin.atendMes||0} agendamentos`
     if(elAtend)elAtend.textContent=fin.atendMes||0; if(elChartL)elChartL.textContent=`R$${Math.round(fin.lucroMes||0)}`;if(elTotal2)elTotal2.textContent=fmtBRL(fin.lucroSemana||0)
-    if(fin.historicoMeses?.length&&negocioAtual){fin.historicoMeses.forEach(({mes,lucro,atendimentos})=>{localStorage.setItem(`lucro_val_${negocioAtual._id}_${mes}`,String(lucro));if(mes!==mesAtualChave()||getLucroIds(negocioAtual._id).length===0)localStorage.setItem(`lucro_ids_${negocioAtual._id}_${mes}`,JSON.stringify(Array.from({length:atendimentos},(_,i)=>`hist_${mes}_${i}`)))});renderHistorico()}
+    if(fin.historicoMeses?.length&&negocioAtual){
+      fin.historicoMeses.forEach(({mes,lucro,atendimentos})=>{
+        localStorage.setItem(`lucro_val_${negocioAtual._id}_${mes}`,String(lucro))
+        if(mes!==mesAtualChave()||getLucroIds(negocioAtual._id).length===0)
+          localStorage.setItem(`lucro_ids_${negocioAtual._id}_${mes}`,JSON.stringify(Array.from({length:atendimentos},(_,i)=>`hist_${mes}_${i}`)))
+      })
+      renderHistorico()
+    }
   } catch(err){console.error('Erro ao carregar insights:',err.message)}
 }
 
@@ -1033,8 +1125,6 @@ function agMudarPorPagina(val){agPorPagina=parseInt(val);agPagina=1;agRenderTabe
 
 /* ═══════════════════════════════════════════════════
    CONFIGURAÇÕES — lista de serviços avançada
-   CORREÇÃO: função definida no escopo global (não dentro de IIFE)
-   para poder ser chamada diretamente de carregarServicos()
 ═══════════════════════════════════════════════════ */
 const CFG_PALETA=[{bg:'rgba(239,68,68,0.18)',bd:'rgba(239,68,68,0.35)',cor:'#f87171'},{bg:'rgba(249,115,22,0.18)',bd:'rgba(249,115,22,0.35)',cor:'#fb923c'},{bg:'rgba(234,179,8,0.18)',bd:'rgba(234,179,8,0.35)',cor:'#facc15'},{bg:'rgba(16,185,129,0.18)',bd:'rgba(16,185,129,0.35)',cor:'#34d399'},{bg:'rgba(59,130,246,0.18)',bd:'rgba(59,130,246,0.35)',cor:'#60a5fa'},{bg:'rgba(139,92,246,0.18)',bd:'rgba(139,92,246,0.35)',cor:'#a78bfa'},{bg:'rgba(236,72,153,0.18)',bd:'rgba(236,72,153,0.35)',cor:'#f472b6'},{bg:'rgba(6,182,212,0.18)',bd:'rgba(6,182,212,0.35)',cor:'#22d3ee'}]
 
@@ -1089,7 +1179,6 @@ function cfgRenderServicos(){
       </div>
     </div>`
   }).join('')
-  // Reaplica drag & drop após re-render
   cfgInitDragDrop()
 }
 
@@ -1190,7 +1279,6 @@ async function cfgSalvarServicos(){
   }
 }
 
-// Alias para compatibilidade
 window.salvarServicos = cfgSalvarServicos
 
 function abrirMinhaPagina(e){
@@ -1199,7 +1287,6 @@ function abrirMinhaPagina(e){
   window.open(`https://agendorapido.com.br/agendar.html?id=${negocioAtual._id}`,'_blank')
 }
 
-// Drag & drop para reordenar serviços
 function cfgInitDragDrop(){
   let dragSrc=null
   document.querySelectorAll('.cfg-serv-row').forEach(row=>{
@@ -1218,7 +1305,6 @@ function cfgInitDragDrop(){
   })
 }
 
-// Enter nos campos de configuração
 document.addEventListener('DOMContentLoaded',()=>{
   const nEl=document.getElementById('cfg-novo-servico')
   const pEl=document.getElementById('cfg-novo-preco')
