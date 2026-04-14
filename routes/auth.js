@@ -474,4 +474,15 @@ router.patch('/lembretes', autenticar, async (req, res) => {
   }
 })
 
+// GET /api/auth/negocio/por-slug/:slug
+router.get('/negocio/por-slug/:slug', async (req, res) => {
+  try {
+    const negocio = await Negocio.findOne({ slug: req.params.slug })
+    if (!negocio) return res.status(404).json({ erro: 'Negócio não encontrado' })
+    res.json(negocio)
+  } catch (e) {
+    res.status(500).json({ erro: e.message })
+  }
+})
+
 module.exports = router

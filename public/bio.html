@@ -181,9 +181,28 @@ body{
   <div class="loading">Carregando...</div>
 </div>
 <script>
-const API='https://agendafacil-wf3q.onrender.com/api'
-const params=new URLSearchParams(window.location.search)
-const id=params.get('id')
+const API = 'https://agendafacil-wf3q.onrender.com/api'
+
+// ── Detecta slug ou ?id= ──────────────────────────────────────
+const params = new URLSearchParams(window.location.search)
+let id = params.get('id')
+
+async function resolverBioId() {
+  if (id) return
+
+  // URL: /bio/lucio → slug = "lucio"
+  const partes = window.location.pathname.split('/').filter(Boolean)
+  // partes[0] = 'bio', partes[1] = slug
+  const slug = partes[1] || partes[0]
+  if (!slug || slug === 'bio') return
+
+  try {
+    const res = await fetch(`${API}/auth/negocio/por-slug/${encodeURIComponent(slug)}`)
+    if (!res.ok) return
+    const data = await res.json()
+    id = data._id
+  } catch(e) {}
+}
 
 function iconeServico(nome){
   const n=(nome||'').toLowerCase()
@@ -216,12 +235,18 @@ async function carregarBio(){
     if(!res.ok){document.getElementById('card').innerHTML='<div class="loading">Negócio não encontrado</div>';return}
     const bio=data.bio||{}
     const servicos=(data.servicos||[]).slice(0,3)
-    const linkAgendar=`https://agendafacil-wf3q.onrender.com/agendar.html?id=${id}`
+    const negNome=data.negocio||data.nome||''
+
+    // Link de agendamento: usa slug se tiver, senão ?id=
+    const slug = data.slug
+    const linkAgendar = slug
+      ? `https://agendorapido.com.br/${slug}`
+      : `https://agendafacil-wf3q.onrender.com/agendar.html?id=${id}`
+
     const tel=(bio.whatsapp||'').replace(/\D/g,'')
     const linkWhats=tel?`https://wa.me/55${tel}`:null
     const instaHandle=bio.instagram?bio.instagram.replace('@',''):null
     const linkInsta=instaHandle?`https://instagram.com/${instaHandle}`:null
-    const negNome=data.negocio||data.nome||''
     const subTitulo=segMap[data.segmento]||(data.segmento||'')
     document.title=negNome
 
@@ -303,7 +328,8 @@ function compartilhar(){
   else navigator.clipboard.writeText(window.location.href).then(()=>alert('Link copiado!'))
 }
 
-carregarBio()
+// ── Init ──────────────────────────────────────────────────────
+resolverBioId().then(() => carregarBio())
 </script>
 </body>
 </html>

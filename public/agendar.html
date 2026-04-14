@@ -230,8 +230,26 @@ nav{background:rgba(255,255,255,0.95);backdrop-filter:blur(16px);border-bottom:1
 
 <script>
 const API = 'https://agendafacil-wf3q.onrender.com/api'
+
+// ── Detecta se veio por slug (/lucio) ou por ?id=xxx ──────────
 const params = new URLSearchParams(window.location.search)
-const clinicaId = params.get('id')
+let clinicaId = params.get('id')
+
+async function resolverClinicaId() {
+  if (clinicaId) return // já tem o id direto, usa normalmente
+
+  // veio por slug: /lucio
+  const slug = window.location.pathname.replace(/^\//, '').replace(/\/$/, '')
+  if (!slug) return
+
+  try {
+    const res = await fetch(`${API}/auth/negocio/por-slug/${encodeURIComponent(slug)}`)
+    if (!res.ok) return
+    const data = await res.json()
+    clinicaId = data._id
+  } catch(e) {}
+}
+
 let servicoSel = '', dataSel = '', horarioSel = ''
 let servicosDisponiveis = []
 
@@ -381,17 +399,16 @@ async function carregarClinica() {
     const res = await fetch(`${API}/auth/negocio/${clinicaId}`)
     const data = await res.json()
     if(!res.ok) return
-    document.getElementById('hero-nome').textContent = data.negocio
-    document.title = `Agendar — ${data.negocio}`
+    document.getElementById('hero-nome').textContent = data.negocio || data.nome
+    document.title = `Agendar — ${data.negocio || data.nome}`
     if(data.segmento) { const chip = document.getElementById('hero-chip'); chip.textContent = data.segmento; chip.style.display = 'inline-flex' }
-    if(data.bio?.foto) document.getElementById('hero-avatar').innerHTML = `<img src="${data.bio.foto}" alt="${data.negocio}">`
+    if(data.bio?.foto) document.getElementById('hero-avatar').innerHTML = `<img src="${data.bio.foto}" alt="${data.negocio || data.nome}">`
     servicosDisponiveis = (data.servicos || []).map(s => typeof s === 'object' ? s : { nome: s, preco: 0 })
     pagamentosConfig = data.pagamentos || {}
     renderServicos()
   } catch(e) {}
 }
 
-// ✅ CORRIGIDO: trata serviços como objetos {nome, preco}
 function renderServicos() {
   const grid = document.getElementById('servicos-grid')
   if(!servicosDisponiveis.length) {
@@ -497,7 +514,8 @@ function novoAgendamento() {
   irTela(1)
 }
 
-carregarClinica()
+// ── Init ──────────────────────────────────────────────────────
+resolverClinicaId().then(() => carregarClinica())
 </script>
 </body>
 </html>
