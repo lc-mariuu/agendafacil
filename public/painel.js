@@ -55,35 +55,19 @@ srStyle.textContent = `
 document.head.appendChild(srStyle)
 
 /* ═══════════════════════════════════════════════════
-   LINKS CURTOS — slug baseado no nome do negócio
+   LINKS — usa ?id= para compatibilidade com o backend
 ═══════════════════════════════════════════════════ */
 const BASE_URL = 'https://agendorapido.com.br'
 
-function gerarSlug(nome) {
-  return (nome || '')
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')  // remove acentos: ã→a, ê→e...
-    .replace(/[^a-z0-9\s]/g, '')      // remove caracteres especiais
-    .trim()
-    .replace(/\s+/g, '-')             // espaços → hífen
-    .replace(/-+/g, '-')              // hífens duplos → um
-    .slice(0, 28)
-}
-
-function slugDoNegocio(negocio) {
-  if (!negocio) return ''
-  if (negocio.slug) return negocio.slug       // slug salvo/personalizado pelo usuário
-  const s = gerarSlug(negocio.nome)
-  return s || (negocio._id || '').slice(-6)   // fallback: 6 últimos chars do ID
-}
-
+// ✅ CORRIGIDO: usa ?id= que o backend já reconhece
 function urlAgendamento(negocio) {
-  return `${BASE_URL}/${slugDoNegocio(negocio)}`
+  if (!negocio) return ''
+  return `${BASE_URL}/agendar.html?id=${negocio._id}`
 }
 
 function urlBio(negocio) {
-  return `${BASE_URL}/bio/${slugDoNegocio(negocio)}`
+  if (!negocio) return ''
+  return `${BASE_URL}/bio.html?id=${negocio._id}`
 }
 
 // Atualiza todos os elementos de link no painel de uma vez
@@ -334,7 +318,6 @@ function atualizarSidebarNegocio() {
   if (!negocioAtual) return
   document.getElementById('neg-nome-sidebar').textContent = negocioAtual.nome || ''
   document.getElementById('neg-avatar').textContent = (negocioAtual.nome||'A')[0].toUpperCase()
-  // Usa links curtos em todos os lugares
   atualizarTodosLinks(negocioAtual)
 }
 
@@ -388,7 +371,7 @@ function carregarDadosNegocio() {
 }
 
 /* ═══════════════════════════════════════════════════
-   WHATSAPP — copiar funções usando link curto
+   COPIAR LINKS
 ═══════════════════════════════════════════════════ */
 function copiarLink() {
   if (!negocioAtual) return
@@ -411,136 +394,6 @@ function copiarLinkWpp() {
 function copiarMensagemWpp() {
   const el = document.getElementById('wpp-mensagem-preview'); if (!el) return
   navigator.clipboard.writeText(el.textContent).then(() => flashBtn('btn-copiar-msg', '✓ Mensagem copiada!'))
-}
-
-/* ═══════════════════════════════════════════════════
-   MODAL — PERSONALIZAR LINK CURTO
-═══════════════════════════════════════════════════ */
-function abrirModalPersonalizarLink() {
-  if (!negocioAtual) return
-  document.getElementById('modal-link-curto')?.remove()
-
-  const slugAtual = slugDoNegocio(negocioAtual)
-  const modal = document.createElement('div')
-  modal.id = 'modal-link-curto'
-  modal.className = 'modal-overlay'
-  modal.style.display = 'flex'
-  modal.setAttribute('role', 'dialog')
-  modal.setAttribute('aria-modal', 'true')
-  modal.innerHTML = `
-    <div class="modal" style="max-width:470px">
-      <div class="modal-header">
-        <h2 style="font-size:15px;font-weight:700;color:var(--text)">Personalizar link de agendamento</h2>
-        <button class="modal-close" onclick="fecharModalLink()" aria-label="Fechar">×</button>
-      </div>
-      <div style="background:var(--accent-light);border:1px solid var(--accent-mid);border-radius:11px;padding:13px 15px;margin-bottom:18px">
-        <div style="font-size:9px;font-weight:800;color:var(--accent);text-transform:uppercase;letter-spacing:.12em;margin-bottom:5px">Pré-visualização</div>
-        <div style="font-size:13.5px;font-weight:600;word-break:break-all">
-          <span style="color:var(--text3)">agendorapido.com.br/</span><span id="sl-preview" style="color:var(--accent)">${slugAtual}</span>
-        </div>
-      </div>
-      <div class="form-group">
-        <label for="sl-input" style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:7px;display:block">Apelido do link</label>
-        <div style="display:flex;align-items:stretch;border:1px solid var(--border2);border-radius:9px;overflow:hidden;background:var(--bg-input)">
-          <span style="padding:10px 11px;font-size:12px;color:var(--text3);background:var(--bg2);border-right:1px solid var(--border2);white-space:nowrap;display:flex;align-items:center">agendorapido.com.br/</span>
-          <input type="text" id="sl-input" value="${slugAtual}" maxlength="28" placeholder="barbearia-joao" autocomplete="off"
-            style="flex:1;padding:10px 12px;border:none;background:transparent;font-size:13px;color:var(--text);outline:none;font-family:inherit;font-weight:600"
-            oninput="slPreview(this.value)">
-        </div>
-        <div style="font-size:11px;color:var(--text3);margin-top:5px">Somente letras minúsculas, números e hífens. Máximo 28 caracteres.</div>
-      </div>
-      <div id="sl-status" style="min-height:18px;font-size:12px;margin:2px 0 14px"></div>
-      <div class="modal-footer">
-        <button class="btn-cancelar-modal" onclick="fecharModalLink()" type="button">Cancelar</button>
-        <button class="btn-salvar-modal" id="sl-btn-salvar" onclick="slSalvar()" type="button">Salvar link</button>
-      </div>
-    </div>
-  `
-  document.body.appendChild(modal)
-  document.body.classList.add('modal-open')
-  setTimeout(() => document.getElementById('sl-input')?.focus(), 60)
-}
-
-function fecharModalLink() {
-  document.getElementById('modal-link-curto')?.remove()
-  document.body.classList.remove('modal-open')
-}
-
-function slLimpar(val) {
-  return (val || '')
-    .toLowerCase()
-    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-    .replace(/[^a-z0-9-]/g, '-')
-    .replace(/-+/g, '-')
-    .replace(/^-+|-+$/g, '')
-    .slice(0, 28)
-}
-
-function slPreview(val) {
-  const limpo = slLimpar(val)
-  const prev = document.getElementById('sl-preview')
-  const status = document.getElementById('sl-status')
-  if (prev) prev.textContent = limpo || '...'
-  if (!limpo || limpo.length < 2) {
-    if (status) status.innerHTML = '<span style="color:#f87171">⚠ Mínimo 2 caracteres</span>'
-    return
-  }
-  if (status) status.innerHTML = '<span style="color:var(--text3)">Verificando...</span>'
-  clearTimeout(window._slTimer)
-  window._slTimer = setTimeout(async () => {
-    const ok = await slVerificar(limpo)
-    if (status) status.innerHTML = ok
-      ? '<span style="color:#34d399">✓ Disponível</span>'
-      : '<span style="color:#f87171">✗ Já em uso — escolha outro</span>'
-  }, 500)
-}
-
-async function slVerificar(slug) {
-  const token = localStorage.getItem('token')
-  try {
-    const res = await fetch(`${API}/auth/slug/check?slug=${encodeURIComponent(slug)}&negocioId=${negocioAtual._id}`,
-      { headers: { 'Authorization': `Bearer ${token}` } })
-    const data = await res.json()
-    return data.disponivel !== false
-  } catch { return true }
-}
-
-async function slSalvar() {
-  const input  = document.getElementById('sl-input')
-  const btn    = document.getElementById('sl-btn-salvar')
-  const status = document.getElementById('sl-status')
-  if (!input || !negocioAtual) return
-
-  const slug = slLimpar(input.value)
-  if (!slug || slug.length < 2) {
-    if (status) status.innerHTML = '<span style="color:#f87171">⚠ Link inválido</span>'
-    return
-  }
-  if (btn) { btn.disabled = true; btn.textContent = 'Salvando...' }
-
-  const ok = await slVerificar(slug)
-  if (!ok) {
-    if (status) status.innerHTML = '<span style="color:#f87171">✗ Link já em uso</span>'
-    if (btn) { btn.disabled = false; btn.textContent = 'Salvar link' }
-    return
-  }
-
-  const token = localStorage.getItem('token')
-  try {
-    await fetch(`${API}/auth/slug`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-      body: JSON.stringify({ negocioId: negocioAtual._id, slug })
-    })
-  } catch { /* aplica localmente mesmo sem endpoint */ }
-
-  negocioAtual.slug = slug
-  const idx = todosNegocios.findIndex(n => n._id === negocioAtual._id)
-  if (idx >= 0) todosNegocios[idx].slug = slug
-
-  atualizarTodosLinks(negocioAtual)
-  if (btn) { btn.textContent = '✓ Salvo!' }
-  setTimeout(fecharModalLink, 700)
 }
 
 /* ═══════════════════════════════════════════════════
@@ -1221,9 +1074,9 @@ document.addEventListener('DOMContentLoaded', () => {
   window.atualizarPreviewAuto=function(){
     const ta=document.getElementById('auto-mensagem-textarea');const bubble=document.getElementById('auto-preview-bubble');if(!ta||!bubble)return
     const negNome=(window.negocioAtual&&window.negocioAtual.nome)?window.negocioAtual.nome:'sua empresa'
-    // Usa link curto na preview da automação
-    const linkCurto=window.negocioAtual?urlAgendamento(window.negocioAtual):'agendorapido.com.br/seu-negocio'
-    let txt=ta.value.replace(/\{nome\}/g,'Carlos').replace(/\{data\}/g,'23/05').replace(/\{hora\}/g,'15:00').replace(/\{servico\}/g,'Barba').replace(/\{negocio\}/g,negNome).replace(/\{link\}/g,linkCurto)
+    // ✅ CORRIGIDO: usa ?id= no link da preview da automação
+    const linkAgendamento=window.negocioAtual?urlAgendamento(window.negocioAtual):'agendorapido.com.br/agendar.html?id=...'
+    let txt=ta.value.replace(/\{nome\}/g,'Carlos').replace(/\{data\}/g,'23/05').replace(/\{hora\}/g,'15:00').replace(/\{servico\}/g,'Barba').replace(/\{negocio\}/g,negNome).replace(/\{link\}/g,linkAgendamento)
     bubble.innerHTML=txt.split('\n').map(l=>l||'<br>').join('<br>')+`<div class="auto-wpp-bubble-time">10:30<svg width="14" height="10" viewBox="0 0 16 11" fill="none"><path d="M1 5.5l3.5 3.5L9 2M7 5.5l3.5 3.5L15 2" stroke="#4fc3f7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>`
   }
   window.salvarAutomacao=function(){
