@@ -418,44 +418,64 @@ function copiarMensagemWpp() {
 ═══════════════════════════════════════════════════ */
 async function carregarAgendamentos() {
   if (!negocioAtual) return
+  const nid = negocioAtual._id
   const token = localStorage.getItem('token')
-  const res = await fetch(`${API}/agendamentos?negocioId=${negocioAtual._id}`,{headers:{'Authorization':`Bearer ${token}`}})
-  todosAgendamentos = await res.json()
 
+  const res = await fetch(`${API}/agendamentos?negocioId=${nid}`, {
+    headers: { 'Authorization': `Bearer ${token}` }
+  })
+  let agsDaAPI = await res.json()
+
+  // Marca como concluído os agendamentos passados
   const agora = new Date()
-  const passados = todosAgendamentos.filter(a => {
-    if (a.status!=='confirmado'||!a.data||!a.hora) return false
-    const [ano,mes,dia] = a.data.split('-').map(Number)
-    const [h,m] = a.hora.split(':').map(Number)
-    return new Date(ano,mes-1,dia,h,m).getTime() < agora.getTime()
+  const passados = agsDaAPI.filter(a => {
+    if (a.status !== 'confirmado' || !a.data || !a.hora) return false
+    const [ano, mes, dia] = a.data.split('-').map(Number)
+    const [h, m] = a.hora.split(':').map(Number)
+    return new Date(ano, mes - 1, dia, h, m).getTime() < agora.getTime()
   })
 
   if (passados.length > 0) {
-    await Promise.all(passados.map(a=>fetch(`${API}/agendamentos/${a._id}`,{
-      method:'PATCH',
-      headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},
-      body:JSON.stringify({status:'concluido'})
-    })))
-    todosAgendamentos = todosAgendamentos.map(a => {
+    await Promise.all(passados.map(a =>
+      fetch(`${API}/agendamentos/${a._id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({ status: 'concluido' })
+      })
+    ))
+    agsDaAPI = agsDaAPI.map(a => {
       const foi = passados.find(p => p._id === a._id)
       if (!foi) return a
-      const c = {...a, status:'concluido'}
+      const c = { ...a, status: 'concluido' }
       registrarLucro(c)
       return c
     })
   }
 
-  const hoje = new Date().toISOString().split('T')[0]
-  const semana = new Date(Date.now()+7*86400000).toISOString().split('T')[0]
+  // ── PONTO CRÍTICO: salva concluídos no cache ANTES de qualquer merge ──
+  salvarConcluidosNoCache(nid, agsDaAPI)
+
+  // Mescla com o cache: recupera concluídos que a API já não retorna mais
+  todosAgendamentos = mergeComCache(nid, agsDaAPI)
+
+  // Stats de hoje e semana
+  const hoje   = new Date().toISOString().split('T')[0]
+  const semana = new Date(Date.now() + 7 * 86400000).toISOString().split('T')[0]
   const qtdHoje   = todosAgendamentos.filter(a => a.data === hoje).length
   const qtdSemana = todosAgendamentos.filter(a => a.data >= hoje && a.data <= semana).length
 
-  salvarStatsPersistentes(qtdHoje, qtdSemana)
+  // Só atualiza stat se o valor novo for maior (nunca regride)
+  const savedHoje   = parseInt(localStorage.getItem(`stat_hoje_${nid}`)) || 0
+  const savedSemana = parseInt(localStorage.getItem(`stat_semana_${nid}`)) || 0
+  const finalHoje   = Math.max(qtdHoje, savedHoje)
+  const finalSemana = Math.max(qtdSemana, savedSemana)
+  localStorage.setItem(`stat_hoje_${nid}`, String(finalHoje))
+  localStorage.setItem(`stat_semana_${nid}`, String(finalSemana))
 
   const elH = document.getElementById('stat-hoje')
   const elS = document.getElementById('stat-semana')
-  if (elH) elH.textContent = qtdHoje
-  if (elS) elS.textContent = qtdSemana
+  if (elH) elH.textContent = finalHoje
+  if (elS) elS.textContent = finalSemana
 
   seedLucroDoMes(todosAgendamentos)
   exibirLucro()
@@ -540,16 +560,48 @@ function renderDashboardHoje() {
 
 async function atualizar(id, status) {
   const token = localStorage.getItem('token')
-  if (status==='concluido') { const ag=todosAgendamentos.find(a=>a._id===id); if (ag) registrarLucro(ag) }
-  await fetch(`${API}/agendamentos/${id}`,{method:'PATCH',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({status})})
-  todosAgendamentos = todosAgendamentos.map(a=>a._id===id?{...a,status}:a)
-  const hoje = new Date().toISOString().split('T')[0]
-  const semana = new Date(Date.now()+7*86400000).toISOString().split('T')[0]
+  const nid = negocioAtual?._id
+
+  if (status === 'concluido') {
+    const ag = todosAgendamentos.find(a => a._id === id)
+    if (ag) {
+      registrarLucro(ag)
+      // Salva imediatamente no cache ao concluir manualmente
+      if (nid) {
+        const agConcluido = { ...ag, status: 'concluido' }
+        const cache = getCacheConc(nid)
+        const cacheMap = {}
+        cache.forEach(a => cacheMap[a._id] = a)
+        cacheMap[agConcluido._id] = agConcluido
+        setCacheConc(nid, Object.values(cacheMap))
+      }
+    }
+  }
+
+  await fetch(`${API}/agendamentos/${id}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+    body: JSON.stringify({ status })
+  })
+
+  todosAgendamentos = todosAgendamentos.map(a => a._id === id ? { ...a, status } : a)
+
+  // Atualiza cache com o novo status
+  if (nid) salvarConcluidosNoCache(nid, todosAgendamentos)
+
+  const hoje   = new Date().toISOString().split('T')[0]
+  const semana = new Date(Date.now() + 7 * 86400000).toISOString().split('T')[0]
   salvarStatsPersistentes(
-    todosAgendamentos.filter(a=>a.data===hoje).length,
-    todosAgendamentos.filter(a=>a.data>=hoje&&a.data<=semana).length
+    todosAgendamentos.filter(a => a.data === hoje).length,
+    todosAgendamentos.filter(a => a.data >= hoje && a.data <= semana).length
   )
-  exibirLucro(); renderHistorico(); filtrarData(); atualizarInsights(); renderDashboardHoje(); agAplicarFiltro()
+
+  exibirLucro()
+  renderHistorico()
+  filtrarData()
+  atualizarInsights()
+  renderDashboardHoje()
+  agAplicarFiltro()
 }
 
 async function cancelarComAviso(id, nome, telefone, data, hora) {
@@ -1432,6 +1484,41 @@ function getStatComFallback(nid, campo, valorCalculado) {
   // Usa o valor calculado se for maior, senão usa o salvo
   const salvo = getStatSalvo(nid, campo) || 0
   return Math.max(valorCalculado, salvo)
+}
+
+/* ═══════════════════════════════════════════════════
+   CACHE LOCAL DE AGENDAMENTOS CONCLUÍDOS
+   Garante que dados nunca somem mesmo se a API apagar
+═══════════════════════════════════════════════════ */
+function cacheKey(nid) { return `ags_concluidos_${nid}` }
+
+function getCacheConc(nid) {
+  try { return JSON.parse(localStorage.getItem(cacheKey(nid)) || '[]') } catch { return [] }
+}
+
+function setCacheConc(nid, lista) {
+  // Mantém apenas os do mês atual e do mês anterior (evita crescer demais)
+  const cutoff = new Date(); cutoff.setMonth(cutoff.getMonth() - 2)
+  const cutStr = cutoff.toISOString().split('T')[0]
+  const filtrado = lista.filter(a => (a.data || '') >= cutStr)
+  try { localStorage.setItem(cacheKey(nid), JSON.stringify(filtrado)) } catch {}
+}
+
+function mergeComCache(nid, agsDaAPI) {
+  const cache = getCacheConc(nid)
+  const idsAPI = new Set(agsDaAPI.map(a => a._id))
+  // Pega do cache apenas os que a API não retornou mais
+  const apenasNoCache = cache.filter(a => !idsAPI.has(a._id))
+  return [...agsDaAPI, ...apenasNoCache]
+}
+
+function salvarConcluidosNoCache(nid, ags) {
+  const cache = getCacheConc(nid)
+  const cacheMap = {}
+  cache.forEach(a => cacheMap[a._id] = a)
+  // Adiciona/atualiza todos os concluídos
+  ags.filter(a => a.status === 'concluido').forEach(a => cacheMap[a._id] = a)
+  setCacheConc(nid, Object.values(cacheMap))
 }
 
 document.addEventListener('DOMContentLoaded',()=>{
