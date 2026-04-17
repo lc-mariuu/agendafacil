@@ -148,8 +148,25 @@ function exibirLucro() {
 function salvarStatsPersistentes(qtdHoje, qtdSemana) {
   if (!negocioAtual) return
   const nid = negocioAtual._id
-  localStorage.setItem(`stat_hoje_${nid}`, String(qtdHoje))
-  localStorage.setItem(`stat_semana_${nid}`, String(qtdSemana))
+  // Só atualiza se o novo valor for maior (nunca regride)
+  const savedHoje   = parseInt(localStorage.getItem(`stat_hoje_${nid}`)) || 0
+  const savedSemana = parseInt(localStorage.getItem(`stat_semana_${nid}`)) || 0
+  if (qtdHoje   > savedHoje)   localStorage.setItem(`stat_hoje_${nid}`, String(qtdHoje))
+  if (qtdSemana > savedSemana) localStorage.setItem(`stat_semana_${nid}`, String(qtdSemana))
+}
+
+function carregarStatsSalvas() {
+  if (!negocioAtual) return
+  const nid = negocioAtual._id
+  const elH = document.getElementById('stat-hoje')
+  const elS = document.getElementById('stat-semana')
+  const qtdH = localStorage.getItem(`stat_hoje_${nid}`)
+  const qtdS = localStorage.getItem(`stat_semana_${nid}`)
+  if (elH && qtdH !== null) elH.textContent = qtdH
+  if (elS && qtdS !== null) elS.textContent = qtdS
+  exibirLucro()
+  // Carrega também os insights salvos antes de receber da API
+  atualizarInsights()
 }
 
 function carregarStatsSalvas() {
@@ -816,29 +833,107 @@ function historicoIrPara(offset){if(offset>0)return;historicoMesOffset=offset;re
    INSIGHTS
 ═══════════════════════════════════════════════════ */
 function atualizarInsights() {
-  const ags=todosAgendamentos||[]; if(!ags.length)return
-  const freqHora={}; ags.forEach(a=>{if(a.hora)freqHora[a.hora]=(freqHora[a.hora]||0)+1})
-  const topHora=Object.entries(freqHora).sort((a,b)=>b[1]-a[1])[0]; const elH=document.getElementById('insight-melhor-horario'); if(elH)elH.textContent=topHora?topHora[0]:'Sem dados'
-  const freqServ={}; ags.forEach(a=>{if(!a.servico)return;if(!freqServ[a.servico])freqServ[a.servico]={total:0,qtd:0};freqServ[a.servico].total+=Number(a.preco)||0;freqServ[a.servico].qtd+=1})
-  const topServ=Object.entries(freqServ).sort((a,b)=>b[1].total-a[1].total)[0]; const elST=document.getElementById('insight-servico-top'); const elSR=document.getElementById('insight-servico-receita')
-  if(elST&&topServ){elST.textContent=topServ[0];if(elSR)elSR.textContent=topServ[1].total>0?`R$ ${topServ[1].total.toFixed(2).replace('.',',')} gerados`:`${topServ[1].qtd} agendamento${topServ[1].qtd>1?'s':''}`}
-  const cutoff=new Date();cutoff.setDate(cutoff.getDate()-30);const cutStr=cutoff.toISOString().split('T')[0]
-  const recentes=new Set(ags.filter(a=>a.data>=cutStr).map(a=>a.pacienteNome)); const todos=new Set(ags.map(a=>a.pacienteNome)); const inativos=[...todos].filter(c=>!recentes.has(c)).length
-  const elI=document.getElementById('insight-inativos');const elIS=document.getElementById('insight-inativos-sub')
-  if(elI)elI.textContent=inativos>0?`${inativos} cliente${inativos>1?'s':''}`:'Nenhum'
-  if(elIS){elIS.textContent=inativos>0?'há mais de 30 dias':'todos ativos';elIS.className='insight-item-sub'+(inativos>0?' warning':'')}
-  const banner=document.getElementById('alert-clientes-inativos');if(banner)banner.style.display=inativos>=3?'flex':'none'
-  if(inativos>=3){const t=document.getElementById('alert-clientes-texto');if(t)t.innerHTML=`<strong>${inativos} clientes estão inativos</strong>, mande uma promoção para reativá-los`}
-  const hoje=new Date().toISOString().split('T')[0]; const semStart=new Date();semStart.setDate(semStart.getDate()-7)
-  const lucroSem=ags.filter(a=>a.status==='concluido'&&a.data>=semStart.toISOString().split('T')[0]&&a.data<=hoje).reduce((s,a)=>s+(Number(a.preco)||0),0)
-  const elTotal=document.getElementById('stat-total');if(elTotal)elTotal.textContent=fmtBRL(lucroSem)
-  const mes=new Date().toISOString().slice(0,7);const nid=negocioAtual?._id
-  const lucroMes=nid?(parseFloat(localStorage.getItem(`lucro_val_${nid}_${mes}`))||0):0
-  const atendMes=nid?(()=>{try{return JSON.parse(localStorage.getItem(`lucro_ids_${nid}_${mes}`)||'[]').length}catch{return 0}})():0
-  const fv=document.getElementById('finance-amount-val');const fm=document.getElementById('finance-meta');const fa=document.getElementById('finance-atend');const fcl=document.getElementById('finance-chart-label')
-  if(fv)fv.textContent=lucroMes.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})
-  if(fm)fm.textContent=`Movidas: ${atendMes} agendamento${atendMes!==1?'s':''}`
-  if(fa)fa.textContent=atendMes; if(fcl)fcl.textContent=`R$${Math.round(lucroMes)}`
+  const ags = todosAgendamentos || []
+  const nid = negocioAtual?._id
+  if (!nid) return
+
+  // ── Melhor horário ──
+  if (ags.length) {
+    const freqHora = {}
+    ags.forEach(a => { if (a.hora) freqHora[a.hora] = (freqHora[a.hora] || 0) + 1 })
+    const topHora = Object.entries(freqHora).sort((a, b) => b[1] - a[1])[0]
+    if (topHora) {
+      localStorage.setItem(`insight_melhorHorario_${nid}`, topHora[0])
+    }
+  }
+  const melhorHorario = localStorage.getItem(`insight_melhorHorario_${nid}`) || '—'
+  const elH = document.getElementById('insight-melhor-horario')
+  if (elH) elH.textContent = melhorHorario
+
+  // ── Serviço mais lucrativo ──
+  if (ags.length) {
+    const freqServ = {}
+    ags.forEach(a => {
+      if (!a.servico) return
+      if (!freqServ[a.servico]) freqServ[a.servico] = { total: 0, qtd: 0 }
+      freqServ[a.servico].total += Number(a.preco) || 0
+      freqServ[a.servico].qtd += 1
+    })
+    const topServ = Object.entries(freqServ).sort((a, b) => b[1].total - a[1].total)[0]
+    if (topServ) {
+      localStorage.setItem(`insight_topServico_${nid}`, topServ[0])
+      localStorage.setItem(`insight_topServicoBRL_${nid}`, topServ[1].total.toFixed(2))
+      localStorage.setItem(`insight_topServicoQtd_${nid}`, topServ[1].qtd)
+    }
+  }
+  const topServicoNome = localStorage.getItem(`insight_topServico_${nid}`)
+  const topServicoBRL  = parseFloat(localStorage.getItem(`insight_topServicoBRL_${nid}`)) || 0
+  const topServicoQtd  = parseInt(localStorage.getItem(`insight_topServicoQtd_${nid}`)) || 0
+  const elST = document.getElementById('insight-servico-top')
+  const elSR = document.getElementById('insight-servico-receita')
+  if (elST && topServicoNome) {
+    elST.textContent = topServicoNome
+    if (elSR) elSR.textContent = topServicoBRL > 0
+      ? `R$ ${topServicoBRL.toFixed(2).replace('.', ',')} gerados`
+      : `${topServicoQtd} agendamento${topServicoQtd !== 1 ? 's' : ''}`
+  }
+
+  // ── Clientes inativos ──
+  const cutoff = new Date()
+  cutoff.setDate(cutoff.getDate() - 30)
+  const cutStr = cutoff.toISOString().split('T')[0]
+  if (ags.length) {
+    const recentes = new Set(ags.filter(a => a.data >= cutStr).map(a => a.pacienteNome))
+    const todos    = new Set(ags.map(a => a.pacienteNome))
+    const inativos = [...todos].filter(c => !recentes.has(c)).length
+    // Persiste: inativos só regride se tivermos MAIS agendamentos que antes (dados mais completos)
+    const savedInativos = parseInt(localStorage.getItem(`insight_inativos_${nid}`)) || 0
+    if (inativos > 0 || todos.size > 0) {
+      localStorage.setItem(`insight_inativos_${nid}`, inativos)
+    }
+  }
+  const inativosSalvo = parseInt(localStorage.getItem(`insight_inativos_${nid}`)) || 0
+  const elI  = document.getElementById('insight-inativos')
+  const elIS = document.getElementById('insight-inativos-sub')
+  if (elI) elI.textContent = inativosSalvo > 0 ? `${inativosSalvo} cliente${inativosSalvo > 1 ? 's' : ''}` : 'Nenhum'
+  if (elIS) { elIS.textContent = inativosSalvo > 0 ? 'há mais de 30 dias' : 'todos ativos'; elIS.className = 'insight-item-sub' + (inativosSalvo > 0 ? ' warning' : '') }
+  const banner = document.getElementById('alert-clientes-inativos')
+  if (banner) banner.style.display = inativosSalvo >= 3 ? 'flex' : 'none'
+  if (inativosSalvo >= 3) {
+    const t = document.getElementById('alert-clientes-texto')
+    if (t) t.innerHTML = `<strong>${inativosSalvo} clientes estão inativos</strong>, mande uma promoção para reativá-los`
+  }
+
+  // ── Lucro da semana ──
+  const hoje    = new Date().toISOString().split('T')[0]
+  const semStart = new Date(); semStart.setDate(semStart.getDate() - 7)
+  const lucroSemCalc = ags
+    .filter(a => a.status === 'concluido' && a.data >= semStart.toISOString().split('T')[0] && a.data <= hoje)
+    .reduce((s, a) => s + (Number(a.preco) || 0), 0)
+  setStatSalvo(nid, 'lucroSemana', lucroSemCalc)
+  const lucroSem = getStatComFallback(nid, 'lucroSemana', lucroSemCalc)
+  const elTotal  = document.getElementById('stat-total')
+  if (elTotal) elTotal.textContent = fmtBRL(lucroSem)
+
+  // ── Finance card (este mês) ──
+  const mes         = mesAtualChave()
+  const lucroMes    = getLucroMes(nid) || 0
+  const idsDoMes    = getLucroIds(nid)
+  const atendMesCalc = idsDoMes.length
+
+  setStatSalvo(nid, 'atendMes', atendMesCalc)
+  const atendMes = Math.max(atendMesCalc, getStatSalvo(nid, 'atendMes') || 0)
+
+  const fv  = document.getElementById('finance-amount-val')
+  const fm  = document.getElementById('finance-meta')
+  const fa  = document.getElementById('finance-atend')
+  const fcl = document.getElementById('finance-chart-label')
+  if (fv)  fv.textContent  = lucroMes.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+  if (fm)  fm.textContent  = `Movidas: ${atendMes} agendamento${atendMes !== 1 ? 's' : ''}`
+  if (fa)  fa.textContent  = atendMes
+  if (fcl) fcl.textContent = `R$${Math.round(lucroMes)}`
+
+  atualizarPix()
 }
 
 async function carregarInsights() {
@@ -1311,6 +1406,32 @@ function cfgInitDragDrop(){
       cfgRenderServicos()
     })
   })
+}
+
+/* ═══════════════════════════════════════════════════
+   PERSISTÊNCIA DE STATS — nunca regride para zero
+═══════════════════════════════════════════════════ */
+function statKey(nid, campo) {
+  return `stat_${campo}_${nid}_${mesAtualChave()}`
+}
+
+function getStatSalvo(nid, campo) {
+  const v = localStorage.getItem(statKey(nid, campo))
+  return v !== null ? parseFloat(v) : null
+}
+
+function setStatSalvo(nid, campo, valor) {
+  // Só salva se o novo valor for MAIOR ou igual ao salvo
+  const atual = getStatSalvo(nid, campo)
+  if (atual === null || valor >= atual) {
+    localStorage.setItem(statKey(nid, campo), String(valor))
+  }
+}
+
+function getStatComFallback(nid, campo, valorCalculado) {
+  // Usa o valor calculado se for maior, senão usa o salvo
+  const salvo = getStatSalvo(nid, campo) || 0
+  return Math.max(valorCalculado, salvo)
 }
 
 document.addEventListener('DOMContentLoaded',()=>{
