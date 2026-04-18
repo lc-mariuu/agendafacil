@@ -11,7 +11,7 @@ app.use('/api/pagamento/webhook', express.raw({ type: 'application/json' }))
 
 app.use(express.json({ limit: '10mb' }))
 app.use(express.urlencoded({ limit: '10mb', extended: true }))
-app.use(express.static('public'))
+app.use(express.static('public', { extensions: ['html'] }))
 
 app.use('/api/auth',         require('./routes/auth'))
 app.use('/api/agendamentos', require('./routes/appointments'))
@@ -23,7 +23,7 @@ app.get('/', (req, res) => {
   res.sendFile('index.html', { root: 'public' })
 })
 
-// ── Rotas públicas por slug ────────────────────────────────────
+// ── Bio por slug ───────────────────────────────────────────────
 app.get('/bio/:slug', (req, res) => {
   res.sendFile('bio.html', { root: 'public' })
 })
@@ -41,17 +41,27 @@ const PAGINAS_ESTATICAS = [
   'planos'
 ]
 
-app.get('/:slug', (req, res) => {
+app.get('/:slug', async (req, res) => {
   const slug = req.params.slug
-  if (slug.includes('.')) return res.status(404).send('Not found')
 
-  // Se for uma página estática conhecida, serve o HTML dela
+  // Ignora requisições de arquivos estáticos
+  if (slug.includes('.')) return res.status(404).sendFile('404.html', { root: 'public' })
+
+  // Serve páginas estáticas conhecidas
   if (PAGINAS_ESTATICAS.includes(slug)) {
     return res.sendFile(`${slug}.html`, { root: 'public' })
   }
 
-  // Caso contrário, trata como link de agendamento
-  res.sendFile('agendar.html', { root: 'public' })
+  // Verifica se existe um negócio com esse ID no banco
+  try {
+    const Negocio = require('./models/Negocio')
+    const negocio = await Negocio.findById(slug)
+    if (!negocio) return res.status(404).sendFile('404.html', { root: 'public' })
+    res.sendFile('agendar.html', { root: 'public' })
+  } catch (e) {
+    // ID inválido (formato errado pro MongoDB) ou qualquer outro erro
+    return res.status(404).sendFile('404.html', { root: 'public' })
+  }
 })
 
 // ── LIMPEZA AUTOMÁTICA ─────────────────────────────────────────
