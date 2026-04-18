@@ -1,4 +1,3 @@
-/* painel-light-fix.css — Premium Redesign Overrides */
 /* ════════════════════════════════════════════════════
    AGENDORAPIDO — LIGHT MODE FIX (adicione após painel.css)
    Corrige todos os problemas visuais do modo claro
@@ -1025,83 +1024,6 @@ body.light-mode .negocio-atual { background: rgba(255,255,255,0.04); border-colo
 body.light-mode .negocio-atual:hover { background: rgba(255,255,255,0.07); }
 body.light-mode .negocio-nome { color: rgba(255,255,255,0.85); }
 
-
-body.light-mode .sidebar { background: var(--sidebar-bg); }
-
-body.light-mode .main-topbar {
-  background: rgba(246,246,251,0.9);
-  border-bottom-color: var(--border);
-}
-
-body.light-mode .negocio-atual {
-  background: rgba(255,255,255,0.07);
-  border-color: rgba(255,255,255,0.1);
-}
-body.light-mode .negocio-nome { color: rgba(255,255,255,0.8); }
-
-body.light-mode .menu-item { color: rgba(255,255,255,0.38); }
-body.light-mode .menu-item:hover { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.75); }
-body.light-mode .menu-item.ativo { background: rgba(99,102,241,0.15); color: #a5b4fc; }
-
-body.light-mode .stat-card,
-body.light-mode .card,
-body.light-mode .section-block,
-body.light-mode .insight-card,
-body.light-mode .finance-card,
-body.light-mode .ag-nova-tabela,
-body.light-mode .ag-filter-bar,
-body.light-mode .ag-stat-top,
-body.light-mode .horarios-dias-card,
-body.light-mode .auto-editor-card,
-body.light-mode .auto-dicas-card,
-body.light-mode .auto-tipo-card,
-body.light-mode .cfg-card,
-body.light-mode .link-card {
-  background: #ffffff;
-  border-color: rgba(15,15,30,0.08);
-}
-
-body.light-mode .ag-nova-thead,
-body.light-mode .ag-nova-pag,
-body.light-mode .cfg-dicas-section,
-body.light-mode .cfg-card-footer,
-body.light-mode .horarios-save-row {
-  background: rgba(15,15,30,0.02);
-}
-
-body.light-mode thead tr { background: rgba(15,15,30,0.02); }
-
-body.light-mode .busca-modal,
-body.light-mode .topbar-dropdown-panel,
-body.light-mode .avatar-menu-dropdown,
-body.light-mode .modal,
-body.light-mode .modal-neg { background: #ffffff; }
-
-body.light-mode .cfg-dica-item { background: #f8f8fd; }
-
-body.light-mode .btn-sair:hover { background: rgba(244,63,94,0.08); color: #e11d48; }
-body.light-mode .btn-instalar { background: rgba(99,102,241,0.09); }
-
-body.light-mode .auto-preview-box { background: #1a2440; }
-
-body.light-mode .horario-item { background: rgba(15,15,30,0.03); }
-
-body.light-mode .ag-tabs { background: rgba(15,15,30,0.04); border-color: rgba(15,15,30,0.1); }
-
-body.light-mode .hist-grafico-wrap { background: rgba(15,15,30,0.025); }
-body.light-mode .hist-stat { background: rgba(15,15,30,0.03); }
-
-body.light-mode .intervalo-btn { background: #ffffff; }
-
-body.light-mode .passo-steps { background: rgba(15,15,30,0.03); }
-
-body.light-mode .topbar-icon-btn { background: rgba(15,15,30,0.04); }
-body.light-mode .topbar-icon-btn:hover { background: rgba(15,15,30,0.08); }
-
-body.light-mode .cfg-serv-row:hover,
-body.light-mode .ag-nova-row:hover { background: rgba(15,15,30,0.025); }
-
-body.light-mode .ag-mobile-chip { background: rgba(15,15,30,0.04); }
 /* ── FIM DO PATCH ── */
 
 /* ════════════════════════════════════════════════════
