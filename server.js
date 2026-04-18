@@ -20,7 +20,7 @@ app.use('/api/assinatura',   require('./routes/assinatura'))
 app.use('/api/pagamento',    require('./routes/pagamento'))
 
 app.get('/', (req, res) => {
-  res.json({ mensagem: 'AgendoRapido API funcionando!' })
+  res.sendFile('index.html', { root: 'public' })
 })
 
 // ── Rotas públicas por slug ────────────────────────────────────
@@ -28,9 +28,29 @@ app.get('/bio/:slug', (req, res) => {
   res.sendFile('bio.html', { root: 'public' })
 })
 
+// ── Páginas estáticas de landing ──────────────────────────────
+const PAGINAS_ESTATICAS = [
+  'barbearia',
+  'salao-de-beleza',
+  'clinica',
+  'pet-shop',
+  'academia',
+  'tatuagem',
+  'painel',
+  'auth',
+  'planos'
+]
+
 app.get('/:slug', (req, res) => {
   const slug = req.params.slug
   if (slug.includes('.')) return res.status(404).send('Not found')
+
+  // Se for uma página estática conhecida, serve o HTML dela
+  if (PAGINAS_ESTATICAS.includes(slug)) {
+    return res.sendFile(`${slug}.html`, { root: 'public' })
+  }
+
+  // Caso contrário, trata como link de agendamento
   res.sendFile('agendar.html', { root: 'public' })
 })
 
