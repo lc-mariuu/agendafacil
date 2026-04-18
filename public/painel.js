@@ -59,7 +59,6 @@ document.head.appendChild(srStyle)
 ═══════════════════════════════════════════════════ */
 const BASE_URL = 'https://agendorapido.com.br'
 
-// ✅ CORRIGIDO: usa ?id= que o backend já reconhece
 function urlAgendamento(negocio) {
   if (!negocio) return ''
   return `${BASE_URL}/agendar.html?id=${negocio._id}`
@@ -70,7 +69,6 @@ function urlBio(negocio) {
   return `${BASE_URL}/bio.html?id=${negocio._id}`
 }
 
-// Atualiza todos os elementos de link no painel de uma vez
 function atualizarTodosLinks(negocio) {
   if (!negocio) return
   const ag  = urlAgendamento(negocio)
@@ -95,6 +93,37 @@ function atualizarTodosLinks(negocio) {
   }
 
   if (typeof atualizarPreviewAuto === 'function') atualizarPreviewAuto()
+}
+
+/* ═══════════════════════════════════════════════════
+   EXPIRAÇÃO VISUAL DE CONCLUÍDOS (1 hora)
+   Lucros, stats e insights ficam intactos no localStorage
+═══════════════════════════════════════════════════ */
+function conclusaoKey(id) {
+  return `ag_concluido_em_${id}`
+}
+
+function registrarConclusao(id) {
+  // Só registra se ainda não tiver — preserva o timestamp original
+  if (!localStorage.getItem(conclusaoKey(id))) {
+    localStorage.setItem(conclusaoKey(id), String(Date.now()))
+  }
+}
+
+function concluídoExpirado(id) {
+  const HORA_EM_MS = 60 * 60 * 1000
+  const salvo = localStorage.getItem(conclusaoKey(id))
+  if (!salvo) return false
+  return (Date.now() - Number(salvo)) > HORA_EM_MS
+}
+
+// Filtra a lista removendo concluídos com mais de 1h — só visual
+// Lucros e stats já foram calculados antes desta chamada
+function filtrarExpirados(lista) {
+  return lista.filter(a => {
+    if (a.status !== 'concluido') return true
+    return !concluídoExpirado(a._id)
+  })
 }
 
 /* ═══════════════════════════════════════════════════
@@ -148,7 +177,6 @@ function exibirLucro() {
 function salvarStatsPersistentes(qtdHoje, qtdSemana) {
   if (!negocioAtual) return
   const nid = negocioAtual._id
-  // Só atualiza se o novo valor for maior (nunca regride)
   const savedHoje   = parseInt(localStorage.getItem(`stat_hoje_${nid}`)) || 0
   const savedSemana = parseInt(localStorage.getItem(`stat_semana_${nid}`)) || 0
   if (qtdHoje   > savedHoje)   localStorage.setItem(`stat_hoje_${nid}`, String(qtdHoje))
@@ -165,20 +193,7 @@ function carregarStatsSalvas() {
   if (elH && qtdH !== null) elH.textContent = qtdH
   if (elS && qtdS !== null) elS.textContent = qtdS
   exibirLucro()
-  // Carrega também os insights salvos antes de receber da API
   atualizarInsights()
-}
-
-function carregarStatsSalvas() {
-  if (!negocioAtual) return
-  const nid = negocioAtual._id
-  const elH = document.getElementById('stat-hoje')
-  const elS = document.getElementById('stat-semana')
-  const qtdH = localStorage.getItem(`stat_hoje_${nid}`)
-  const qtdS = localStorage.getItem(`stat_semana_${nid}`)
-  if (elH && qtdH !== null) elH.textContent = qtdH
-  if (elS && qtdS !== null) elS.textContent = qtdS
-  exibirLucro()
 }
 
 /* ═══════════════════════════════════════════════════
@@ -452,19 +467,34 @@ async function carregarAgendamentos() {
     })
   }
 
-  // ── PONTO CRÍTICO: salva concluídos no cache ANTES de qualquer merge ──
+  // Salva concluídos no cache ANTES de qualquer merge
   salvarConcluidosNoCache(nid, agsDaAPI)
 
-  // Mescla com o cache: recupera concluídos que a API já não retorna mais
-  todosAgendamentos = mergeComCache(nid, agsDaAPI)
+  // Mescla com o cache
+  const listaMerged = mergeComCache(nid, agsDaAPI)
 
-  // Stats de hoje e semana
-  const hoje   = new Date().toISOString().split('T')[0]
+  // ── Registra timestamps de conclusão para todos os concluídos ──
+  // Isso garante que o filtro visual funcione corretamente
+  const hoje = new Date().toISOString().split('T')[0]
+  agsDaAPI
+    .filter(a => a.status === 'concluido')
+    .forEach(a => {
+      if (!localStorage.getItem(conclusaoKey(a._id))) {
+        if (a.data < hoje) {
+          // Agendamento de dia anterior → já expirado (marca 2h atrás)
+          localStorage.setItem(conclusaoKey(a._id), String(Date.now() - 2 * 60 * 60 * 1000))
+        } else {
+          // Concluído hoje sem registro → trata como recém-concluído
+          registrarConclusao(a._id)
+        }
+      }
+    })
+
+  // ── Stats de hoje e semana — calculados sobre lista COMPLETA ──
   const semana = new Date(Date.now() + 7 * 86400000).toISOString().split('T')[0]
-  const qtdHoje   = todosAgendamentos.filter(a => a.data === hoje).length
-  const qtdSemana = todosAgendamentos.filter(a => a.data >= hoje && a.data <= semana).length
+  const qtdHoje   = listaMerged.filter(a => a.data === hoje).length
+  const qtdSemana = listaMerged.filter(a => a.data >= hoje && a.data <= semana).length
 
-  // Só atualiza stat se o valor novo for maior (nunca regride)
   const savedHoje   = parseInt(localStorage.getItem(`stat_hoje_${nid}`)) || 0
   const savedSemana = parseInt(localStorage.getItem(`stat_semana_${nid}`)) || 0
   const finalHoje   = Math.max(qtdHoje, savedHoje)
@@ -477,18 +507,28 @@ async function carregarAgendamentos() {
   if (elH) elH.textContent = finalHoje
   if (elS) elS.textContent = finalSemana
 
-  seedLucroDoMes(todosAgendamentos)
+  // ── Lucro calculado sobre lista COMPLETA ──
+  seedLucroDoMes(listaMerged)
   exibirLucro()
+
+  // ── Insights calculados sobre lista COMPLETA ──
+  // Guardamos temporariamente a lista completa para atualizarInsights()
+  todosAgendamentos = listaMerged
+  atualizarInsights()
+
+  // ── Agora aplica o filtro visual (concluídos com +1h somem da lista) ──
+  todosAgendamentos = filtrarExpirados(listaMerged)
+
+  // ── Renders ──
   renderHistorico()
   filtrarData()
-  atualizarInsights()
   agAplicarFiltro()
   renderDashboardHoje()
 
   const dot = document.getElementById('notif-dot')
-  if (dot) dot.style.display = qtdHoje > 0 ? 'block' : 'none'
+  if (dot) dot.style.display = finalHoje > 0 ? 'block' : 'none'
   const dotMobile = document.getElementById('notif-dot-mobile')
-  if (dotMobile) dotMobile.style.display = qtdHoje > 0 ? 'block' : 'none'
+  if (dotMobile) dotMobile.style.display = finalHoje > 0 ? 'block' : 'none'
 }
 
 const POR_PAGINA = 8
@@ -566,6 +606,8 @@ async function atualizar(id, status) {
     const ag = todosAgendamentos.find(a => a._id === id)
     if (ag) {
       registrarLucro(ag)
+      // Registra o timestamp de conclusão agora (para controle de expiração de 1h)
+      registrarConclusao(id)
       // Salva imediatamente no cache ao concluir manualmente
       if (nid) {
         const agConcluido = { ...ag, status: 'concluido' }
@@ -584,22 +626,30 @@ async function atualizar(id, status) {
     body: JSON.stringify({ status })
   })
 
-  todosAgendamentos = todosAgendamentos.map(a => a._id === id ? { ...a, status } : a)
+  // Atualiza lista completa com novo status
+  const listaCompleta = todosAgendamentos.map(a => a._id === id ? { ...a, status } : a)
 
   // Atualiza cache com o novo status
-  if (nid) salvarConcluidosNoCache(nid, todosAgendamentos)
+  if (nid) salvarConcluidosNoCache(nid, listaCompleta)
 
   const hoje   = new Date().toISOString().split('T')[0]
   const semana = new Date(Date.now() + 7 * 86400000).toISOString().split('T')[0]
   salvarStatsPersistentes(
-    todosAgendamentos.filter(a => a.data === hoje).length,
-    todosAgendamentos.filter(a => a.data >= hoje && a.data <= semana).length
+    listaCompleta.filter(a => a.data === hoje).length,
+    listaCompleta.filter(a => a.data >= hoje && a.data <= semana).length
   )
 
+  // Recalcula insights/lucro sobre lista completa ANTES do filtro visual
+  const listaParaInsights = listaCompleta
+  todosAgendamentos = listaParaInsights
+  atualizarInsights()
   exibirLucro()
+
+  // Aplica filtro visual
+  todosAgendamentos = filtrarExpirados(listaCompleta)
+
   renderHistorico()
   filtrarData()
-  atualizarInsights()
   renderDashboardHoje()
   agAplicarFiltro()
 }
@@ -883,6 +933,8 @@ function historicoIrPara(offset){if(offset>0)return;historicoMesOffset=offset;re
 
 /* ═══════════════════════════════════════════════════
    INSIGHTS
+   ATENÇÃO: atualizarInsights() deve ser chamado com
+   todosAgendamentos ainda COMPLETO (antes de filtrarExpirados)
 ═══════════════════════════════════════════════════ */
 function atualizarInsights() {
   const ags = todosAgendamentos || []
@@ -938,8 +990,6 @@ function atualizarInsights() {
     const recentes = new Set(ags.filter(a => a.data >= cutStr).map(a => a.pacienteNome))
     const todos    = new Set(ags.map(a => a.pacienteNome))
     const inativos = [...todos].filter(c => !recentes.has(c)).length
-    // Persiste: inativos só regride se tivermos MAIS agendamentos que antes (dados mais completos)
-    const savedInativos = parseInt(localStorage.getItem(`insight_inativos_${nid}`)) || 0
     if (inativos > 0 || todos.size > 0) {
       localStorage.setItem(`insight_inativos_${nid}`, inativos)
     }
@@ -968,7 +1018,6 @@ function atualizarInsights() {
   if (elTotal) elTotal.textContent = fmtBRL(lucroSem)
 
   // ── Finance card (este mês) ──
-  const mes         = mesAtualChave()
   const lucroMes    = getLucroMes(nid) || 0
   const idsDoMes    = getLucroIds(nid)
   const atendMesCalc = idsDoMes.length
@@ -1221,7 +1270,6 @@ document.addEventListener('DOMContentLoaded', () => {
   window.atualizarPreviewAuto=function(){
     const ta=document.getElementById('auto-mensagem-textarea');const bubble=document.getElementById('auto-preview-bubble');if(!ta||!bubble)return
     const negNome=(window.negocioAtual&&window.negocioAtual.nome)?window.negocioAtual.nome:'sua empresa'
-    // ✅ CORRIGIDO: usa ?id= no link da preview da automação
     const linkAgendamento=window.negocioAtual?urlAgendamento(window.negocioAtual):'agendorapido.com.br/agendar.html?id=...'
     let txt=ta.value.replace(/\{nome\}/g,'Carlos').replace(/\{data\}/g,'23/05').replace(/\{hora\}/g,'15:00').replace(/\{servico\}/g,'Barba').replace(/\{negocio\}/g,negNome).replace(/\{link\}/g,linkAgendamento)
     bubble.innerHTML=txt.split('\n').map(l=>l||'<br>').join('<br>')+`<div class="auto-wpp-bubble-time">10:30<svg width="14" height="10" viewBox="0 0 16 11" fill="none"><path d="M1 5.5l3.5 3.5L9 2M7 5.5l3.5 3.5L15 2" stroke="#4fc3f7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>`
@@ -1473,7 +1521,6 @@ function getStatSalvo(nid, campo) {
 }
 
 function setStatSalvo(nid, campo, valor) {
-  // Só salva se o novo valor for MAIOR ou igual ao salvo
   const atual = getStatSalvo(nid, campo)
   if (atual === null || valor >= atual) {
     localStorage.setItem(statKey(nid, campo), String(valor))
@@ -1481,14 +1528,12 @@ function setStatSalvo(nid, campo, valor) {
 }
 
 function getStatComFallback(nid, campo, valorCalculado) {
-  // Usa o valor calculado se for maior, senão usa o salvo
   const salvo = getStatSalvo(nid, campo) || 0
   return Math.max(valorCalculado, salvo)
 }
 
 /* ═══════════════════════════════════════════════════
    CACHE LOCAL DE AGENDAMENTOS CONCLUÍDOS
-   Garante que dados nunca somem mesmo se a API apagar
 ═══════════════════════════════════════════════════ */
 function cacheKey(nid) { return `ags_concluidos_${nid}` }
 
@@ -1497,7 +1542,6 @@ function getCacheConc(nid) {
 }
 
 function setCacheConc(nid, lista) {
-  // Mantém apenas os do mês atual e do mês anterior (evita crescer demais)
   const cutoff = new Date(); cutoff.setMonth(cutoff.getMonth() - 2)
   const cutStr = cutoff.toISOString().split('T')[0]
   const filtrado = lista.filter(a => (a.data || '') >= cutStr)
@@ -1507,7 +1551,6 @@ function setCacheConc(nid, lista) {
 function mergeComCache(nid, agsDaAPI) {
   const cache = getCacheConc(nid)
   const idsAPI = new Set(agsDaAPI.map(a => a._id))
-  // Pega do cache apenas os que a API não retornou mais
   const apenasNoCache = cache.filter(a => !idsAPI.has(a._id))
   return [...agsDaAPI, ...apenasNoCache]
 }
@@ -1516,7 +1559,6 @@ function salvarConcluidosNoCache(nid, ags) {
   const cache = getCacheConc(nid)
   const cacheMap = {}
   cache.forEach(a => cacheMap[a._id] = a)
-  // Adiciona/atualiza todos os concluídos
   ags.filter(a => a.status === 'concluido').forEach(a => cacheMap[a._id] = a)
   setCacheConc(nid, Object.values(cacheMap))
 }
