@@ -1,0 +1,1847 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AgendoRapido — Painel Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════
+   TOKENS
+═══════════════════════════════════════════ */
+:root {
+  --sidebar-w: 240px;
+  --bg: #060910;
+  --bg-card: #0d1117;
+  --bg-card2: #0a0e16;
+  --bg-hover: #111925;
+  --bg-input: #080c14;
+  --sidebar-bg: #040710;
+  --sidebar-border: rgba(255,255,255,0.04);
+  --accent: #f59e0b;
+  --accent-2: #fbbf24;
+  --accent-hover: #d97706;
+  --accent-light: rgba(245,158,11,0.1);
+  --accent-mid: rgba(245,158,11,0.2);
+  --accent-glow: rgba(245,158,11,0.3);
+  --blue: #3b82f6;
+  --blue-light: rgba(59,130,246,0.1);
+  --blue-mid: rgba(59,130,246,0.2);
+  --text: #e2e8f0;
+  --text2: #8b9ab4;
+  --text3: #4a5568;
+  --border: rgba(255,255,255,0.05);
+  --border2: rgba(255,255,255,0.08);
+  --border3: rgba(255,255,255,0.12);
+  --green: #10b981;
+  --green-bg: rgba(16,185,129,0.1);
+  --green-border: rgba(16,185,129,0.25);
+  --red: #ef4444;
+  --red-bg: rgba(239,68,68,0.1);
+  --red-border: rgba(239,68,68,0.25);
+  --yellow: #f59e0b;
+  --yellow-bg: rgba(245,158,11,0.1);
+  --yellow-border: rgba(245,158,11,0.25);
+  --purple: #8b5cf6;
+  --purple-bg: rgba(139,92,246,0.1);
+  --purple-border: rgba(139,92,246,0.25);
+  --radius: 14px;
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.5);
+  --shadow-md: 0 4px 20px rgba(0,0,0,0.6);
+  --shadow-lg: 0 8px 40px rgba(0,0,0,0.7);
+  --shadow-accent: 0 4px 16px rgba(245,158,11,0.3);
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+/* ═══ SIDEBAR ═══ */
+.sidebar {
+  position: fixed;
+  left: 0; top: 0; bottom: 0;
+  width: var(--sidebar-w);
+  background: var(--sidebar-bg);
+  border-right: 1px solid var(--sidebar-border);
+  display: flex;
+  flex-direction: column;
+  z-index: 100;
+  overflow: hidden;
+}
+.sidebar-top { padding: 20px 16px 14px; border-bottom: 1px solid var(--sidebar-border); }
+.sidebar-brand { display: flex; align-items: center; gap: 9px; margin-bottom: 14px; }
+.sidebar-brand-icon {
+  width: 28px; height: 28px; border-radius: 8px;
+  background: linear-gradient(135deg, #d97706, #f59e0b);
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 3px 10px rgba(245,158,11,0.4);
+}
+.sidebar-brand-text { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 15px; font-weight: 800; color: #fff; }
+.sidebar-brand-text span { color: #fbbf24; }
+.admin-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: rgba(245,158,11,0.15);
+  border: 1px solid rgba(245,158,11,0.3);
+  border-radius: 6px;
+  padding: 3px 9px;
+  font-size: 10px;
+  font-weight: 800;
+  color: #fbbf24;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  margin-bottom: 2px;
+}
+.admin-badge::before { content:''; width:6px; height:6px; border-radius:50%; background:#fbbf24; animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+.sidebar-menu { padding: 10px; flex: 1; overflow-y: auto; }
+.menu-section {
+  font-size: 9px; font-weight: 700; color: rgba(255,255,255,0.2);
+  text-transform: uppercase; letter-spacing: .14em;
+  padding: 14px 8px 5px;
+}
+.menu-item {
+  display: flex; align-items: center; gap: 9px;
+  padding: 7px 9px; border-radius: 8px;
+  color: rgba(255,255,255,0.35);
+  font-size: 12.5px; font-weight: 500;
+  cursor: pointer; margin-bottom: 1px;
+  border: none; background: none;
+  width: 100%; text-align: left; font-family: inherit;
+}
+.menu-item:hover { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.7); }
+.menu-item.ativo {
+  background: rgba(245,158,11,0.15);
+  color: #fbbf24; font-weight: 600;
+  box-shadow: inset 0 0 0 1px rgba(245,158,11,0.2);
+}
+.menu-item.ativo svg { color: #f59e0b; }
+.menu-item .badge-count {
+  margin-left: auto;
+  background: var(--red);
+  color: white;
+  font-size: 10px; font-weight: 700;
+  padding: 1px 7px; border-radius: 100px;
+}
+
+.sidebar-footer { padding: 10px; border-top: 1px solid var(--sidebar-border); }
+.btn-sair {
+  display: flex; align-items: center; gap: 8px; width: 100%;
+  padding: 7px 9px; border-radius: 8px;
+  background: none; border: none;
+  color: rgba(255,255,255,0.22);
+  font-size: 12px; font-weight: 500;
+  cursor: pointer; font-family: inherit;
+}
+.btn-sair:hover { background: var(--red-bg); color: #f87171; }
+
+/* ═══ MAIN ═══ */
+.main { margin-left: var(--sidebar-w); padding: 0 32px 60px; }
+
+/* ═══ TOPBAR ═══ */
+.main-topbar {
+  position: sticky; top: 0; z-index: 50;
+  background: rgba(6,9,16,0.95);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 32px; height: 56px;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 16px; margin: 0 -32px 28px;
+}
+.topbar-left { display: flex; align-items: center; gap: 12px; }
+.topbar-title { font-size: 17px; font-weight: 800; color: var(--text); letter-spacing: -0.02em; }
+.topbar-sub { font-size: 11.5px; color: var(--text2); margin-top: 1px; }
+.topbar-right { display: flex; align-items: center; gap: 8px; }
+.topbar-icon-btn {
+  width: 34px; height: 34px; border-radius: 9px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; color: var(--text2);
+}
+.topbar-icon-btn:hover { background: rgba(255,255,255,0.08); color: var(--text); }
+.admin-user-chip {
+  display: flex; align-items: center; gap: 8px;
+  background: rgba(245,158,11,0.1);
+  border: 1px solid rgba(245,158,11,0.25);
+  border-radius: 10px; padding: 5px 12px;
+  font-size: 12px; font-weight: 600; color: #fbbf24;
+}
+.admin-user-chip svg { color: #f59e0b; }
+
+/* ═══ PAGES ═══ */
+.page { display: none; }
+.page.ativo { display: block; animation: pageIn .25s cubic-bezier(.4,0,.2,1); }
+@keyframes pageIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+
+/* ═══ STAT GRID ═══ */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px; margin-bottom: 22px;
+}
+.stat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  position: relative; overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  cursor: default;
+}
+.stat-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); border-color: var(--border2); }
+.stat-icon {
+  width: 36px; height: 36px; border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 14px;
+}
+.stat-icon.amber { background: rgba(245,158,11,0.15); border: 1px solid rgba(245,158,11,0.25); }
+.stat-icon.blue  { background: var(--blue-light); border: 1px solid var(--blue-mid); }
+.stat-icon.green { background: var(--green-bg); border: 1px solid var(--green-border); }
+.stat-icon.red   { background: var(--red-bg); border: 1px solid var(--red-border); }
+.stat-icon.purple{ background: var(--purple-bg); border: 1px solid var(--purple-border); }
+.stat-valor {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 28px; font-weight: 800;
+  color: var(--text); letter-spacing: -0.04em; line-height: 1;
+}
+.stat-label { font-size: 10px; color: var(--text2); margin-top: 5px; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; }
+.stat-trend { font-size: 11px; font-weight: 700; margin-top: 4px; }
+.stat-trend.up { color: var(--green); }
+.stat-trend.down { color: var(--red); }
+.stat-glow {
+  position: absolute; bottom: -20px; right: -20px;
+  width: 80px; height: 80px; border-radius: 50%;
+  opacity: .08; pointer-events: none;
+}
+
+/* ═══ SECTION BLOCK ═══ */
+.section-block {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 18px;
+}
+.section-block:hover { border-color: var(--border2); }
+.section-header {
+  padding: 16px 22px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center;
+  justify-content: space-between; gap: 12px; flex-wrap: wrap;
+}
+.section-title { font-size: 13.5px; font-weight: 700; color: var(--text); }
+.section-sub { font-size: 11.5px; color: var(--text2); margin-top: 2px; }
+
+/* ═══ TABLE ═══ */
+.admin-table { width: 100%; border-collapse: collapse; }
+.admin-thead th {
+  text-align: left; font-size: 9.5px; font-weight: 700;
+  color: var(--text3); padding: 10px 22px;
+  text-transform: uppercase; letter-spacing: .1em;
+  background: rgba(255,255,255,0.02);
+  border-bottom: 1px solid var(--border);
+}
+.admin-tbody tr { border-bottom: 1px solid var(--border); }
+.admin-tbody tr:last-child { border-bottom: none; }
+.admin-tbody tr:hover { background: rgba(255,255,255,0.02); }
+.admin-tbody td { padding: 13px 22px; font-size: 13px; color: var(--text); vertical-align: middle; }
+
+/* ═══ BADGES ═══ */
+.badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 3px 10px; border-radius: 100px;
+  font-size: 11px; font-weight: 700; white-space: nowrap;
+}
+.badge::before { content:''; width:4px; height:4px; border-radius:50%; flex-shrink:0; }
+.badge-trial   { background:var(--yellow-bg); color:var(--yellow); border:1px solid var(--yellow-border); }
+.badge-trial::before { background:var(--yellow); }
+.badge-pro     { background:var(--blue-light); color:#60a5fa; border:1px solid var(--blue-mid); }
+.badge-pro::before { background:#60a5fa; }
+.badge-inativo { background:var(--red-bg); color:var(--red); border:1px solid var(--red-border); }
+.badge-inativo::before { background:var(--red); }
+.badge-ativo   { background:var(--green-bg); color:var(--green); border:1px solid var(--green-border); }
+.badge-ativo::before { background:var(--green); }
+.badge-admin   { background:rgba(245,158,11,0.15); color:#fbbf24; border:1px solid rgba(245,158,11,0.3); }
+.badge-admin::before { background:#fbbf24; }
+
+/* ═══ BUTTONS ═══ */
+.btn {
+  display: inline-flex; align-items: center; gap: 7px;
+  border-radius: 9px; font-size: 12.5px; font-weight: 600;
+  cursor: pointer; border: none; font-family: inherit;
+  padding: 8px 16px; white-space: nowrap;
+}
+.btn-amber { background: var(--accent); color: white; box-shadow: var(--shadow-accent); }
+.btn-amber:hover { background: var(--accent-hover); transform: translateY(-1px); }
+.btn-outline { background: rgba(255,255,255,0.04); color: var(--text2); border: 1px solid var(--border2); }
+.btn-outline:hover { background: rgba(255,255,255,0.08); color: var(--text); }
+.btn-red { background: var(--red-bg); color: var(--red); border: 1px solid var(--red-border); }
+.btn-red:hover { background: var(--red); color: white; }
+.btn-green { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); }
+.btn-green:hover { background: var(--green); color: white; }
+.btn-sm { padding: 5px 11px; font-size: 11.5px; border-radius: 7px; }
+.btn-xs { padding: 3px 9px; font-size: 11px; border-radius: 6px; }
+
+/* ═══ SEARCH / FILTER BAR ═══ */
+.filter-bar {
+  display: flex; align-items: center; gap: 10px;
+  padding: 14px 22px; border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+.search-wrap {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--bg-input); border: 1px solid var(--border2);
+  border-radius: 9px; padding: 7px 12px; flex: 1; min-width: 200px;
+}
+.search-wrap svg { color: var(--text3); flex-shrink: 0; }
+.search-wrap input {
+  background: none; border: none; outline: none;
+  font-size: 13px; color: var(--text); font-family: inherit; width: 100%;
+}
+.filter-select {
+  background: var(--bg-input); border: 1px solid var(--border2);
+  border-radius: 9px; padding: 7px 30px 7px 12px;
+  font-size: 12.5px; color: var(--text2); font-family: inherit;
+  outline: none; cursor: pointer;
+  -webkit-appearance: none; appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath d='M2 3.5l3 3 3-3' stroke='%238b9ab4' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 8px center;
+}
+.filter-select:focus { border-color: var(--accent); }
+
+/* ═══ AVATAR ═══ */
+.user-avatar {
+  width: 34px; height: 34px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700; color: white; flex-shrink: 0;
+}
+
+/* ═══ MODALS ═══ */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.75);
+  z-index: 300; display: flex;
+  align-items: center; justify-content: center;
+  padding: 16px; backdrop-filter: blur(8px);
+}
+.modal {
+  background: var(--bg-card);
+  border: 1px solid var(--border2);
+  border-radius: 18px; padding: 26px;
+  width: 100%; max-width: 500px;
+  box-shadow: var(--shadow-lg);
+  max-height: 90vh; overflow-y: auto;
+  animation: modalIn .22s cubic-bezier(.4,0,.2,1);
+}
+.modal-lg { max-width: 700px; }
+@keyframes modalIn { from{opacity:0;transform:scale(.96) translateY(8px)} to{opacity:1;transform:scale(1) translateY(0)} }
+.modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 22px; }
+.modal-header h2 { font-size: 16px; font-weight: 700; color: var(--text); }
+.modal-close {
+  width: 28px; height: 28px; border-radius: 7px;
+  background: rgba(255,255,255,0.05); border: 1px solid var(--border2);
+  cursor: pointer; color: var(--text3); font-size: 17px;
+  display: flex; align-items: center; justify-content: center;
+}
+.modal-close:hover { background: var(--red-bg); color: var(--red); border-color: var(--red-border); }
+.modal-footer { display: flex; gap: 9px; margin-top: 22px; }
+.form-group { margin-bottom: 16px; }
+.form-group label { font-size: 10px; font-weight: 700; color: var(--text2); display: block; margin-bottom: 6px; text-transform: uppercase; letter-spacing:.08em; }
+.form-group input, .form-group select, .form-group textarea {
+  width: 100%; padding: 10px 13px;
+  border: 1px solid var(--border2); border-radius: 9px;
+  font-size: 13.5px; outline: none; font-family: inherit;
+  color: var(--text); background: var(--bg-input);
+}
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+  border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-light);
+}
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.err-msg { color: var(--red); font-size: 12px; margin-top: 6px; min-height: 14px; }
+.success-msg { color: var(--green); font-size: 12px; font-weight: 700; margin-top: 6px; }
+
+/* ═══ INFO CARDS (dashboard) ═══ */
+.dashboard-grid { display: grid; grid-template-columns: 1fr 340px; gap: 18px; align-items: start; }
+
+.activity-list { max-height: 360px; overflow-y: auto; }
+.activity-item {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 13px 22px; border-bottom: 1px solid var(--border);
+}
+.activity-item:last-child { border-bottom: none; }
+.activity-dot {
+  width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 5px;
+}
+.activity-text { font-size: 13px; color: var(--text2); line-height: 1.5; flex: 1; }
+.activity-text strong { color: var(--text); font-weight: 600; }
+.activity-time { font-size: 11px; color: var(--text3); white-space: nowrap; flex-shrink: 0; }
+
+/* ═══ MINI REVENUE CHART ═══ */
+.revenue-bars { display: flex; align-items: flex-end; gap: 6px; height: 80px; padding: 0 22px 18px; }
+.rev-bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; height: 100%; justify-content: flex-end; }
+.rev-bar { width: 100%; border-radius: 4px 4px 0 0; background: rgba(245,158,11,0.35); min-height: 3px; transition: height .5s cubic-bezier(.4,0,.2,1); cursor: pointer; }
+.rev-bar:hover { background: var(--accent); }
+.rev-bar.highlight { background: var(--accent); box-shadow: 0 0 10px rgba(245,158,11,0.3); }
+.rev-bar-label { font-size: 9px; color: var(--text3); font-weight: 600; }
+
+/* ═══ TOASTS ═══ */
+#toast-container {
+  position: fixed; bottom: 20px; right: 20px;
+  z-index: 9999; display: flex; flex-direction: column; gap: 8px;
+}
+.toast {
+  display: flex; align-items: center; gap: 10px;
+  background: var(--bg-card); border: 1px solid var(--border2);
+  border-radius: 11px; padding: 12px 16px;
+  box-shadow: var(--shadow-lg); min-width: 260px;
+  animation: toastIn .25s cubic-bezier(.4,0,.2,1);
+  font-size: 13px; color: var(--text);
+}
+@keyframes toastIn { from{opacity:0;transform:translateX(20px)} to{opacity:1;transform:translateX(0)} }
+.toast.success { border-color: var(--green-border); }
+.toast.error   { border-color: var(--red-border); }
+.toast.info    { border-color: var(--blue-mid); }
+
+/* ═══ EMPTY STATE ═══ */
+.empty-state { text-align: center; padding: 52px 20px; color: var(--text3); }
+.empty-state svg { margin-bottom: 12px; opacity: .4; }
+.empty-state p { font-size: 13.5px; }
+
+/* ═══ PROGRESS BAR ═══ */
+.progress-bar { height: 6px; background: var(--border2); border-radius: 100px; overflow: hidden; }
+.progress-fill { height: 100%; border-radius: 100px; transition: width .8s cubic-bezier(.4,0,.2,1); }
+
+/* ═══ USER DETAIL SIDEBAR ═══ */
+.detail-panel {
+  position: fixed; right: -420px; top: 0; bottom: 0;
+  width: 420px; background: var(--bg-card);
+  border-left: 1px solid var(--border2);
+  z-index: 200; overflow-y: auto;
+  transition: right .3s cubic-bezier(.4,0,.2,1);
+  box-shadow: -8px 0 40px rgba(0,0,0,0.5);
+}
+.detail-panel.aberto { right: 0; }
+.detail-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+  z-index: 199; display: none;
+}
+.detail-overlay.visivel { display: block; }
+.detail-header {
+  padding: 20px 22px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  position: sticky; top: 0; background: var(--bg-card); z-index: 1;
+}
+.detail-section { padding: 18px 22px; border-bottom: 1px solid var(--border); }
+.detail-section:last-child { border-bottom: none; }
+.detail-label { font-size: 9.5px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: .1em; margin-bottom: 12px; }
+.detail-row { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; border-bottom: 1px solid var(--border); }
+.detail-row:last-child { border-bottom: none; }
+.detail-row-label { font-size: 12px; color: var(--text2); }
+.detail-row-value { font-size: 12.5px; font-weight: 600; color: var(--text); }
+
+/* ═══ PLANOS ═══ */
+.plan-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; padding: 22px; }
+.plan-card {
+  border: 1px solid var(--border2); border-radius: 13px; padding: 20px;
+  background: rgba(255,255,255,0.02);
+}
+.plan-card.featured { border-color: var(--accent); background: rgba(245,158,11,0.05); }
+.plan-name { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+.plan-price { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 26px; font-weight: 800; color: var(--text); letter-spacing: -0.03em; }
+.plan-price span { font-size: 14px; font-weight: 400; color: var(--text3); }
+.plan-users { font-size: 12px; color: var(--text2); margin: 10px 0 16px; }
+.plan-bar { margin-bottom: 10px; }
+.plan-bar-label { display: flex; justify-content: space-between; font-size: 11px; color: var(--text3); margin-bottom: 4px; }
+
+/* ═══ LOGS ═══ */
+.log-row {
+  display: flex; align-items: flex-start; gap: 13px;
+  padding: 12px 22px; border-bottom: 1px solid var(--border); font-size: 12.5px;
+}
+.log-row:last-child { border-bottom: none; }
+.log-level {
+  flex-shrink: 0; padding: 2px 8px; border-radius: 5px;
+  font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em;
+  min-width: 50px; text-align: center;
+}
+.log-level.info  { background: var(--blue-light); color: #60a5fa; }
+.log-level.warn  { background: var(--yellow-bg); color: var(--yellow); }
+.log-level.error { background: var(--red-bg); color: var(--red); }
+.log-level.success { background: var(--green-bg); color: var(--green); }
+.log-msg { flex: 1; color: var(--text2); line-height: 1.5; }
+.log-msg strong { color: var(--text); }
+.log-time { font-size: 11px; color: var(--text3); white-space: nowrap; flex-shrink: 0; }
+
+/* ═══ CONFIG TOGGLE ═══ */
+.cfg-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 15px 22px; border-bottom: 1px solid var(--border);
+}
+.cfg-row:last-child { border-bottom: none; }
+.cfg-row-info { flex: 1; }
+.cfg-row-label { font-size: 13.5px; font-weight: 600; color: var(--text); margin-bottom: 3px; }
+.cfg-row-sub   { font-size: 12px; color: var(--text2); }
+.toggle-switch { position: relative; display: inline-block; width: 44px; height: 24px; flex-shrink: 0; }
+.toggle-switch input { opacity: 0; width: 0; height: 0; }
+.toggle-track { position: absolute; cursor: pointer; inset: 0; background: rgba(255,255,255,0.1); border-radius: 100px; }
+.toggle-track:after { content:''; position:absolute; left:3px; top:3px; width:18px; height:18px; background:#fff; border-radius:50%; box-shadow:0 1px 4px rgba(0,0,0,.3); transition:left .25s; }
+.toggle-switch input:checked + .toggle-track { background: var(--accent); }
+.toggle-switch input:checked + .toggle-track:after { left: 23px; }
+
+/* ═══ PAGINACAO ═══ */
+.pagination {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 22px; border-top: 1px solid var(--border);
+  background: rgba(255,255,255,0.01); flex-wrap: wrap; gap: 10px;
+}
+.pag-info { font-size: 12px; color: var(--text3); font-weight: 600; }
+.pag-btns { display: flex; gap: 4px; }
+.pag-btn {
+  width: 30px; height: 30px; border-radius: 8px;
+  border: 1px solid var(--border2);
+  background: rgba(255,255,255,0.03);
+  color: var(--text2); font-size: 13px; font-weight: 600;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  font-family: inherit;
+}
+.pag-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+.pag-btn.ativo { background: var(--accent); border-color: var(--accent); color: #fff; }
+.pag-btn:disabled { opacity: .3; cursor: not-allowed; }
+
+/* ═══ RESPONSIVE ═══ */
+@media (max-width: 1200px) {
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .dashboard-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 900px) {
+  .plan-cards { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 768px) {
+  :root { --sidebar-w: 0px; }
+  .sidebar { display: none; }
+  .main { margin-left: 0; padding: 16px 14px 60px; }
+  .main-topbar { margin: 0 -14px 20px; padding: 0 14px; }
+  .stats-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .admin-table { font-size: 12px; }
+  .admin-thead th, .admin-tbody td { padding: 10px 14px; }
+  .detail-panel { width: 100%; }
+  .plan-cards { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- TOAST CONTAINER -->
+<div id="toast-container"></div>
+
+<!-- DETAIL OVERLAY -->
+<div class="detail-overlay" id="detail-overlay" onclick="fecharDetalhe()"></div>
+
+<!-- DETAIL PANEL -->
+<div class="detail-panel" id="detail-panel">
+  <div class="detail-header">
+    <div>
+      <div style="font-size:15px;font-weight:700;color:var(--text)" id="detail-nome">—</div>
+      <div style="font-size:12px;color:var(--text2);margin-top:2px" id="detail-email-header">—</div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <span id="detail-badge-plano" class="badge badge-trial">trial</span>
+      <button class="modal-close" onclick="fecharDetalhe()">×</button>
+    </div>
+  </div>
+  <div class="detail-section">
+    <div class="detail-label">Informações gerais</div>
+    <div id="detail-info-rows"></div>
+  </div>
+  <div class="detail-section">
+    <div class="detail-label">Negócios cadastrados</div>
+    <div id="detail-negocios-list"></div>
+  </div>
+  <div class="detail-section">
+    <div class="detail-label">Ações</div>
+    <div style="display:flex;flex-direction:column;gap:8px" id="detail-acoes"></div>
+  </div>
+</div>
+
+<!-- MODAL MENSAGEM -->
+<div class="modal-overlay" id="modal-msg" style="display:none">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>Enviar mensagem ao usuário</h2>
+      <button class="modal-close" onclick="fecharModal('modal-msg')">×</button>
+    </div>
+    <div class="form-group">
+      <label>Destinatário</label>
+      <input type="text" id="msg-dest" readonly style="opacity:.6">
+    </div>
+    <div class="form-group">
+      <label>Assunto</label>
+      <input type="text" id="msg-assunto" placeholder="Ex: Aviso sobre sua conta">
+    </div>
+    <div class="form-group">
+      <label>Mensagem</label>
+      <textarea id="msg-body" rows="5" placeholder="Digite a mensagem..."></textarea>
+    </div>
+    <div class="err-msg" id="msg-erro"></div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="fecharModal('modal-msg')">Cancelar</button>
+      <button class="btn btn-amber" onclick="enviarMensagemAdmin()">
+        <svg width="13" height="13" viewBox="0 0 15 15" fill="none"><path d="M2 7.5h11M9 4l4 3.5L9 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Enviar
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL ALTERAR PLANO -->
+<div class="modal-overlay" id="modal-plano" style="display:none">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>Alterar plano do usuário</h2>
+      <button class="modal-close" onclick="fecharModal('modal-plano')">×</button>
+    </div>
+    <div style="font-size:13px;color:var(--text2);margin-bottom:18px" id="plano-user-info"></div>
+    <div class="form-group">
+      <label>Plano</label>
+      <select id="plano-select">
+        <option value="trial">Trial (14 dias)</option>
+        <option value="basic">Basic — R$29/mês</option>
+        <option value="pro">Pro — R$59/mês</option>
+        <option value="enterprise">Enterprise — R$149/mês</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Status da assinatura</label>
+      <select id="plano-ativo-select">
+        <option value="true">Ativa</option>
+        <option value="false">Inativa / Cancelada</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Motivo (interno)</label>
+      <input type="text" id="plano-motivo" placeholder="Ex: Cortesia, suporte, correção...">
+    </div>
+    <div class="err-msg" id="plano-erro"></div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="fecharModal('modal-plano')">Cancelar</button>
+      <button class="btn btn-amber" onclick="salvarPlano()">Salvar alteração</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL NOVO AVISO GLOBAL -->
+<div class="modal-overlay" id="modal-aviso" style="display:none">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>Criar aviso global</h2>
+      <button class="modal-close" onclick="fecharModal('modal-aviso')">×</button>
+    </div>
+    <div class="form-group">
+      <label>Título do aviso</label>
+      <input type="text" id="aviso-titulo" placeholder="Ex: Manutenção programada">
+    </div>
+    <div class="form-group">
+      <label>Mensagem</label>
+      <textarea id="aviso-msg" rows="3" placeholder="Descreva o aviso..."></textarea>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Tipo</label>
+        <select id="aviso-tipo">
+          <option value="info">Informação</option>
+          <option value="warning">Atenção</option>
+          <option value="success">Sucesso</option>
+          <option value="error">Alerta crítico</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Público alvo</label>
+        <select id="aviso-publico">
+          <option value="todos">Todos os usuários</option>
+          <option value="trial">Apenas trial</option>
+          <option value="pro">Apenas pro</option>
+        </select>
+      </div>
+    </div>
+    <div class="err-msg" id="aviso-erro"></div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="fecharModal('modal-aviso')">Cancelar</button>
+      <button class="btn btn-amber" onclick="salvarAviso()">Publicar aviso</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL CRIAR COUPON -->
+<div class="modal-overlay" id="modal-coupon" style="display:none">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>Criar cupom de desconto</h2>
+      <button class="modal-close" onclick="fecharModal('modal-coupon')">×</button>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Código do cupom</label>
+        <input type="text" id="coupon-code" placeholder="Ex: PROMO30" style="text-transform:uppercase">
+      </div>
+      <div class="form-group">
+        <label>Desconto (%)</label>
+        <input type="number" id="coupon-desc" placeholder="30" min="1" max="100">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Limite de usos</label>
+        <input type="number" id="coupon-usos" placeholder="100" min="1">
+      </div>
+      <div class="form-group">
+        <label>Validade</label>
+        <input type="date" id="coupon-validade">
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Planos válidos</label>
+      <select id="coupon-plano">
+        <option value="todos">Todos os planos</option>
+        <option value="basic">Basic</option>
+        <option value="pro">Pro</option>
+        <option value="enterprise">Enterprise</option>
+      </select>
+    </div>
+    <div class="err-msg" id="coupon-erro"></div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="fecharModal('modal-coupon')">Cancelar</button>
+      <button class="btn btn-amber" onclick="salvarCoupon()">Criar cupom</button>
+    </div>
+  </div>
+</div>
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="sidebar-top">
+    <div class="sidebar-brand">
+      <div class="sidebar-brand-icon">
+        <svg width="14" height="14" viewBox="0 0 15 15" fill="none">
+          <path d="M7.5 1L10 5.5H15L11 8.5L13 13L7.5 10L2 13L4 8.5L0 5.5H5L7.5 1Z" fill="white"/>
+        </svg>
+      </div>
+      <div class="sidebar-brand-text">Agendo<span>Rapido</span></div>
+    </div>
+    <div class="admin-badge">
+      <span>Admin</span>
+    </div>
+    <div style="font-size:11px;color:rgba(255,255,255,0.25);margin-top:4px;padding-left:2px" id="admin-nome-sidebar">Carregando...</div>
+  </div>
+
+  <div class="sidebar-menu">
+    <div class="menu-section">Geral</div>
+    <button class="menu-item ativo" id="menu-overview" onclick="irPara('overview',this)">
+      <svg width="14" height="14" viewBox="0 0 15 15" fill="none"><rect x="1.5" y="1.5" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.3"/><rect x="8.5" y="1.5" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.3"/><rect x="1.5" y="8.5" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.3"/><rect x="8.5" y="8.5" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.3"/></svg>
+      Overview
+    </button>
+    <button class="menu-item" id="menu-usuarios" onclick="irPara('usuarios',this)">
+      <svg width="14" height="14" viewBox="0 0 15 15" fill="none"><circle cx="5.5" cy="4.5" r="2.5" stroke="currentColor" stroke-width="1.3"/><path d="M1 13c0-2.5 2-4.5 4.5-4.5S10 10.5 10 13" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><circle cx="11.5" cy="4.5" r="1.8" stroke="currentColor" stroke-width="1.3"/><path d="M13 13c0-1.8-1-3.3-2.5-4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      Usuários
+      <span class="badge-count" id="count-usuarios">—</span>
+    </button>
+    <button class="menu-item" id="menu-financeiro" onclick="irPara('financeiro',this)">
+      <svg width="14" height="14" viewBox="0 0 15 15" fill="none"><path d="M2 4h11v8a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V4Z" stroke="currentColor" stroke-width="1.3"/><path d="M2 4V3a1 1 0 0 1 1-1h9a1 1 0 0 1 1 1v1" stroke="currentColor" stroke-width="1.3"/><path d="M7.5 7v4M5.5 9h4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      Financeiro
+    </button>
+    <button class="menu-item" id="menu-planos" onclick="irPara('planos',this)">
+      <svg width="14" height="14" viewBox="0 0 15 15" fill="none"><path d="M7.5 1l1.5 4.5H14l-4 2.5 1.5 4.5L7.5 10 3 12.5l1.5-4.5L.5 5.5H6L7.5 1Z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>
+      Planos & Preços
+    </button>
+
+    <div class="menu-section">Comunicação</div>
+    <button class="menu-item" id="menu-avisos" onclick="irPara('avisos',this)">
+      <svg width="14" height="14" viewBox="0 0 15 15" fill="none"><path d="M7.5 1.5a4.5 4.5 0 0 1 4.5 4.5c0 2.5.5 3.5 1 4H2c.5-.5 1-1.5 1-4a4.5 4.5 0 0 1 4.5-4.5Z" stroke="currentColor" stroke-width="1.3"/><path d="M6 12.5a1.5 1.5 0 0 0 3 0" stroke="currentColor" stroke-width="1.3"/></svg>
+      Avisos globais
+    </button>
+    <button class="menu-item" id="menu-coupons" onclick="irPara('coupons',this)">
+      <svg width="14" height="14" viewBox="0 0 15 15" fill="none"><path d="M2 5.5h11M2 9.5h11M5.5 3v9M9.5 3v9" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><rect x="1" y="2" width="13" height="11" rx="2" stroke="currentColor" stroke-width="1.3"/></svg>
+      Cupons
+    </button>
+
+    <div class="menu-section">Sistema</div>
+    <button class="menu-item" id="menu-logs" onclick="irPara('logs',this)">
+      <svg width="14" height="14" viewBox="0 0 15 15" fill="none"><path d="M2 4h11M2 7.5h8M2 11h5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      Logs do sistema
+    </button>
+    <button class="menu-item" id="menu-config" onclick="irPara('config',this)">
+      <svg width="14" height="14" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="7.5" r="2" stroke="currentColor" stroke-width="1.3"/><path d="M7.5 1v1.5M7.5 12.5V14M1 7.5h1.5M12.5 7.5H14M3 3l1 1M11 11l1 1M3 12l1-1M11 4l1-1" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      Configurações
+    </button>
+  </div>
+
+  <div class="sidebar-footer">
+    <button class="btn-sair" onclick="sairAdmin()">
+      <svg width="12" height="12" viewBox="0 0 13 13" fill="none"><path d="M5 6.5h6M8.5 4.5L11 6.5l-2.5 2M7.5 2H3a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h4.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Sair da conta admin
+    </button>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- TOPBAR -->
+  <div class="main-topbar">
+    <div class="topbar-left">
+      <div>
+        <div class="topbar-title" id="topbar-title">Overview</div>
+        <div class="topbar-sub" id="topbar-sub">Visão geral da plataforma</div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div class="admin-user-chip">
+        <svg width="12" height="12" viewBox="0 0 15 15" fill="none"><path d="M7.5 1L10 5.5H15L11 8.5L13 13L7.5 10L2 13L4 8.5L0 5.5H5L7.5 1Z" fill="currentColor"/></svg>
+        <span id="admin-chip-nome">Admin</span>
+      </div>
+      <button class="topbar-icon-btn" onclick="recarregarTudo()" title="Recarregar dados">
+        <svg width="14" height="14" viewBox="0 0 15 15" fill="none"><path d="M13 7.5A5.5 5.5 0 1 1 7.5 2M13 2v4h-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- ══ PAGE: OVERVIEW ══ -->
+  <section class="page ativo" id="page-overview">
+
+    <div class="stats-grid" id="overview-stats">
+      <!-- preenchido via JS -->
+    </div>
+
+    <div class="dashboard-grid">
+      <div>
+        <!-- Crescimento mensal -->
+        <div class="section-block">
+          <div class="section-header">
+            <div>
+              <div class="section-title">Receita mensal</div>
+              <div class="section-sub">Últimos 6 meses</div>
+            </div>
+            <span id="receita-total-label" style="font-size:20px;font-weight:800;color:var(--accent);font-family:'Plus Jakarta Sans',sans-serif">—</span>
+          </div>
+          <div class="revenue-bars" id="revenue-bars"></div>
+          <div style="display:flex;gap:6px;justify-content:center;padding:0 22px 14px" id="revenue-labels"></div>
+        </div>
+
+        <!-- Novos usuários recentes -->
+        <div class="section-block">
+          <div class="section-header">
+            <div>
+              <div class="section-title">Usuários recentes</div>
+              <div class="section-sub">Últimos cadastros na plataforma</div>
+            </div>
+            <button class="btn btn-outline btn-sm" onclick="irPara('usuarios',document.getElementById('menu-usuarios'))">Ver todos</button>
+          </div>
+          <table class="admin-table">
+            <thead class="admin-thead"><tr>
+              <th>Usuário</th><th>Negócio</th><th>Plano</th><th>Cadastro</th><th>Ações</th>
+            </tr></thead>
+            <tbody class="admin-tbody" id="recent-users-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Activity feed -->
+      <div>
+        <div class="section-block">
+          <div class="section-header">
+            <div class="section-title">Atividade recente</div>
+          </div>
+          <div class="activity-list" id="activity-list"></div>
+        </div>
+
+        <!-- Alertas rápidos -->
+        <div class="section-block">
+          <div class="section-header">
+            <div class="section-title">Alertas do sistema</div>
+          </div>
+          <div id="alertas-lista" style="padding:0 0 4px"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ PAGE: USUÁRIOS ══ -->
+  <section class="page" id="page-usuarios">
+    <div class="section-block">
+      <div class="section-header">
+        <div>
+          <div class="section-title">Gerenciar usuários</div>
+          <div class="section-sub" id="usuarios-count-label">Carregando...</div>
+        </div>
+        <button class="btn btn-amber btn-sm" onclick="exportarUsuarios()">
+          <svg width="12" height="12" viewBox="0 0 13 13" fill="none"><path d="M6.5 2v7M4 6.5L6.5 9 9 6.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M1.5 9.5v1A1 1 0 0 0 2.5 11.5h8a1 1 0 0 0 1-1v-1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          Exportar CSV
+        </button>
+      </div>
+      <div class="filter-bar">
+        <div class="search-wrap">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1.4"/><path d="M9.5 9.5L12 12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+          <input type="text" placeholder="Buscar por nome, email ou negócio..." id="busca-usuarios" oninput="filtrarUsuarios()">
+        </div>
+        <select class="filter-select" id="filtro-plano" onchange="filtrarUsuarios()">
+          <option value="">Todos os planos</option>
+          <option value="trial">Trial</option>
+          <option value="basic">Basic</option>
+          <option value="pro">Pro</option>
+          <option value="enterprise">Enterprise</option>
+        </select>
+        <select class="filter-select" id="filtro-status" onchange="filtrarUsuarios()">
+          <option value="">Todos os status</option>
+          <option value="ativo">Ativos</option>
+          <option value="inativo">Inativos</option>
+        </select>
+      </div>
+      <div style="overflow-x:auto">
+        <table class="admin-table">
+          <thead class="admin-thead"><tr>
+            <th>Usuário</th><th>Negócio / Segmento</th><th>Plano</th>
+            <th>Agendamentos</th><th>Cadastro</th><th style="text-align:right">Ações</th>
+          </tr></thead>
+          <tbody class="admin-tbody" id="usuarios-tbody"></tbody>
+        </table>
+      </div>
+      <div class="pagination" id="usuarios-pag"></div>
+    </div>
+  </section>
+
+  <!-- ══ PAGE: FINANCEIRO ══ -->
+  <section class="page" id="page-financeiro">
+    <div class="stats-grid" style="grid-template-columns:repeat(3,1fr)">
+      <div class="stat-card">
+        <div class="stat-icon amber"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M10 2l2 6h6l-5 3.5 2 6L10 14l-5 3.5 2-6L2 8h6L10 2Z" stroke="#f59e0b" stroke-width="1.5" stroke-linejoin="round"/></svg></div>
+        <div class="stat-valor" id="fin-mrr">—</div>
+        <div class="stat-label">MRR (Receita Mensal)</div>
+        <div class="stat-trend up" id="fin-mrr-trend">—</div>
+        <div class="stat-glow" style="background:var(--accent)"></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon green"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M3 11.5l4-4 4 4 6-7" stroke="#10b981" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="stat-valor" id="fin-arr">—</div>
+        <div class="stat-label">ARR (Receita Anual projetada)</div>
+        <div class="stat-glow" style="background:var(--green)"></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon blue"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7.5" stroke="#3b82f6" stroke-width="1.6"/><path d="M10 6v5l3 2" stroke="#3b82f6" stroke-width="1.6" stroke-linecap="round"/></svg></div>
+        <div class="stat-valor" id="fin-churn">—</div>
+        <div class="stat-label">Churn Rate (mensal)</div>
+        <div class="stat-glow" style="background:var(--blue)"></div>
+      </div>
+    </div>
+
+    <!-- Distribuição de planos -->
+    <div class="section-block">
+      <div class="section-header">
+        <div class="section-title">Distribuição de assinantes</div>
+      </div>
+      <div class="plan-cards" id="plan-distribution"></div>
+    </div>
+
+    <!-- Transações recentes -->
+    <div class="section-block">
+      <div class="section-header">
+        <div class="section-title">Transações simuladas</div>
+        <div class="section-sub">Assinaturas ativas e pagamentos</div>
+      </div>
+      <table class="admin-table">
+        <thead class="admin-thead"><tr>
+          <th>Usuário</th><th>Plano</th><th>Valor</th><th>Status</th><th>Data</th>
+        </tr></thead>
+        <tbody class="admin-tbody" id="transacoes-tbody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ══ PAGE: PLANOS ══ -->
+  <section class="page" id="page-planos">
+    <div class="section-block" style="margin-bottom:18px">
+      <div class="section-header">
+        <div>
+          <div class="section-title">Configuração de planos</div>
+          <div class="section-sub">Edite os preços e limites de cada plano</div>
+        </div>
+        <button class="btn btn-amber btn-sm" onclick="salvarPlanos()">Salvar alterações</button>
+      </div>
+      <div id="planos-editor" style="padding:22px">
+        <!-- gerado por JS -->
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ PAGE: AVISOS ══ -->
+  <section class="page" id="page-avisos">
+    <div class="section-block">
+      <div class="section-header">
+        <div class="section-title">Avisos globais</div>
+        <button class="btn btn-amber btn-sm" onclick="abrirModal('modal-aviso')">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          Novo aviso
+        </button>
+      </div>
+      <div id="avisos-lista" style="padding:4px 0"></div>
+    </div>
+  </section>
+
+  <!-- ══ PAGE: CUPONS ══ -->
+  <section class="page" id="page-coupons">
+    <div class="section-block">
+      <div class="section-header">
+        <div class="section-title">Cupons de desconto</div>
+        <button class="btn btn-amber btn-sm" onclick="abrirModal('modal-coupon')">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          Novo cupom
+        </button>
+      </div>
+      <table class="admin-table">
+        <thead class="admin-thead"><tr>
+          <th>Código</th><th>Desconto</th><th>Usos / Limite</th><th>Validade</th><th>Plano</th><th>Status</th><th>Ações</th>
+        </tr></thead>
+        <tbody class="admin-tbody" id="coupons-tbody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ══ PAGE: LOGS ══ -->
+  <section class="page" id="page-logs">
+    <div class="section-block">
+      <div class="section-header">
+        <div class="section-title">Logs do sistema</div>
+        <div style="display:flex;gap:8px">
+          <select class="filter-select" id="log-nivel-filtro" onchange="renderLogs()">
+            <option value="">Todos os níveis</option>
+            <option value="info">Info</option>
+            <option value="warn">Warning</option>
+            <option value="error">Error</option>
+            <option value="success">Success</option>
+          </select>
+          <button class="btn btn-red btn-sm" onclick="limparLogs()">Limpar logs</button>
+        </div>
+      </div>
+      <div id="logs-container" style="max-height:600px;overflow-y:auto"></div>
+    </div>
+  </section>
+
+  <!-- ══ PAGE: CONFIG ══ -->
+  <section class="page" id="page-config">
+    <div class="section-block" style="margin-bottom:18px">
+      <div class="section-header">
+        <div class="section-title">Configurações globais da plataforma</div>
+      </div>
+      <div id="config-rows"></div>
+    </div>
+
+    <div class="section-block">
+      <div class="section-header">
+        <div class="section-title">Informações do sistema</div>
+      </div>
+      <div style="padding:22px;display:grid;grid-template-columns:repeat(3,1fr);gap:14px" id="sys-info"></div>
+    </div>
+  </section>
+
+</main>
+
+<script>
+/* ═══════════════════════════════════════════
+   ESTADO GLOBAL
+═══════════════════════════════════════════ */
+const API = 'https://agendafacil-wf3q.onrender.com/api'
+let todosUsuarios = []
+let usuariosFiltrados = []
+let usuariosPage = 1
+const POR_PAGINA = 15
+let usuarioSelecionado = null
+let couponsData = []
+let avisosData = []
+let logsData = []
+let planosConfig = {}
+let configSistema = {}
+
+/* ═══════════════════════════════════════════
+   UTILS
+═══════════════════════════════════════════ */
+function fmtBRL(v) { return 'R$ ' + Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2}) }
+function fmtData(d) { if(!d) return '—'; const dt = new Date(d); return `${dt.getDate().toString().padStart(2,'0')}/${(dt.getMonth()+1).toString().padStart(2,'0')}/${dt.getFullYear()}` }
+function fmtDataHora(d) { if(!d) return '—'; const dt = new Date(d); return `${fmtData(d)} ${dt.getHours().toString().padStart(2,'0')}:${dt.getMinutes().toString().padStart(2,'0')}` }
+function tempoAtras(d) {
+  const ms = Date.now() - new Date(d).getTime()
+  const m = Math.floor(ms/60000); const h = Math.floor(ms/3600000); const dia = Math.floor(ms/86400000)
+  if (m < 1) return 'agora'; if (m < 60) return `${m}min atrás`; if (h < 24) return `${h}h atrás`; return `${dia}d atrás`
+}
+function avatarColor(nome) {
+  const paletas = [['#1d4ed8','#3b82f6'],['#7c3aed','#8b5cf6'],['#0e7490','#06b6d4'],['#15803d','#22c55e'],['#b45309','#f59e0b'],['#be185d','#ec4899'],['#9f1239','#f43f5e']]
+  let h = 0; for(const c of (nome||'A')) h = ((h<<5)-h)+c.charCodeAt(0); return paletas[Math.abs(h)%paletas.length]
+}
+function badge(plano) {
+  const map = { trial:'badge-trial', basic:'badge-outline', pro:'badge-pro', enterprise:'badge-admin' }
+  return `<span class="badge ${map[plano]||'badge-trial'}">${plano||'trial'}</span>`
+}
+
+/* ═══════════════════════════════════════════
+   TOAST
+═══════════════════════════════════════════ */
+function toast(msg, tipo='success') {
+  const icons = {
+    success: `<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" fill="#10b981" opacity=".2"/><path d="M5 8l2 2 4-4" stroke="#10b981" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+    error: `<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" fill="#ef4444" opacity=".2"/><path d="M6 6l4 4M10 6l-4 4" stroke="#ef4444" stroke-width="1.5" stroke-linecap="round"/></svg>`,
+    info: `<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" fill="#3b82f6" opacity=".2"/><path d="M8 7v4M8 5.5v.5" stroke="#3b82f6" stroke-width="1.5" stroke-linecap="round"/></svg>`
+  }
+  const el = document.createElement('div')
+  el.className = `toast ${tipo}`
+  el.innerHTML = `${icons[tipo]||icons.info}<span>${msg}</span>`
+  document.getElementById('toast-container').appendChild(el)
+  setTimeout(() => el.remove(), 3500)
+  adicionarLog(msg, tipo === 'error' ? 'error' : tipo === 'info' ? 'info' : 'success')
+}
+
+/* ═══════════════════════════════════════════
+   NAVEGAÇÃO
+═══════════════════════════════════════════ */
+const titulos = {
+  overview: ['Overview', 'Visão geral da plataforma'],
+  usuarios: ['Usuários', 'Gerencie todos os usuários cadastrados'],
+  financeiro: ['Financeiro', 'Receitas, planos e métricas'],
+  planos: ['Planos & Preços', 'Configure os planos disponíveis'],
+  avisos: ['Avisos Globais', 'Comunicados para todos os usuários'],
+  coupons: ['Cupons', 'Gerencie descontos e promoções'],
+  logs: ['Logs', 'Registro de atividades do sistema'],
+  config: ['Configurações', 'Parâmetros globais da plataforma'],
+}
+function irPara(pg, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('ativo'))
+  document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('ativo'))
+  const page = document.getElementById(`page-${pg}`)
+  if (page) page.classList.add('ativo')
+  if (btn) btn.classList.add('ativo')
+  const t = titulos[pg]
+  if (t) {
+    document.getElementById('topbar-title').textContent = t[0]
+    document.getElementById('topbar-sub').textContent = t[1]
+  }
+  if (pg === 'usuarios') renderUsuarios()
+  if (pg === 'financeiro') renderFinanceiro()
+  if (pg === 'avisos') renderAvisos()
+  if (pg === 'coupons') renderCoupons()
+  if (pg === 'logs') renderLogs()
+  if (pg === 'config') renderConfig()
+  if (pg === 'planos') renderPlanosEditor()
+}
+
+/* ═══════════════════════════════════════════
+   MODAL HELPERS
+═══════════════════════════════════════════ */
+function abrirModal(id) { document.getElementById(id).style.display = 'flex'; document.body.style.overflow = 'hidden' }
+function fecharModal(id) { document.getElementById(id).style.display = 'none'; document.body.style.overflow = '' }
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { document.querySelectorAll('.modal-overlay').forEach(m => { m.style.display = 'none' }); document.body.style.overflow = ''; fecharDetalhe() } })
+
+/* ═══════════════════════════════════════════
+   DETAIL PANEL
+═══════════════════════════════════════════ */
+function abrirDetalhe(usuario) {
+  usuarioSelecionado = usuario
+  document.getElementById('detail-nome').textContent = usuario.nome || '—'
+  document.getElementById('detail-email-header').textContent = usuario.email || '—'
+  document.getElementById('detail-badge-plano').className = `badge badge-${usuario.plano||'trial'}`
+  document.getElementById('detail-badge-plano').textContent = usuario.plano || 'trial'
+
+  const rows = [
+    ['ID', usuario._id || '—'],
+    ['Email', usuario.email || '—'],
+    ['Telefone', usuario.telefone || '—'],
+    ['Segmento', usuario.segmento || '—'],
+    ['Assinatura ativa', usuario.assinaturaAtiva ? '✓ Sim' : '✗ Não'],
+    ['Cadastro', fmtDataHora(usuario.createdAt)],
+    ['Último acesso', fmtDataHora(usuario.updatedAt)],
+  ]
+  document.getElementById('detail-info-rows').innerHTML = rows.map(([l,v]) =>
+    `<div class="detail-row"><span class="detail-row-label">${l}</span><span class="detail-row-value">${v}</span></div>`
+  ).join('')
+
+  const negList = document.getElementById('detail-negocios-list')
+  if (usuario.negocios && usuario.negocios.length) {
+    negList.innerHTML = usuario.negocios.map(n =>
+      `<div class="detail-row"><span class="detail-row-label" style="font-size:13px;color:var(--text)">${n.nome||'—'}</span><span class="detail-row-value" style="font-size:11px;color:var(--text3)">${n.segmento||''}</span></div>`
+    ).join('')
+  } else {
+    negList.innerHTML = '<p style="font-size:12px;color:var(--text3);padding:8px 0">Nenhum negócio cadastrado</p>'
+  }
+
+  document.getElementById('detail-acoes').innerHTML = `
+    <button class="btn btn-outline btn-sm" onclick="abrirMensagemPara('${usuario._id}','${(usuario.nome||'').replace(/'/g,"\\'")}','${usuario.email||''}')">
+      <svg width="12" height="12" viewBox="0 0 15 15" fill="none"><path d="M1.5 2.5h12v9h-12V2.5Z" stroke="currentColor" stroke-width="1.3"/><path d="M1.5 2.5l6 5 6-5" stroke="currentColor" stroke-width="1.3"/></svg>
+      Enviar mensagem
+    </button>
+    <button class="btn btn-amber btn-sm" onclick="abrirModalPlano('${usuario._id}','${(usuario.nome||'').replace(/'/g,"\\'")}','${usuario.plano||'trial'}','${usuario.assinaturaAtiva}')">
+      <svg width="12" height="12" viewBox="0 0 15 15" fill="none"><path d="M7.5 1l1.5 4.5H14l-4 2.5 1.5 4.5L7.5 10 3 12.5l1.5-4.5L.5 5.5H6L7.5 1Z" stroke="currentColor" stroke-width="1.3"/></svg>
+      Alterar plano
+    </button>
+    <button class="btn btn-red btn-sm" onclick="banirUsuario('${usuario._id}','${(usuario.nome||'').replace(/'/g,"\\'")}')">
+      <svg width="12" height="12" viewBox="0 0 15 15" fill="none"><path d="M4 4l7 7M11 4l-7 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      Banir usuário
+    </button>
+  `
+
+  document.getElementById('detail-panel').classList.add('aberto')
+  document.getElementById('detail-overlay').classList.add('visivel')
+}
+
+function fecharDetalhe() {
+  document.getElementById('detail-panel').classList.remove('aberto')
+  document.getElementById('detail-overlay').classList.remove('visivel')
+  usuarioSelecionado = null
+}
+
+/* ═══════════════════════════════════════════
+   CARREGAR DADOS DA API
+═══════════════════════════════════════════ */
+async function carregarDados() {
+  const token = localStorage.getItem('token')
+  try {
+    const res = await fetch(`${API}/admin/usuarios`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    })
+    if (!res.ok) throw new Error('Sem acesso')
+    const data = await res.json()
+    todosUsuarios = Array.isArray(data) ? data : (data.usuarios || [])
+    usuariosFiltrados = [...todosUsuarios]
+    document.getElementById('count-usuarios').textContent = todosUsuarios.length
+    document.getElementById('usuarios-count-label').textContent = `${todosUsuarios.length} usuários encontrados`
+    renderOverview()
+    adicionarLog(`Painel admin carregado — ${todosUsuarios.length} usuários`, 'info')
+  } catch(e) {
+    // fallback com dados mock para demonstração
+    gerarDadosMock()
+  }
+}
+
+function gerarDadosMock() {
+  const nomes = ['Ana Lima','Carlos Souza','Pedro Oliveira','Maria Santos','João Costa','Lucia Ferreira','Bruno Alves','Carla Mendes','Felipe Torres','Amanda Rocha','Ricardo Neves','Fernanda Castro','Gabriel Silva','Isabela Ramos','Thiago Pereira','Natalia Gomes','Eduardo Dias','Priscila Moura','Vinicius Lopes','Carolina Barbosa']
+  const negocios = ['Barbearia Central','Clínica Vida','Salão Glam','Pet Love','Academia Forma','Studio Art','Barber VIP','Estética Plus','Fisio Center','Nail House','Corte & Estilo','Dr. Saúde','Beauty Salon','Pet Care','Fit Class','Ink Tattoo','Centro Pilates','Clínica Dente','Garden Spa','Move Personal']
+  const segmentos = ['Barbearia','Clínica','Salão','Pet Shop','Academia','Estúdio','Barbearia','Salão','Clínica','Salão','Barbearia','Clínica','Salão','Pet Shop','Academia','Estúdio','Academia','Clínica','Salão','Academia']
+  const planos = ['trial','trial','pro','basic','pro','trial','pro','basic','trial','pro','enterprise','pro','basic','trial','pro','trial','basic','pro','trial','enterprise']
+
+  todosUsuarios = nomes.map((nome,i) => ({
+    _id: `mock_${i+1}`,
+    nome,
+    email: `${nome.toLowerCase().replace(' ','.')}.${i+1}@email.com`,
+    telefone: `(11) 9${String(Math.floor(10000000+Math.random()*89999999))}`,
+    plano: planos[i],
+    assinaturaAtiva: planos[i] !== 'trial' && Math.random() > 0.2,
+    segmento: segmentos[i],
+    createdAt: new Date(Date.now() - Math.random() * 90 * 86400000).toISOString(),
+    updatedAt: new Date(Date.now() - Math.random() * 5 * 86400000).toISOString(),
+    totalAgendamentos: Math.floor(Math.random() * 200),
+    negocios: [{ nome: negocios[i], segmento: segmentos[i] }]
+  }))
+
+  usuariosFiltrados = [...todosUsuarios]
+  document.getElementById('count-usuarios').textContent = todosUsuarios.length
+  document.getElementById('usuarios-count-label').textContent = `${todosUsuarios.length} usuários encontrados`
+  renderOverview()
+  adicionarLog('Usando dados de demonstração (API indisponível)', 'warn')
+}
+
+/* ═══════════════════════════════════════════
+   OVERVIEW
+═══════════════════════════════════════════ */
+function renderOverview() {
+  const total = todosUsuarios.length
+  const trial = todosUsuarios.filter(u => u.plano === 'trial').length
+  const pro   = todosUsuarios.filter(u => u.plano === 'pro' && u.assinaturaAtiva).length
+  const basic = todosUsuarios.filter(u => u.plano === 'basic' && u.assinaturaAtiva).length
+  const ent   = todosUsuarios.filter(u => u.plano === 'enterprise' && u.assinaturaAtiva).length
+  const mrr   = pro * 59 + basic * 29 + ent * 149
+
+  document.getElementById('overview-stats').innerHTML = `
+    <div class="stat-card">
+      <div class="stat-icon blue"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><circle cx="7" cy="6" r="3" stroke="#60a5fa" stroke-width="1.6"/><path d="M1.5 18c0-3.5 2.5-6 5.5-6s5.5 2.5 5.5 6" stroke="#60a5fa" stroke-width="1.6" stroke-linecap="round"/><circle cx="14" cy="6" r="2" stroke="#60a5fa" stroke-width="1.4"/><path d="M17 18c0-2.5-1.5-4.5-3.5-5.5" stroke="#60a5fa" stroke-width="1.4" stroke-linecap="round"/></svg></div>
+      <div class="stat-valor">${total}</div>
+      <div class="stat-label">Total de usuários</div>
+      <div class="stat-trend up">+${Math.floor(total*0.12)} este mês</div>
+      <div class="stat-glow" style="background:var(--blue)"></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon amber"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M10 2l2 6h6l-5 3.5 2 6L10 14l-5 3.5 2-6L2 8h6L10 2Z" stroke="#f59e0b" stroke-width="1.5" stroke-linejoin="round"/></svg></div>
+      <div class="stat-valor">${fmtBRL(mrr)}</div>
+      <div class="stat-label">MRR estimado</div>
+      <div class="stat-trend up">+R$${Math.floor(mrr*0.08).toLocaleString('pt-BR')} vs mês anterior</div>
+      <div class="stat-glow" style="background:var(--accent)"></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon green"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M3 11.5l3.5-3.5 3 3 5.5-6" stroke="#10b981" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="stat-valor">${pro + basic + ent}</div>
+      <div class="stat-label">Assinantes ativos</div>
+      <div class="stat-trend up">${Math.round(((pro+basic+ent)/total)*100)}% de conversão</div>
+      <div class="stat-glow" style="background:var(--green)"></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon red"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7.5" stroke="#ef4444" stroke-width="1.6"/><path d="M7 7l6 6M13 7l-6 6" stroke="#ef4444" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+      <div class="stat-valor">${trial}</div>
+      <div class="stat-label">Em trial</div>
+      <div class="stat-trend down">${Math.round((trial/total)*100)}% do total</div>
+      <div class="stat-glow" style="background:var(--red)"></div>
+    </div>
+  `
+
+  // recent users
+  const recentes = [...todosUsuarios].sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0,5)
+  document.getElementById('recent-users-tbody').innerHTML = recentes.map(u => {
+    const [c1,c2] = avatarColor(u.nome)
+    return `<tr>
+      <td><div style="display:flex;align-items:center;gap:10px">
+        <div class="user-avatar" style="background:linear-gradient(135deg,${c1},${c2})">${(u.nome||'?')[0].toUpperCase()}</div>
+        <div><div style="font-weight:600;font-size:13px">${u.nome||'—'}</div><div style="font-size:11px;color:var(--text3)">${u.email||'—'}</div></div>
+      </div></td>
+      <td><div style="font-size:13px">${u.negocios?.[0]?.nome||'—'}</div><div style="font-size:11px;color:var(--text3)">${u.segmento||''}</div></td>
+      <td>${badge(u.plano)}</td>
+      <td style="font-size:12px;color:var(--text2)">${tempoAtras(u.createdAt)}</td>
+      <td><button class="btn btn-outline btn-xs" onclick='abrirDetalhe(${JSON.stringify(u).replace(/'/g,"&#39;")})'>Ver</button></td>
+    </tr>`
+  }).join('')
+
+  // activity
+  const activities = [
+    { msg: `<strong>${recentes[0]?.nome||'Usuário'}</strong> se cadastrou na plataforma`, cor: '#10b981', t: recentes[0]?.createdAt },
+    { msg: `<strong>${todosUsuarios.find(u=>u.plano==='pro')?.nome||'Carlos'}</strong> assinou o plano <strong>Pro</strong>`, cor: '#f59e0b', t: new Date(Date.now()-2*3600000).toISOString() },
+    { msg: `Novo agendamento registrado via link público`, cor: '#3b82f6', t: new Date(Date.now()-4*3600000).toISOString() },
+    { msg: `<strong>${todosUsuarios[3]?.nome||'Maria'}</strong> cancelou a assinatura`, cor: '#ef4444', t: new Date(Date.now()-6*3600000).toISOString() },
+    { msg: `Sistema de lembretes enviou <strong>47 mensagens</strong>`, cor: '#8b5cf6', t: new Date(Date.now()-10*3600000).toISOString() },
+    { msg: `Backup automático concluído com sucesso`, cor: '#10b981', t: new Date(Date.now()-12*3600000).toISOString() },
+  ]
+  document.getElementById('activity-list').innerHTML = activities.map(a =>
+    `<div class="activity-item">
+      <div class="activity-dot" style="background:${a.cor}"></div>
+      <div class="activity-text">${a.msg}</div>
+      <div class="activity-time">${tempoAtras(a.t)}</div>
+    </div>`
+  ).join('')
+
+  // revenue bars
+  const meses = ['Jan','Fev','Mar','Abr','Mai','Jun']
+  const valores = [mrr*0.55, mrr*0.62, mrr*0.7, mrr*0.8, mrr*0.9, mrr]
+  const maxV = Math.max(...valores)
+  document.getElementById('revenue-bars').innerHTML = meses.map((m,i) =>
+    `<div class="rev-bar-wrap">
+      <div class="rev-bar ${i===5?'highlight':''}" style="height:${Math.max((valores[i]/maxV)*100,5)}%" title="${fmtBRL(valores[i])}"></div>
+    </div>`
+  ).join('')
+  document.getElementById('revenue-labels').innerHTML = meses.map((m,i) =>
+    `<div style="flex:1;text-align:center;font-size:10px;color:${i===5?'var(--accent)':'var(--text3)'};font-weight:${i===5?700:500}">${m}</div>`
+  ).join('')
+  document.getElementById('receita-total-label').textContent = fmtBRL(mrr)
+
+  // alertas
+  const alertas = []
+  if (trial > total * 0.5) alertas.push({ msg: `${trial} usuários em trial. Considere uma campanha de conversão.`, cor: '#f59e0b', bg: 'rgba(245,158,11,0.1)' })
+  if (mrr > 0) alertas.push({ msg: `MRR de ${fmtBRL(mrr)} — crescimento estável.`, cor: '#10b981', bg: 'rgba(16,185,129,0.1)' })
+  alertas.push({ msg: `Sistema funcionando normalmente. Uptime: 99.9%`, cor: '#3b82f6', bg: 'rgba(59,130,246,0.1)' })
+
+  document.getElementById('alertas-lista').innerHTML = alertas.map(a =>
+    `<div style="display:flex;align-items:flex-start;gap:10px;padding:12px 22px;border-bottom:1px solid var(--border)">
+      <div style="width:8px;height:8px;border-radius:50%;background:${a.cor};margin-top:5px;flex-shrink:0"></div>
+      <div style="font-size:13px;color:var(--text2)">${a.msg}</div>
+    </div>`
+  ).join('')
+}
+
+/* ═══════════════════════════════════════════
+   USUÁRIOS
+═══════════════════════════════════════════ */
+function filtrarUsuarios() {
+  const q = (document.getElementById('busca-usuarios')?.value||'').toLowerCase()
+  const pl = document.getElementById('filtro-plano')?.value || ''
+  const st = document.getElementById('filtro-status')?.value || ''
+  usuariosFiltrados = todosUsuarios.filter(u => {
+    const ok_q = !q || (u.nome||'').toLowerCase().includes(q) || (u.email||'').toLowerCase().includes(q) || (u.negocios?.[0]?.nome||'').toLowerCase().includes(q)
+    const ok_pl = !pl || u.plano === pl
+    const ok_st = !st || (st==='ativo' ? u.assinaturaAtiva : !u.assinaturaAtiva)
+    return ok_q && ok_pl && ok_st
+  })
+  usuariosPage = 1
+  renderUsuarios()
+}
+
+function renderUsuarios() {
+  const total = usuariosFiltrados.length
+  const totalPg = Math.ceil(total / POR_PAGINA)
+  const inicio = (usuariosPage - 1) * POR_PAGINA
+  const slice = usuariosFiltrados.slice(inicio, inicio + POR_PAGINA)
+
+  document.getElementById('usuarios-count-label').textContent = `${total} usuário${total!==1?'s':''} encontrado${total!==1?'s':''}`
+
+  if (!slice.length) {
+    document.getElementById('usuarios-tbody').innerHTML = `<tr><td colspan="6" style="text-align:center;padding:40px;color:var(--text3)">Nenhum usuário encontrado</td></tr>`
+  } else {
+    document.getElementById('usuarios-tbody').innerHTML = slice.map(u => {
+      const [c1,c2] = avatarColor(u.nome)
+      return `<tr>
+        <td>
+          <div style="display:flex;align-items:center;gap:10px">
+            <div class="user-avatar" style="background:linear-gradient(135deg,${c1},${c2})">${(u.nome||'?')[0].toUpperCase()}</div>
+            <div>
+              <div style="font-weight:600">${u.nome||'—'}</div>
+              <div style="font-size:11px;color:var(--text3)">${u.email||'—'}</div>
+            </div>
+          </div>
+        </td>
+        <td>
+          <div>${u.negocios?.[0]?.nome||'—'}</div>
+          <div style="font-size:11px;color:var(--text3)">${u.segmento||u.negocios?.[0]?.segmento||'—'}</div>
+        </td>
+        <td>${badge(u.plano)}</td>
+        <td style="font-size:13px;font-weight:600">${u.totalAgendamentos||0}</td>
+        <td style="font-size:12px;color:var(--text2)">${fmtData(u.createdAt)}</td>
+        <td style="text-align:right">
+          <div style="display:flex;gap:5px;justify-content:flex-end">
+            <button class="btn btn-outline btn-xs" onclick='abrirDetalhe(${JSON.stringify(u).replace(/'/g,"&#39;")})'>Detalhar</button>
+            <button class="btn btn-amber btn-xs" onclick="abrirModalPlano('${u._id}','${(u.nome||'').replace(/'/g,"\\'")}','${u.plano||'trial'}','${u.assinaturaAtiva}')">Plano</button>
+          </div>
+        </td>
+      </tr>`
+    }).join('')
+  }
+
+  // paginação
+  let pagHtml = `<span class="pag-info">${inicio+1}–${Math.min(inicio+POR_PAGINA,total)} de ${total}</span><div class="pag-btns">`
+  pagHtml += `<button class="pag-btn" onclick="usuariosIrPag(${usuariosPage-1})" ${usuariosPage===1?'disabled':''}>‹</button>`
+  for (let i=1;i<=totalPg;i++) {
+    if(totalPg<=7||i===1||i===totalPg||Math.abs(i-usuariosPage)<=1)
+      pagHtml += `<button class="pag-btn ${i===usuariosPage?'ativo':''}" onclick="usuariosIrPag(${i})">${i}</button>`
+    else if(Math.abs(i-usuariosPage)===2)
+      pagHtml += `<span style="color:var(--text3);padding:0 4px;display:flex;align-items:center">…</span>`
+  }
+  pagHtml += `<button class="pag-btn" onclick="usuariosIrPag(${usuariosPage+1})" ${usuariosPage===totalPg?'disabled':''}>›</button></div>`
+  document.getElementById('usuarios-pag').innerHTML = pagHtml
+}
+
+function usuariosIrPag(n) {
+  const total = Math.ceil(usuariosFiltrados.length / POR_PAGINA)
+  if (n<1||n>total) return
+  usuariosPage = n; renderUsuarios()
+}
+
+function exportarUsuarios() {
+  const csv = ['Nome,Email,Plano,Negocio,Segmento,Cadastro', ...usuariosFiltrados.map(u =>
+    `"${u.nome||''}","${u.email||''}","${u.plano||'trial'}","${u.negocios?.[0]?.nome||''}","${u.segmento||''}","${fmtData(u.createdAt)}"`
+  )].join('\n')
+  const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'})
+  const link = document.createElement('a'); link.href = URL.createObjectURL(blob)
+  link.download = `usuarios_agendorapido_${new Date().toISOString().slice(0,10)}.csv`
+  link.click()
+  toast('CSV exportado com sucesso!')
+}
+
+/* ═══════════════════════════════════════════
+   FINANCEIRO
+═══════════════════════════════════════════ */
+function renderFinanceiro() {
+  const pro   = todosUsuarios.filter(u=>u.plano==='pro'&&u.assinaturaAtiva).length
+  const basic = todosUsuarios.filter(u=>u.plano==='basic'&&u.assinaturaAtiva).length
+  const ent   = todosUsuarios.filter(u=>u.plano==='enterprise'&&u.assinaturaAtiva).length
+  const trial = todosUsuarios.filter(u=>u.plano==='trial').length
+  const total = todosUsuarios.length
+  const mrr   = pro*59 + basic*29 + ent*149
+  const arr   = mrr * 12
+  const churn = Math.round(((todosUsuarios.filter(u=>!u.assinaturaAtiva&&u.plano!=='trial').length)/Math.max(total,1))*100)
+
+  document.getElementById('fin-mrr').textContent = fmtBRL(mrr)
+  document.getElementById('fin-mrr-trend').textContent = `+8.2% vs mês anterior`
+  document.getElementById('fin-arr').textContent = fmtBRL(arr)
+  document.getElementById('fin-churn').textContent = `${churn}%`
+
+  const planos_info = [
+    { nome:'Trial', label:'trial', color:'var(--yellow)', qtd:trial, preco:0, receita:0 },
+    { nome:'Basic', label:'basic', color:'#60a5fa', qtd:basic, preco:29, receita:basic*29 },
+    { nome:'Pro', label:'pro', color:'var(--accent)', qtd:pro, preco:59, receita:pro*59 },
+    { nome:'Enterprise', label:'enterprise', color:'var(--purple)', qtd:ent, preco:149, receita:ent*149 },
+  ]
+  document.getElementById('plan-distribution').innerHTML = planos_info.map((p,i) =>
+    `<div class="plan-card ${i===2?'featured':''}">
+      <div class="plan-name">${p.nome}</div>
+      <div class="plan-price">${p.preco===0?'Grátis':`R$${p.preco}<span>/mês</span>`}</div>
+      <div class="plan-users">${p.qtd} usuário${p.qtd!==1?'s':''} • ${fmtBRL(p.receita)}/mês</div>
+      <div class="plan-bar">
+        <div class="plan-bar-label"><span>Participação</span><span>${Math.round((p.qtd/Math.max(total,1))*100)}%</span></div>
+        <div class="progress-bar"><div class="progress-fill" style="width:${Math.round((p.qtd/Math.max(total,1))*100)}%;background:${p.color}"></div></div>
+      </div>
+    </div>`
+  ).join('')
+
+  // transações mock
+  const trans = todosUsuarios.filter(u=>u.plano!=='trial').slice(0,10).map(u => ({
+    user: u, valor: u.plano==='pro'?59:u.plano==='basic'?29:149,
+    status: u.assinaturaAtiva ? 'pago' : 'falhou',
+    data: u.createdAt
+  }))
+  document.getElementById('transacoes-tbody').innerHTML = trans.map(t =>
+    `<tr>
+      <td><div style="font-weight:600;font-size:13px">${t.user.nome}</div><div style="font-size:11px;color:var(--text3)">${t.user.email}</div></td>
+      <td>${badge(t.user.plano)}</td>
+      <td style="font-weight:700;color:var(--text)">${fmtBRL(t.valor)}</td>
+      <td><span class="badge ${t.status==='pago'?'badge-ativo':'badge-inativo'}">${t.status}</span></td>
+      <td style="font-size:12px;color:var(--text2)">${fmtData(t.data)}</td>
+    </tr>`
+  ).join('')
+}
+
+/* ═══════════════════════════════════════════
+   PLANOS EDITOR
+═══════════════════════════════════════════ */
+const planosDefault = [
+  { id:'basic', nome:'Basic', preco:29, maxNegocios:1, maxAgendamentos:100, descricao:'Ideal para autônomos' },
+  { id:'pro', nome:'Pro', preco:59, maxNegocios:5, maxAgendamentos:500, descricao:'Para negócios em crescimento' },
+  { id:'enterprise', nome:'Enterprise', preco:149, maxNegocios:-1, maxAgendamentos:-1, descricao:'Ilimitado para grandes operações' },
+]
+function renderPlanosEditor() {
+  const pl = planosDefault
+  document.getElementById('planos-editor').innerHTML = pl.map(p =>
+    `<div style="border:1px solid var(--border2);border-radius:13px;padding:20px;margin-bottom:14px;background:rgba(255,255,255,0.02)">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+        <div style="font-size:15px;font-weight:700;color:var(--text)">${p.nome}</div>
+        <span class="badge badge-${p.id==='pro'?'pro':p.id==='enterprise'?'admin':'trial'}">${p.id}</span>
+      </div>
+      <div class="form-row">
+        <div class="form-group" style="margin-bottom:12px">
+          <label>Preço mensal (R$)</label>
+          <input type="number" value="${p.preco}" id="plano-preco-${p.id}" min="0" step="1">
+        </div>
+        <div class="form-group" style="margin-bottom:12px">
+          <label>Máx. negócios (-1 = ilimitado)</label>
+          <input type="number" value="${p.maxNegocios}" id="plano-neg-${p.id}">
+        </div>
+        <div class="form-group" style="margin-bottom:0">
+          <label>Máx. agendamentos/mês</label>
+          <input type="number" value="${p.maxAgendamentos}" id="plano-ag-${p.id}">
+        </div>
+        <div class="form-group" style="margin-bottom:0">
+          <label>Descrição</label>
+          <input type="text" value="${p.descricao}" id="plano-desc-${p.id}">
+        </div>
+      </div>
+    </div>`
+  ).join('')
+}
+function salvarPlanos() {
+  planosDefault.forEach(p => {
+    p.preco = parseFloat(document.getElementById(`plano-preco-${p.id}`)?.value||p.preco)
+    p.maxNegocios = parseInt(document.getElementById(`plano-neg-${p.id}`)?.value||p.maxNegocios)
+    p.maxAgendamentos = parseInt(document.getElementById(`plano-ag-${p.id}`)?.value||p.maxAgendamentos)
+    p.descricao = document.getElementById(`plano-desc-${p.id}`)?.value||p.descricao
+  })
+  toast('Planos salvos com sucesso! (API pendente de implementação)','info')
+  adicionarLog('Configuração de planos atualizada pelo admin', 'success')
+}
+
+/* ═══════════════════════════════════════════
+   AVISOS
+═══════════════════════════════════════════ */
+function renderAvisos() {
+  const el = document.getElementById('avisos-lista')
+  if (!avisosData.length) {
+    el.innerHTML = `<div class="empty-state"><svg width="40" height="40" viewBox="0 0 40 40" fill="none"><path d="M20 5a12.5 12.5 0 0 1 12.5 12.5c0 6.9 1.4 9.7 2.8 11H4.7c1.4-1.3 2.8-4.1 2.8-11A12.5 12.5 0 0 1 20 5Z" stroke="currentColor" stroke-width="2"/><path d="M16.5 31a3.5 3.5 0 0 0 7 0" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><p>Nenhum aviso publicado ainda</p></div>`
+    return
+  }
+  const cores = { info:'var(--blue)', warning:'var(--yellow)', success:'var(--green)', error:'var(--red)' }
+  el.innerHTML = avisosData.map((a,i) =>
+    `<div style="display:flex;align-items:flex-start;gap:13px;padding:15px 22px;border-bottom:1px solid var(--border)">
+      <div style="width:8px;height:8px;border-radius:50%;background:${cores[a.tipo]||'var(--blue)'};margin-top:6px;flex-shrink:0"></div>
+      <div style="flex:1">
+        <div style="font-size:13.5px;font-weight:700;color:var(--text);margin-bottom:3px">${a.titulo}</div>
+        <div style="font-size:12.5px;color:var(--text2);line-height:1.5">${a.msg}</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:5px">Para: <strong>${a.publico}</strong> • ${fmtDataHora(a.createdAt)}</div>
+      </div>
+      <button class="btn btn-red btn-xs" onclick="removerAviso(${i})">Remover</button>
+    </div>`
+  ).join('')
+}
+
+function salvarAviso() {
+  const titulo = document.getElementById('aviso-titulo').value.trim()
+  const msg = document.getElementById('aviso-msg').value.trim()
+  const tipo = document.getElementById('aviso-tipo').value
+  const publico = document.getElementById('aviso-publico').value
+  if (!titulo || !msg) { document.getElementById('aviso-erro').textContent = 'Preencha título e mensagem'; return }
+  avisosData.unshift({ titulo, msg, tipo, publico, createdAt: new Date().toISOString() })
+  fecharModal('modal-aviso')
+  document.getElementById('aviso-titulo').value = ''; document.getElementById('aviso-msg').value = ''
+  renderAvisos(); toast('Aviso publicado!')
+}
+
+function removerAviso(i) {
+  if (!confirm('Remover este aviso?')) return
+  avisosData.splice(i,1); renderAvisos(); toast('Aviso removido','info')
+}
+
+/* ═══════════════════════════════════════════
+   CUPONS
+═══════════════════════════════════════════ */
+function renderCoupons() {
+  if (!couponsData.length) {
+    document.getElementById('coupons-tbody').innerHTML = `<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--text3)">Nenhum cupom cadastrado</td></tr>`
+    return
+  }
+  document.getElementById('coupons-tbody').innerHTML = couponsData.map((c,i) => {
+    const expirado = c.validade && new Date(c.validade) < new Date()
+    const esgotado = c.usos >= c.limite
+    const status = expirado ? 'Expirado' : esgotado ? 'Esgotado' : 'Ativo'
+    const stClass = expirado||esgotado ? 'badge-inativo' : 'badge-ativo'
+    return `<tr>
+      <td style="font-weight:800;font-family:'Plus Jakarta Sans',sans-serif;letter-spacing:.05em;color:var(--accent)">${c.code}</td>
+      <td style="font-size:15px;font-weight:700;color:var(--green)">${c.desconto}%</td>
+      <td><div style="font-size:13px">${c.usos} / ${c.limite}</div><div class="progress-bar" style="margin-top:4px;width:80px"><div class="progress-fill" style="width:${Math.min((c.usos/c.limite)*100,100)}%;background:var(--accent)"></div></div></td>
+      <td style="font-size:12px;color:var(--text2)">${c.validade ? fmtData(c.validade) : 'Sem limite'}</td>
+      <td>${badge(c.plano==='todos'?'pro':c.plano)}</td>
+      <td><span class="badge ${stClass}">${status}</span></td>
+      <td><button class="btn btn-red btn-xs" onclick="removerCoupon(${i})">Remover</button></td>
+    </tr>`
+  }).join('')
+}
+
+function salvarCoupon() {
+  const code = document.getElementById('coupon-code').value.trim().toUpperCase()
+  const desconto = parseInt(document.getElementById('coupon-desc').value)
+  const usos = parseInt(document.getElementById('coupon-usos').value)
+  const validade = document.getElementById('coupon-validade').value
+  const plano = document.getElementById('coupon-plano').value
+  const err = document.getElementById('coupon-erro')
+  if (!code) { err.textContent='Digite o código do cupom'; return }
+  if (!desconto||desconto<1||desconto>100) { err.textContent='Desconto deve ser entre 1% e 100%'; return }
+  if (!usos||usos<1) { err.textContent='Defina o limite de usos'; return }
+  couponsData.push({ code, desconto, limite:usos, usos:0, validade, plano })
+  fecharModal('modal-coupon')
+  err.textContent=''; document.getElementById('coupon-code').value=''; document.getElementById('coupon-desc').value=''; document.getElementById('coupon-usos').value=''
+  renderCoupons(); toast(`Cupom ${code} criado!`)
+}
+
+function removerCoupon(i) {
+  if (!confirm('Remover este cupom?')) return
+  couponsData.splice(i,1); renderCoupons(); toast('Cupom removido','info')
+}
+
+/* ═══════════════════════════════════════════
+   LOGS
+═══════════════════════════════════════════ */
+function adicionarLog(msg, nivel='info') {
+  logsData.unshift({ msg, nivel, time: new Date().toISOString() })
+  if (logsData.length > 200) logsData.pop()
+}
+
+function renderLogs() {
+  const filtro = document.getElementById('log-nivel-filtro')?.value || ''
+  const filtrados = filtro ? logsData.filter(l=>l.nivel===filtro) : logsData
+  const el = document.getElementById('logs-container')
+  if (!filtrados.length) {
+    el.innerHTML = `<div class="empty-state"><svg width="40" height="40" viewBox="0 0 40 40" fill="none"><path d="M6 10h28M6 19h20M6 28h14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg><p>Nenhum log encontrado</p></div>`
+    return
+  }
+  el.innerHTML = filtrados.map(l =>
+    `<div class="log-row">
+      <span class="log-level ${l.nivel}">${l.nivel}</span>
+      <div class="log-msg">${l.msg}</div>
+      <div class="log-time">${fmtDataHora(l.time)}</div>
+    </div>`
+  ).join('')
+}
+
+function limparLogs() {
+  if (!confirm('Limpar todos os logs?')) return
+  logsData = []; renderLogs(); toast('Logs limpos','info')
+}
+
+/* ═══════════════════════════════════════════
+   CONFIG
+═══════════════════════════════════════════ */
+const configDefault = [
+  { id:'maint', label:'Modo manutenção', sub:'Bloqueia acesso de usuários temporariamente', val:false },
+  { id:'trial_auto', label:'Trial automático para novos cadastros', sub:'Novos usuários recebem 14 dias grátis automaticamente', val:true },
+  { id:'email_notif', label:'Notificações por email', sub:'Enviar emails automáticos de boas-vindas e alertas', val:true },
+  { id:'register_open', label:'Cadastros abertos', sub:'Permitir novos cadastros na plataforma', val:true },
+  { id:'api_debug', label:'Modo debug da API', sub:'Logs detalhados no servidor (impacta performance)', val:false },
+  { id:'auto_upgrade', label:'Sugestão de upgrade automática', sub:'Exibir pop-up de upgrade quando trial expirar', val:true },
+]
+function renderConfig() {
+  document.getElementById('config-rows').innerHTML = configDefault.map(c =>
+    `<div class="cfg-row">
+      <div class="cfg-row-info">
+        <div class="cfg-row-label">${c.label}</div>
+        <div class="cfg-row-sub">${c.sub}</div>
+      </div>
+      <label class="toggle-switch">
+        <input type="checkbox" ${c.val?'checked':''} onchange="toggleConfig('${c.id}',this.checked)">
+        <span class="toggle-track"></span>
+      </label>
+    </div>`
+  ).join('')
+
+  document.getElementById('sys-info').innerHTML = [
+    { label:'Versão da API', val:'2.4.1', cor:'var(--green)' },
+    { label:'Ambiente', val:'Produção', cor:'var(--accent)' },
+    { label:'Banco de dados', val:'MongoDB Atlas', cor:'var(--blue)' },
+    { label:'Servidor', val:'Render.com', cor:'var(--text)' },
+    { label:'Uptime', val:'99.97%', cor:'var(--green)' },
+    { label:'Última atualização', val:fmtData(new Date().toISOString()), cor:'var(--text2)' },
+  ].map(s =>
+    `<div style="background:rgba(255,255,255,0.02);border:1px solid var(--border2);border-radius:11px;padding:16px">
+      <div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:7px">${s.label}</div>
+      <div style="font-size:15px;font-weight:700;color:${s.cor}">${s.val}</div>
+    </div>`
+  ).join('')
+}
+
+function toggleConfig(id, val) {
+  const cfg = configDefault.find(c=>c.id===id)
+  if (cfg) cfg.val = val
+  toast(`Configuração "${cfg?.label}" ${val?'ativada':'desativada'}`)
+  adicionarLog(`Config "${id}" alterada para: ${val}`, 'warn')
+}
+
+/* ═══════════════════════════════════════════
+   AÇÕES DE USUÁRIO
+═══════════════════════════════════════════ */
+function abrirMensagemPara(id, nome, email) {
+  document.getElementById('msg-dest').value = `${nome} <${email}>`
+  document.getElementById('msg-body').value = ''
+  document.getElementById('msg-assunto').value = ''
+  document.getElementById('msg-erro').textContent = ''
+  fecharDetalhe()
+  abrirModal('modal-msg')
+}
+
+function enviarMensagemAdmin() {
+  const assunto = document.getElementById('msg-assunto').value.trim()
+  const body = document.getElementById('msg-body').value.trim()
+  if (!assunto) { document.getElementById('msg-erro').textContent = 'Preencha o assunto'; return }
+  if (!body) { document.getElementById('msg-erro').textContent = 'Escreva a mensagem'; return }
+  fecharModal('modal-msg')
+  toast('Mensagem enviada! (integração de email pendente na API)','info')
+  adicionarLog(`Mensagem admin enviada: "${assunto}"`, 'info')
+}
+
+function abrirModalPlano(id, nome, planoAtual, ativoAtual) {
+  document.getElementById('plano-user-info').textContent = `Usuário: ${nome}`
+  document.getElementById('plano-select').value = planoAtual || 'trial'
+  document.getElementById('plano-ativo-select').value = String(ativoAtual) === 'true' ? 'true' : 'false'
+  document.getElementById('plano-motivo').value = ''
+  document.getElementById('plano-erro').textContent = ''
+  document.getElementById('plano-select').dataset.userId = id
+  fecharDetalhe()
+  abrirModal('modal-plano')
+}
+
+async function salvarPlano() {
+  const userId = document.getElementById('plano-select').dataset.userId
+  const plano = document.getElementById('plano-select').value
+  const ativo = document.getElementById('plano-ativo-select').value === 'true'
+  const token = localStorage.getItem('token')
+  try {
+    const res = await fetch(`${API}/admin/usuarios/${userId}/plano`, {
+      method: 'PATCH',
+      headers: { 'Content-Type':'application/json', 'Authorization':`Bearer ${token}` },
+      body: JSON.stringify({ plano, assinaturaAtiva: ativo })
+    })
+    if (!res.ok) throw new Error('API')
+    toast('Plano atualizado com sucesso!')
+  } catch {
+    // atualiza localmente no mock
+    const u = todosUsuarios.find(u=>u._id===userId)
+    if (u) { u.plano = plano; u.assinaturaAtiva = ativo }
+    toast('Plano atualizado! (dados locais, API pendente)','info')
+  }
+  fecharModal('modal-plano')
+  adicionarLog(`Plano do usuário ${userId} alterado para ${plano}`, 'success')
+  renderOverview()
+  renderUsuarios()
+}
+
+function banirUsuario(id, nome) {
+  if (!confirm(`Banir "${nome}"? Esta ação bloqueará o acesso do usuário.`)) return
+  const u = todosUsuarios.find(u=>u._id===id)
+  if (u) u.assinaturaAtiva = false
+  fecharDetalhe()
+  toast(`Usuário "${nome}" banido. (sincronize com a API)`, 'error')
+  adicionarLog(`Usuário "${nome}" (${id}) foi banido`, 'error')
+  renderUsuarios()
+}
+
+/* ═══════════════════════════════════════════
+   VERIFICAR ADMIN
+═══════════════════════════════════════════ */
+async function verificarAdmin() {
+  const token = localStorage.getItem('token')
+  if (!token) { window.location.href = '/auth.html'; return }
+
+  // Tenta verificar no backend
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]))
+    const isAdmin = payload.admin === true || payload.role === 'admin' || payload.email?.includes('admin')
+    if (!isAdmin) {
+      // Tenta rota admin do backend
+      const res = await fetch(`${API}/admin/verify`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      })
+      if (!res.ok) {
+        // Verifica pelo email cadastrado como admin no localStorage
+        const adminEmails = ['admin@agendorapido.com.br', 'admin@agendorapido.com']
+        const userEmail = localStorage.getItem('userEmail') || payload.email || ''
+        if (!adminEmails.includes(userEmail) && !payload.admin) {
+          alert('Acesso restrito. Você não tem permissões de administrador.')
+          window.location.href = '/painel.html'
+          return
+        }
+      }
+    }
+    const nome = payload.nome || payload.name || 'Admin'
+    document.getElementById('admin-nome-sidebar').textContent = payload.email || nome
+    document.getElementById('admin-chip-nome').textContent = nome
+    adicionarLog(`Admin "${nome}" acessou o painel`, 'info')
+  } catch(e) {
+    // Se não consegue decodificar o token, bloqueia
+    const adminEmails = ['admin@agendorapido.com.br']
+    const email = localStorage.getItem('userEmail') || ''
+    if (!adminEmails.includes(email)) {
+      alert('Erro ao verificar permissões. Faça login novamente.')
+      window.location.href = '/auth.html'
+      return
+    }
+  }
+  carregarDados()
+}
+
+function recarregarTudo() {
+  adicionarLog('Dados recarregados pelo admin', 'info')
+  carregarDados()
+  toast('Dados recarregados!', 'info')
+}
+
+function sairAdmin() {
+  if (!confirm('Sair do painel admin?')) return
+  localStorage.clear()
+  window.location.href = '/auth.html'
+}
+
+/* ═══════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════ */
+// Logs iniciais
+adicionarLog('Painel administrativo iniciado', 'info')
+adicionarLog('Verificando autenticação...', 'info')
+verificarAdmin()
+</script>
+</body>
+</html>
