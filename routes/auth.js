@@ -201,7 +201,11 @@ router.post('/cadastro', async (req, res) => {
       servicos: servicos || [],
     })
 
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' })
+   const token = jwt.sign(
+  { id: user._id, role: user.role || 'user' },
+  process.env.JWT_SECRET,
+  { expiresIn: '7d' }
+  )
     res.json({ token, nome: user.nome, negocio: neg.nome, negocioId: neg._id, userId: user._id })
   } catch (err) {
     console.error('Erro no cadastro:', err.message)
