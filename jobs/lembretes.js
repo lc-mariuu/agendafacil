@@ -2,10 +2,10 @@ const cron = require('node-cron')
 const Negocio = require('../models/Negocio')
 const Appointment = require('../models/Appointment')
 
-const EVOLUTION_API_URL = process.env.EVOLUTION_API_URL || 'https://evolution-api-gpdc.onrender.com'
-const EVOLUTION_API_KEY = process.env.EVOLUTION_API_KEY || 'agendorapido123'
+const EVOLUTION_API_URL  = process.env.EVOLUTION_API_URL  || 'https://evolution-api-gpdc.onrender.com'
+const EVOLUTION_API_KEY  = process.env.EVOLUTION_API_KEY  || 'agendorapido123'
 const EVOLUTION_INSTANCE = process.env.EVOLUTION_INSTANCE || 'agendorapido'
-const BASE_URL = process.env.BASE_URL || 'https://agendafacil-wf3q.onrender.com'
+const BASE_URL           = process.env.BASE_URL           || 'https://agendafacil-wf3q.onrender.com'
 
 // ─────────────────────────────────────────────
 // UTILITÁRIOS
@@ -44,9 +44,9 @@ function formatarData(dataStr) {
 function montarMensagem(template, agendamento, nomeNegocio, incluirCancelamento = true) {
   const linkCancelamento = `${BASE_URL}/cancelar.html?id=${agendamento._id}`
   let mensagem = template
-    .replace(/\{nome\}/g, agendamento.pacienteNome || '')
-    .replace(/\{data\}/g, formatarData(agendamento.data))
-    .replace(/\{hora\}/g, agendamento.hora || '')
+    .replace(/\{nome\}/g,    agendamento.pacienteNome || '')
+    .replace(/\{data\}/g,    formatarData(agendamento.data))
+    .replace(/\{hora\}/g,    agendamento.hora || '')
     .replace(/\{servico\}/g, agendamento.servico || '')
     .replace(/\{negocio\}/g, nomeNegocio || '')
 
@@ -91,11 +91,10 @@ async function dispararLembretes24h() {
       const template = negocio.lembrete?.mensagem ||
         'Ola {nome}! 👋\nLembramos que voce tem um agendamento amanha, {data}, as {hora} — {servico}.\nEstamos te esperando! 🙏'
 
-      // clinicaId no Appointment = _id do Negocio (confirmado em routes/agendamentos.js)
       const agendamentos = await Appointment.find({
         clinicaId: negocio._id,
-        data: dataAmanha,
-        status: 'confirmado'
+        data:      dataAmanha,
+        status:    'confirmado'
       })
 
       console.log(`[24H] ${negocio.nome}: ${agendamentos.length} agendamento(s) amanha`)
@@ -141,7 +140,7 @@ async function dispararLembretes1h() {
         clinicaId: negocio._id,
         data,
         hora,
-        status: 'confirmado'
+        status:    'confirmado'
       })
 
       console.log(`[1H] ${negocio.nome}: ${agendamentos.length} agendamento(s) na proxima hora`)
@@ -166,7 +165,8 @@ async function dispararLembretes1h() {
 // ─────────────────────────────────────────────
 // 3. PÓS-ATENDIMENTO
 //    Roda todo hora no minuto :00
-//    Busca agendamentos confirmados de 1h atrás
+//    Busca agendamentos de 1h atrás
+//    CORRIGIDO: status inclui 'concluido' além de 'confirmado'
 // ─────────────────────────────────────────────
 
 async function dispararPosAtendimento() {
@@ -183,11 +183,13 @@ async function dispararPosAtendimento() {
       const template = negocio.posAtendimento?.mensagem ||
         'Ola {nome}! 💙\nObrigado por nos visitar hoje!\nEsperamos que tenha gostado do atendimento em *{negocio}*.\nAte a proxima! 😊'
 
+      // CORRIGIDO: busca tanto 'confirmado' quanto 'concluido'
+      // pois o sistema marca como concluido automaticamente após o horário
       const agendamentos = await Appointment.find({
         clinicaId: negocio._id,
         data,
         hora,
-        status: 'confirmado'
+        status: { $in: ['confirmado', 'concluido'] }
       })
 
       console.log(`[POS] ${negocio.nome}: ${agendamentos.length} agendamento(s) para pos-atendimento`)
@@ -200,11 +202,11 @@ async function dispararPosAtendimento() {
 
         // Pós-atendimento não inclui link de cancelamento
         const mensagem = template
-          .replace(/\{nome\}/g, ag.pacienteNome || '')
+          .replace(/\{nome\}/g,    ag.pacienteNome || '')
           .replace(/\{servico\}/g, ag.servico || '')
           .replace(/\{negocio\}/g, negocio.nome || '')
-          .replace(/\{data\}/g, formatarData(ag.data))
-          .replace(/\{hora\}/g, ag.hora || '')
+          .replace(/\{data\}/g,    formatarData(ag.data))
+          .replace(/\{hora\}/g,    ag.hora || '')
 
         await enviarLembrete(ag.pacienteTelefone, mensagem)
         await new Promise(r => setTimeout(r, 1500))

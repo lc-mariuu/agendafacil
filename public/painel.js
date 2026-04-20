@@ -1471,35 +1471,34 @@ document.addEventListener('DOMContentLoaded', () => {
  
   // ─── Salvar UM tipo específico no banco ──────────────────────────
   async function salvarTipo(tipo) {
-    if (!window.negocioAtual) return
-    const token  = localStorage.getItem('token')
-    const campo  = campoBanco[tipo]
-    const estado = estadoTipos[tipo]
- 
-    // Pega a mensagem atual do textarea se for o tipo sendo editado
-    if (tipo === tipoSelecionado) {
-      const ta = document.getElementById('auto-mensagem-textarea')
-      if (ta) estado.mensagem = ta.value
-    }
- 
-    try {
-      await fetch(`${window.API}/auth/lembretes`, {
-        method:  'PATCH',
-        headers: {
-          'Content-Type':  'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          negocioId: window.negocioAtual._id,
-          campo,                       // ex: "lembrete", "lembrete1h", "posAtendimento"
-          ativo:     estado.ativo,
-          mensagem:  estado.mensagem,
-        }),
-      })
-    } catch (e) {
-      console.error('[Automação] Erro ao salvar tipo', tipo, e)
-    }
+  if (!window.negocioAtual) return
+  const token = localStorage.getItem('token')
+  const campo = campoBanco[tipo]   // 'lembrete' | 'lembrete1h' | 'posAtendimento'
+  const estado = estadoTipos[tipo]
+
+  if (tipo === tipoSelecionado) {
+    const ta = document.getElementById('auto-mensagem-textarea')
+    if (ta) estado.mensagem = ta.value
   }
+
+  try {
+    await fetch(`${window.API}/auth/lembretes`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        negocioId: window.negocioAtual._id,
+        campo,          // ← garante que o backend sabe qual campo atualizar
+        ativo: estado.ativo,
+        mensagem: estado.mensagem,
+      }),
+    })
+  } catch (e) {
+    console.error('[Automação] Erro ao salvar tipo', tipo, e)
+  }
+}
  
   // ─── Botão "Salvar alterações" no editor ─────────────────────────
   window.salvarAutomacao = async function () {

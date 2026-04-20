@@ -114,7 +114,6 @@ router.post('/enviar-codigo', async (req, res) => {
     if (userVerificado)
       return res.status(400).json({ erro: 'Email já cadastrado' })
 
-    // Remove rascunho pendente para evitar E11000 no cadastro
     await User.deleteOne({ email: email.toLowerCase(), verificado: false })
 
     const codigo = gerarCodigo()
@@ -201,11 +200,11 @@ router.post('/cadastro', async (req, res) => {
       servicos: servicos || [],
     })
 
-   const token = jwt.sign(
-  { id: user._id, role: user.role || 'user' },
-  process.env.JWT_SECRET,
-  { expiresIn: '7d' }
-  )
+    const token = jwt.sign(
+      { id: user._id, role: user.role || 'user' },
+      process.env.JWT_SECRET,
+      { expiresIn: '7d' }
+    )
     res.json({ token, nome: user.nome, negocio: neg.nome, negocioId: neg._id, userId: user._id })
   } catch (err) {
     console.error('Erro no cadastro:', err.message)
@@ -235,9 +234,9 @@ router.post('/login', async (req, res) => {
       await user.save()
     }
 
-    const negocios    = await Negocio.find({ userId: user._id }).sort({ criadoEm: 1 })
+    const negocios     = await Negocio.find({ userId: user._id }).sort({ criadoEm: 1 })
     const negPrincipal = negocios[0]
-    const token       = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' })
+    const token        = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' })
 
     res.json({
       token,
@@ -353,6 +352,8 @@ router.delete('/negocios/:negocioId', autenticar, async (req, res) => {
   }
 })
 
+// ── GET negócio por ID ────────────────────────────────
+// CORRIGIDO: retorna lembrete1h e posAtendimento
 router.get('/negocio/:id', async (req, res) => {
   try {
     let neg = await Negocio.findById(req.params.id)
@@ -367,6 +368,8 @@ router.get('/negocio/:id', async (req, res) => {
         pagamentos:         neg.pagamentos || {},
         bio:                neg.bio,
         lembrete:           neg.lembrete,
+        lembrete1h:         neg.lembrete1h,       // ← ADICIONADO
+        posAtendimento:     neg.posAtendimento,   // ← ADICIONADO
         intervalosServicos: neg.intervalosServicos || {},
       })
     }
@@ -375,12 +378,15 @@ router.get('/negocio/:id', async (req, res) => {
     const negUser = await Negocio.findOne({ userId: user._id })
     if (negUser) {
       return res.json({
-        negocio:  negUser.nome,
-        segmento: negUser.segmento,
-        servicos: negUser.servicos,
-        horarios: negUser.horarios,
-        intervalo: negUser.intervalo,
-        bio:      negUser.bio,
+        negocio:        negUser.nome,
+        segmento:       negUser.segmento,
+        servicos:       negUser.servicos,
+        horarios:       negUser.horarios,
+        intervalo:      negUser.intervalo,
+        bio:            negUser.bio,
+        lembrete:       negUser.lembrete,
+        lembrete1h:     negUser.lembrete1h,       // ← ADICIONADO
+        posAtendimento: negUser.posAtendimento,   // ← ADICIONADO
       })
     }
     res.status(404).json({ erro: 'Negócio não encontrado' })
@@ -464,12 +470,20 @@ router.patch('/negocios/:negocioId', autenticar, async (req, res) => {
   }
 })
 
+// ── PATCH lembretes ───────────────────────────────────
+// CORRIGIDO: usa o campo dinâmico (lembrete | lembrete1h | posAtendimento)
 router.patch('/lembretes', autenticar, async (req, res) => {
   try {
-    const { negocioId, ativo, numero, mensagem } = req.body
+    const { negocioId, campo, ativo, numero, mensagem } = req.body
+
+    // Valida o campo para evitar injeção de campos arbitrários
+    const campoValido = ['lembrete', 'lembrete1h', 'posAtendimento'].includes(campo)
+      ? campo
+      : 'lembrete' // fallback: comportamento original para código legado
+
     await Negocio.findOneAndUpdate(
       { _id: negocioId, userId: req.userId },
-      { $set: { lembrete: { ativo, numero, mensagem } } }
+      { $set: { [campoValido]: { ativo, numero, mensagem } } }
     )
     res.json({ ok: true })
   } catch (err) {
@@ -478,7 +492,7 @@ router.patch('/lembretes', autenticar, async (req, res) => {
   }
 })
 
-// GET /api/auth/negocio/por-slug/:slug
+// ── GET negócio por slug ──────────────────────────────
 router.get('/negocio/por-slug/:slug', async (req, res) => {
   try {
     const negocio = await Negocio.findOne({ slug: req.params.slug })
