@@ -1,268 +1,240 @@
-const express = require('express')
-const jwt = require('jsonwebtoken')
-const axios = require('axios')
-const User = require('../models/User')
-const router = express.Router()
+/**
+ * routes/assinatura.js
+ * 
+ * Integração com Mercado Pago Subscriptions (preapproval)
+ * 
+ * Endpoints:
+ *   POST /api/assinatura/criar       → gera link de assinatura
+ *   POST /api/assinatura/webhook     → recebe notificações do MP
+ *   GET  /api/assinatura/status      → retorna status atual do usuário
+ *   POST /api/assinatura/cancelar    → cancela assinatura ativa
+ */
 
-// ── ABACATEPAY v1 (customer) ─────────────────────────────────────
-const ABACATE_API = 'https://api.abacatepay.com/v1'
-const abacate = axios.create({
-  baseURL: ABACATE_API,
-  headers: {
-    Authorization: `Bearer ${process.env.ABACATEPAY_API_KEY}`,
-    'Content-Type': 'application/json',
-  },
-})
+const express  = require('express')
+const router   = express.Router()
+const User     = require('../models/User')
+const Negocio  = require('../models/Negocio')
+const jwt      = require('jsonwebtoken')
 
-// ── ABACATEPAY v2 (subscriptions) ────────────────────────────────
-const abacateV2 = axios.create({
-  baseURL: 'https://api.abacatepay.com/v2',
-  headers: {
-    Authorization: `Bearer ${process.env.ABACATEPAY_API_KEY}`,
-    'Content-Type': 'application/json',
-  },
-})
+const MP_ACCESS_TOKEN = process.env.MP_ACCESS_TOKEN
+const MP_WEBHOOK_SECRET = process.env.MP_WEBHOOK_SECRET || ''
 
-// ── MIDDLEWARE DE AUTH ───────────────────────────────────────────
-const autenticar = async (req, res, next) => {
+// IDs dos planos criados com criar-planos-mp.js
+const PLANOS = {
+  basico:        { id: process.env.MP_PLAN_BASICO_ID,        valor: 29, nome: 'Básico'        },
+  profissional:  { id: process.env.MP_PLAN_PROFISSIONAL_ID,  valor: 49, nome: 'Profissional'  },
+}
+
+// ─── Middleware de autenticação ───────────────────────────────────────
+function auth(req, res, next) {
+  const header = req.headers.authorization
+  if (!header) return res.status(401).json({ erro: 'Token ausente' })
   try {
-    const token = req.headers.authorization?.split(' ')[1]
-    const decoded = jwt.verify(token, process.env.JWT_SECRET)
-    req.userId = decoded.id
+    req.user = jwt.verify(header.replace('Bearer ', ''), process.env.JWT_SECRET)
     next()
   } catch {
-    res.status(401).json({ erro: 'Não autorizado' })
+    res.status(401).json({ erro: 'Token inválido' })
   }
 }
 
-// ── PLANOS ───────────────────────────────────────────────────────
-const PRODUTOS = {
-  basico: process.env.ABACATEPAY_PRODUCT_BASICO,
-  pro:    process.env.ABACATEPAY_PRODUCT_PRO,
-}
-
-// ── STATUS ───────────────────────────────────────────────────────
-router.get('/status', autenticar, async (req, res) => {
+// ─── POST /api/assinatura/criar ───────────────────────────────────────
+// Cria link de assinatura recorrente no Mercado Pago
+router.post('/criar', auth, async (req, res) => {
   try {
-    const user = await User.findById(req.userId)
-    const temAcesso = user.temAcesso()
-    const diasRestantes = user.plano === 'trial'
-      ? Math.max(0, Math.ceil((new Date(user.trialExpira) - new Date()) / (1000 * 60 * 60 * 24)))
-      : null
-    res.json({
-      plano: user.plano,
-      temAcesso,
-      diasRestantes,
-      assinaturaAtiva: user.assinaturaAtiva,
-      assinaturaCancelando: user.assinaturaCancelando || false,
+    const { plano } = req.body // 'basico' ou 'profissional'
+
+    if (!PLANOS[plano]) {
+      return res.status(400).json({ erro: 'Plano inválido. Use: basico ou profissional' })
+    }
+
+    const user = await User.findById(req.user.id)
+    if (!user) return res.status(404).json({ erro: 'Usuário não encontrado' })
+
+    const planConfig = PLANOS[plano]
+
+    // Cria a pré-aprovação (assinatura) no MP
+    const mpRes = await fetch('https://api.mercadopago.com/preapproval', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${MP_ACCESS_TOKEN}`,
+      },
+      body: JSON.stringify({
+        preapproval_plan_id: planConfig.id,
+        reason: `AgendoRapido — Plano ${planConfig.nome}`,
+        payer_email: user.email,
+        // Dados extras para identificar o usuário no webhook
+        external_reference: user._id.toString(),
+        back_url: 'https://agendorapido.com.br/painel.html?assinatura=ok',
+        auto_recurring: {
+          frequency: 1,
+          frequency_type: 'months',
+          transaction_amount: planConfig.valor,
+          currency_id: 'BRL',
+        },
+      }),
     })
+
+    const mpData = await mpRes.json()
+
+    if (!mpRes.ok) {
+      console.error('[MP] Erro ao criar assinatura:', mpData)
+      return res.status(500).json({ erro: 'Erro ao criar assinatura no Mercado Pago', detalhes: mpData })
+    }
+
+    // Salva o ID da assinatura no usuário (para gerenciar depois)
+    user.mp_preapproval_id  = mpData.id
+    user.mp_plano           = plano
+    user.mp_status          = 'pending'
+    await user.save()
+
+    // Retorna o link de pagamento para o frontend redirecionar
+    res.json({
+      link: mpData.init_point,       // URL para o cliente assinar
+      assinaturaId: mpData.id,
+    })
+
+  } catch (err) {
+    console.error('[MP] Erro interno:', err)
+    res.status(500).json({ erro: 'Erro interno ao criar assinatura' })
+  }
+})
+
+// ─── POST /api/assinatura/webhook ─────────────────────────────────────
+// Mercado Pago chama este endpoint automaticamente quando o status muda
+// Configure no painel do MP: https://www.mercadopago.com.br/developers/panel/webhooks
+router.post('/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
+  try {
+    const body = JSON.parse(req.body)
+
+    // Filtra apenas notificações de assinatura (preapproval)
+    if (body.type !== 'preapproval') {
+      return res.sendStatus(200)
+    }
+
+    const preapprovalId = body.data?.id
+    if (!preapprovalId) return res.sendStatus(200)
+
+    // Busca os detalhes da assinatura no MP
+    const mpRes = await fetch(`https://api.mercadopago.com/preapproval/${preapprovalId}`, {
+      headers: { 'Authorization': `Bearer ${MP_ACCESS_TOKEN}` },
+    })
+    const assinatura = await mpRes.json()
+
+    const userId       = assinatura.external_reference
+    const statusMP     = assinatura.status  // authorized | paused | cancelled | pending
+
+    if (!userId) return res.sendStatus(200)
+
+    const user = await User.findById(userId)
+    if (!user) return res.sendStatus(200)
+
+    // Mapeia status do MP para o seu sistema
+    const statusMap = {
+      authorized: { ativo: true,  plano: user.mp_plano || 'basico' },
+      paused:     { ativo: false, plano: user.mp_plano || 'basico' },
+      cancelled:  { ativo: false, plano: 'trial' },
+      pending:    { ativo: false, plano: user.mp_plano || 'basico' },
+    }
+
+    const novoStatus = statusMap[statusMP] || { ativo: false, plano: 'trial' }
+
+    user.mp_status         = statusMP
+    user.mp_preapproval_id = preapprovalId
+    user.assinaturaAtiva   = novoStatus.ativo
+    user.plano             = novoStatus.plano
+
+    if (novoStatus.ativo) {
+      // Define vencimento para +1 mês (backup caso webhook atrase)
+      const vencimento = new Date()
+      vencimento.setMonth(vencimento.getMonth() + 1)
+      user.assinaturaVencimento = vencimento
+    }
+
+    await user.save()
+
+    console.log(`[MP Webhook] User ${userId} → ${statusMP} (plano: ${user.plano})`)
+    res.sendStatus(200)
+
+  } catch (err) {
+    console.error('[MP Webhook] Erro:', err)
+    res.sendStatus(500)
+  }
+})
+
+// ─── GET /api/assinatura/status ───────────────────────────────────────
+// Retorna situação atual do usuário (já existe na sua rota, mas aqui está mais completo)
+router.get('/status', auth, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id)
+    if (!user) return res.status(404).json({ erro: 'Usuário não encontrado' })
+
+    const agora = new Date()
+
+    // Verifica se trial ainda é válido
+    const criadoEm     = new Date(user.createdAt || agora)
+    const diasDeTrial  = 14
+    const fimTrial     = new Date(criadoEm)
+    fimTrial.setDate(fimTrial.getDate() + diasDeTrial)
+    const trialValido  = agora < fimTrial
+    const diasRestantes = Math.max(0, Math.ceil((fimTrial - agora) / 86400000))
+
+    // Verifica assinatura paga
+    const assinaturaValida =
+      user.assinaturaAtiva &&
+      user.mp_status === 'authorized' &&
+      (!user.assinaturaVencimento || new Date(user.assinaturaVencimento) > agora)
+
+    const temAcesso = assinaturaValida || trialValido
+
+    res.json({
+      temAcesso,
+      plano:           assinaturaValida ? (user.plano || 'basico') : 'trial',
+      assinaturaAtiva: assinaturaValida,
+      mp_status:       user.mp_status || null,
+      diasRestantes:   trialValido ? diasRestantes : 0,
+      vencimento:      user.assinaturaVencimento || null,
+    })
+
   } catch (err) {
     res.status(500).json({ erro: 'Erro ao buscar status' })
   }
 })
 
-// ── CHECKOUT ─────────────────────────────────────────────────────
-// Usa /v2/subscriptions/create para cobrança recorrente no cartão.
-// O produto precisa ter o ciclo (frequency) definido no dashboard da AbacatePay.
-router.post('/checkout', autenticar, async (req, res) => {
+// ─── POST /api/assinatura/cancelar ────────────────────────────────────
+router.post('/cancelar', auth, async (req, res) => {
   try {
-    const { plano } = req.body
-    const user = await User.findById(req.userId)
-
-    const productId = PRODUTOS[plano]
-    if (!productId) return res.status(400).json({ erro: 'Plano inválido' })
-
-    // Cria o customer na AbacatePay se ainda não existir
-    let customerId = user.abacateCustomerId
-    if (!customerId) {
-      const { data: cliente } = await abacate.post('/customer/create', {
-        name:      user.nome,
-        email:     user.email,
-        cellphone: '11999999999',
-        taxId:     '111.444.777-35',
-      })
-      customerId = cliente.data.id
-      await User.findByIdAndUpdate(req.userId, { abacateCustomerId: customerId })
-    }
-
-    // Cria o checkout de assinatura recorrente (v2)
-    const { data: subscription } = await abacateV2.post('/subscriptions/create', {
-      items: [{ id: productId, quantity: 1 }],
-      customerId,
-      methods:       ['CARD'],
-      returnUrl:     `${process.env.URL_BASE}/planos.html`,
-      completionUrl: `${process.env.URL_BASE}/painel.html?assinatura=sucesso`,
-      externalId:    String(user._id),
-    })
-
-    const subscriptionId = subscription.data.id
-
-    await User.findByIdAndUpdate(req.userId, {
-      abacateSubscriptionId: subscriptionId,
-      pendingPlano: plano,
-    })
-
-    console.log(`[checkout] userId: ${user._id} | subscriptionId: ${subscriptionId} | plano: ${plano}`)
-    res.json({ url: subscription.data.url })
-  } catch (err) {
-    console.error('[checkout]', err.response?.data || err.message)
-    res.status(500).json({ erro: 'Erro ao criar checkout' })
-  }
-})
-
-// ── CANCELAR ─────────────────────────────────────────────────────
-// A AbacatePay não tem endpoint de cancelamento de assinatura via API.
-// Marcamos localmente como "cancelando" — o acesso segue até o fim do ciclo
-// e, como o webhook de renovação não virá, o usuário cai para inativo automaticamente.
-router.post('/cancelar', autenticar, async (req, res) => {
-  try {
-    const user = await User.findById(req.userId)
-
-    if (!user.assinaturaAtiva)
+    const user = await User.findById(req.user.id)
+    if (!user || !user.mp_preapproval_id) {
       return res.status(400).json({ erro: 'Nenhuma assinatura ativa encontrada' })
-
-    if (user.assinaturaCancelando)
-      return res.status(400).json({ erro: 'Cancelamento já solicitado anteriormente' })
-
-    await User.findByIdAndUpdate(req.userId, { assinaturaCancelando: true })
-
-    res.json({ ok: true, mensagem: 'Assinatura será cancelada no fim do período atual' })
-  } catch (err) {
-    console.error('[cancelar]', err.message)
-    res.status(500).json({ erro: 'Erro ao cancelar assinatura' })
-  }
-})
-
-// ── PORTAL ───────────────────────────────────────────────────────
-// Redireciona para a página interna de gerenciamento/cancelamento.
-// O botão só aparece no frontend quando assinaturaAtiva=true.
-router.post('/portal', autenticar, async (req, res) => {
-  try {
-    const user = await User.findById(req.userId)
-
-    if (!user || !user.assinaturaAtiva) {
-      return res.status(400).json({ erro: 'Nenhuma assinatura ativa para gerenciar' })
     }
 
-    res.json({ url: `${process.env.URL_BASE}/cancelar-assinatura.html` })
-  } catch (err) {
-    console.error('[portal]', err.message)
-    res.status(500).json({ erro: 'Erro ao abrir portal' })
-  }
-})
+    // Cancela no Mercado Pago
+    const mpRes = await fetch(`https://api.mercadopago.com/preapproval/${user.mp_preapproval_id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${MP_ACCESS_TOKEN}`,
+      },
+      body: JSON.stringify({ status: 'cancelled' }),
+    })
 
-// ── WEBHOOK AbacatePay ───────────────────────────────────────────
-router.post('/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
-  const crypto = require('crypto')
-  const sig    = req.headers['abacatepay-signature']
-  const secret = process.env.ABACATEPAY_WEBHOOK_SECRET
-
-  if (secret && sig) {
-    const expected = crypto
-      .createHmac('sha256', secret)
-      .update(req.body)
-      .digest('hex')
-    if (sig !== expected)
-      return res.status(400).send('Assinatura inválida')
-  }
-
-  let event
-  try {
-    event = JSON.parse(req.body.toString())
-  } catch {
-    return res.status(400).send('Payload inválido')
-  }
-
-  console.log('[webhook] Evento:', event.event)
-
-  try {
-    const data    = event.data || {}
-    const billing = data.billing || data.subscription || {}
-    const billingId  = billing.id
-    const customerId = billing.customer?.id || billing.customerId
-    const email      = billing.customer?.metadata?.email
-
-    console.log(`[webhook] billingId: ${billingId} | customerId: ${customerId} | email: ${email}`)
-
-    async function acharUsuario() {
-      let user = billingId
-        ? await User.findOne({ abacateSubscriptionId: billingId })
-        : null
-      if (user) { console.log(`[webhook] Encontrado por billingId: ${user._id}`); return user }
-
-      // Tenta pelo externalId (userId que enviamos no checkout)
-      const externalId = billing.externalId
-      user = externalId
-        ? await User.findById(externalId).catch(() => null)
-        : null
-      if (user) { console.log(`[webhook] Encontrado por externalId: ${user._id}`); return user }
-
-      user = customerId
-        ? await User.findOne({ abacateCustomerId: customerId })
-        : null
-      if (user) { console.log(`[webhook] Encontrado por customerId: ${user._id}`); return user }
-
-      user = email
-        ? await User.findOne({ email: email.toLowerCase() })
-        : null
-      if (user) {
-        console.log(`[webhook] Encontrado por email: ${user._id}`)
-        if (customerId) await User.findByIdAndUpdate(user._id, { abacateCustomerId: customerId })
-        return user
-      }
-
-      console.log(`[webhook] AVISO: usuário não encontrado`)
-      return null
+    if (!mpRes.ok) {
+      const err = await mpRes.json()
+      return res.status(500).json({ erro: 'Erro ao cancelar no Mercado Pago', detalhes: err })
     }
 
-    switch (event.event) {
+    user.assinaturaAtiva = false
+    user.mp_status       = 'cancelled'
+    user.plano           = 'trial'
+    await user.save()
 
-      case 'subscription.paid':
-      case 'billing.paid': {
-        const prodId = billing.products?.[0]?.externalId || billing.items?.[0]?.id
-        const plano  = prodId === process.env.ABACATEPAY_PRODUCT_PRO ? 'pro' : 'basico'
-        const user   = await acharUsuario()
-        if (!user) break
+    res.json({ ok: true, mensagem: 'Assinatura cancelada com sucesso' })
 
-        await User.findByIdAndUpdate(user._id, {
-          assinaturaAtiva:       true,
-          assinaturaCancelando:  false,
-          plano,
-          abacateSubscriptionId: billingId || '',
-          pendingPlano:          null,
-        })
-        console.log(`[webhook] ✓ Ativado — userId: ${user._id} | plano: ${plano}`)
-        break
-      }
-
-      case 'billing.failed':
-      case 'subscription.payment_failed': {
-        const user = await acharUsuario()
-        if (!user) break
-        await User.findByIdAndUpdate(user._id, { assinaturaAtiva: false })
-        console.log(`[webhook] Pagamento falhou — userId: ${user._id}`)
-        break
-      }
-
-      case 'subscription.canceled':
-      case 'subscription.expired': {
-        const user = await acharUsuario()
-        if (!user) break
-        await User.findByIdAndUpdate(user._id, {
-          assinaturaAtiva:       false,
-          assinaturaCancelando:  false,
-          plano:                 'inativo',
-          abacateSubscriptionId: '',
-        })
-        console.log(`[webhook] Encerrado — userId: ${user._id}`)
-        break
-      }
-    }
   } catch (err) {
-    console.error('[webhook] Erro:', err.message)
+    console.error('[MP] Erro ao cancelar:', err)
+    res.status(500).json({ erro: 'Erro interno ao cancelar assinatura' })
   }
-
-  res.json({ received: true })
 })
 
 module.exports = router

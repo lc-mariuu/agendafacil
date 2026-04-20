@@ -2,25 +2,12 @@ const mongoose = require('mongoose')
 const bcrypt = require('bcryptjs')
 
 const userSchema = new mongoose.Schema({
-  nome:  { type: String, required: true },
-  email: { type: String, required: true, unique: true },
-  senha: { type: String, required: true },
-
-  plano:        { type: String, default: 'trial' },
-  trialExpira:  { type: Date, default: () => new Date(Date.now() + 14 * 24 * 60 * 60 * 1000) },
-
-  abacateCustomerId:     { type: String, default: '' },
-  abacateSubscriptionId: { type: String, default: '' },
-
-  assinaturaAtiva:      { type: Boolean, default: false },
-  assinaturaCancelando: { type: Boolean, default: false },
-
-  // ── Verificação de email ─────────────────────────────────────
-  verificado:         { type: Boolean, default: false },
-  codigoVerificacao:  { type: String },
-  codigoExpira:       { type: Date },
-
-  criadoEm: { type: Date, default: Date.now },
+  plano:                 { type: String, default: 'trial' },       // 'trial' | 'basico' | 'profissional'
+assinaturaAtiva:       { type: Boolean, default: false },         // true quando MP confirma pagamento
+assinaturaVencimento:  { type: Date, default: null },             // data do próximo vencimento
+mp_preapproval_id:     { type: String, default: null },           // ID da assinatura no Mercado Pago
+mp_plano:              { type: String, default: null },           // qual plano escolheu ('basico'|'profissional')
+mp_status:             { type: String, default: null },           // status do MP: authorized|paused|cancelled
 })
 
 userSchema.methods.compararSenha = async function (senha) {
