@@ -5,7 +5,21 @@
 const express  = require('express')
 const router   = express.Router()
 const axios    = require('axios')
-const auth     = require('../middleware/auth')
+// O middleware autenticar está definido dentro do auth.js
+const authRouter  = require('./auth')
+// Extrai apenas o middleware de autenticação diretamente via JWT
+const jwt = require('jsonwebtoken')
+const auth = (req, res, next) => {
+  const token = req.headers.authorization?.split(' ')[1]
+  if (!token) return res.status(401).json({ erro: 'Sem autorização' })
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET)
+    req.userId = decoded.id
+    next()
+  } catch {
+    res.status(401).json({ erro: 'Token inválido' })
+  }
+}
 const User     = require('../models/User')
 
 const MP_TOKEN     = process.env.MP_ACCESS_TOKEN
