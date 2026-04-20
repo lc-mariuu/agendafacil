@@ -474,21 +474,43 @@ router.patch('/negocios/:negocioId', autenticar, async (req, res) => {
 // CORRIGIDO: usa o campo dinâmico (lembrete | lembrete1h | posAtendimento)
 router.patch('/lembretes', autenticar, async (req, res) => {
   try {
-    const { negocioId, campo, ativo, numero, mensagem } = req.body
-
-    // Valida o campo para evitar injeção de campos arbitrários
-    const campoValido = ['lembrete', 'lembrete1h', 'posAtendimento'].includes(campo)
-      ? campo
-      : 'lembrete' // fallback: comportamento original para código legado
-
-    await Negocio.findOneAndUpdate(
+    const { negocioId, campo, ativo, mensagem } = req.body
+ 
+    // Mapa de campos permitidos → chave no documento Negocio
+    const camposPermitidos = {
+      'lembrete':        'lembrete',
+      'lembrete1h':      'lembrete1h',
+      'posAtendimento':  'posAtendimento',
+    }
+ 
+    // Se vier o campo "campo" usa atualização granular,
+    // caso contrário mantém compatibilidade com o formato antigo
+    if (campo && camposPermitidos[campo]) {
+      const chave = camposPermitidos[campo]
+      const update = {}
+      update[`${chave}.ativo`]    = !!ativo
+      if (mensagem !== undefined) update[`${chave}.mensagem`] = mensagem
+ 
+      const neg = await Negocio.findOneAndUpdate(
+        { _id: negocioId, userId: req.userId },
+        { $set: update },
+        { new: true }
+      )
+      if (!neg) return res.status(404).json({ erro: 'Negócio não encontrado' })
+      return res.json({ ok: true, campo, ativo: !!ativo })
+    }
+ 
+    // Fallback: formato legado (só salva lembrete principal)
+    const neg = await Negocio.findOneAndUpdate(
       { _id: negocioId, userId: req.userId },
-      { $set: { [campoValido]: { ativo, numero, mensagem } } }
+      { $set: { 'lembrete.ativo': !!ativo, ...(mensagem !== undefined ? { 'lembrete.mensagem': mensagem } : {}) } },
+      { new: true }
     )
-    res.json({ ok: true })
+    if (!neg) return res.status(404).json({ erro: 'Negócio não encontrado' })
+    return res.json({ ok: true })
   } catch (err) {
-    console.error('Erro salvar lembrete:', err.message)
-    res.status(500).json({ erro: 'Erro ao salvar configuração de lembretes' })
+    console.error('ERRO lembretes PATCH:', err.message)
+    res.status(500).json({ erro: 'Erro ao salvar lembrete' })
   }
 })
 

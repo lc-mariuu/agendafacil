@@ -1238,36 +1238,42 @@ document.addEventListener('DOMContentLoaded', () => {
 ;(function () {
   let tipoSelecionado = '24h'
  
-  // Mensagens padrão por tipo
   const mensagensAuto = {
     '24h': 'Olá {nome}! 👋\nLembramos que você tem um agendamento amanhã, {data}, às {hora} — {servico}.\nEstamos te esperando! 🙏',
     '1h':  'Olá {nome}! ⏰\nSeu agendamento é em 1 hora — {hora}. Serviço: {servico}.\nTe esperamos em breve! 😊',
     'pos': 'Olá {nome}! 🙏\nObrigado por nos visitar hoje! Foi um prazer te atender.\nAgende seu próximo horário: {link}',
   }
  
-  // Títulos do editor
   const titulos = {
     '24h': 'Editar lembrete 24h antes',
     '1h':  'Editar lembrete 1h antes',
     'pos': 'Editar mensagem pós-atendimento',
   }
  
-  // Mapeamento tipo → campo no banco de dados
-  // Deve bater exatamente com o que o cron (lembretes.js) lê:
-  //   24h  → negocio.lembrete.ativo       / negocio.lembrete.mensagem
-  //   1h   → negocio.lembrete1h.ativo     / negocio.lembrete1h.mensagem
-  //   pos  → negocio.posAtendimento.ativo / negocio.posAtendimento.mensagem
   const campoBanco = {
     '24h': 'lembrete',
     '1h':  'lembrete1h',
     'pos': 'posAtendimento',
   }
  
-  // Estado local de cada tipo (ativo + mensagem)
   const estadoTipos = {
     '24h': { ativo: true,  mensagem: mensagensAuto['24h'] },
     '1h':  { ativo: true,  mensagem: mensagensAuto['1h']  },
     'pos': { ativo: false, mensagem: mensagensAuto['pos'] },
+  }
+ 
+  // ─── Lê o textarea e atualiza o estado do tipo selecionado ───────
+  function syncTextareaParaEstado() {
+    const ta = document.getElementById('auto-mensagem-textarea')
+    if (ta) estadoTipos[tipoSelecionado].mensagem = ta.value
+  }
+ 
+  // ─── Lê o toggle do editor e atualiza o estado do tipo selecionado
+  function syncToggleEditorParaEstado() {
+    const toggleEditor = document.getElementById('toggle-editor-main')
+    if (toggleEditor) {
+      estadoTipos[tipoSelecionado].ativo = toggleEditor.classList.contains('on')
+    }
   }
  
   // ─── Carrega configuração real do banco ao inicializar ───────────
@@ -1277,25 +1283,20 @@ document.addEventListener('DOMContentLoaded', () => {
       const res  = await fetch(`${window.API}/auth/negocio/${window.negocioAtual._id}`)
       const data = await res.json()
  
-      // 24h
       if (data.lembrete) {
         estadoTipos['24h'].ativo    = !!data.lembrete.ativo
         estadoTipos['24h'].mensagem = data.lembrete.mensagem || mensagensAuto['24h']
       }
-      // 1h
       if (data.lembrete1h) {
         estadoTipos['1h'].ativo    = !!data.lembrete1h.ativo
         estadoTipos['1h'].mensagem = data.lembrete1h.mensagem || mensagensAuto['1h']
       }
-      // pós-atendimento
       if (data.posAtendimento) {
         estadoTipos['pos'].ativo    = !!data.posAtendimento.ativo
         estadoTipos['pos'].mensagem = data.posAtendimento.mensagem || mensagensAuto['pos']
       }
  
-      // Atualiza a UI com os valores carregados
       atualizarTodosToggleCards()
-      // Atualiza editor com o tipo que está selecionado
       atualizarEditor(tipoSelecionado)
     } catch (e) {
       console.error('[Automação] Erro ao carregar do servidor:', e)
@@ -1314,8 +1315,8 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!card) return
       const badge = card.querySelector('.auto-tipo-badge')
       if (badge) {
-        badge.textContent  = isOn ? 'Ativo' : 'Inativo'
-        badge.className    = 'auto-tipo-badge ' + (isOn ? 'ativo' : 'inativo')
+        badge.textContent = isOn ? 'Ativo' : 'Inativo'
+        badge.className   = 'auto-tipo-badge ' + (isOn ? 'ativo' : 'inativo')
       }
     })
   }
@@ -1324,25 +1325,21 @@ document.addEventListener('DOMContentLoaded', () => {
   function atualizarEditor(tipo) {
     const estado = estadoTipos[tipo]
  
-    // Título
     const headerTitle = document.querySelector('.auto-editor-header-title')
     if (headerTitle) headerTitle.textContent = titulos[tipo] || 'Editar mensagem'
  
-    // Textarea
     const textarea = document.getElementById('auto-mensagem-textarea')
     if (textarea) {
       textarea.value = estado.mensagem
       atualizarPreviewAuto()
     }
  
-    // Toggle principal do editor
     const toggleEditor = document.getElementById('toggle-editor-main')
     if (toggleEditor) {
       toggleEditor.className    = 'auto-tipo-toggle ' + (estado.ativo ? 'on' : 'off')
       toggleEditor.setAttribute('aria-checked', estado.ativo)
     }
  
-    // Label "Ativo / Inativo" ao lado do toggle
     const labelAtivo = document.querySelector('.auto-ativo-label')
     if (labelAtivo) {
       labelAtivo.textContent = estado.ativo ? 'Ativo' : 'Inativo'
@@ -1352,6 +1349,10 @@ document.addEventListener('DOMContentLoaded', () => {
  
   // ─── Selecionar tipo no card ──────────────────────────────────────
   window.selecionarTipoAuto = function (tipo, card) {
+    // Salva o estado do textarea ANTES de trocar de tipo
+    syncTextareaParaEstado()
+    syncToggleEditorParaEstado()
+ 
     tipoSelecionado = tipo
  
     document.querySelectorAll('.auto-tipo-card').forEach(c =>
@@ -1362,70 +1363,86 @@ document.addEventListener('DOMContentLoaded', () => {
     atualizarEditor(tipo)
   }
  
-  // ─── Toggle no card (ativa/desativa sem salvar ainda) ────────────
+  // ─── Toggle no card (ativa/desativa e salva imediatamente) ───────
   window.toggleAutoTipo = function (tipo, toggleEl) {
     const isOn = toggleEl.classList.contains('on')
-    estadoTipos[tipo].ativo = !isOn
+    const novoAtivo = !isOn
  
-    // Atualiza o card visualmente
-    toggleEl.className = 'auto-tipo-toggle ' + (isOn ? 'off' : 'on')
-    toggleEl.setAttribute('aria-checked', !isOn)
+    // 1. Atualiza estado local
+    estadoTipos[tipo].ativo = novoAtivo
  
-    const card  = toggleEl.closest('.auto-tipo-card')
+    // 2. Se for o tipo editado no momento, também sincroniza a mensagem do textarea
+    if (tipo === tipoSelecionado) {
+      syncTextareaParaEstado()
+    }
+ 
+    // 3. Atualiza visual do card
+    toggleEl.className = 'auto-tipo-toggle ' + (novoAtivo ? 'on' : 'off')
+    toggleEl.setAttribute('aria-checked', novoAtivo)
+ 
+    const card = toggleEl.closest('.auto-tipo-card')
     if (card) {
       const badge = card.querySelector('.auto-tipo-badge')
       if (badge) {
-        badge.textContent = isOn ? 'Inativo' : 'Ativo'
-        badge.className   = 'auto-tipo-badge ' + (isOn ? 'inativo' : 'ativo')
+        badge.textContent = novoAtivo ? 'Ativo' : 'Inativo'
+        badge.className   = 'auto-tipo-badge ' + (novoAtivo ? 'ativo' : 'inativo')
       }
     }
  
-    // Se for o tipo atualmente editado, atualiza o editor também
+    // 4. Se for o tipo editado, atualiza o editor principal também
     if (tipo === tipoSelecionado) {
       const toggleEditor = document.getElementById('toggle-editor-main')
       if (toggleEditor) {
-        toggleEditor.className = 'auto-tipo-toggle ' + (isOn ? 'off' : 'on')
-        toggleEditor.setAttribute('aria-checked', !isOn)
+        toggleEditor.className = 'auto-tipo-toggle ' + (novoAtivo ? 'on' : 'off')
+        toggleEditor.setAttribute('aria-checked', novoAtivo)
       }
       const labelAtivo = document.querySelector('.auto-ativo-label')
       if (labelAtivo) {
-        labelAtivo.textContent = isOn ? 'Inativo' : 'Ativo'
-        labelAtivo.style.color = isOn ? 'var(--text3)' : '#34d399'
+        labelAtivo.textContent = novoAtivo ? 'Ativo' : 'Inativo'
+        labelAtivo.style.color = novoAtivo ? '#34d399' : 'var(--text3)'
       }
     }
  
-    // Salva imediatamente no banco
+    // 5. Persiste imediatamente no banco
     salvarTipo(tipo)
   }
  
   // ─── Toggle no editor principal ──────────────────────────────────
   window.toggleEditorMain = function (toggleEl) {
     const isOn = toggleEl.classList.contains('on')
-    estadoTipos[tipoSelecionado].ativo = !isOn
+    const novoAtivo = !isOn
  
-    toggleEl.className = 'auto-tipo-toggle ' + (isOn ? 'off' : 'on')
-    toggleEl.setAttribute('aria-checked', !isOn)
+    // 1. Atualiza estado
+    estadoTipos[tipoSelecionado].ativo = novoAtivo
+    syncTextareaParaEstado()
+ 
+    // 2. Atualiza visual do editor
+    toggleEl.className = 'auto-tipo-toggle ' + (novoAtivo ? 'on' : 'off')
+    toggleEl.setAttribute('aria-checked', novoAtivo)
  
     const labelAtivo = document.querySelector('.auto-ativo-label')
     if (labelAtivo) {
-      labelAtivo.textContent = isOn ? 'Inativo' : 'Ativo'
-      labelAtivo.style.color = isOn ? 'var(--text3)' : '#34d399'
+      labelAtivo.textContent = novoAtivo ? 'Ativo' : 'Inativo'
+      labelAtivo.style.color = novoAtivo ? '#34d399' : 'var(--text3)'
     }
  
-    // Sincroniza o card correspondente
+    // 3. Sincroniza o card correspondente
     const cardToggle = document.getElementById('toggle-' + tipoSelecionado)
     if (cardToggle) {
-      cardToggle.className = 'auto-tipo-toggle ' + (isOn ? 'off' : 'on')
-      cardToggle.setAttribute('aria-checked', !isOn)
-      const card  = cardToggle.closest('.auto-tipo-card')
+      cardToggle.className = 'auto-tipo-toggle ' + (novoAtivo ? 'on' : 'off')
+      cardToggle.setAttribute('aria-checked', novoAtivo)
+      const card = cardToggle.closest('.auto-tipo-card')
       if (card) {
         const badge = card.querySelector('.auto-tipo-badge')
         if (badge) {
-          badge.textContent = isOn ? 'Inativo' : 'Ativo'
-          badge.className   = 'auto-tipo-badge ' + (isOn ? 'inativo' : 'ativo')
+          badge.textContent = novoAtivo ? 'Ativo' : 'Inativo'
+          badge.className   = 'auto-tipo-badge ' + (novoAtivo ? 'ativo' : 'inativo')
         }
       }
     }
+ 
+    // 4. Persiste imediatamente no banco
+    salvarTipo(tipoSelecionado)
   }
  
   // ─── Inserir variável no textarea ────────────────────────────────
@@ -1470,55 +1487,52 @@ document.addEventListener('DOMContentLoaded', () => {
   }
  
   // ─── Salvar UM tipo específico no banco ──────────────────────────
+  // CORREÇÃO: sempre usa o estado já atualizado em estadoTipos[tipo]
   async function salvarTipo(tipo) {
-  if (!window.negocioAtual) return
-  const token = localStorage.getItem('token')
-  const campo = campoBanco[tipo]   // 'lembrete' | 'lembrete1h' | 'posAtendimento'
-  const estado = estadoTipos[tipo]
-
-  if (tipo === tipoSelecionado) {
-    const ta = document.getElementById('auto-mensagem-textarea')
-    if (ta) estado.mensagem = ta.value
+    if (!window.negocioAtual) return
+    const token = localStorage.getItem('token')
+    const campo = campoBanco[tipo]
+    const estado = estadoTipos[tipo]
+ 
+    try {
+      const res = await fetch(`${window.API}/auth/lembretes`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          negocioId: window.negocioAtual._id,
+          campo,
+          ativo: estado.ativo,
+          mensagem: estado.mensagem,
+        }),
+      })
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}))
+        console.error('[Automação] Erro ao salvar tipo', tipo, err)
+      }
+    } catch (e) {
+      console.error('[Automação] Erro de rede ao salvar tipo', tipo, e)
+    }
   }
-
-  try {
-    await fetch(`${window.API}/auth/lembretes`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        negocioId: window.negocioAtual._id,
-        campo,          // ← garante que o backend sabe qual campo atualizar
-        ativo: estado.ativo,
-        mensagem: estado.mensagem,
-      }),
-    })
-  } catch (e) {
-    console.error('[Automação] Erro ao salvar tipo', tipo, e)
-  }
-}
  
   // ─── Botão "Salvar alterações" no editor ─────────────────────────
   window.salvarAutomacao = async function () {
-    // Lê a mensagem atual do textarea e salva no estado
-    const ta = document.getElementById('auto-mensagem-textarea')
-    if (ta) estadoTipos[tipoSelecionado].mensagem = ta.value
+    syncTextareaParaEstado()
+    syncToggleEditorParaEstado()
  
-    // Lê o toggle do editor
-    const toggleEditor = document.getElementById('toggle-editor-main')
-    if (toggleEditor) {
-      estadoTipos[tipoSelecionado].ativo = toggleEditor.classList.contains('on')
-    }
+    const btn = document.querySelector('.auto-btn-salvar')
+    if (btn) { btn.disabled = true; btn.innerHTML = 'Salvando...' }
  
     await salvarTipo(tipoSelecionado)
  
-    const btn = document.querySelector('.auto-btn-salvar')
     if (btn) {
-      const orig = btn.innerHTML
+      btn.disabled = false
       btn.innerHTML = '✓ Salvo!'
-      setTimeout(() => (btn.innerHTML = orig), 2000)
+      setTimeout(() => {
+        btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg> Salvar alterações'
+      }, 2000)
     }
   }
  
@@ -1529,18 +1543,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const orig = btn.innerHTML
     btn.innerHTML    = '✓ Teste enviado!'
     btn.style.color  = '#34d399'
-    setTimeout(() => {
-      btn.innerHTML   = orig
-      btn.style.color = ''
-    }, 2500)
+    setTimeout(() => { btn.innerHTML = orig; btn.style.color = '' }, 2500)
   }
  
-  // ─── Expõe carregarAutomacaoDoServidor para o painel.js ──────────
-  // Chame esta função após negocioAtual estar definido.
-  // No carregarDadosNegocio() do painel.js, substitua
-  // "carregarLembretes()" por "carregarAutomacaoDoServidor()".
   window.carregarAutomacaoDoServidor = carregarAutomacaoDoServidor
- 
 })()
 
 /* ═══════════════════════════════════════════════════
