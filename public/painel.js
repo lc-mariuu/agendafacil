@@ -1235,51 +1235,313 @@ document.addEventListener('DOMContentLoaded', () => {
 /* ═══════════════════════════════════════════════════
    AUTOMAÇÃO
 ═══════════════════════════════════════════════════ */
-;(function(){
-  let tipoSelecionado='24h'
-  const mensagensAuto={
-    '24h':'Olá {nome}! 👋\nLembramos que você tem um agendamento amanhã, {data}, às {hora} — {servico}.\nEstamos te esperando! 🙏',
-    '1h':'Olá {nome}! ⏰\nSeu agendamento é em 1 hora — {hora}. Serviço: {servico}.\nTe esperamos em breve! 😊',
-    'pos':'Olá {nome}! 🙏\nObrigado por nos visitar hoje! Foi um prazer te atender.\nAgende seu próximo horário: {link}',
-    'aniversario':'Feliz aniversário, {nome}! 🎉\nA equipe da {negocio} deseja tudo de melhor para você!\nTemos um presente especial esperando por você. 🎁'
+;(function () {
+  let tipoSelecionado = '24h'
+ 
+  // Mensagens padrão por tipo
+  const mensagensAuto = {
+    '24h': 'Olá {nome}! 👋\nLembramos que você tem um agendamento amanhã, {data}, às {hora} — {servico}.\nEstamos te esperando! 🙏',
+    '1h':  'Olá {nome}! ⏰\nSeu agendamento é em 1 hora — {hora}. Serviço: {servico}.\nTe esperamos em breve! 😊',
+    'pos': 'Olá {nome}! 🙏\nObrigado por nos visitar hoje! Foi um prazer te atender.\nAgende seu próximo horário: {link}',
   }
-  const titulos={
-    '24h':'Editar lembrete 24h antes',
-    '1h':'Editar lembrete 1h antes',
-    'pos':'Editar mensagem pós-atendimento',
-    'aniversario':'Editar mensagem de aniversário'
+ 
+  // Títulos do editor
+  const titulos = {
+    '24h': 'Editar lembrete 24h antes',
+    '1h':  'Editar lembrete 1h antes',
+    'pos': 'Editar mensagem pós-atendimento',
   }
-  window.selecionarTipoAuto=function(tipo,card){
-    tipoSelecionado=tipo; document.querySelectorAll('.auto-tipo-card').forEach(c=>c.classList.remove('ativo-selected')); card.classList.add('ativo-selected')
-    const headerTitle=document.querySelector('.auto-editor-header-title');if(headerTitle)headerTitle.textContent=titulos[tipo]||'Editar mensagem'
-    const textarea=document.getElementById('auto-mensagem-textarea');if(textarea){textarea.value=mensagensAuto[tipo]||'';atualizarPreviewAuto()}
-    const toggleCard=document.getElementById('toggle-'+tipo);const toggleEditor=document.getElementById('toggle-editor-main');const labelAtivo=document.querySelector('.auto-ativo-label')
-    if(toggleCard&&toggleEditor){const isOn=toggleCard.classList.contains('on');toggleEditor.className='auto-tipo-toggle '+(isOn?'on':'off');if(labelAtivo){labelAtivo.textContent=isOn?'Ativo':'Inativo';labelAtivo.style.color=isOn?'#34d399':'var(--text3)'}}
+ 
+  // Mapeamento tipo → campo no banco de dados
+  // Deve bater exatamente com o que o cron (lembretes.js) lê:
+  //   24h  → negocio.lembrete.ativo       / negocio.lembrete.mensagem
+  //   1h   → negocio.lembrete1h.ativo     / negocio.lembrete1h.mensagem
+  //   pos  → negocio.posAtendimento.ativo / negocio.posAtendimento.mensagem
+  const campoBanco = {
+    '24h': 'lembrete',
+    '1h':  'lembrete1h',
+    'pos': 'posAtendimento',
   }
-  window.toggleAutoTipo=function(tipo,toggleEl){
-    const isOn=toggleEl.classList.contains('on'); toggleEl.className='auto-tipo-toggle '+(isOn?'off':'on')
-    const card=toggleEl.closest('.auto-tipo-card');if(card){const badge=card.querySelector('.auto-tipo-badge');if(badge){badge.textContent=isOn?'Inativo':'Ativo';badge.className='auto-tipo-badge '+(isOn?'inativo':'ativo')}}
-    if(tipo===tipoSelecionado){const toggleEditor=document.getElementById('toggle-editor-main');const labelAtivo=document.querySelector('.auto-ativo-label');if(toggleEditor)toggleEditor.className='auto-tipo-toggle '+(isOn?'off':'on');if(labelAtivo){labelAtivo.textContent=isOn?'Inativo':'Ativo';labelAtivo.style.color=isOn?'var(--text3)':'#34d399'}}
+ 
+  // Estado local de cada tipo (ativo + mensagem)
+  const estadoTipos = {
+    '24h': { ativo: true,  mensagem: mensagensAuto['24h'] },
+    '1h':  { ativo: true,  mensagem: mensagensAuto['1h']  },
+    'pos': { ativo: false, mensagem: mensagensAuto['pos'] },
   }
-  window.toggleEditorMain=function(toggleEl){
-    const isOn=toggleEl.classList.contains('on'); toggleEl.className='auto-tipo-toggle '+(isOn?'off':'on')
-    const labelAtivo=document.querySelector('.auto-ativo-label');if(labelAtivo){labelAtivo.textContent=isOn?'Inativo':'Ativo';labelAtivo.style.color=isOn?'var(--text3)':'#34d399'}
-    const cardToggle=document.getElementById('toggle-'+tipoSelecionado);if(cardToggle){cardToggle.className='auto-tipo-toggle '+(isOn?'off':'on');const card=cardToggle.closest('.auto-tipo-card');if(card){const badge=card.querySelector('.auto-tipo-badge');if(badge){badge.textContent=isOn?'Inativo':'Ativo';badge.className='auto-tipo-badge '+(isOn?'inativo':'ativo')}}}
+ 
+  // ─── Carrega configuração real do banco ao inicializar ───────────
+  async function carregarAutomacaoDoServidor() {
+    if (!window.negocioAtual) return
+    try {
+      const res  = await fetch(`${window.API}/auth/negocio/${window.negocioAtual._id}`)
+      const data = await res.json()
+ 
+      // 24h
+      if (data.lembrete) {
+        estadoTipos['24h'].ativo    = !!data.lembrete.ativo
+        estadoTipos['24h'].mensagem = data.lembrete.mensagem || mensagensAuto['24h']
+      }
+      // 1h
+      if (data.lembrete1h) {
+        estadoTipos['1h'].ativo    = !!data.lembrete1h.ativo
+        estadoTipos['1h'].mensagem = data.lembrete1h.mensagem || mensagensAuto['1h']
+      }
+      // pós-atendimento
+      if (data.posAtendimento) {
+        estadoTipos['pos'].ativo    = !!data.posAtendimento.ativo
+        estadoTipos['pos'].mensagem = data.posAtendimento.mensagem || mensagensAuto['pos']
+      }
+ 
+      // Atualiza a UI com os valores carregados
+      atualizarTodosToggleCards()
+      // Atualiza editor com o tipo que está selecionado
+      atualizarEditor(tipoSelecionado)
+    } catch (e) {
+      console.error('[Automação] Erro ao carregar do servidor:', e)
+    }
   }
-  window.inserirVarAuto=function(variavel){const ta=document.getElementById('auto-mensagem-textarea');if(!ta)return;const start=ta.selectionStart;const end=ta.selectionEnd;ta.value=ta.value.substring(0,start)+variavel+ta.value.substring(end);ta.selectionStart=ta.selectionEnd=start+variavel.length;ta.focus();atualizarPreviewAuto()}
-  window.atualizarPreviewAuto=function(){
-    const ta=document.getElementById('auto-mensagem-textarea');const bubble=document.getElementById('auto-preview-bubble');if(!ta||!bubble)return
-    const negNome=(window.negocioAtual&&window.negocioAtual.nome)?window.negocioAtual.nome:'sua empresa'
-    const linkAgendamento=window.negocioAtual?urlAgendamento(window.negocioAtual):'agendorapido.com.br/agendar.html?id=...'
-    let txt=ta.value.replace(/\{nome\}/g,'Carlos').replace(/\{data\}/g,'23/05').replace(/\{hora\}/g,'15:00').replace(/\{servico\}/g,'Barba').replace(/\{negocio\}/g,negNome).replace(/\{link\}/g,linkAgendamento)
-    bubble.innerHTML=txt.split('\n').map(l=>l||'<br>').join('<br>')+`<div class="auto-wpp-bubble-time">10:30<svg width="14" height="10" viewBox="0 0 16 11" fill="none"><path d="M1 5.5l3.5 3.5L9 2M7 5.5l3.5 3.5L15 2" stroke="#4fc3f7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>`
+ 
+  // ─── Atualiza os card-toggles com o estado atual ─────────────────
+  function atualizarTodosToggleCards() {
+    ;['24h', '1h', 'pos'].forEach(tipo => {
+      const toggle = document.getElementById('toggle-' + tipo)
+      if (!toggle) return
+      const isOn = estadoTipos[tipo].ativo
+      toggle.className = 'auto-tipo-toggle ' + (isOn ? 'on' : 'off')
+      toggle.setAttribute('aria-checked', isOn)
+      const card  = toggle.closest('.auto-tipo-card')
+      if (!card) return
+      const badge = card.querySelector('.auto-tipo-badge')
+      if (badge) {
+        badge.textContent  = isOn ? 'Ativo' : 'Inativo'
+        badge.className    = 'auto-tipo-badge ' + (isOn ? 'ativo' : 'inativo')
+      }
+    })
   }
-  window.salvarAutomacao=function(){
-    const ta=document.getElementById('auto-mensagem-textarea');const msg=ta?ta.value:'';const isOn=document.getElementById('toggle-editor-main')?.classList.contains('on')
-    if(!window.negocioAtual)return; const token=localStorage.getItem('token')
-    fetch(`${API}/auth/lembretes`,{method:'PATCH',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({negocioId:window.negocioAtual._id,ativo:isOn,mensagem:msg})}).then(()=>{const btn=document.querySelector('.auto-btn-salvar');if(btn){const orig=btn.innerHTML;btn.innerHTML='✓ Salvo!';setTimeout(()=>btn.innerHTML=orig,2000)}}).catch(()=>{})
+ 
+  // ─── Atualiza o painel editor com o tipo selecionado ─────────────
+  function atualizarEditor(tipo) {
+    const estado = estadoTipos[tipo]
+ 
+    // Título
+    const headerTitle = document.querySelector('.auto-editor-header-title')
+    if (headerTitle) headerTitle.textContent = titulos[tipo] || 'Editar mensagem'
+ 
+    // Textarea
+    const textarea = document.getElementById('auto-mensagem-textarea')
+    if (textarea) {
+      textarea.value = estado.mensagem
+      atualizarPreviewAuto()
+    }
+ 
+    // Toggle principal do editor
+    const toggleEditor = document.getElementById('toggle-editor-main')
+    if (toggleEditor) {
+      toggleEditor.className    = 'auto-tipo-toggle ' + (estado.ativo ? 'on' : 'off')
+      toggleEditor.setAttribute('aria-checked', estado.ativo)
+    }
+ 
+    // Label "Ativo / Inativo" ao lado do toggle
+    const labelAtivo = document.querySelector('.auto-ativo-label')
+    if (labelAtivo) {
+      labelAtivo.textContent = estado.ativo ? 'Ativo' : 'Inativo'
+      labelAtivo.style.color = estado.ativo ? '#34d399' : 'var(--text3)'
+    }
   }
-  window.enviarTesteAuto=function(){const btn=document.querySelector('.auto-btn-teste');if(!btn)return;const orig=btn.innerHTML;btn.innerHTML='✓ Teste enviado!';btn.style.color='#34d399';setTimeout(()=>{btn.innerHTML=orig;btn.style.color=''},2500)}
+ 
+  // ─── Selecionar tipo no card ──────────────────────────────────────
+  window.selecionarTipoAuto = function (tipo, card) {
+    tipoSelecionado = tipo
+ 
+    document.querySelectorAll('.auto-tipo-card').forEach(c =>
+      c.classList.remove('ativo-selected')
+    )
+    card.classList.add('ativo-selected')
+ 
+    atualizarEditor(tipo)
+  }
+ 
+  // ─── Toggle no card (ativa/desativa sem salvar ainda) ────────────
+  window.toggleAutoTipo = function (tipo, toggleEl) {
+    const isOn = toggleEl.classList.contains('on')
+    estadoTipos[tipo].ativo = !isOn
+ 
+    // Atualiza o card visualmente
+    toggleEl.className = 'auto-tipo-toggle ' + (isOn ? 'off' : 'on')
+    toggleEl.setAttribute('aria-checked', !isOn)
+ 
+    const card  = toggleEl.closest('.auto-tipo-card')
+    if (card) {
+      const badge = card.querySelector('.auto-tipo-badge')
+      if (badge) {
+        badge.textContent = isOn ? 'Inativo' : 'Ativo'
+        badge.className   = 'auto-tipo-badge ' + (isOn ? 'inativo' : 'ativo')
+      }
+    }
+ 
+    // Se for o tipo atualmente editado, atualiza o editor também
+    if (tipo === tipoSelecionado) {
+      const toggleEditor = document.getElementById('toggle-editor-main')
+      if (toggleEditor) {
+        toggleEditor.className = 'auto-tipo-toggle ' + (isOn ? 'off' : 'on')
+        toggleEditor.setAttribute('aria-checked', !isOn)
+      }
+      const labelAtivo = document.querySelector('.auto-ativo-label')
+      if (labelAtivo) {
+        labelAtivo.textContent = isOn ? 'Inativo' : 'Ativo'
+        labelAtivo.style.color = isOn ? 'var(--text3)' : '#34d399'
+      }
+    }
+ 
+    // Salva imediatamente no banco
+    salvarTipo(tipo)
+  }
+ 
+  // ─── Toggle no editor principal ──────────────────────────────────
+  window.toggleEditorMain = function (toggleEl) {
+    const isOn = toggleEl.classList.contains('on')
+    estadoTipos[tipoSelecionado].ativo = !isOn
+ 
+    toggleEl.className = 'auto-tipo-toggle ' + (isOn ? 'off' : 'on')
+    toggleEl.setAttribute('aria-checked', !isOn)
+ 
+    const labelAtivo = document.querySelector('.auto-ativo-label')
+    if (labelAtivo) {
+      labelAtivo.textContent = isOn ? 'Inativo' : 'Ativo'
+      labelAtivo.style.color = isOn ? 'var(--text3)' : '#34d399'
+    }
+ 
+    // Sincroniza o card correspondente
+    const cardToggle = document.getElementById('toggle-' + tipoSelecionado)
+    if (cardToggle) {
+      cardToggle.className = 'auto-tipo-toggle ' + (isOn ? 'off' : 'on')
+      cardToggle.setAttribute('aria-checked', !isOn)
+      const card  = cardToggle.closest('.auto-tipo-card')
+      if (card) {
+        const badge = card.querySelector('.auto-tipo-badge')
+        if (badge) {
+          badge.textContent = isOn ? 'Inativo' : 'Ativo'
+          badge.className   = 'auto-tipo-badge ' + (isOn ? 'inativo' : 'ativo')
+        }
+      }
+    }
+  }
+ 
+  // ─── Inserir variável no textarea ────────────────────────────────
+  window.inserirVarAuto = function (variavel) {
+    const ta = document.getElementById('auto-mensagem-textarea')
+    if (!ta) return
+    const start = ta.selectionStart
+    const end   = ta.selectionEnd
+    ta.value = ta.value.substring(0, start) + variavel + ta.value.substring(end)
+    ta.selectionStart = ta.selectionEnd = start + variavel.length
+    ta.focus()
+    atualizarPreviewAuto()
+  }
+ 
+  // ─── Preview WhatsApp ─────────────────────────────────────────────
+  window.atualizarPreviewAuto = function () {
+    const ta     = document.getElementById('auto-mensagem-textarea')
+    const bubble = document.getElementById('auto-preview-bubble')
+    if (!ta || !bubble) return
+    const negNome         = (window.negocioAtual?.nome) || 'sua empresa'
+    const linkAgendamento = window.negocioAtual
+      ? `https://agendorapido.com.br/agendar.html?id=${window.negocioAtual._id}`
+      : 'agendorapido.com.br/agendar.html?id=...'
+ 
+    let txt = ta.value
+      .replace(/\{nome\}/g,    'Carlos')
+      .replace(/\{data\}/g,    '23/05')
+      .replace(/\{hora\}/g,    '15:00')
+      .replace(/\{servico\}/g, 'Barba')
+      .replace(/\{negocio\}/g, negNome)
+      .replace(/\{link\}/g,    linkAgendamento)
+ 
+    bubble.innerHTML =
+      txt.split('\n').map(l => l || '<br>').join('<br>') +
+      `<div class="auto-wpp-bubble-time">10:30
+        <svg width="14" height="10" viewBox="0 0 16 11" fill="none">
+          <path d="M1 5.5l3.5 3.5L9 2M7 5.5l3.5 3.5L15 2"
+                stroke="#4fc3f7" stroke-width="1.5"
+                stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>`
+  }
+ 
+  // ─── Salvar UM tipo específico no banco ──────────────────────────
+  async function salvarTipo(tipo) {
+    if (!window.negocioAtual) return
+    const token  = localStorage.getItem('token')
+    const campo  = campoBanco[tipo]
+    const estado = estadoTipos[tipo]
+ 
+    // Pega a mensagem atual do textarea se for o tipo sendo editado
+    if (tipo === tipoSelecionado) {
+      const ta = document.getElementById('auto-mensagem-textarea')
+      if (ta) estado.mensagem = ta.value
+    }
+ 
+    try {
+      await fetch(`${window.API}/auth/lembretes`, {
+        method:  'PATCH',
+        headers: {
+          'Content-Type':  'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          negocioId: window.negocioAtual._id,
+          campo,                       // ex: "lembrete", "lembrete1h", "posAtendimento"
+          ativo:     estado.ativo,
+          mensagem:  estado.mensagem,
+        }),
+      })
+    } catch (e) {
+      console.error('[Automação] Erro ao salvar tipo', tipo, e)
+    }
+  }
+ 
+  // ─── Botão "Salvar alterações" no editor ─────────────────────────
+  window.salvarAutomacao = async function () {
+    // Lê a mensagem atual do textarea e salva no estado
+    const ta = document.getElementById('auto-mensagem-textarea')
+    if (ta) estadoTipos[tipoSelecionado].mensagem = ta.value
+ 
+    // Lê o toggle do editor
+    const toggleEditor = document.getElementById('toggle-editor-main')
+    if (toggleEditor) {
+      estadoTipos[tipoSelecionado].ativo = toggleEditor.classList.contains('on')
+    }
+ 
+    await salvarTipo(tipoSelecionado)
+ 
+    const btn = document.querySelector('.auto-btn-salvar')
+    if (btn) {
+      const orig = btn.innerHTML
+      btn.innerHTML = '✓ Salvo!'
+      setTimeout(() => (btn.innerHTML = orig), 2000)
+    }
+  }
+ 
+  // ─── Botão "Enviar teste" ─────────────────────────────────────────
+  window.enviarTesteAuto = function () {
+    const btn = document.querySelector('.auto-btn-teste')
+    if (!btn) return
+    const orig = btn.innerHTML
+    btn.innerHTML    = '✓ Teste enviado!'
+    btn.style.color  = '#34d399'
+    setTimeout(() => {
+      btn.innerHTML   = orig
+      btn.style.color = ''
+    }, 2500)
+  }
+ 
+  // ─── Expõe carregarAutomacaoDoServidor para o painel.js ──────────
+  // Chame esta função após negocioAtual estar definido.
+  // No carregarDadosNegocio() do painel.js, substitua
+  // "carregarLembretes()" por "carregarAutomacaoDoServidor()".
+  window.carregarAutomacaoDoServidor = carregarAutomacaoDoServidor
+ 
 })()
 
 /* ═══════════════════════════════════════════════════
