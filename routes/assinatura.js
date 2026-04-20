@@ -1,239 +1,205 @@
 /**
  * routes/assinatura.js
- * 
- * Integração com Mercado Pago Subscriptions (preapproval)
- * 
- * Endpoints:
- *   POST /api/assinatura/criar       → gera link de assinatura
- *   POST /api/assinatura/webhook     → recebe notificações do MP
- *   GET  /api/assinatura/status      → retorna status atual do usuário
- *   POST /api/assinatura/cancelar    → cancela assinatura ativa
  */
 
 const express  = require('express')
 const router   = express.Router()
+const axios    = require('axios')
+const auth     = require('../middleware/auth')
 const User     = require('../models/User')
-const Negocio  = require('../models/Negocio')
-const jwt      = require('jsonwebtoken')
 
-const MP_ACCESS_TOKEN = process.env.MP_ACCESS_TOKEN
-const MP_WEBHOOK_SECRET = process.env.MP_WEBHOOK_SECRET || ''
+const MP_TOKEN     = process.env.MP_ACCESS_TOKEN
+const PLAN_BASICO  = process.env.MP_PLAN_BASICO
+const PLAN_PRO     = process.env.MP_PLAN_PRO
+const FRONTEND_URL = process.env.FRONTEND_URL || 'https://agendorapido.com.br'
 
-// IDs dos planos criados com criar-planos-mp.js
-const PLANOS = {
-  basico:        { id: process.env.MP_PLAN_BASICO_ID,        valor: 29, nome: 'Básico'        },
-  profissional:  { id: process.env.MP_PLAN_PROFISSIONAL_ID,  valor: 49, nome: 'Profissional'  },
-}
+const MP_API = axios.create({
+  baseURL: 'https://api.mercadopago.com',
+  headers: { Authorization: `Bearer ${MP_TOKEN}` },
+})
 
-// ─── Middleware de autenticação ───────────────────────────────────────
-function auth(req, res, next) {
-  const header = req.headers.authorization
-  if (!header) return res.status(401).json({ erro: 'Token ausente' })
-  try {
-    req.user = jwt.verify(header.replace('Bearer ', ''), process.env.JWT_SECRET)
-    next()
-  } catch {
-    res.status(401).json({ erro: 'Token inválido' })
+function planIdFor(plano) {
+  const map = {
+    basico:       PLAN_BASICO,
+    profissional: PLAN_PRO,
+    pro:          PLAN_PRO,
   }
+  return map[plano] || null
 }
 
-// ─── POST /api/assinatura/criar ───────────────────────────────────────
-// Cria link de assinatura recorrente no Mercado Pago
-router.post('/criar', auth, async (req, res) => {
+/* ─────────────────────────────────────────────────────────────────────────────
+   POST /api/assinatura/criar
+   POST /api/assinatura/checkout  (alias retrocompatível)
+───────────────────────────────────────────────────────────────────────────── */
+async function criarAssinatura(req, res) {
   try {
-    const { plano } = req.body // 'basico' ou 'profissional'
+    const { plano } = req.body
+    const user      = await User.findById(req.userId)
 
-    if (!PLANOS[plano]) {
-      return res.status(400).json({ erro: 'Plano inválido. Use: basico ou profissional' })
-    }
-
-    const user = await User.findById(req.user.id)
     if (!user) return res.status(404).json({ erro: 'Usuário não encontrado' })
 
-    const planConfig = PLANOS[plano]
+    const planId = planIdFor(plano)
+    if (!planId) return res.status(400).json({ erro: `Plano inválido: ${plano}` })
 
-    // Cria a pré-aprovação (assinatura) no MP
-    const mpRes = await fetch('https://api.mercadopago.com/preapproval', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${MP_ACCESS_TOKEN}`,
-      },
-      body: JSON.stringify({
-        preapproval_plan_id: planConfig.id,
-        reason: `AgendoRapido — Plano ${planConfig.nome}`,
-        payer_email: user.email,
-        // Dados extras para identificar o usuário no webhook
-        external_reference: user._id.toString(),
-        back_url: 'https://agendorapido.com.br/painel.html?assinatura=ok',
-        auto_recurring: {
-          frequency: 1,
-          frequency_type: 'months',
-          transaction_amount: planConfig.valor,
-          currency_id: 'BRL',
-        },
-      }),
+    const { data } = await MP_API.post('/preapproval', {
+      preapproval_plan_id: planId,
+      payer_email:         user.email,
+      back_url:            `${FRONTEND_URL}/planos.html?assinatura=sucesso`,
+      external_reference:  user._id.toString(),
     })
 
-    const mpData = await mpRes.json()
-
-    if (!mpRes.ok) {
-      console.error('[MP] Erro ao criar assinatura:', mpData)
-      return res.status(500).json({ erro: 'Erro ao criar assinatura no Mercado Pago', detalhes: mpData })
-    }
-
-    // Salva o ID da assinatura no usuário (para gerenciar depois)
-    user.mp_preapproval_id  = mpData.id
-    user.mp_plano           = plano
-    user.mp_status          = 'pending'
+    user.mp_preapproval_id = data.id
+    user.mp_plano          = plano
+    user.mp_status         = data.status
     await user.save()
 
-    // Retorna o link de pagamento para o frontend redirecionar
-    res.json({
-      link: mpData.init_point,       // URL para o cliente assinar
-      assinaturaId: mpData.id,
-    })
+    return res.json({ link: data.init_point })
 
   } catch (err) {
-    console.error('[MP] Erro interno:', err)
-    res.status(500).json({ erro: 'Erro interno ao criar assinatura' })
+    console.error('[criarAssinatura]', err?.response?.data || err.message)
+    const msg = err?.response?.data?.message || err.message || 'Erro interno'
+    return res.status(500).json({ erro: msg })
   }
-})
+}
 
-// ─── POST /api/assinatura/webhook ─────────────────────────────────────
-// Mercado Pago chama este endpoint automaticamente quando o status muda
-// Configure no painel do MP: https://www.mercadopago.com.br/developers/panel/webhooks
-router.post('/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
-  try {
-    const body = JSON.parse(req.body)
+router.post('/criar',    auth, criarAssinatura)
+router.post('/checkout', auth, criarAssinatura)
 
-    // Filtra apenas notificações de assinatura (preapproval)
-    if (body.type !== 'preapproval') {
-      return res.sendStatus(200)
-    }
-
-    const preapprovalId = body.data?.id
-    if (!preapprovalId) return res.sendStatus(200)
-
-    // Busca os detalhes da assinatura no MP
-    const mpRes = await fetch(`https://api.mercadopago.com/preapproval/${preapprovalId}`, {
-      headers: { 'Authorization': `Bearer ${MP_ACCESS_TOKEN}` },
-    })
-    const assinatura = await mpRes.json()
-
-    const userId       = assinatura.external_reference
-    const statusMP     = assinatura.status  // authorized | paused | cancelled | pending
-
-    if (!userId) return res.sendStatus(200)
-
-    const user = await User.findById(userId)
-    if (!user) return res.sendStatus(200)
-
-    // Mapeia status do MP para o seu sistema
-    const statusMap = {
-      authorized: { ativo: true,  plano: user.mp_plano || 'basico' },
-      paused:     { ativo: false, plano: user.mp_plano || 'basico' },
-      cancelled:  { ativo: false, plano: 'trial' },
-      pending:    { ativo: false, plano: user.mp_plano || 'basico' },
-    }
-
-    const novoStatus = statusMap[statusMP] || { ativo: false, plano: 'trial' }
-
-    user.mp_status         = statusMP
-    user.mp_preapproval_id = preapprovalId
-    user.assinaturaAtiva   = novoStatus.ativo
-    user.plano             = novoStatus.plano
-
-    if (novoStatus.ativo) {
-      // Define vencimento para +1 mês (backup caso webhook atrase)
-      const vencimento = new Date()
-      vencimento.setMonth(vencimento.getMonth() + 1)
-      user.assinaturaVencimento = vencimento
-    }
-
-    await user.save()
-
-    console.log(`[MP Webhook] User ${userId} → ${statusMP} (plano: ${user.plano})`)
-    res.sendStatus(200)
-
-  } catch (err) {
-    console.error('[MP Webhook] Erro:', err)
-    res.sendStatus(500)
-  }
-})
-
-// ─── GET /api/assinatura/status ───────────────────────────────────────
-// Retorna situação atual do usuário (já existe na sua rota, mas aqui está mais completo)
+/* ─────────────────────────────────────────────────────────────────────────────
+   GET /api/assinatura/status
+───────────────────────────────────────────────────────────────────────────── */
 router.get('/status', auth, async (req, res) => {
   try {
-    const user = await User.findById(req.user.id)
+    const user  = await User.findById(req.userId)
     if (!user) return res.status(404).json({ erro: 'Usuário não encontrado' })
 
-    const agora = new Date()
+    const agora   = new Date()
+    const emTrial = user.plano === 'trial' && user.trialExpira && agora < new Date(user.trialExpira)
 
-    // Verifica se trial ainda é válido
-    const criadoEm     = new Date(user.createdAt || agora)
-    const diasDeTrial  = 14
-    const fimTrial     = new Date(criadoEm)
-    fimTrial.setDate(fimTrial.getDate() + diasDeTrial)
-    const trialValido  = agora < fimTrial
-    const diasRestantes = Math.max(0, Math.ceil((fimTrial - agora) / 86400000))
+    if (user.mp_preapproval_id && !user.assinaturaAtiva) {
+      try {
+        const { data } = await MP_API.get(`/preapproval/${user.mp_preapproval_id}`)
+        if (data.status === 'authorized') {
+          user.assinaturaAtiva      = true
+          user.plano                = user.mp_plano || 'basico'
+          user.mp_status            = 'authorized'
+          user.assinaturaVencimento = data.next_payment_date
+            ? new Date(data.next_payment_date) : null
+          await user.save()
+        }
+      } catch (_) {}
+    }
 
-    // Verifica assinatura paga
-    const assinaturaValida =
-      user.assinaturaAtiva &&
-      user.mp_status === 'authorized' &&
-      (!user.assinaturaVencimento || new Date(user.assinaturaVencimento) > agora)
+    const diasRestantes = emTrial
+      ? Math.max(0, Math.ceil((new Date(user.trialExpira) - agora) / 86400000))
+      : null
 
-    const temAcesso = assinaturaValida || trialValido
-
-    res.json({
-      temAcesso,
-      plano:           assinaturaValida ? (user.plano || 'basico') : 'trial',
-      assinaturaAtiva: assinaturaValida,
-      mp_status:       user.mp_status || null,
-      diasRestantes:   trialValido ? diasRestantes : 0,
-      vencimento:      user.assinaturaVencimento || null,
+    return res.json({
+      plano:           user.plano,
+      assinaturaAtiva: user.assinaturaAtiva,
+      temAcesso:       user.assinaturaAtiva || emTrial,
+      diasRestantes,
+      vencimento:      user.assinaturaVencimento,
     })
 
   } catch (err) {
-    res.status(500).json({ erro: 'Erro ao buscar status' })
+    console.error('[status]', err.message)
+    return res.status(500).json({ erro: 'Erro interno' })
   }
 })
 
-// ─── POST /api/assinatura/cancelar ────────────────────────────────────
-router.post('/cancelar', auth, async (req, res) => {
+/* ─────────────────────────────────────────────────────────────────────────────
+   POST /api/assinatura/portal
+───────────────────────────────────────────────────────────────────────────── */
+router.post('/portal', auth, async (req, res) => {
   try {
-    const user = await User.findById(req.user.id)
+    const user = await User.findById(req.userId)
     if (!user || !user.mp_preapproval_id) {
       return res.status(400).json({ erro: 'Nenhuma assinatura ativa encontrada' })
     }
 
-    // Cancela no Mercado Pago
-    const mpRes = await fetch(`https://api.mercadopago.com/preapproval/${user.mp_preapproval_id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${MP_ACCESS_TOKEN}`,
-      },
-      body: JSON.stringify({ status: 'cancelled' }),
-    })
+    const { data } = await MP_API.get(`/preapproval/${user.mp_preapproval_id}`)
+    const url = data.init_point || 'https://www.mercadopago.com.br/subscriptions'
+    return res.json({ url })
 
-    if (!mpRes.ok) {
-      const err = await mpRes.json()
-      return res.status(500).json({ erro: 'Erro ao cancelar no Mercado Pago', detalhes: err })
+  } catch (err) {
+    console.error('[portal]', err?.response?.data || err.message)
+    return res.status(500).json({ erro: 'Erro ao abrir gerenciamento' })
+  }
+})
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   POST /api/assinatura/webhook
+   SEM auth — o MP não manda token JWT
+   Responde 200 ANTES de processar (MP cancela se demorar)
+───────────────────────────────────────────────────────────────────────────── */
+router.post('/webhook', express.raw({ type: '*/*' }), async (req, res) => {
+  res.status(200).json({ ok: true })
+
+  try {
+    let body = req.body
+    if (Buffer.isBuffer(body)) {
+      body = JSON.parse(body.toString('utf8'))
     }
+
+    const id = body?.data?.id
+    if (!id) return
+
+    const { data: mpData } = await MP_API.get(`/preapproval/${id}`)
+    const userId = mpData.external_reference
+
+    if (!userId) return
+
+    const user = await User.findById(userId)
+    if (!user) return
+
+    user.mp_preapproval_id = id
+    user.mp_status         = mpData.status
+    user.mp_plano          = user.mp_plano || 'basico'
+
+    if (mpData.status === 'authorized') {
+      user.assinaturaAtiva      = true
+      user.plano                = user.mp_plano
+      user.assinaturaVencimento = mpData.next_payment_date
+        ? new Date(mpData.next_payment_date) : null
+
+    } else if (['cancelled', 'paused'].includes(mpData.status)) {
+      user.assinaturaAtiva = false
+      if (!user.assinaturaVencimento || new Date() > new Date(user.assinaturaVencimento)) {
+        user.plano = 'inativo'
+      }
+    }
+
+    await user.save()
+    console.log(`[Webhook MP] user=${userId} status=${mpData.status} plano=${user.plano}`)
+
+  } catch (err) {
+    console.error('[webhook erro]', err?.response?.data || err.message)
+  }
+})
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   POST /api/assinatura/cancelar
+───────────────────────────────────────────────────────────────────────────── */
+router.post('/cancelar', auth, async (req, res) => {
+  try {
+    const user = await User.findById(req.userId)
+    if (!user || !user.mp_preapproval_id) {
+      return res.status(400).json({ erro: 'Nenhuma assinatura encontrada' })
+    }
+
+    await MP_API.put(`/preapproval/${user.mp_preapproval_id}`, { status: 'cancelled' })
 
     user.assinaturaAtiva = false
     user.mp_status       = 'cancelled'
-    user.plano           = 'trial'
+    user.plano           = 'inativo'
     await user.save()
 
-    res.json({ ok: true, mensagem: 'Assinatura cancelada com sucesso' })
+    return res.json({ ok: true, mensagem: 'Assinatura cancelada' })
 
   } catch (err) {
-    console.error('[MP] Erro ao cancelar:', err)
-    res.status(500).json({ erro: 'Erro interno ao cancelar assinatura' })
+    console.error('[cancelar]', err?.response?.data || err.message)
+    return res.status(500).json({ erro: 'Erro ao cancelar assinatura' })
   }
 })
 

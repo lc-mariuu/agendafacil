@@ -64,6 +64,9 @@ app.get('/:slug', async (req, res) => {
   }
 })
 
+const assinaturaRoutes = require('./routes/assinatura')
+app.use('/api/assinatura', assinaturaRoutes)
+
 // ── LIMPEZA AUTOMÁTICA ─────────────────────────────────────────
 async function limparAgendamentos() {
   try {
