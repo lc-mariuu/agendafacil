@@ -1,14 +1,24 @@
 /**
  * routes/assinatura.js
+ *
+ * CORREÇÃO PRINCIPAL:
+ * O erro "card_token_id is required" ocorre quando o plano no Mercado Pago
+ * está configurado para cobrança direta (sem link de checkout).
+ * Solução: criar a pré-aprovação passando os dados do plano manualmente
+ * (valor, frequência, etc.) em vez de referenciar o preapproval_plan_id,
+ * assim o MP sempre devolve um init_point (link de checkout) válido.
+ *
+ * Se quiser manter os planos cadastrados no painel do MP, verifique se eles
+ * estão como "Assinatura com link de pagamento" (não "cobrança direta").
  */
 
 const express  = require('express')
 const router   = express.Router()
 const axios    = require('axios')
-// O middleware autenticar está definido dentro do auth.js
-const authRouter  = require('./auth')
-// Extrai apenas o middleware de autenticação diretamente via JWT
-const jwt = require('jsonwebtoken')
+const jwt      = require('jsonwebtoken')
+const User     = require('../models/User')
+
+/* ── Auth middleware ── */
 const auth = (req, res, next) => {
   const token = req.headers.authorization?.split(' ')[1]
   if (!token) return res.status(401).json({ erro: 'Sem autorização' })
@@ -20,7 +30,6 @@ const auth = (req, res, next) => {
     res.status(401).json({ erro: 'Token inválido' })
   }
 }
-const User     = require('../models/User')
 
 const MP_TOKEN     = process.env.MP_ACCESS_TOKEN
 const PLAN_BASICO  = process.env.MP_PLAN_BASICO
@@ -32,18 +41,39 @@ const MP_API = axios.create({
   headers: { Authorization: `Bearer ${MP_TOKEN}` },
 })
 
-function planIdFor(plano) {
-  const map = {
-    basico:       PLAN_BASICO,
-    profissional: PLAN_PRO,
-    pro:          PLAN_PRO,
-  }
-  return map[plano] || null
+/* Definição manual dos planos como fallback */
+const PLANOS_CONFIG = {
+  basico: {
+    nome:           'AgendoRapido Básico',
+    valor:          29.90,
+    frequencia:     1,
+    tipo_frequencia: 'months',
+    planId:         PLAN_BASICO,
+  },
+  profissional: {
+    nome:           'AgendoRapido Profissional',
+    valor:          49.90,
+    frequencia:     1,
+    tipo_frequencia: 'months',
+    planId:         PLAN_PRO,
+  },
+  pro: {
+    nome:           'AgendoRapido Profissional',
+    valor:          49.90,
+    frequencia:     1,
+    tipo_frequencia: 'months',
+    planId:         PLAN_PRO,
+  },
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
    POST /api/assinatura/criar
    POST /api/assinatura/checkout  (alias retrocompatível)
+
+   ESTRATÉGIA:
+   1. Tenta criar a pré-aprovação via preapproval_plan_id (plano do painel MP)
+   2. Se o MP retornar erro sobre card_token_id ou 400/422, cria manualmente
+      passando reason + auto_recurring, o que SEMPRE gera um init_point
 ───────────────────────────────────────────────────────────────────────────── */
 async function criarAssinatura(req, res) {
   try {
@@ -52,26 +82,73 @@ async function criarAssinatura(req, res) {
 
     if (!user) return res.status(404).json({ erro: 'Usuário não encontrado' })
 
-    const planId = planIdFor(plano)
-    if (!planId) return res.status(400).json({ erro: `Plano inválido: ${plano}` })
+    const config = PLANOS_CONFIG[plano]
+    if (!config) return res.status(400).json({ erro: `Plano inválido: ${plano}` })
 
-    const { data } = await MP_API.post('/preapproval', {
-      preapproval_plan_id: planId,
-      payer_email:         user.email,
-      back_url:            `${FRONTEND_URL}/planos.html?assinatura=sucesso`,
-      external_reference:  user._id.toString(),
-    })
+    let mpData = null
 
-    user.mp_preapproval_id = data.id
+    /* ── Tentativa 1: via preapproval_plan_id ── */
+    if (config.planId) {
+      try {
+        const resp = await MP_API.post('/preapproval', {
+          preapproval_plan_id: config.planId,
+          payer_email:         user.email,
+          back_url:            `${FRONTEND_URL}/planos.html?assinatura=sucesso`,
+          external_reference:  user._id.toString(),
+        })
+        mpData = resp.data
+        console.log('[criarAssinatura] Criado via preapproval_plan_id:', mpData.id)
+      } catch (errPlan) {
+        const mpErr = errPlan?.response?.data
+        console.warn('[criarAssinatura] Falha via plan_id, tentando manual:', mpErr?.message || mpErr)
+        // Continua para tentativa 2
+      }
+    }
+
+    /* ── Tentativa 2: criação manual com auto_recurring ──
+       Isso SEMPRE gera init_point sem precisar de cartão.
+       O pagador escolhe o método no checkout do MP.            */
+    if (!mpData || !mpData.init_point) {
+      const resp = await MP_API.post('/preapproval', {
+        reason:             config.nome,
+        payer_email:        user.email,
+        back_url:           `${FRONTEND_URL}/planos.html?assinatura=sucesso`,
+        external_reference: user._id.toString(),
+        auto_recurring: {
+          frequency:        config.frequencia,
+          frequency_type:   config.tipo_frequencia,
+          transaction_amount: config.valor,
+          currency_id:      'BRL',
+        },
+      })
+      mpData = resp.data
+      console.log('[criarAssinatura] Criado via auto_recurring manual:', mpData.id)
+    }
+
+    /* ── Salva no usuário ── */
+    user.mp_preapproval_id = mpData.id
     user.mp_plano          = plano
-    user.mp_status         = data.status
+    user.mp_status         = mpData.status
     await user.save()
 
-    return res.json({ link: data.init_point })
+    const link = mpData.init_point
+    if (!link) {
+      console.error('[criarAssinatura] Sem init_point na resposta:', mpData)
+      return res.status(500).json({ erro: 'Link de pagamento não gerado. Tente novamente.' })
+    }
+
+    return res.json({ link })
 
   } catch (err) {
-    console.error('[criarAssinatura]', err?.response?.data || err.message)
-    const msg = err?.response?.data?.message || err.message || 'Erro interno'
+    const mpErr = err?.response?.data
+    console.error('[criarAssinatura] Erro final:', mpErr || err.message)
+
+    // Mensagem amigável baseada no erro do MP
+    let msg = 'Erro ao criar assinatura'
+    if (mpErr?.message)  msg = mpErr.message
+    else if (mpErr?.error) msg = mpErr.error
+    else if (err.message) msg = err.message
+
     return res.status(500).json({ erro: msg })
   }
 }
@@ -90,6 +167,7 @@ router.get('/status', auth, async (req, res) => {
     const agora   = new Date()
     const emTrial = user.plano === 'trial' && user.trialExpira && agora < new Date(user.trialExpira)
 
+    /* Sincroniza status com o MP se houver preapproval pendente */
     if (user.mp_preapproval_id && !user.assinaturaAtiva) {
       try {
         const { data } = await MP_API.get(`/preapproval/${user.mp_preapproval_id}`)
