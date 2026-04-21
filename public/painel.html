@@ -1195,19 +1195,172 @@ Estamos te esperando! 🙏</textarea>
 
   <!-- ══════════════════ PAGE: PAGAMENTOS ══════════════════ -->
   <section class="page" id="page-pagamentos" aria-label="Pagamentos">
+
+    <!-- CHAVE PIX -->
     <div class="section-block">
       <div class="section-block-header">
-        <div class="section-block-icon" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><rect x="2" y="5" width="16" height="13" rx="2.5" stroke="var(--accent)" stroke-width="1.6"/><path d="M2 9h16M6 13h4" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round"/></svg></div>
-        <div><div class="section-block-title">Cobrança via Pix</div><div class="section-block-sub">Receba antes do atendimento, automaticamente</div></div>
+        <div class="section-block-icon" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+            <rect x="2" y="5" width="16" height="13" rx="2.5" stroke="var(--accent)" stroke-width="1.6"/>
+            <path d="M2 9h16M6 13h4" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div>
+          <div class="section-block-title">Sua chave Pix</div>
+          <div class="section-block-sub">Configure a chave que receberá os pagamentos antecipados dos clientes</div>
+        </div>
       </div>
       <div class="section-block-body">
-        <div style="text-align:center;padding:36px 0 26px">
-          <div class="pag-empty-icon" aria-hidden="true"><svg width="32" height="32" viewBox="0 0 34 34" fill="none"><rect x="3" y="7" width="28" height="20" rx="3.5" stroke="var(--accent)" stroke-width="1.8"/><path d="M3 13h28M9 20h7" stroke="var(--accent)" stroke-width="1.8" stroke-linecap="round"/></svg></div>
-          <div style="font-size:19px;font-weight:700;color:var(--text);margin-bottom:9px">Pagamentos em breve</div>
-          <p style="font-size:13.5px;color:var(--text2);max-width:320px;margin:0 auto;line-height:1.7">Cobrança antecipada via Pix com repasse automático e reembolso em cancelamentos.</p>
+
+        <!-- INFO BANNER -->
+        <div style="display:flex;gap:12px;padding:13px 15px;background:var(--accent-light);border:1px solid var(--accent-mid);border-radius:10px;margin-bottom:18px">
+          <svg width="15" height="15" viewBox="0 0 16 16" fill="none" style="flex-shrink:0;margin-top:1px" aria-hidden="true">
+            <circle cx="8" cy="8" r="6.5" stroke="#60a5fa" stroke-width="1.4"/>
+            <path d="M8 7v4M8 5.5v.5" stroke="#60a5fa" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          <div style="font-size:12.5px;color:var(--text2);line-height:1.65">
+            <strong style="color:var(--text)">Como funciona:</strong> quando ativado, o cliente só confirma o agendamento após pagar via Pix. O valor cai direto na sua chave cadastrada aqui.
+          </div>
+        </div>
+
+        <!-- TIPO DE CHAVE -->
+        <div style="margin-bottom:14px">
+          <div style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px">Tipo de chave</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap" id="pix-tipo-tabs">
+            <button class="pix-tipo-tab ativo" data-tipo="cpf"       onclick="pixSelecionarTipo('cpf',this)"       type="button">CPF</button>
+            <button class="pix-tipo-tab"       data-tipo="cnpj"      onclick="pixSelecionarTipo('cnpj',this)"      type="button">CNPJ</button>
+            <button class="pix-tipo-tab"       data-tipo="email"     onclick="pixSelecionarTipo('email',this)"     type="button">E-mail</button>
+            <button class="pix-tipo-tab"       data-tipo="telefone"  onclick="pixSelecionarTipo('telefone',this)"  type="button">Telefone</button>
+            <button class="pix-tipo-tab"       data-tipo="aleatoria" onclick="pixSelecionarTipo('aleatoria',this)" type="button">Chave aleatória</button>
+          </div>
+        </div>
+
+        <!-- INPUT CHAVE -->
+        <div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;margin-bottom:8px">
+          <div style="flex:1;min-width:200px">
+            <label style="display:block;font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:7px" id="pix-key-label">Chave CPF</label>
+            <div style="position:relative;display:flex;align-items:center">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none" style="position:absolute;left:12px;color:var(--text3)" aria-hidden="true">
+                <rect x="2" y="3" width="12" height="10" rx="2" stroke="currentColor" stroke-width="1.3"/>
+                <path d="M5 7h3M5 9.5h5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+              </svg>
+              <input type="text" id="pix-chave-input"
+                style="width:100%;background:var(--bg-input,#1a2236);border:1px solid var(--border2);border-radius:9px;color:var(--text);font-size:13px;font-family:inherit;padding:9px 12px 9px 34px;outline:none;transition:border-color .15s"
+                placeholder="000.000.000-00"
+                oninput="pixFormatarChave(this)"
+                onfocus="this.style.borderColor='var(--accent)'"
+                onblur="this.style.borderColor='var(--border2)'"
+                autocomplete="off">
+            </div>
+          </div>
+          <button onclick="pixSalvarChave()" type="button" id="btn-salvar-pix-chave"
+            style="display:flex;align-items:center;gap:7px;background:var(--accent);color:white;border:none;padding:9px 18px;border-radius:9px;font-size:12.5px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .18s;white-space:nowrap">
+            <svg width="12" height="12" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+              <path d="M2 7l3.5 3.5L12 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Salvar chave
+          </button>
+          <span id="pix-chave-salvo" style="display:none;color:var(--green);font-size:12.5px;font-weight:700">✓ Salvo!</span>
+        </div>
+
+        <!-- PREVIEW CHAVE SALVA -->
+        <div id="pix-chave-preview" style="display:none;margin-top:14px;padding:11px 14px;background:var(--green-bg);border:1px solid var(--green-border);border-radius:9px;display:none;align-items:center;gap:10px;font-size:12.5px;color:var(--green)">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d="M2 9l4 4L14 3" stroke="#10b981" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Chave Pix cadastrada: <strong id="pix-chave-preview-val">—</strong>
         </div>
       </div>
     </div>
+
+    <!-- COBRANÇA POR SERVIÇO -->
+    <div class="section-block">
+      <div class="section-block-header">
+        <div class="section-block-icon" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+            <path d="M3 5h14M3 10h8M3 15h10" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div style="flex:1">
+          <div class="section-block-title">Cobrança antecipada por serviço</div>
+          <div class="section-block-sub">Ative o Pix e defina o valor cobrado antes do atendimento</div>
+        </div>
+        <div id="pag-badge-ativados" style="font-size:11.5px;font-weight:700;color:var(--text3);white-space:nowrap">0 ativados</div>
+      </div>
+      <div class="section-block-body" style="padding-bottom:4px">
+
+        <!-- CABEÇALHO TABELA (desktop) -->
+        <div style="display:grid;grid-template-columns:1fr 130px 90px 60px;gap:8px;padding:8px 12px;background:var(--bg3,#1a2236);border-radius:8px;margin-bottom:10px;font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.07em" aria-hidden="true">
+          <div>Serviço</div>
+          <div>Valor Pix (R$)</div>
+          <div>% do preço</div>
+          <div style="text-align:center">Ativo</div>
+        </div>
+
+        <div id="pag-servicos-lista" aria-live="polite"></div>
+
+        <!-- RESUMO -->
+        <div id="pag-resumo" style="display:none;align-items:center;gap:10px;margin-top:14px;padding:11px 14px;background:var(--green-bg);border:1px solid var(--green-border);border-radius:9px;font-size:12.5px;color:var(--green);font-weight:600">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d="M2 9l4 4L14 3" stroke="#10b981" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span id="pag-resumo-txt">Pix ativo em 0 serviços</span>
+        </div>
+      </div>
+
+      <!-- FOOTER SALVAR -->
+      <div style="display:flex;align-items:center;gap:12px;padding:0 20px 18px">
+        <button onclick="salvarPagamentos()" type="button" id="btn-salvar-pag"
+          style="display:flex;align-items:center;gap:7px;background:var(--accent);color:white;border:none;padding:9px 18px;border-radius:9px;font-size:12.5px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .18s">
+          <svg width="12" height="12" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+            <path d="M2 7l3.5 3.5L12 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Salvar configurações
+        </button>
+        <span id="pag-salvo-msg" style="display:none;color:var(--green);font-size:12.5px;font-weight:700" role="status" aria-live="polite">✓ Salvo!</span>
+      </div>
+    </div>
+
+    <!-- COMO FUNCIONA -->
+    <div class="section-block">
+      <div class="section-block-header">
+        <div class="section-block-icon" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+            <circle cx="10" cy="10" r="7.5" stroke="var(--accent)" stroke-width="1.6"/>
+            <path d="M10 6.5v4M10 13v.5" stroke="var(--accent)" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div>
+          <div class="section-block-title">Como funciona para o cliente</div>
+          <div class="section-block-sub">Fluxo automático de cobrança antecipada via Pix</div>
+        </div>
+      </div>
+      <div class="section-block-body">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px">
+          <div style="background:var(--bg3,#1a2236);border:1px solid var(--border);border-radius:11px;padding:16px;text-align:center">
+            <div style="width:32px;height:32px;border-radius:50%;background:var(--accent-light);border:1px solid var(--accent-mid);color:#60a5fa;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;margin:0 auto 10px">1</div>
+            <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:5px">Cliente agenda</div>
+            <div style="font-size:11.5px;color:var(--text3);line-height:1.55">Escolhe serviço, data e horário na página de agendamento.</div>
+          </div>
+          <div style="background:var(--bg3,#1a2236);border:1px solid var(--border);border-radius:11px;padding:16px;text-align:center">
+            <div style="width:32px;height:32px;border-radius:50%;background:var(--accent-light);border:1px solid var(--accent-mid);color:#60a5fa;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;margin:0 auto 10px">2</div>
+            <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:5px">QR Code gerado</div>
+            <div style="font-size:11.5px;color:var(--text3);line-height:1.55">Sistema gera automaticamente o QR Code Pix com o valor configurado.</div>
+          </div>
+          <div style="background:var(--bg3,#1a2236);border:1px solid var(--border);border-radius:11px;padding:16px;text-align:center">
+            <div style="width:32px;height:32px;border-radius:50%;background:var(--accent-light);border:1px solid var(--accent-mid);color:#60a5fa;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;margin:0 auto 10px">3</div>
+            <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:5px">Pix confirmado</div>
+            <div style="font-size:11.5px;color:var(--text3);line-height:1.55">Após o pagamento, o agendamento é confirmado instantaneamente.</div>
+          </div>
+          <div style="background:var(--bg3,#1a2236);border:1px solid var(--border);border-radius:11px;padding:16px;text-align:center">
+            <div style="width:32px;height:32px;border-radius:50%;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.25);color:#10b981;font-size:14px;font-weight:800;display:flex;align-items:center;justify-content:center;margin:0 auto 10px">✓</div>
+            <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:5px">Você recebe direto</div>
+            <div style="font-size:11.5px;color:var(--text3);line-height:1.55">O valor cai na sua chave Pix. Zero intermediários, zero taxas nossas.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </section>
 
   <!-- ══════════════════ PAGE: SUPORTE ══════════════════ -->

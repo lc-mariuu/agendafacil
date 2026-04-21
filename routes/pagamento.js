@@ -192,4 +192,21 @@ router.post('/reembolsar', async (req, res) => {
   }
 })
 
+const mongoose = require('mongoose')
+
+const PagamentoSchema = new mongoose.Schema({
+  negocioId:     { type: mongoose.Schema.Types.ObjectId, ref: 'Negocio', required: true },
+  agendamentoId: { type: mongoose.Schema.Types.ObjectId, ref: 'Appointment', required: true },
+  mpPaymentId:   { type: String },          // ID do pagamento no Mercado Pago
+  status:        { type: String, enum: ['pendente', 'aprovado', 'expirado', 'cancelado'], default: 'pendente' },
+  valor:         { type: Number, required: true },
+  qrCode:        { type: String },          // base64 do QR Code
+  qrCodeText:    { type: String },          // texto copia-e-cola
+  expiresAt:     { type: Date },            // expiração do Pix (30 min)
+  paidAt:        { type: Date },
+  criadoEm:      { type: Date, default: Date.now },
+})
+
+module.exports = mongoose.model('Pagamento', PagamentoSchema)
+
 module.exports = router

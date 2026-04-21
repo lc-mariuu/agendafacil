@@ -13,6 +13,7 @@ var negocioAtual       = null
 var todosNegocios      = []
 var pausasAtuais       = []
 var pagamentosConfig   = {}
+var pixTipoAtual       = 'cpf'
 
 var agFiltroAtivo     = 'todos'
 var agFiltroDataAtivo = ''
@@ -51,6 +52,9 @@ srStyle.textContent = `
   button:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
   .notif-dot-badge{position:absolute;top:5px;right:5px;width:8px;height:8px;border-radius:50%;background:var(--red);border:2px solid var(--bg)}
   .badge.agendado{background:rgba(59,130,246,0.12);color:#60a5fa;border:1px solid rgba(59,130,246,0.25)}
+  .pix-tipo-tab{padding:6px 13px;border-radius:20px;border:1px solid var(--border2);background:none;color:var(--text3);font-size:12px;font-weight:500;cursor:pointer;font-family:inherit;transition:all .15s}
+  .pix-tipo-tab:hover{color:var(--text2)}
+  .pix-tipo-tab.ativo{background:var(--accent-light);border-color:var(--accent-mid);color:#60a5fa;font-weight:600}
 `
 document.head.appendChild(srStyle)
 
@@ -63,26 +67,20 @@ function urlAgendamento(negocio) {
   if (!negocio) return ''
   return `${BASE_URL}/agendar.html?id=${negocio._id}`
 }
-
 function urlBio(negocio) {
   if (!negocio) return ''
   return `${BASE_URL}/bio.html?id=${negocio._id}`
 }
-
 function atualizarTodosLinks(negocio) {
   if (!negocio) return
   const ag  = urlAgendamento(negocio)
   const bio = urlBio(negocio)
-
   const elAg = document.getElementById('link-agendamento')
   if (elAg) elAg.textContent = ag
-
   const elBio = document.getElementById('link-bio')
   if (elBio) elBio.textContent = bio
-
   const elWppLink = document.getElementById('wpp-link-agendamento')
   if (elWppLink) elWppLink.textContent = ag
-
   const elMsg = document.getElementById('wpp-mensagem-preview')
   if (elMsg) {
     elMsg.textContent =
@@ -91,36 +89,16 @@ function atualizarTodosLinks(negocio) {
       `🔗 ${ag}\n\n` +
       `Escolha o serviço, data e horário. Rápido e fácil! 😊`
   }
-
   if (typeof atualizarPreviewAuto === 'function') atualizarPreviewAuto()
 }
 
 /* ═══════════════════════════════════════════════════
    EXPIRAÇÃO VISUAL DE CONCLUÍDOS (1 hora)
 ═══════════════════════════════════════════════════ */
-function conclusaoKey(id) {
-  return `ag_concluido_em_${id}`
-}
-
-function registrarConclusao(id) {
-  if (!localStorage.getItem(conclusaoKey(id))) {
-    localStorage.setItem(conclusaoKey(id), String(Date.now()))
-  }
-}
-
-function concluídoExpirado(id) {
-  const HORA_EM_MS = 60 * 60 * 1000
-  const salvo = localStorage.getItem(conclusaoKey(id))
-  if (!salvo) return false
-  return (Date.now() - Number(salvo)) > HORA_EM_MS
-}
-
-function filtrarExpirados(lista) {
-  return lista.filter(a => {
-    if (a.status !== 'concluido') return true
-    return !concluídoExpirado(a._id)
-  })
-}
+function conclusaoKey(id) { return `ag_concluido_em_${id}` }
+function registrarConclusao(id) { if (!localStorage.getItem(conclusaoKey(id))) { localStorage.setItem(conclusaoKey(id), String(Date.now())) } }
+function concluídoExpirado(id) { const HORA_EM_MS = 60*60*1000; const salvo = localStorage.getItem(conclusaoKey(id)); if (!salvo) return false; return (Date.now()-Number(salvo)) > HORA_EM_MS }
+function filtrarExpirados(lista) { return lista.filter(a => { if (a.status !== 'concluido') return true; return !concluídoExpirado(a._id) }) }
 
 /* ═══════════════════════════════════════════════════
    LUCRO — localStorage helpers
@@ -149,18 +127,12 @@ function seedLucroDoMes(ags) {
   const nid = negocioAtual._id
   const mes = mesAtualChave()
   const idsJaSalvos = new Set(getLucroIds(nid))
-  ags
-    .filter(a => a.status === 'concluido' && a.data && a.data.startsWith(mes))
-    .forEach(a => {
-      if (!idsJaSalvos.has(a._id)) {
-        const preco = Number(a.preco) || 0
-        if (preco > 0) {
-          setLucroMes(nid, (getLucroMes(nid) || 0) + preco)
-          idsJaSalvos.add(a._id)
-          setLucroIds(nid, [...idsJaSalvos])
-        }
-      }
-    })
+  ags.filter(a => a.status === 'concluido' && a.data && a.data.startsWith(mes)).forEach(a => {
+    if (!idsJaSalvos.has(a._id)) {
+      const preco = Number(a.preco) || 0
+      if (preco > 0) { setLucroMes(nid, (getLucroMes(nid) || 0) + preco); idsJaSalvos.add(a._id); setLucroIds(nid, [...idsJaSalvos]) }
+    }
+  })
 }
 
 function exibirLucro() {
@@ -197,11 +169,7 @@ function carregarStatsSalvas() {
 ═══════════════════════════════════════════════════ */
 function fmtBRL(v) { return 'R$ ' + Number(v).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }
 function formatarData(data) { if (!data) return ''; const [a,m,d] = data.split('-'); return `${d}/${m}/${a}` }
-function formatarMinutos(min) {
-  if (!min || min <= 0) return '—'
-  const h = Math.floor(min / 60); const m = min % 60
-  if (h === 0) return `${m} min`; if (m === 0) return `${h}h`; return `${h}h${String(m).padStart(2,'0')}`
-}
+function formatarMinutos(min) { if (!min || min <= 0) return '—'; const h = Math.floor(min/60); const m = min%60; if (h===0) return `${m} min`; if (m===0) return `${h}h`; return `${h}h${String(m).padStart(2,'0')}` }
 function formatarCompacto(val) { if (val >= 1000) return `${(val/1000).toFixed(1).replace('.0','')}k`; return `${val.toFixed(0)}` }
 function sair() { localStorage.clear(); window.location.href = '/auth.html' }
 function mostrarSalvo(id) { const el = document.getElementById(id); if (!el) return; el.style.display = 'inline'; setTimeout(() => el.style.display = 'none', 2500) }
@@ -218,7 +186,7 @@ function closeModal(id) { const el = document.getElementById(id); if (el) { el.s
 
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') {
-    ['modal-agendamento','modal-negocio','modal-gerenciar-dias','cfg-modal-editar','modal-link-curto'].forEach(id => {
+    ['modal-agendamento','modal-negocio','modal-gerenciar-dias','cfg-modal-editar'].forEach(id => {
       const el = document.getElementById(id); if (el && el.style.display !== 'none') closeModal(id)
     })
     if (buscaAberta) fecharBusca()
@@ -298,6 +266,7 @@ function irPara(pagina, btn) {
   if (pagina === 'clientes') renderClientes('')
   if (pagina === 'horarios') setTimeout(() => renderHorariosDiasLateral(), 100)
   if (pagina === 'configuracoes') cfgRenderServicos()
+  if (pagina === 'pagamentos') renderPagamentos()
   if (pagina === 'agendamentos') {
     agFiltroAtivo = 'todos'; agFiltroDataAtivo = ''
     const di = document.getElementById('ag-filtro-data'); if (di) di.value = ''
@@ -375,66 +344,34 @@ async function criarNegocio() {
 
 /* ═══════════════════════════════════════════════════
    PAINEL — CARREGAMENTO INICIAL
-   CORRIGIDO: valida token no servidor obrigatoriamente,
-   sem fallback de cache que permitia acesso sem login
 ═══════════════════════════════════════════════════ */
 async function mostrarPainel() {
   const token = localStorage.getItem('token')
-
-  // Sem token → redireciona imediatamente
-  if (!token) {
-    window.location.href = '/auth.html'
-    return
-  }
-
+  if (!token) { window.location.href = '/auth.html'; return }
   try {
-    // ✅ SEMPRE valida o token no servidor antes de mostrar qualquer dado
-    const res = await fetch(`${API}/auth/negocios`, {
-      headers: { 'Authorization': `Bearer ${token}` }
-    })
-
-    // Token inválido ou expirado → logout obrigatório
-    if (res.status === 401) {
-      localStorage.clear()
-      window.location.href = '/auth.html'
-      return
-    }
-
+    const res = await fetch(`${API}/auth/negocios`, { headers: { 'Authorization': `Bearer ${token}` } })
+    if (res.status === 401) { localStorage.clear(); window.location.href = '/auth.html'; return }
     if (!res.ok) throw new Error(`Erro ${res.status}`)
-
     const data = await res.json()
-
-    if (!Array.isArray(data) || data.length === 0) {
-      mostrarErroPainel('Nenhum painel encontrado. Entre em contato com o suporte.')
-      return
-    }
-
+    if (!Array.isArray(data) || data.length === 0) { mostrarErroPainel('Nenhum painel encontrado. Entre em contato com o suporte.'); return }
     todosNegocios = data
     const savedId = localStorage.getItem('negocioId')
     negocioAtual  = todosNegocios.find(n => n._id === savedId) || todosNegocios[0]
-
     localStorage.setItem('negocioId', negocioAtual._id)
     localStorage.setItem('negocio',   negocioAtual.nome)
-
     renderDropdown()
     atualizarSidebarNegocio()
-
     const fd = document.getElementById('filtro-data')
     if (fd) fd.value = new Date().toISOString().split('T')[0]
-
     carregarDadosNegocio()
     verificarAcesso()
-
   } catch (err) {
     console.error('Erro ao carregar painel:', err.message)
-    // ❌ REMOVIDO: antes entrava via cache quando servidor hibernava
-    // Agora: qualquer falha de conexão = logout forçado por segurança
     localStorage.clear()
     window.location.href = '/auth.html'
   }
 }
 
-// Exibe erro amigável na sidebar em vez de travar silenciosamente
 function mostrarErroPainel(msg) {
   const el = document.getElementById('neg-nome-sidebar')
   if (el) el.textContent = 'Erro ao carregar'
@@ -457,6 +394,7 @@ function carregarDadosNegocio() {
   carregarBioConfig()
   carregarLembretes()
   carregarInsights()
+  carregarPagamentosConfig()
 }
 
 /* ═══════════════════════════════════════════════════
@@ -464,22 +402,16 @@ function carregarDadosNegocio() {
 ═══════════════════════════════════════════════════ */
 function copiarLink() {
   if (!negocioAtual) return
-  navigator.clipboard.writeText(urlAgendamento(negocioAtual))
-    .then(() => flashBtn('btn-copiar-agendamento', '✓ Copiado!'))
+  navigator.clipboard.writeText(urlAgendamento(negocioAtual)).then(() => flashBtn('btn-copiar-agendamento', '✓ Copiado!'))
 }
-
 function copiarLinkBio() {
   if (!negocioAtual) return
-  navigator.clipboard.writeText(urlBio(negocioAtual))
-    .then(() => flashBtn('btn-copiar-bio', '✓ Copiado!'))
+  navigator.clipboard.writeText(urlBio(negocioAtual)).then(() => flashBtn('btn-copiar-bio', '✓ Copiado!'))
 }
-
 function copiarLinkWpp() {
   if (!negocioAtual) return
-  navigator.clipboard.writeText(urlAgendamento(negocioAtual))
-    .then(() => { const btn = document.querySelector('[onclick="copiarLinkWpp()"]'); if (btn) flash(btn, '✓ Copiado!') })
+  navigator.clipboard.writeText(urlAgendamento(negocioAtual)).then(() => { const btn = document.querySelector('[onclick="copiarLinkWpp()"]'); if (btn) flash(btn, '✓ Copiado!') })
 }
-
 function copiarMensagemWpp() {
   const el = document.getElementById('wpp-mensagem-preview'); if (!el) return
   navigator.clipboard.writeText(el.textContent).then(() => flashBtn('btn-copiar-msg', '✓ Mensagem copiada!'))
@@ -492,100 +424,61 @@ async function carregarAgendamentos() {
   if (!negocioAtual) return
   const nid = negocioAtual._id
   const token = localStorage.getItem('token')
-
   try {
-    const res = await fetch(`${API}/agendamentos?negocioId=${nid}`, {
-      headers: { 'Authorization': `Bearer ${token}` }
-    })
-
+    const res = await fetch(`${API}/agendamentos?negocioId=${nid}`, { headers: { 'Authorization': `Bearer ${token}` } })
     if (res.status === 401) { localStorage.clear(); window.location.href = '/auth.html'; return }
     if (!res.ok) throw new Error(`Erro ${res.status}`)
-
     let agsDaAPI = await res.json()
-
     const agora = new Date()
     const passados = agsDaAPI.filter(a => {
       if (a.status !== 'confirmado' || !a.data || !a.hora) return false
       const [ano, mes, dia] = a.data.split('-').map(Number)
       const [h, m] = a.hora.split(':').map(Number)
-      return new Date(ano, mes - 1, dia, h, m).getTime() < agora.getTime()
+      return new Date(ano, mes-1, dia, h, m).getTime() < agora.getTime()
     })
-
     if (passados.length > 0) {
-      await Promise.all(passados.map(a =>
-        fetch(`${API}/agendamentos/${a._id}`, {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-          body: JSON.stringify({ status: 'concluido' })
-        })
-      ))
-      agsDaAPI = agsDaAPI.map(a => {
-        const foi = passados.find(p => p._id === a._id)
-        if (!foi) return a
-        const c = { ...a, status: 'concluido' }
-        registrarLucro(c)
-        return c
-      })
+      await Promise.all(passados.map(a => fetch(`${API}/agendamentos/${a._id}`, { method:'PATCH', headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`}, body:JSON.stringify({status:'concluido'}) })))
+      agsDaAPI = agsDaAPI.map(a => { const foi = passados.find(p => p._id === a._id); if (!foi) return a; const c = {...a, status:'concluido'}; registrarLucro(c); return c })
     }
-
     salvarConcluidosNoCache(nid, agsDaAPI)
     const listaMerged = mergeComCache(nid, agsDaAPI)
-
     const hoje = new Date().toISOString().split('T')[0]
-    agsDaAPI
-      .filter(a => a.status === 'concluido')
-      .forEach(a => {
-        if (!localStorage.getItem(conclusaoKey(a._id))) {
-          if (a.data < hoje) {
-            localStorage.setItem(conclusaoKey(a._id), String(Date.now() - 2 * 60 * 60 * 1000))
-          } else {
-            registrarConclusao(a._id)
-          }
-        }
-      })
-
-    const semana = new Date(Date.now() + 7 * 86400000).toISOString().split('T')[0]
+    agsDaAPI.filter(a => a.status === 'concluido').forEach(a => {
+      if (!localStorage.getItem(conclusaoKey(a._id))) {
+        if (a.data < hoje) { localStorage.setItem(conclusaoKey(a._id), String(Date.now() - 2*60*60*1000)) }
+        else { registrarConclusao(a._id) }
+      }
+    })
+    const semana = new Date(Date.now() + 7*86400000).toISOString().split('T')[0]
     const qtdHoje   = listaMerged.filter(a => a.data === hoje).length
     const qtdSemana = listaMerged.filter(a => a.data >= hoje && a.data <= semana).length
-
     const savedHoje   = parseInt(localStorage.getItem(`stat_hoje_${nid}`)) || 0
     const savedSemana = parseInt(localStorage.getItem(`stat_semana_${nid}`)) || 0
     const finalHoje   = Math.max(qtdHoje, savedHoje)
     const finalSemana = Math.max(qtdSemana, savedSemana)
     localStorage.setItem(`stat_hoje_${nid}`, String(finalHoje))
     localStorage.setItem(`stat_semana_${nid}`, String(finalSemana))
-
     const elH = document.getElementById('stat-hoje')
     const elS = document.getElementById('stat-semana')
     if (elH) elH.textContent = finalHoje
     if (elS) elS.textContent = finalSemana
-
     seedLucroDoMes(listaMerged)
     exibirLucro()
-
     todosAgendamentos = listaMerged
     atualizarInsights()
-
     todosAgendamentos = filtrarExpirados(listaMerged)
-
     renderHistorico()
     filtrarData()
     agAplicarFiltro()
     renderDashboardHoje()
-
     const dot = document.getElementById('notif-dot')
     if (dot) dot.style.display = finalHoje > 0 ? 'block' : 'none'
     const dotMobile = document.getElementById('notif-dot-mobile')
     if (dotMobile) dotMobile.style.display = finalHoje > 0 ? 'block' : 'none'
-
   } catch (err) {
     console.error('Erro ao carregar agendamentos:', err.message)
     const cache = getCacheConc(negocioAtual._id)
-    if (cache.length) {
-      todosAgendamentos = filtrarExpirados(cache)
-      renderDashboardHoje()
-      agAplicarFiltro()
-    }
+    if (cache.length) { todosAgendamentos = filtrarExpirados(cache); renderDashboardHoje(); agAplicarFiltro() }
   }
 }
 
@@ -659,50 +552,23 @@ function renderDashboardHoje() {
 async function atualizar(id, status) {
   const token = localStorage.getItem('token')
   const nid = negocioAtual?._id
-
   if (status === 'concluido') {
     const ag = todosAgendamentos.find(a => a._id === id)
     if (ag) {
-      registrarLucro(ag)
-      registrarConclusao(id)
-      if (nid) {
-        const agConcluido = { ...ag, status: 'concluido' }
-        const cache = getCacheConc(nid)
-        const cacheMap = {}
-        cache.forEach(a => cacheMap[a._id] = a)
-        cacheMap[agConcluido._id] = agConcluido
-        setCacheConc(nid, Object.values(cacheMap))
-      }
+      registrarLucro(ag); registrarConclusao(id)
+      if (nid) { const agConcluido = {...ag, status:'concluido'}; const cache = getCacheConc(nid); const cacheMap = {}; cache.forEach(a => cacheMap[a._id] = a); cacheMap[agConcluido._id] = agConcluido; setCacheConc(nid, Object.values(cacheMap)) }
     }
   }
-
-  await fetch(`${API}/agendamentos/${id}`, {
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-    body: JSON.stringify({ status })
-  })
-
-  const listaCompleta = todosAgendamentos.map(a => a._id === id ? { ...a, status } : a)
-
+  await fetch(`${API}/agendamentos/${id}`, { method:'PATCH', headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`}, body:JSON.stringify({status}) })
+  const listaCompleta = todosAgendamentos.map(a => a._id === id ? {...a, status} : a)
   if (nid) salvarConcluidosNoCache(nid, listaCompleta)
-
   const hoje   = new Date().toISOString().split('T')[0]
-  const semana = new Date(Date.now() + 7 * 86400000).toISOString().split('T')[0]
-  salvarStatsPersistentes(
-    listaCompleta.filter(a => a.data === hoje).length,
-    listaCompleta.filter(a => a.data >= hoje && a.data <= semana).length
-  )
-
+  const semana = new Date(Date.now() + 7*86400000).toISOString().split('T')[0]
+  salvarStatsPersistentes(listaCompleta.filter(a => a.data === hoje).length, listaCompleta.filter(a => a.data >= hoje && a.data <= semana).length)
   todosAgendamentos = listaCompleta
-  atualizarInsights()
-  exibirLucro()
-
+  atualizarInsights(); exibirLucro()
   todosAgendamentos = filtrarExpirados(listaCompleta)
-
-  renderHistorico()
-  filtrarData()
-  renderDashboardHoje()
-  agAplicarFiltro()
+  renderHistorico(); filtrarData(); renderDashboardHoje(); agAplicarFiltro()
 }
 
 async function cancelarComAviso(id, nome, telefone, data, hora) {
@@ -762,9 +628,7 @@ async function carregarServicos() {
   const res=await fetch(`${API}/auth/negocio/${negocioAtual._id}`); const data=await res.json()
   servicosAtuais = (data.servicos||[]).map(s => typeof s==='object' ? s : {nome:s, preco:0})
   pagamentosConfig = data.pagamentos||{}
-  renderServicos()
-  renderIntervalosServicos()
-  cfgRenderServicos()
+  renderServicos(); renderIntervalosServicos(); cfgRenderServicos()
 }
 
 function renderServicos() {
@@ -784,11 +648,7 @@ function adicionarServico() {
 
 function removerServico(i) {
   const nome=typeof servicosAtuais[i]==='object'?servicosAtuais[i].nome:servicosAtuais[i]
-  delete intervalosServicos[nome]
-  servicosAtuais.splice(i,1)
-  renderServicos()
-  renderIntervalosServicos()
-  cfgRenderServicos()
+  delete intervalosServicos[nome]; servicosAtuais.splice(i,1); renderServicos(); renderIntervalosServicos(); cfgRenderServicos()
 }
 
 async function salvarServicos() {
@@ -831,7 +691,7 @@ function alterarIntervaloServico(select) {
   if (val==='custom') {
     const customVal=prompt(`Digite a duração em minutos para "${nome}":`,intervalosServicos[nome]||60); if(customVal===null){select.value=String(intervalosServicos[nome]||0);return}
     const min=parseInt(customVal); if(isNaN(min)||min<1||min>720){alert('Informe um valor entre 1 e 720 minutos.');select.value=String(intervalosServicos[nome]||0);return}
-    intervalosServicos[nome]=min; if(!select.querySelector(`[value="${min}"]`)){const opt=document.createElement('option');opt.value=String(min);opt.textContent=formatarMinutos(min);select.insertBefore(opt,select.querySelector('[value="custom"]'))}; select.value=String(min)
+    intervalosServicos[nome]=min; if(!select.querySelector(`[value="${min}"]`)){const opt=document.createElement('option');opt.value=String(min);opt.textContent=formatarMinutos(min);select.insertBefore(opt,select.querySelector('[value="custom"]'))};select.value=String(min)
   } else { const min=parseInt(val); if(min===0)delete intervalosServicos[nome];else intervalosServicos[nome]=min }
 }
 async function salvarIntervalosServicos() { if (!negocioAtual) return; await patchHorarios(); mostrarSalvo('salvo-intervalos-servicos') }
@@ -992,7 +852,6 @@ function atualizarInsights() {
   const ags = todosAgendamentos || []
   const nid = negocioAtual?._id
   if (!nid) return
-
   if (ags.length) {
     const freqHora = {}
     ags.forEach(a => { if (a.hora) freqHora[a.hora] = (freqHora[a.hora] || 0) + 1 })
@@ -1002,81 +861,43 @@ function atualizarInsights() {
   const melhorHorario = localStorage.getItem(`insight_melhorHorario_${nid}`) || '—'
   const elH = document.getElementById('insight-melhor-horario')
   if (elH) elH.textContent = melhorHorario
-
   if (ags.length) {
     const freqServ = {}
-    ags.forEach(a => {
-      if (!a.servico) return
-      if (!freqServ[a.servico]) freqServ[a.servico] = { total: 0, qtd: 0 }
-      freqServ[a.servico].total += Number(a.preco) || 0
-      freqServ[a.servico].qtd += 1
-    })
+    ags.forEach(a => { if (!a.servico) return; if (!freqServ[a.servico]) freqServ[a.servico] = { total: 0, qtd: 0 }; freqServ[a.servico].total += Number(a.preco) || 0; freqServ[a.servico].qtd += 1 })
     const topServ = Object.entries(freqServ).sort((a, b) => b[1].total - a[1].total)[0]
-    if (topServ) {
-      localStorage.setItem(`insight_topServico_${nid}`, topServ[0])
-      localStorage.setItem(`insight_topServicoBRL_${nid}`, topServ[1].total.toFixed(2))
-      localStorage.setItem(`insight_topServicoQtd_${nid}`, topServ[1].qtd)
-    }
+    if (topServ) { localStorage.setItem(`insight_topServico_${nid}`, topServ[0]); localStorage.setItem(`insight_topServicoBRL_${nid}`, topServ[1].total.toFixed(2)); localStorage.setItem(`insight_topServicoQtd_${nid}`, topServ[1].qtd) }
   }
   const topServicoNome = localStorage.getItem(`insight_topServico_${nid}`)
   const topServicoBRL  = parseFloat(localStorage.getItem(`insight_topServicoBRL_${nid}`)) || 0
   const topServicoQtd  = parseInt(localStorage.getItem(`insight_topServicoQtd_${nid}`)) || 0
-  const elST = document.getElementById('insight-servico-top')
-  const elSR = document.getElementById('insight-servico-receita')
-  if (elST && topServicoNome) {
-    elST.textContent = topServicoNome
-    if (elSR) elSR.textContent = topServicoBRL > 0
-      ? `R$ ${topServicoBRL.toFixed(2).replace('.', ',')} gerados`
-      : `${topServicoQtd} agendamento${topServicoQtd !== 1 ? 's' : ''}`
-  }
-
-  const cutoff = new Date()
-  cutoff.setDate(cutoff.getDate() - 30)
-  const cutStr = cutoff.toISOString().split('T')[0]
-  if (ags.length) {
-    const recentes = new Set(ags.filter(a => a.data >= cutStr).map(a => a.pacienteNome))
-    const todos    = new Set(ags.map(a => a.pacienteNome))
-    const inativos = [...todos].filter(c => !recentes.has(c)).length
-    if (inativos > 0 || todos.size > 0) localStorage.setItem(`insight_inativos_${nid}`, inativos)
-  }
+  const elST = document.getElementById('insight-servico-top'); const elSR = document.getElementById('insight-servico-receita')
+  if (elST && topServicoNome) { elST.textContent = topServicoNome; if (elSR) elSR.textContent = topServicoBRL > 0 ? `R$ ${topServicoBRL.toFixed(2).replace('.', ',')} gerados` : `${topServicoQtd} agendamento${topServicoQtd !== 1 ? 's' : ''}` }
+  const cutoff = new Date(); cutoff.setDate(cutoff.getDate() - 30); const cutStr = cutoff.toISOString().split('T')[0]
+  if (ags.length) { const recentes = new Set(ags.filter(a => a.data >= cutStr).map(a => a.pacienteNome)); const todos = new Set(ags.map(a => a.pacienteNome)); const inativos = [...todos].filter(c => !recentes.has(c)).length; if (inativos > 0 || todos.size > 0) localStorage.setItem(`insight_inativos_${nid}`, inativos) }
   const inativosSalvo = parseInt(localStorage.getItem(`insight_inativos_${nid}`)) || 0
-  const elI  = document.getElementById('insight-inativos')
-  const elIS = document.getElementById('insight-inativos-sub')
+  const elI  = document.getElementById('insight-inativos'); const elIS = document.getElementById('insight-inativos-sub')
   if (elI) elI.textContent = inativosSalvo > 0 ? `${inativosSalvo} cliente${inativosSalvo > 1 ? 's' : ''}` : 'Nenhum'
   if (elIS) { elIS.textContent = inativosSalvo > 0 ? 'há mais de 30 dias' : 'todos ativos'; elIS.className = 'insight-item-sub' + (inativosSalvo > 0 ? ' warning' : '') }
   const banner = document.getElementById('alert-clientes-inativos')
   if (banner) banner.style.display = inativosSalvo >= 3 ? 'flex' : 'none'
-  if (inativosSalvo >= 3) {
-    const t = document.getElementById('alert-clientes-texto')
-    if (t) t.innerHTML = `<strong>${inativosSalvo} clientes estão inativos</strong>, mande uma promoção para reativá-los`
-  }
-
+  if (inativosSalvo >= 3) { const t = document.getElementById('alert-clientes-texto'); if (t) t.innerHTML = `<strong>${inativosSalvo} clientes estão inativos</strong>, mande uma promoção para reativá-los` }
   const hoje    = new Date().toISOString().split('T')[0]
   const semStart = new Date(); semStart.setDate(semStart.getDate() - 7)
-  const lucroSemCalc = ags
-    .filter(a => a.status === 'concluido' && a.data >= semStart.toISOString().split('T')[0] && a.data <= hoje)
-    .reduce((s, a) => s + (Number(a.preco) || 0), 0)
+  const lucroSemCalc = ags.filter(a => a.status === 'concluido' && a.data >= semStart.toISOString().split('T')[0] && a.data <= hoje).reduce((s, a) => s + (Number(a.preco) || 0), 0)
   setStatSalvo(nid, 'lucroSemana', lucroSemCalc)
   const lucroSem = getStatComFallback(nid, 'lucroSemana', lucroSemCalc)
   const elTotal  = document.getElementById('stat-total')
   if (elTotal) elTotal.textContent = fmtBRL(lucroSem)
-
   const lucroMes    = getLucroMes(nid) || 0
   const idsDoMes    = getLucroIds(nid)
   const atendMesCalc = idsDoMes.length
-
   setStatSalvo(nid, 'atendMes', atendMesCalc)
   const atendMes = Math.max(atendMesCalc, getStatSalvo(nid, 'atendMes') || 0)
-
-  const fv  = document.getElementById('finance-amount-val')
-  const fm  = document.getElementById('finance-meta')
-  const fa  = document.getElementById('finance-atend')
-  const fcl = document.getElementById('finance-chart-label')
+  const fv  = document.getElementById('finance-amount-val'); const fm  = document.getElementById('finance-meta'); const fa  = document.getElementById('finance-atend'); const fcl = document.getElementById('finance-chart-label')
   if (fv)  fv.textContent  = lucroMes.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
   if (fm)  fm.textContent  = `Movidas: ${atendMes} agendamento${atendMes !== 1 ? 's' : ''}`
   if (fa)  fa.textContent  = atendMes
   if (fcl) fcl.textContent = `R$${Math.round(lucroMes)}`
-
   atualizarPix()
 }
 
@@ -1128,22 +949,8 @@ function filtrarClientes(v){renderClientes(v)}
    BUSCA GLOBAL
 ═══════════════════════════════════════════════════ */
 let buscaAberta=false
-
-function abrirBusca(){
-  const overlay=document.getElementById('busca-overlay');if(!overlay)return
-  overlay.classList.add('aberta')
-  overlay.removeAttribute('aria-hidden')
-  buscaAberta=true
-  document.body.classList.add('modal-open')
-  const inp=document.getElementById('busca-input')
-  if(inp){inp.value='';setTimeout(()=>{inp.focus();executarBusca('')},60)}
-}
-function fecharBusca(){
-  const overlay=document.getElementById('busca-overlay')
-  if(overlay){overlay.classList.remove('aberta');overlay.setAttribute('aria-hidden','true')}
-  buscaAberta=false
-  document.body.classList.remove('modal-open')
-}
+function abrirBusca(){const overlay=document.getElementById('busca-overlay');if(!overlay)return;overlay.classList.add('aberta');overlay.removeAttribute('aria-hidden');buscaAberta=true;document.body.classList.add('modal-open');const inp=document.getElementById('busca-input');if(inp){inp.value='';setTimeout(()=>{inp.focus();executarBusca('')},60)}}
+function fecharBusca(){const overlay=document.getElementById('busca-overlay');if(overlay){overlay.classList.remove('aberta');overlay.setAttribute('aria-hidden','true')};buscaAberta=false;document.body.classList.remove('modal-open')}
 function executarBusca(q){
   const res=document.getElementById('busca-resultados');if(!res)return; const ags=todosAgendamentos||[]
   if(!q||!q.trim()){const hoje=new Date().toISOString().split('T')[0];const deHoje=ags.filter(a=>a.data===hoje).slice(0,6);if(!deHoje.length){res.innerHTML='<div style="text-align:center;color:var(--text3);padding:28px;font-size:13px">Digite para buscar por nome, serviço ou data</div>';return};res.innerHTML='<div class="busca-secao-label">Agendamentos de hoje</div>'+deHoje.map(buscaItemHTML).join('');return}
@@ -1153,21 +960,17 @@ function executarBusca(q){
 }
 function buscaItemHTML(a){
   const [c1,c2]=avatarColor(a.pacienteNome);const ini=(a.pacienteNome||'C')[0].toUpperCase()
-  const dataFmt=a.data?a.data.split('-').reverse().join('/'):''; const preco=a.preco?` · R$${Number(a.preco).toFixed(2).replace('.',',')}`:'';
+  const dataFmt=a.data?a.data.split('-').reverse().join('/'):''; const preco=a.preco?` · R$${Number(a.preco).toFixed(2).replace('.',',')}`:''
   const statusCor={confirmado:'#10b981',concluido:'#8b5cf6',cancelado:'#ef4444',pendente:'#f59e0b'}[a.status]||'#8b9ab4'
   return `<div class="busca-item" onclick="buscaSelecionarAgendamento('${a._id}','${a.data||''}')" role="option" tabindex="0"><div class="busca-avatar-mini" style="background:linear-gradient(135deg,${c1},${c2})">${ini}</div><div class="busca-item-info"><div class="busca-item-nome">${a.pacienteNome||'—'}</div><div class="busca-item-sub">${a.servico||''} · ${dataFmt} às ${a.hora||''}${preco}</div></div><span class="busca-item-badge" style="background:${statusCor}22;color:${statusCor};border:1px solid ${statusCor}44">${a.status}</span></div>`
 }
 function buscaSelecionarAgendamento(id,data){fecharBusca();irPara('agendamentos',document.getElementById('menu-agendamentos'));if(data){const inp=document.getElementById('ag-filtro-data');if(inp){inp.value=data;agFiltrarData(data)}}}
-
-document.addEventListener('keydown',e=>{
-  if((e.metaKey||e.ctrlKey)&&e.key==='k'){e.preventDefault();buscaAberta?fecharBusca():abrirBusca()}
-})
+document.addEventListener('keydown',e=>{if((e.metaKey||e.ctrlKey)&&e.key==='k'){e.preventDefault();buscaAberta?fecharBusca():abrirBusca()}})
 
 /* ═══════════════════════════════════════════════════
    TOPBAR — notificações, mensagens, avatar
 ═══════════════════════════════════════════════════ */
 function abrirNotificacoes(){fecharTodosDropdowns();const panel=document.getElementById('notif-panel');if(!panel)return;renderNotificacoes();panel.classList.add('aberto')}
-
 function renderNotificacoes(){
   const panel=document.getElementById('notif-panel');if(!panel)return
   const ags=todosAgendamentos||[];const hoje=new Date().toISOString().split('T')[0]
@@ -1181,7 +984,6 @@ function renderNotificacoes(){
   html+=`</div><div class="notif-ver-todos" onclick="irPara('agendamentos',document.getElementById('menu-agendamentos'));fecharTodosDropdowns()">Ver todos os agendamentos</div>`
   panel.innerHTML=html
 }
-
 function abrirMensagens(){
   fecharTodosDropdowns();const panel=document.getElementById('msg-panel');if(!panel)return
   const ags=todosAgendamentos||[];const vistos={};const cutoff=new Date(Date.now()-30*864e5).toISOString().split('T')[0]
@@ -1192,7 +994,6 @@ function abrirMensagens(){
   else html+=lista.map(c=>{const [c1,c2]=avatarColor(c.nome);const ini=c.nome[0].toUpperCase();const tel=c.tel.replace(/\D/g,'');const msg=encodeURIComponent(`Olá ${c.nome}! Tudo bem? Aqui é da ${negNome}. 😊`);const link=`https://wa.me/55${tel}?text=${msg}`;return `<div class="msg-item" onclick="window.open('${link}','_blank');fecharTodosDropdowns()"><div class="msg-avatar-mini" style="background:linear-gradient(135deg,${c1},${c2})">${ini}</div><div class="msg-item-info"><div class="msg-item-nome">${c.nome}</div><div class="msg-item-tel">${c.tel}</div></div><div class="msg-wpp-btn">WhatsApp</div></div>`}).join('')
   panel.innerHTML=html; panel.classList.add('aberto')
 }
-
 function abrirAvatarMenu(){
   const menu=document.getElementById('avatar-menu');if(!menu)return
   const aberto=menu.style.display!=='none'&&menu.style.display!==''; fecharTodosDropdowns()
@@ -1203,7 +1004,6 @@ function abrirAvatarMenu(){
     menu.style.display='block'; menu.removeAttribute('aria-hidden')
   }
 }
-
 function fecharTodosDropdowns(){
   const notif=document.getElementById('notif-panel');const msg=document.getElementById('msg-panel');const avatar=document.getElementById('avatar-menu');const neg=document.getElementById('neg-dropdown')
   if(notif)notif.classList.remove('aberto'); if(msg)msg.classList.remove('aberto')
@@ -1211,7 +1011,6 @@ function fecharTodosDropdowns(){
   if(neg){neg.classList.remove('show');const chev=document.getElementById('neg-chevron');if(chev)chev.classList.remove('open')}
 }
 window.fecharTodosDropdowns=fecharTodosDropdowns
-
 function atualizarPix(){const elPix=document.getElementById('finance-pix');if(!elPix)return;const mes=mesAtualChave();const doMes=todosAgendamentos.filter(a=>a.data?.startsWith(mes));const pagos=doMes.filter(a=>a.pagamento?.status==='pago').length;const pct=doMes.length>0?Math.round((pagos/doMes.length)*100):0;elPix.textContent=`${pct}%`}
 
 /* ═══════════════════════════════════════════════════
@@ -1227,6 +1026,433 @@ window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPro
 window.addEventListener('appinstalled',()=>{deferredPrompt=null;const btn=document.getElementById('btn-instalar-app');if(btn)btn.style.display='none'})
 const _installBtn=document.getElementById('btn-instalar-app')
 if(_installBtn)_installBtn.onclick=function(){if(isAppInstalled()){this.style.display='none';return};if(deferredPrompt){deferredPrompt.prompt();deferredPrompt.userChoice.then(()=>{deferredPrompt=null})}}
+
+/* ═══════════════════════════════════════════════════
+   PAGAMENTOS PIX
+═══════════════════════════════════════════════════ */
+var pixPlaceholders = { cpf:'000.000.000-00', cnpj:'00.000.000/0001-00', email:'seuemail@exemplo.com', telefone:'+55 (11) 99999-9999', aleatoria:'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx' }
+var pixLabels = { cpf:'Chave CPF', cnpj:'Chave CNPJ', email:'Chave E-mail', telefone:'Chave Telefone', aleatoria:'Chave Aleatória' }
+
+function pixSelecionarTipo(tipo, btn) {
+  pixTipoAtual = tipo
+  document.querySelectorAll('.pix-tipo-tab').forEach(b => b.classList.remove('ativo'))
+  if (btn) btn.classList.add('ativo')
+  const input = document.getElementById('pix-chave-input')
+  const label = document.getElementById('pix-key-label')
+  if (input) { input.placeholder = pixPlaceholders[tipo]; input.value = '' }
+  if (label)  label.textContent  = pixLabels[tipo]
+}
+
+function pixFormatarChave(input) {
+  if (pixTipoAtual === 'cpf') {
+    let v = input.value.replace(/\D/g,'').slice(0,11)
+    v = v.replace(/^(\d{3})(\d)/,'$1.$2').replace(/^(\d{3})\.(\d{3})(\d)/,'$1.$2.$3').replace(/\.(\d{3})(\d)/,'.$1-$2')
+    input.value = v
+  } else if (pixTipoAtual === 'cnpj') {
+    let v = input.value.replace(/\D/g,'').slice(0,14)
+    v = v.replace(/^(\d{2})(\d)/,'$1.$2').replace(/^(\d{2})\.(\d{3})(\d)/,'$1.$2.$3').replace(/\.(\d{3})(\d)/,'.$1/$2').replace(/(\d{4})(\d)/,'$1-$2')
+    input.value = v
+  } else if (pixTipoAtual === 'telefone') {
+    let v = input.value.replace(/\D/g,'').slice(0,13)
+    if (v.length > 0) v = '+' + v
+    input.value = v
+  }
+}
+
+async function pixSalvarChave() {
+  const input = document.getElementById('pix-chave-input')
+  const btn   = document.getElementById('btn-salvar-pix-chave')
+  if (!input) return
+  const val = input.value.trim()
+  if (!val) { alert('Digite a chave Pix.'); return }
+  if (!negocioAtual) return
+  const origHTML = btn ? btn.innerHTML : ''
+  if (btn) { btn.disabled = true; btn.textContent = 'Salvando...' }
+  try {
+    const token = localStorage.getItem('token')
+    const res = await fetch(`${API}/pagamento/config`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      body: JSON.stringify({ negocioId: negocioAtual._id, chavePix: val, tipoPix: pixTipoAtual })
+    })
+    if (!res.ok) throw new Error('Erro ao salvar chave')
+    const prev    = document.getElementById('pix-chave-preview')
+    const prevVal = document.getElementById('pix-chave-preview-val')
+    if (prev)    prev.style.display = 'flex'
+    if (prevVal) prevVal.textContent = val
+    mostrarSalvo('pix-chave-salvo')
+  } catch (e) {
+    console.error('[pixSalvarChave]', e.message)
+    alert('Erro ao salvar chave Pix. Tente novamente.')
+  } finally {
+    if (btn) { btn.disabled = false; btn.innerHTML = origHTML }
+  }
+}
+
+function renderPagamentos() {
+  const container = document.getElementById('pag-servicos-lista')
+  if (!container) return
+  const servicos = servicosAtuais || []
+  if (!servicos.length) {
+    container.innerHTML = `<div style="text-align:center;padding:32px 20px;color:var(--text3);font-size:13px"><div style="font-size:14px;font-weight:700;color:var(--text2);margin-bottom:5px">Nenhum serviço cadastrado</div>Adicione serviços em <strong>Configurações</strong> para ativar a cobrança Pix.</div>`
+    return
+  }
+  container.innerHTML = servicos.map((s, i) => {
+    const nome  = typeof s === 'object' ? s.nome  : s
+    const preco = typeof s === 'object' ? Number(s.preco || 0) : 0
+    const cfg   = (pagamentosConfig || {})[nome] || { ativo: false, valor: preco }
+    const isOn  = !!cfg.ativo
+    const valor = cfg.valor != null ? cfg.valor : preco
+    const pct   = preco > 0 ? Math.round((valor / preco) * 100) : 0
+    return `<div id="pag-row-${i}" style="display:grid;grid-template-columns:1fr 130px 90px 60px;gap:8px;align-items:center;padding:11px 12px;border-radius:10px;border:1px solid ${isOn?'rgba(16,185,129,0.3)':'var(--border)'};background:${isOn?'rgba(16,185,129,0.04)':'var(--bg3,#1a2236)'};margin-bottom:8px;transition:border-color .2s,background .2s">
+      <div><div style="font-size:13.5px;font-weight:600;color:var(--text)">${nome}</div><div style="font-size:12px;color:var(--text3);margin-top:2px">${preco>0?`R$ ${preco.toFixed(2).replace('.',',')}`:'Sem preço'}</div></div>
+      <div style="display:flex;align-items:center;gap:5px">
+        <span style="font-size:12px;font-weight:600;color:var(--text3)">R$</span>
+        <input type="number" id="pag-input-${i}" value="${Number(valor).toFixed(2)}" min="0.01" step="0.01" ${!isOn?'disabled':''} oninput="pagAtualizarPct(${i},${preco})"
+          style="width:72px;background:var(--bg4,#1e293b);border:1px solid var(--border2);border-radius:7px;color:var(--text);font-size:13px;font-family:inherit;padding:6px 7px;outline:none;text-align:right;transition:border-color .15s,opacity .15s;${!isOn?'opacity:.35;cursor:not-allowed':''}"
+          onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border2)'" aria-label="Valor Pix para ${nome}">
+      </div>
+      <div id="pag-pct-${i}" style="font-size:12px;color:var(--text3)">${preco>0?`${pct}%`:'—'}</div>
+      <div style="display:flex;justify-content:center">
+        <div id="pag-toggle-${i}" onclick="pagToggle(${i})" role="switch" aria-checked="${isOn}" aria-label="Ativar Pix para ${nome}" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' ')pagToggle(${i})"
+          style="width:40px;height:22px;border-radius:11px;background:${isOn?'var(--green)':'var(--bg4,#1e293b)'};border:1px solid ${isOn?'var(--green)':'var(--border2)'};position:relative;cursor:pointer;transition:background .2s,border-color .2s;flex-shrink:0" data-on="${isOn}">
+          <div style="width:16px;height:16px;border-radius:50%;background:white;position:absolute;top:2px;left:${isOn?'19px':'3px'};transition:left .2s;box-shadow:0 1px 4px rgba(0,0,0,0.3)"></div>
+        </div>
+      </div>
+    </div>`
+  }).join('')
+  pagAtualizarResumo()
+}
+
+function pagToggle(idx) {
+  const toggle = document.getElementById(`pag-toggle-${idx}`)
+  const input  = document.getElementById(`pag-input-${idx}`)
+  const row    = document.getElementById(`pag-row-${idx}`)
+  if (!toggle) return
+  const novoOn = toggle.dataset.on !== 'true'
+  toggle.dataset.on = novoOn
+  toggle.style.background  = novoOn ? 'var(--green)' : 'var(--bg4,#1e293b)'
+  toggle.style.borderColor = novoOn ? 'var(--green)' : 'var(--border2)'
+  toggle.setAttribute('aria-checked', novoOn)
+  const thumb = toggle.querySelector('div')
+  if (thumb) thumb.style.left = novoOn ? '19px' : '3px'
+  if (input) { input.disabled = !novoOn; input.style.opacity = novoOn ? '1' : '0.35'; input.style.cursor = novoOn ? 'text' : 'not-allowed' }
+  if (row) { row.style.borderColor = novoOn ? 'rgba(16,185,129,0.3)' : 'var(--border)'; row.style.background = novoOn ? 'rgba(16,185,129,0.04)' : 'var(--bg3,#1a2236)' }
+  pagAtualizarResumo()
+}
+
+function pagAtualizarPct(idx, precoTotal) {
+  const input = document.getElementById(`pag-input-${idx}`)
+  const elPct = document.getElementById(`pag-pct-${idx}`)
+  if (!input || !elPct || precoTotal <= 0) return
+  elPct.textContent = `${Math.round((parseFloat(input.value)||0) / precoTotal * 100)}%`
+}
+
+function pagAtualizarResumo() {
+  let count = 0
+  ;(servicosAtuais || []).forEach((_, i) => { const t = document.getElementById(`pag-toggle-${i}`); if (t && t.dataset.on === 'true') count++ })
+  const badge = document.getElementById('pag-badge-ativados')
+  if (badge) badge.textContent = `${count} ativado${count !== 1 ? 's' : ''}`
+  const resumo = document.getElementById('pag-resumo'); const resumoTxt = document.getElementById('pag-resumo-txt')
+  if (resumo) { resumo.style.display = count > 0 ? 'flex' : 'none'; if (resumoTxt) resumoTxt.textContent = `Pix ativo em ${count} serviço${count !== 1 ? 's' : ''}` }
+}
+
+async function salvarPagamentos() {
+  if (!negocioAtual) return
+  const token    = localStorage.getItem('token')
+  const servicos = servicosAtuais || []
+  const btn      = document.getElementById('btn-salvar-pag')
+  const origHTML = btn ? btn.innerHTML : ''
+  if (btn) { btn.disabled = true; btn.textContent = 'Salvando...' }
+  const configServicos = {}
+  servicos.forEach((s, i) => {
+    const nome   = typeof s === 'object' ? s.nome : s
+    const toggle = document.getElementById(`pag-toggle-${i}`)
+    const input  = document.getElementById(`pag-input-${i}`)
+    configServicos[nome] = { ativo: toggle ? toggle.dataset.on === 'true' : false, valor: input ? parseFloat(input.value) || 0 : 0 }
+  })
+  const inputChave = document.getElementById('pix-chave-input')
+  const chavePix   = inputChave ? inputChave.value.trim() : ''
+  try {
+    const res = await fetch(`${API}/pagamento/config`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      body: JSON.stringify({ negocioId: negocioAtual._id, chavePix, tipoPix: pixTipoAtual, servicos: configServicos })
+    })
+    if (!res.ok) throw new Error('Erro ao salvar')
+    pagamentosConfig = configServicos
+    mostrarSalvo('pag-salvo-msg')
+  } catch (e) {
+    console.error('[salvarPagamentos]', e.message)
+    alert('Erro ao salvar configurações de pagamento.')
+  } finally {
+    if (btn) { btn.disabled = false; btn.innerHTML = origHTML }
+  }
+}
+
+async function carregarPagamentosConfig() {
+  if (!negocioAtual) return
+  try {
+    const res = await fetch(`${API}/pagamento/config/${negocioAtual._id}`, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } })
+    if (!res.ok) return
+    const cfg = await res.json()
+    pagamentosConfig = cfg.servicos || {}
+    if (cfg.chavePix) {
+      const input = document.getElementById('pix-chave-input')
+      if (input) input.value = cfg.chavePix
+      const prev    = document.getElementById('pix-chave-preview')
+      const prevVal = document.getElementById('pix-chave-preview-val')
+      if (prev)    prev.style.display = 'flex'
+      if (prevVal) prevVal.textContent = cfg.chavePix
+      if (cfg.tipoPix) { const tabBtn = document.querySelector(`.pix-tipo-tab[data-tipo="${cfg.tipoPix}"]`); if (tabBtn) pixSelecionarTipo(cfg.tipoPix, tabBtn) }
+    }
+  } catch (e) { console.error('[carregarPagamentosConfig]', e.message) }
+}
+
+/* ═══════════════════════════════════════════════════
+   TABELA DE AGENDAMENTOS (nova)
+═══════════════════════════════════════════════════ */
+function agAvatarColor(nome){const paletas=[['#1d4ed8','#3b82f6'],['#7c3aed','#8b5cf6'],['#0e7490','#06b6d4'],['#15803d','#22c55e'],['#b45309','#f59e0b'],['#be185d','#ec4899'],['#0369a1','#38bdf8'],['#6d28d9','#a78bfa'],['#9f1239','#f43f5e']];let h=0;for(const c of(nome||'A'))h=((h<<5)-h)+c.charCodeAt(0);return paletas[Math.abs(h)%paletas.length]}
+function agServicoCor(status){if(status==='confirmado')return'#22c55e';if(status==='concluido')return'#a78bfa';if(status==='cancelado')return'#f87171';return'#f59e0b'}
+function agDuracao(ag){if(ag.duracao)return ag.duracao+' min';const mapa={'Barba':45,'Corte':60,'Corte + Barba':75,'Sobrancelha':30,'Manicure':50};return(mapa[ag.servico]||30)+' min'}
+function agFmtData(data){if(!data)return'—';const[a,m,d]=data.split('-');return `${d.padStart(2,'0')}/${m.padStart(2,'0')}/${a}`}
+
+function agAtualizarStats(base,mes){
+  const doMes=base.filter(a=>a.data&&a.data.startsWith(mes));const total=doMes.length;const concl=doMes.filter(a=>a.status==='concluido').length;const canc=doMes.filter(a=>a.status==='cancelado').length
+  const pctConc=total?Math.round((concl/total)*100):0;const pctCanc=total?Math.round((canc/total)*100):0
+  const elTotal=document.getElementById('ag-stat-total-num');const elConc=document.getElementById('ag-stat-conc-num');const elCanc=document.getElementById('ag-stat-canc-num');const elPConc=document.getElementById('ag-stat-conc-pct');const elPCanc=document.getElementById('ag-stat-canc-pct')
+  if(elTotal)elTotal.textContent=total;if(elConc)elConc.textContent=concl;if(elCanc)elCanc.textContent=canc;if(elPConc)elPConc.textContent=pctConc+'%';if(elPCanc)elPCanc.textContent=pctCanc+'%'
+}
+
+function agAplicarFiltro(){
+  const base=todosAgendamentos||[];const hoje=new Date().toISOString().split('T')[0]
+  const inicioSemana=(()=>{const d=new Date();d.setDate(d.getDate()-d.getDay());return d.toISOString().split('T')[0]})()
+  const fimSemana=(()=>{const d=new Date();d.setDate(d.getDate()+(6-d.getDay()));return d.toISOString().split('T')[0]})()
+  const mes=new Date().toISOString().slice(0,7)
+  let lista=[...base]
+  if(agFiltroDataAtivo){lista=lista.filter(a=>a.data===agFiltroDataAtivo)}
+  else if(agFiltroAtivo==='hoje')lista=lista.filter(a=>a.data===hoje)
+  else if(agFiltroAtivo==='semana')lista=lista.filter(a=>a.data>=inicioSemana&&a.data<=fimSemana)
+  else if(agFiltroAtivo==='mes')lista=lista.filter(a=>a.data&&a.data.startsWith(mes))
+  else if(agFiltroAtivo==='concluido')lista=lista.filter(a=>a.status==='concluido')
+  else if(agFiltroAtivo==='cancelado')lista=lista.filter(a=>a.status==='cancelado')
+  lista.sort((a,b)=>((b.data||'')+(b.hora||'')).localeCompare((a.data||'')+(a.hora||'')))
+  agListaFiltrada=lista; agPagina=1; agAtualizarStats(base,mes); agRenderTabela()
+}
+
+function agRenderTabela(){
+  const tbody=document.getElementById('ag-nova-tbody');const mcards=document.getElementById('ag-mobile-cards');const pag=document.getElementById('ag-nova-pag')
+  const total=agListaFiltrada.length;const totalPg=Math.ceil(total/agPorPagina);const inicio=(agPagina-1)*agPorPagina;const fim=inicio+agPorPagina;const slice=agListaFiltrada.slice(inicio,fim)
+  const statusLabel={confirmado:'confirmado',concluido:'concluído',cancelado:'cancelado',pendente:'pendente',agendado:'agendado'}
+  if(!total){
+    if(tbody)tbody.innerHTML='<div style="text-align:center;color:var(--text3);padding:52px 20px;font-size:13.5px">Nenhum agendamento encontrado</div>'
+    if(mcards)mcards.innerHTML='<div style="text-align:center;color:var(--text3);padding:36px 18px;font-size:13px">Nenhum agendamento encontrado</div>'
+    if(pag)pag.style.display='none'; return
+  }
+  if(tbody){tbody.innerHTML=slice.map(a=>{const[c1,c2]=agAvatarColor(a.pacienteNome);const ini=(a.pacienteNome||'C')[0].toUpperCase();const corPonto=agServicoCor(a.status);const dur=agDuracao(a);const cls=a.status||'pendente';const label=statusLabel[a.status]||a.status;const nomeSafe=(a.pacienteNome||'').replace(/'/g,"\\'");const telSafe=(a.pacienteTelefone||'').replace(/'/g,"\\'");const acoes=a.status==='confirmado'?`<button class="btn-acao concluir" onclick="atualizar('${a._id}','concluido')" type="button">Concluir</button><button class="btn-acao cancelar" onclick="cancelarComAviso('${a._id}','${nomeSafe}','${telSafe}','${a.data}','${a.hora}')" type="button">Cancelar</button>`:`<button class="ag-ver-btn" type="button">Ver</button>`;return `<div class="ag-nova-row"><div class="ag-nova-cliente"><div class="ag-nova-avatar" style="background:linear-gradient(135deg,${c1},${c2})">${ini}<div class="ag-nova-avatar-dot" style="background:${corPonto}"></div></div><div><div class="ag-nova-nome">${a.pacienteNome||'—'}</div><div class="ag-nova-tel">${a.pacienteTelefone||'—'}</div></div></div><div class="ag-nova-servico"><div class="ag-nova-serv-nome">${a.servico||'—'}</div><div class="ag-nova-serv-dur">${dur}<span class="ag-nova-serv-dur-dot" style="background:${corPonto}"></span></div></div><div class="ag-nova-data"><div class="ag-nova-data-row">${agFmtData(a.data)}</div><div class="ag-nova-data-row">às ${a.hora||'—'}</div></div><div><span class="badge ${cls}">${label}</span></div><div class="ag-nova-acoes">${acoes}</div></div>`}).join('')}
+  if(mcards){mcards.innerHTML=slice.map(a=>{const[c1,c2]=agAvatarColor(a.pacienteNome);const ini=(a.pacienteNome||'C')[0].toUpperCase();const cls=a.status||'pendente';const label=statusLabel[a.status]||a.status;const nomeSafe=(a.pacienteNome||'').replace(/'/g,"\\'");const telSafe=(a.pacienteTelefone||'').replace(/'/g,"\\'");const acoes=a.status==='confirmado'?`<button class="btn-acao concluir" onclick="atualizar('${a._id}','concluido')" type="button">Concluir</button><button class="btn-acao cancelar" onclick="cancelarComAviso('${a._id}','${nomeSafe}','${telSafe}','${a.data}','${a.hora}')" type="button">Cancelar</button>`:`<button class="ag-ver-btn" style="flex:1" type="button">Ver detalhes</button>`;return `<div class="ag-mobile-card"><div class="ag-mobile-top"><div style="display:flex;align-items:center;gap:10px"><div class="ag-nova-avatar" style="background:linear-gradient(135deg,${c1},${c2});width:34px;height:34px;font-size:12px;flex-shrink:0">${ini}</div><div><div class="ag-nova-nome">${a.pacienteNome||'—'}</div><div class="ag-nova-tel">${a.pacienteTelefone||''}</div></div></div><span class="badge ${cls}">${label}</span></div><div class="ag-mobile-chips"><span class="ag-mobile-chip">${agFmtData(a.data)}</span><span class="ag-mobile-chip">às ${a.hora||'—'}</span><span class="ag-mobile-chip">${a.servico||'—'}</span><span class="ag-mobile-chip">${agDuracao(a)}</span></div><div class="ag-mobile-actions">${acoes}</div></div>`}).join('')}
+  if(pag){
+    const elPagInfo=document.getElementById('ag-pag-info');const elPagBtns=document.getElementById('ag-pag-btns')
+    if(elPagInfo)elPagInfo.textContent=`Mostrando ${inicio+1} a ${Math.min(fim,total)} de ${total} agendamentos`
+    if(elPagBtns){let btns=`<button class="ag-pag-btn" onclick="agIrPagina(${agPagina-1})" ${agPagina===1?'disabled':''} type="button">‹</button>`;for(let i=1;i<=totalPg;i++){if(totalPg<=7||i===1||i===totalPg||Math.abs(i-agPagina)<=1)btns+=`<button class="ag-pag-btn ${i===agPagina?'ativo':''}" onclick="agIrPagina(${i})" type="button">${i}</button>`;else if(Math.abs(i-agPagina)===2)btns+=`<span style="color:var(--text3);font-size:12px;padding:0 2px">…</span>`};btns+=`<button class="ag-pag-btn" onclick="agIrPagina(${agPagina+1})" ${agPagina===totalPg?'disabled':''} type="button">›</button>`;elPagBtns.innerHTML=btns}
+    pag.style.display=totalPg>=1?'flex':'none'
+  }
+}
+
+function agFiltrar(filtro,btn){
+  agFiltroAtivo=filtro;agFiltroDataAtivo='';const dataInput=document.getElementById('ag-filtro-data');if(dataInput)dataInput.value=''
+  document.querySelectorAll('.ag-tab').forEach(b=>{b.classList.remove('ativo');b.setAttribute('aria-selected','false')})
+  if(btn){btn.classList.add('ativo');btn.setAttribute('aria-selected','true')}
+  agAplicarFiltro()
+}
+function agFiltrarData(val){agFiltroDataAtivo=val;if(val){document.querySelectorAll('.ag-tab').forEach(b=>{b.classList.remove('ativo');b.setAttribute('aria-selected','false')})};agAplicarFiltro()}
+function agIrPagina(n){const total=Math.ceil(agListaFiltrada.length/agPorPagina);if(n<1||n>total)return;agPagina=n;agRenderTabela()}
+function agMudarPorPagina(val){agPorPagina=parseInt(val);agPagina=1;agRenderTabela()}
+
+/* ═══════════════════════════════════════════════════
+   CONFIGURAÇÕES — lista de serviços avançada
+═══════════════════════════════════════════════════ */
+const CFG_PALETA=[{bg:'rgba(239,68,68,0.18)',bd:'rgba(239,68,68,0.35)',cor:'#f87171'},{bg:'rgba(249,115,22,0.18)',bd:'rgba(249,115,22,0.35)',cor:'#fb923c'},{bg:'rgba(234,179,8,0.18)',bd:'rgba(234,179,8,0.35)',cor:'#facc15'},{bg:'rgba(16,185,129,0.18)',bd:'rgba(16,185,129,0.35)',cor:'#34d399'},{bg:'rgba(59,130,246,0.18)',bd:'rgba(59,130,246,0.35)',cor:'#60a5fa'},{bg:'rgba(139,92,246,0.18)',bd:'rgba(139,92,246,0.35)',cor:'#a78bfa'},{bg:'rgba(236,72,153,0.18)',bd:'rgba(236,72,153,0.35)',cor:'#f472b6'},{bg:'rgba(6,182,212,0.18)',bd:'rgba(6,182,212,0.35)',cor:'#22d3ee'}]
+function cfgPaletaFor(nome){let h=0;for(const c of(nome||'A'))h=((h<<5)-h)+c.charCodeAt(0);return CFG_PALETA[Math.abs(h)%CFG_PALETA.length]}
+let cfgEditIdx=-1
+
+function cfgRenderServicos(){
+  const lista=servicosAtuais||[]; const cont=document.getElementById('cfg-servicos-lista'); const badge=document.getElementById('cfg-badge-num')
+  if(badge)badge.textContent=lista.length
+  if(!cont)return
+  if(!lista.length){cont.innerHTML=`<div class="cfg-lista-vazia"><div>Nenhum serviço cadastrado ainda.</div><div style="font-size:12px;color:var(--text3);margin-top:4px">Use o formulário acima para adicionar.</div></div>`;return}
+  cont.innerHTML=lista.map((s,i)=>{
+    const nome=typeof s==='object'?s.nome:s; const preco=typeof s==='object'?Number(s.preco||0):0; const desc=typeof s==='object'?(s.desc||s.descricao||''):''; const dur=typeof s==='object'?(s.duracao||0):0
+    const pal=cfgPaletaFor(nome); const ini=(nome||'?')[0].toUpperCase()
+    const precoFmt=preco>0?`R$ ${preco.toFixed(2).replace('.',',')}`:`<span style="color:var(--text3)">—</span>`
+    const durLabel=dur>0?`<span class="cfg-serv-dur">${dur} min</span>`:''
+    const descLabel=desc?`<span class="cfg-serv-desc">${desc}</span>`:''
+    return `<div class="cfg-serv-row" draggable="true" data-idx="${i}"><div class="cfg-drag-handle" title="Arrastar para reordenar"><svg width="12" height="14" viewBox="0 0 12 14" fill="none"><circle cx="4" cy="3" r="1.2" fill="currentColor"/><circle cx="8" cy="3" r="1.2" fill="currentColor"/><circle cx="4" cy="7" r="1.2" fill="currentColor"/><circle cx="8" cy="7" r="1.2" fill="currentColor"/><circle cx="4" cy="11" r="1.2" fill="currentColor"/><circle cx="8" cy="11" r="1.2" fill="currentColor"/></svg></div><div class="cfg-serv-avatar" style="background:${pal.bg};border-color:${pal.bd};color:${pal.cor}">${ini}</div><div class="cfg-serv-info"><div class="cfg-serv-nome">${nome}</div><div class="cfg-serv-meta">${descLabel}${durLabel}</div></div><div class="cfg-serv-preco">${precoFmt}</div><div class="cfg-serv-acoes"><button class="cfg-act-btn cfg-act-edit" onclick="cfgAbrirModalEditar(${i})" title="Editar" type="button"><svg width="13" height="13" viewBox="0 0 15 15" fill="none"><path d="M10.5 2.5l2 2-8 8H2.5v-2l8-8Z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg></button><button class="cfg-act-btn cfg-act-del" onclick="cfgRemoverServico(${i})" title="Remover" type="button"><svg width="13" height="13" viewBox="0 0 15 15" fill="none"><path d="M2.5 4h10M5 4V3a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v1M6 7v4M9 7v4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M3.5 4l.5 8a1 1 0 0 0 1 1h5a1 1 0 0 0 1-1l.5-8" stroke="currentColor" stroke-width="1.3"/></svg></button></div></div>`
+  }).join('')
+  cfgInitDragDrop()
+}
+
+function cfgAdicionarServico(){
+  const nomeEl=document.getElementById('cfg-novo-servico'); const precoEl=document.getElementById('cfg-novo-preco'); const erroEl=document.getElementById('cfg-add-erro')
+  const nome=(nomeEl?nomeEl.value:'').trim(); const preco=parseFloat(precoEl?precoEl.value:'')
+  if(erroEl)erroEl.textContent=''; if(nomeEl)nomeEl.classList.remove('cfg-input-erro'); if(precoEl)precoEl.classList.remove('cfg-input-erro')
+  if(!nome){if(erroEl)erroEl.textContent='⚠ Digite o nome do serviço.';if(nomeEl){nomeEl.classList.add('cfg-input-erro');nomeEl.focus()};return}
+  if(!precoEl||!precoEl.value.trim()||isNaN(preco)||preco<=0){if(erroEl)erroEl.textContent='⚠ O preço é obrigatório e deve ser maior que R$ 0,00.';if(precoEl){precoEl.classList.add('cfg-input-erro');precoEl.focus()};return}
+  if(servicosAtuais.some(s=>(typeof s==='object'?s.nome:s).toLowerCase()===nome.toLowerCase())){if(erroEl)erroEl.textContent='⚠ Já existe um serviço com esse nome.';if(nomeEl){nomeEl.classList.add('cfg-input-erro');nomeEl.focus()};return}
+  servicosAtuais.push({nome,preco}); if(nomeEl)nomeEl.value=''; if(precoEl)precoEl.value=''; if(nomeEl)nomeEl.focus(); cfgRenderServicos(); renderIntervalosServicos()
+}
+
+function cfgRemoverServico(i){const nome=typeof servicosAtuais[i]==='object'?servicosAtuais[i].nome:servicosAtuais[i];if(intervalosServicos)delete intervalosServicos[nome];servicosAtuais.splice(i,1);cfgRenderServicos();renderIntervalosServicos()}
+
+function cfgAbrirModalEditar(i){
+  cfgEditIdx=i; const s=servicosAtuais[i]||{}
+  const nomeEl=document.getElementById('cfg-edit-nome'); const precoEl=document.getElementById('cfg-edit-preco'); const descEl=document.getElementById('cfg-edit-desc'); const durEl=document.getElementById('cfg-edit-duracao')
+  if(nomeEl)nomeEl.value=typeof s==='object'?s.nome:s; if(precoEl)precoEl.value=typeof s==='object'?(s.preco||''):''; if(descEl)descEl.value=typeof s==='object'?(s.desc||s.descricao||''):''; if(durEl)durEl.value=typeof s==='object'?(s.duracao||''):''
+  const modal=document.getElementById('cfg-modal-editar'); if(modal){modal.style.display='flex';document.body.classList.add('modal-open')}
+}
+function cfgFecharModalEditar(){const modal=document.getElementById('cfg-modal-editar');if(modal){modal.style.display='none';document.body.classList.remove('modal-open')};cfgEditIdx=-1}
+function cfgSalvarEdicao(){
+  if(cfgEditIdx<0)return
+  const nomeEl=document.getElementById('cfg-edit-nome'); const precoEl=document.getElementById('cfg-edit-preco'); const descEl=document.getElementById('cfg-edit-desc'); const durEl=document.getElementById('cfg-edit-duracao')
+  const nome=nomeEl?nomeEl.value.trim():''; if(!nome){alert('Digite o nome do serviço.');return}
+  servicosAtuais[cfgEditIdx]={nome,preco:parseFloat(precoEl?precoEl.value:'')||0,desc:descEl?descEl.value.trim():'',duracao:parseInt(durEl?durEl.value:'')||0}
+  cfgRenderServicos(); renderIntervalosServicos(); cfgFecharModalEditar()
+}
+
+async function cfgSalvarServicos(){
+  if(!negocioAtual)return; const token=localStorage.getItem('token')
+  const btn=document.getElementById('cfg-btn-salvar-servicos'); if(btn){btn.disabled=true;btn.textContent='Salvando...'}
+  try{
+    const res=await fetch(`${API}/auth/servicos`,{method:'PATCH',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({negocioId:negocioAtual._id,servicos:servicosAtuais})})
+    if(!res.ok){const err=await res.json();console.error('Erro ao salvar:',err);return}
+    const msg=document.getElementById('cfg-salvo-msg'); if(msg){msg.style.display='inline';setTimeout(()=>msg.style.display='none',2500)}
+  }catch(e){console.error('Erro na requisição:',e)}
+  finally{if(btn){btn.disabled=false;btn.innerHTML='<svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg> Salvar alterações'}}
+}
+window.salvarServicos = cfgSalvarServicos
+
+function cfgInitDragDrop(){
+  let dragSrc=null
+  document.querySelectorAll('.cfg-serv-row').forEach(row=>{
+    row.addEventListener('dragstart',e=>{dragSrc=row;row.classList.add('cfg-dragging')})
+    row.addEventListener('dragend',()=>{document.querySelectorAll('.cfg-serv-row').forEach(r=>r.classList.remove('cfg-dragging','cfg-drag-over'));dragSrc=null})
+    row.addEventListener('dragover',e=>{e.preventDefault();if(row!==dragSrc){document.querySelectorAll('.cfg-serv-row').forEach(r=>r.classList.remove('cfg-drag-over'));row.classList.add('cfg-drag-over')}})
+    row.addEventListener('drop',e=>{e.preventDefault();if(!dragSrc||row===dragSrc)return;const src=parseInt(dragSrc.dataset.idx);const dest=parseInt(row.dataset.idx);const tmp=servicosAtuais.splice(src,1)[0];servicosAtuais.splice(dest,0,tmp);cfgRenderServicos()})
+  })
+}
+
+/* ═══════════════════════════════════════════════════
+   PERSISTÊNCIA DE STATS
+═══════════════════════════════════════════════════ */
+function statKey(nid, campo) { return `stat_${campo}_${nid}_${mesAtualChave()}` }
+function getStatSalvo(nid, campo) { const v = localStorage.getItem(statKey(nid, campo)); return v !== null ? parseFloat(v) : null }
+function setStatSalvo(nid, campo, valor) { const atual = getStatSalvo(nid, campo); if (atual === null || valor >= atual) { localStorage.setItem(statKey(nid, campo), String(valor)) } }
+function getStatComFallback(nid, campo, valorCalculado) { const salvo = getStatSalvo(nid, campo) || 0; return Math.max(valorCalculado, salvo) }
+
+/* ═══════════════════════════════════════════════════
+   CACHE LOCAL DE AGENDAMENTOS
+═══════════════════════════════════════════════════ */
+function cacheKey(nid) { return `ags_concluidos_${nid}` }
+function getCacheConc(nid) { try { return JSON.parse(localStorage.getItem(cacheKey(nid)) || '[]') } catch { return [] } }
+function setCacheConc(nid, lista) {
+  const cutoff = new Date(); cutoff.setMonth(cutoff.getMonth() - 2)
+  const cutStr = cutoff.toISOString().split('T')[0]
+  const filtrado = lista.filter(a => (a.data || '') >= cutStr)
+  try { localStorage.setItem(cacheKey(nid), JSON.stringify(filtrado)) } catch {}
+}
+function mergeComCache(nid, agsDaAPI) { const cache = getCacheConc(nid); const idsAPI = new Set(agsDaAPI.map(a => a._id)); const apenasNoCache = cache.filter(a => !idsAPI.has(a._id)); return [...agsDaAPI, ...apenasNoCache] }
+function salvarConcluidosNoCache(nid, ags) { const cache = getCacheConc(nid); const cacheMap = {}; cache.forEach(a => cacheMap[a._id] = a); ags.filter(a => a.status === 'concluido').forEach(a => cacheMap[a._id] = a); setCacheConc(nid, Object.values(cacheMap)) }
+
+/* ═══════════════════════════════════════════════════
+   AUTOMAÇÃO
+═══════════════════════════════════════════════════ */
+;(function () {
+  let tipoSelecionado = '24h'
+  const mensagensAuto = {
+    '24h': 'Olá {nome}! 👋\nLembramos que você tem um agendamento amanhã, {data}, às {hora} — {servico}.\nEstamos te esperando! 🙏',
+    '1h':  'Olá {nome}! ⏰\nSeu agendamento é em 1 hora — {hora}. Serviço: {servico}.\nTe esperamos em breve! 😊',
+    'pos': 'Olá {nome}! 🙏\nObrigado por nos visitar hoje! Foi um prazer te atender.\nAgende seu próximo horário: {link}',
+  }
+  const titulos = { '24h': 'Editar lembrete 24h antes', '1h': 'Editar lembrete 1h antes', 'pos': 'Editar mensagem pós-atendimento' }
+  const campoBanco = { '24h': 'lembrete', '1h': 'lembrete1h', 'pos': 'posAtendimento' }
+  const estadoTipos = { '24h': { ativo: true, mensagem: mensagensAuto['24h'] }, '1h': { ativo: true, mensagem: mensagensAuto['1h'] }, 'pos': { ativo: false, mensagem: mensagensAuto['pos'] } }
+
+  function syncTextareaParaEstado() { const ta = document.getElementById('auto-mensagem-textarea'); if (ta) estadoTipos[tipoSelecionado].mensagem = ta.value }
+  function syncToggleEditorParaEstado() { const toggleEditor = document.getElementById('toggle-editor-main'); if (toggleEditor) { estadoTipos[tipoSelecionado].ativo = toggleEditor.classList.contains('on') } }
+
+  async function carregarAutomacaoDoServidor() {
+    if (!window.negocioAtual) return
+    try {
+      const res  = await fetch(`${window.API}/auth/negocio/${window.negocioAtual._id}`)
+      const data = await res.json()
+      if (data.lembrete)       { estadoTipos['24h'].ativo = !!data.lembrete.ativo;       estadoTipos['24h'].mensagem = data.lembrete.mensagem       || mensagensAuto['24h'] }
+      if (data.lembrete1h)     { estadoTipos['1h'].ativo  = !!data.lembrete1h.ativo;     estadoTipos['1h'].mensagem  = data.lembrete1h.mensagem     || mensagensAuto['1h']  }
+      if (data.posAtendimento) { estadoTipos['pos'].ativo  = !!data.posAtendimento.ativo; estadoTipos['pos'].mensagem = data.posAtendimento.mensagem || mensagensAuto['pos'] }
+      atualizarTodosToggleCards(); atualizarEditor(tipoSelecionado)
+    } catch (e) { console.error('[Automação] Erro ao carregar do servidor:', e) }
+  }
+
+  function atualizarTodosToggleCards() {
+    ;['24h', '1h', 'pos'].forEach(tipo => {
+      const toggle = document.getElementById('toggle-' + tipo); if (!toggle) return
+      const isOn = estadoTipos[tipo].ativo; toggle.className = 'auto-tipo-toggle ' + (isOn ? 'on' : 'off'); toggle.setAttribute('aria-checked', isOn)
+      const card = toggle.closest('.auto-tipo-card'); if (!card) return
+      const badge = card.querySelector('.auto-tipo-badge'); if (badge) { badge.textContent = isOn ? 'Ativo' : 'Inativo'; badge.className = 'auto-tipo-badge ' + (isOn ? 'ativo' : 'inativo') }
+    })
+  }
+
+  function atualizarEditor(tipo) {
+    const estado = estadoTipos[tipo]
+    const headerTitle = document.querySelector('.auto-editor-header-title'); if (headerTitle) headerTitle.textContent = titulos[tipo] || 'Editar mensagem'
+    const textarea = document.getElementById('auto-mensagem-textarea'); if (textarea) { textarea.value = estado.mensagem; atualizarPreviewAuto() }
+    const toggleEditor = document.getElementById('toggle-editor-main'); if (toggleEditor) { toggleEditor.className = 'auto-tipo-toggle ' + (estado.ativo ? 'on' : 'off'); toggleEditor.setAttribute('aria-checked', estado.ativo) }
+    const labelAtivo = document.querySelector('.auto-ativo-label'); if (labelAtivo) { labelAtivo.textContent = estado.ativo ? 'Ativo' : 'Inativo'; labelAtivo.style.color = estado.ativo ? '#34d399' : 'var(--text3)' }
+  }
+
+  window.selecionarTipoAuto = function (tipo, card) { syncTextareaParaEstado(); syncToggleEditorParaEstado(); tipoSelecionado = tipo; document.querySelectorAll('.auto-tipo-card').forEach(c => c.classList.remove('ativo-selected')); card.classList.add('ativo-selected'); atualizarEditor(tipo) }
+
+  window.toggleAutoTipo = function (tipo, toggleEl) {
+    const isOn = toggleEl.classList.contains('on'); const novoAtivo = !isOn; estadoTipos[tipo].ativo = novoAtivo
+    if (tipo === tipoSelecionado) syncTextareaParaEstado()
+    toggleEl.className = 'auto-tipo-toggle ' + (novoAtivo ? 'on' : 'off'); toggleEl.setAttribute('aria-checked', novoAtivo)
+    const card = toggleEl.closest('.auto-tipo-card'); if (card) { const badge = card.querySelector('.auto-tipo-badge'); if (badge) { badge.textContent = novoAtivo ? 'Ativo' : 'Inativo'; badge.className = 'auto-tipo-badge ' + (novoAtivo ? 'ativo' : 'inativo') } }
+    if (tipo === tipoSelecionado) { const toggleEditor = document.getElementById('toggle-editor-main'); if (toggleEditor) { toggleEditor.className = 'auto-tipo-toggle ' + (novoAtivo ? 'on' : 'off'); toggleEditor.setAttribute('aria-checked', novoAtivo) }; const labelAtivo = document.querySelector('.auto-ativo-label'); if (labelAtivo) { labelAtivo.textContent = novoAtivo ? 'Ativo' : 'Inativo'; labelAtivo.style.color = novoAtivo ? '#34d399' : 'var(--text3)' } }
+    salvarTipo(tipo)
+  }
+
+  window.toggleEditorMain = function (toggleEl) {
+    const novoAtivo = !toggleEl.classList.contains('on'); estadoTipos[tipoSelecionado].ativo = novoAtivo; syncTextareaParaEstado()
+    toggleEl.className = 'auto-tipo-toggle ' + (novoAtivo ? 'on' : 'off'); toggleEl.setAttribute('aria-checked', novoAtivo)
+    const labelAtivo = document.querySelector('.auto-ativo-label'); if (labelAtivo) { labelAtivo.textContent = novoAtivo ? 'Ativo' : 'Inativo'; labelAtivo.style.color = novoAtivo ? '#34d399' : 'var(--text3)' }
+    const cardToggle = document.getElementById('toggle-' + tipoSelecionado); if (cardToggle) { cardToggle.className = 'auto-tipo-toggle ' + (novoAtivo ? 'on' : 'off'); cardToggle.setAttribute('aria-checked', novoAtivo); const card = cardToggle.closest('.auto-tipo-card'); if (card) { const badge = card.querySelector('.auto-tipo-badge'); if (badge) { badge.textContent = novoAtivo ? 'Ativo' : 'Inativo'; badge.className = 'auto-tipo-badge ' + (novoAtivo ? 'ativo' : 'inativo') } } }
+    salvarTipo(tipoSelecionado)
+  }
+
+  window.inserirVarAuto = function (variavel) { const ta = document.getElementById('auto-mensagem-textarea'); if (!ta) return; const start = ta.selectionStart; const end = ta.selectionEnd; ta.value = ta.value.substring(0, start) + variavel + ta.value.substring(end); ta.selectionStart = ta.selectionEnd = start + variavel.length; ta.focus(); atualizarPreviewAuto() }
+
+  window.atualizarPreviewAuto = function () {
+    const ta = document.getElementById('auto-mensagem-textarea'); const bubble = document.getElementById('auto-preview-bubble'); if (!ta || !bubble) return
+    const negNome = (window.negocioAtual?.nome) || 'sua empresa'
+    const linkAgendamento = window.negocioAtual ? `https://agendorapido.com.br/agendar.html?id=${window.negocioAtual._id}` : 'agendorapido.com.br/agendar.html?id=...'
+    let txt = ta.value.replace(/\{nome\}/g,'Carlos').replace(/\{data\}/g,'23/05').replace(/\{hora\}/g,'15:00').replace(/\{servico\}/g,'Barba').replace(/\{negocio\}/g,negNome).replace(/\{link\}/g,linkAgendamento)
+    bubble.innerHTML = txt.split('\n').map(l => l || '<br>').join('<br>') + `<div class="auto-wpp-bubble-time">10:30<svg width="14" height="10" viewBox="0 0 16 11" fill="none"><path d="M1 5.5l3.5 3.5L9 2M7 5.5l3.5 3.5L15 2" stroke="#4fc3f7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>`
+  }
+
+  async function salvarTipo(tipo) {
+    if (!window.negocioAtual) return; const token = localStorage.getItem('token'); const campo = campoBanco[tipo]; const estado = estadoTipos[tipo]
+    try { await fetch(`${window.API}/auth/lembretes`, { method: 'PATCH', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ negocioId: window.negocioAtual._id, campo, ativo: estado.ativo, mensagem: estado.mensagem }) }) } catch (e) { console.error('[Automação] Erro ao salvar tipo', tipo, e) }
+  }
+
+  window.salvarAutomacao = async function () {
+    syncTextareaParaEstado(); syncToggleEditorParaEstado()
+    const btn = document.querySelector('.auto-btn-salvar'); if (btn) { btn.disabled = true; btn.innerHTML = 'Salvando...' }
+    await salvarTipo(tipoSelecionado)
+    if (btn) { btn.disabled = false; btn.innerHTML = '✓ Salvo!'; setTimeout(() => { btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg> Salvar alterações' }, 2000) }
+  }
+
+  window.enviarTesteAuto = function () { const btn = document.querySelector('.auto-btn-teste'); if (!btn) return; const orig = btn.innerHTML; btn.innerHTML = '✓ Teste enviado!'; btn.style.color = '#34d399'; setTimeout(() => { btn.innerHTML = orig; btn.style.color = '' }, 2500) }
+  window.carregarAutomacaoDoServidor = carregarAutomacaoDoServidor
+})()
 
 /* ═══════════════════════════════════════════════════
    DOMContentLoaded
@@ -1266,522 +1492,19 @@ document.addEventListener('DOMContentLoaded', () => {
   if(btnTemaMobile) btnTemaMobile.onclick = function(e){ e.stopPropagation(); toggleTema() }
 
   const buscaOverlay = document.getElementById('busca-overlay')
-  if(buscaOverlay){
-    buscaOverlay.addEventListener('click', function(e){
-      if(e.target === buscaOverlay) fecharBusca()
-    })
-  }
+  if(buscaOverlay){ buscaOverlay.addEventListener('click', function(e){ if(e.target === buscaOverlay) fecharBusca() }) }
 
   document.querySelectorAll('.page').forEach(p=>{if(!p.classList.contains('ativo'))p.setAttribute('aria-hidden','true')})
 
-  // ✅ Keep-alive: mantém o servidor Render acordado com ping a cada 10 minutos
-  setInterval(() => {
-    fetch(`${API}/health`).catch(() => {})
-  }, 10 * 60 * 1000)
-})
-
-/* ═══════════════════════════════════════════════════
-   AUTOMAÇÃO
-═══════════════════════════════════════════════════ */
-;(function () {
-  let tipoSelecionado = '24h'
-
-  const mensagensAuto = {
-    '24h': 'Olá {nome}! 👋\nLembramos que você tem um agendamento amanhã, {data}, às {hora} — {servico}.\nEstamos te esperando! 🙏',
-    '1h':  'Olá {nome}! ⏰\nSeu agendamento é em 1 hora — {hora}. Serviço: {servico}.\nTe esperamos em breve! 😊',
-    'pos': 'Olá {nome}! 🙏\nObrigado por nos visitar hoje! Foi um prazer te atender.\nAgende seu próximo horário: {link}',
-  }
-
-  const titulos = {
-    '24h': 'Editar lembrete 24h antes',
-    '1h':  'Editar lembrete 1h antes',
-    'pos': 'Editar mensagem pós-atendimento',
-  }
-
-  const campoBanco = {
-    '24h': 'lembrete',
-    '1h':  'lembrete1h',
-    'pos': 'posAtendimento',
-  }
-
-  const estadoTipos = {
-    '24h': { ativo: true,  mensagem: mensagensAuto['24h'] },
-    '1h':  { ativo: true,  mensagem: mensagensAuto['1h']  },
-    'pos': { ativo: false, mensagem: mensagensAuto['pos'] },
-  }
-
-  function syncTextareaParaEstado() {
-    const ta = document.getElementById('auto-mensagem-textarea')
-    if (ta) estadoTipos[tipoSelecionado].mensagem = ta.value
-  }
-
-  function syncToggleEditorParaEstado() {
-    const toggleEditor = document.getElementById('toggle-editor-main')
-    if (toggleEditor) {
-      estadoTipos[tipoSelecionado].ativo = toggleEditor.classList.contains('on')
-    }
-  }
-
-  async function carregarAutomacaoDoServidor() {
-    if (!window.negocioAtual) return
-    try {
-      const res  = await fetch(`${window.API}/auth/negocio/${window.negocioAtual._id}`)
-      const data = await res.json()
-
-      if (data.lembrete) {
-        estadoTipos['24h'].ativo    = !!data.lembrete.ativo
-        estadoTipos['24h'].mensagem = data.lembrete.mensagem || mensagensAuto['24h']
-      }
-      if (data.lembrete1h) {
-        estadoTipos['1h'].ativo    = !!data.lembrete1h.ativo
-        estadoTipos['1h'].mensagem = data.lembrete1h.mensagem || mensagensAuto['1h']
-      }
-      if (data.posAtendimento) {
-        estadoTipos['pos'].ativo    = !!data.posAtendimento.ativo
-        estadoTipos['pos'].mensagem = data.posAtendimento.mensagem || mensagensAuto['pos']
-      }
-
-      atualizarTodosToggleCards()
-      atualizarEditor(tipoSelecionado)
-    } catch (e) {
-      console.error('[Automação] Erro ao carregar do servidor:', e)
-    }
-  }
-
-  function atualizarTodosToggleCards() {
-    ;['24h', '1h', 'pos'].forEach(tipo => {
-      const toggle = document.getElementById('toggle-' + tipo)
-      if (!toggle) return
-      const isOn = estadoTipos[tipo].ativo
-      toggle.className = 'auto-tipo-toggle ' + (isOn ? 'on' : 'off')
-      toggle.setAttribute('aria-checked', isOn)
-      const card  = toggle.closest('.auto-tipo-card')
-      if (!card) return
-      const badge = card.querySelector('.auto-tipo-badge')
-      if (badge) {
-        badge.textContent = isOn ? 'Ativo' : 'Inativo'
-        badge.className   = 'auto-tipo-badge ' + (isOn ? 'ativo' : 'inativo')
-      }
-    })
-  }
-
-  function atualizarEditor(tipo) {
-    const estado = estadoTipos[tipo]
-
-    const headerTitle = document.querySelector('.auto-editor-header-title')
-    if (headerTitle) headerTitle.textContent = titulos[tipo] || 'Editar mensagem'
-
-    const textarea = document.getElementById('auto-mensagem-textarea')
-    if (textarea) {
-      textarea.value = estado.mensagem
-      atualizarPreviewAuto()
-    }
-
-    const toggleEditor = document.getElementById('toggle-editor-main')
-    if (toggleEditor) {
-      toggleEditor.className    = 'auto-tipo-toggle ' + (estado.ativo ? 'on' : 'off')
-      toggleEditor.setAttribute('aria-checked', estado.ativo)
-    }
-
-    const labelAtivo = document.querySelector('.auto-ativo-label')
-    if (labelAtivo) {
-      labelAtivo.textContent = estado.ativo ? 'Ativo' : 'Inativo'
-      labelAtivo.style.color = estado.ativo ? '#34d399' : 'var(--text3)'
-    }
-  }
-
-  window.selecionarTipoAuto = function (tipo, card) {
-    syncTextareaParaEstado()
-    syncToggleEditorParaEstado()
-    tipoSelecionado = tipo
-    document.querySelectorAll('.auto-tipo-card').forEach(c => c.classList.remove('ativo-selected'))
-    card.classList.add('ativo-selected')
-    atualizarEditor(tipo)
-  }
-
-  window.toggleAutoTipo = function (tipo, toggleEl) {
-    const isOn = toggleEl.classList.contains('on')
-    const novoAtivo = !isOn
-    estadoTipos[tipo].ativo = novoAtivo
-    if (tipo === tipoSelecionado) syncTextareaParaEstado()
-    toggleEl.className = 'auto-tipo-toggle ' + (novoAtivo ? 'on' : 'off')
-    toggleEl.setAttribute('aria-checked', novoAtivo)
-    const card = toggleEl.closest('.auto-tipo-card')
-    if (card) {
-      const badge = card.querySelector('.auto-tipo-badge')
-      if (badge) { badge.textContent = novoAtivo ? 'Ativo' : 'Inativo'; badge.className = 'auto-tipo-badge ' + (novoAtivo ? 'ativo' : 'inativo') }
-    }
-    if (tipo === tipoSelecionado) {
-      const toggleEditor = document.getElementById('toggle-editor-main')
-      if (toggleEditor) { toggleEditor.className = 'auto-tipo-toggle ' + (novoAtivo ? 'on' : 'off'); toggleEditor.setAttribute('aria-checked', novoAtivo) }
-      const labelAtivo = document.querySelector('.auto-ativo-label')
-      if (labelAtivo) { labelAtivo.textContent = novoAtivo ? 'Ativo' : 'Inativo'; labelAtivo.style.color = novoAtivo ? '#34d399' : 'var(--text3)' }
-    }
-    salvarTipo(tipo)
-  }
-
-  window.toggleEditorMain = function (toggleEl) {
-    const isOn = toggleEl.classList.contains('on')
-    const novoAtivo = !isOn
-    estadoTipos[tipoSelecionado].ativo = novoAtivo
-    syncTextareaParaEstado()
-    toggleEl.className = 'auto-tipo-toggle ' + (novoAtivo ? 'on' : 'off')
-    toggleEl.setAttribute('aria-checked', novoAtivo)
-    const labelAtivo = document.querySelector('.auto-ativo-label')
-    if (labelAtivo) { labelAtivo.textContent = novoAtivo ? 'Ativo' : 'Inativo'; labelAtivo.style.color = novoAtivo ? '#34d399' : 'var(--text3)' }
-    const cardToggle = document.getElementById('toggle-' + tipoSelecionado)
-    if (cardToggle) {
-      cardToggle.className = 'auto-tipo-toggle ' + (novoAtivo ? 'on' : 'off')
-      cardToggle.setAttribute('aria-checked', novoAtivo)
-      const card = cardToggle.closest('.auto-tipo-card')
-      if (card) { const badge = card.querySelector('.auto-tipo-badge'); if (badge) { badge.textContent = novoAtivo ? 'Ativo' : 'Inativo'; badge.className = 'auto-tipo-badge ' + (novoAtivo ? 'ativo' : 'inativo') } }
-    }
-    salvarTipo(tipoSelecionado)
-  }
-
-  window.inserirVarAuto = function (variavel) {
-    const ta = document.getElementById('auto-mensagem-textarea')
-    if (!ta) return
-    const start = ta.selectionStart; const end = ta.selectionEnd
-    ta.value = ta.value.substring(0, start) + variavel + ta.value.substring(end)
-    ta.selectionStart = ta.selectionEnd = start + variavel.length
-    ta.focus(); atualizarPreviewAuto()
-  }
-
-  window.atualizarPreviewAuto = function () {
-    const ta     = document.getElementById('auto-mensagem-textarea')
-    const bubble = document.getElementById('auto-preview-bubble')
-    if (!ta || !bubble) return
-    const negNome         = (window.negocioAtual?.nome) || 'sua empresa'
-    const linkAgendamento = window.negocioAtual
-      ? `https://agendorapido.com.br/agendar.html?id=${window.negocioAtual._id}`
-      : 'agendorapido.com.br/agendar.html?id=...'
-
-    let txt = ta.value
-      .replace(/\{nome\}/g,    'Carlos')
-      .replace(/\{data\}/g,    '23/05')
-      .replace(/\{hora\}/g,    '15:00')
-      .replace(/\{servico\}/g, 'Barba')
-      .replace(/\{negocio\}/g, negNome)
-      .replace(/\{link\}/g,    linkAgendamento)
-
-    bubble.innerHTML =
-      txt.split('\n').map(l => l || '<br>').join('<br>') +
-      `<div class="auto-wpp-bubble-time">10:30
-        <svg width="14" height="10" viewBox="0 0 16 11" fill="none">
-          <path d="M1 5.5l3.5 3.5L9 2M7 5.5l3.5 3.5L15 2"
-                stroke="#4fc3f7" stroke-width="1.5"
-                stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </div>`
-  }
-
-  async function salvarTipo(tipo) {
-    if (!window.negocioAtual) return
-    const token = localStorage.getItem('token')
-    const campo = campoBanco[tipo]
-    const estado = estadoTipos[tipo]
-    try {
-      await fetch(`${window.API}/auth/lembretes`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-        body: JSON.stringify({ negocioId: window.negocioAtual._id, campo, ativo: estado.ativo, mensagem: estado.mensagem }),
-      })
-    } catch (e) { console.error('[Automação] Erro ao salvar tipo', tipo, e) }
-  }
-
-  window.salvarAutomacao = async function () {
-    syncTextareaParaEstado()
-    syncToggleEditorParaEstado()
-    const btn = document.querySelector('.auto-btn-salvar')
-    if (btn) { btn.disabled = true; btn.innerHTML = 'Salvando...' }
-    await salvarTipo(tipoSelecionado)
-    if (btn) {
-      btn.disabled = false; btn.innerHTML = '✓ Salvo!'
-      setTimeout(() => { btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg> Salvar alterações' }, 2000)
-    }
-  }
-
-  window.enviarTesteAuto = function () {
-    const btn = document.querySelector('.auto-btn-teste'); if (!btn) return
-    const orig = btn.innerHTML
-    btn.innerHTML = '✓ Teste enviado!'; btn.style.color = '#34d399'
-    setTimeout(() => { btn.innerHTML = orig; btn.style.color = '' }, 2500)
-  }
-
-  window.carregarAutomacaoDoServidor = carregarAutomacaoDoServidor
-})()
-
-/* ═══════════════════════════════════════════════════
-   TABELA DE AGENDAMENTOS
-═══════════════════════════════════════════════════ */
-function agAvatarColor(nome){const paletas=[['#1d4ed8','#3b82f6'],['#7c3aed','#8b5cf6'],['#0e7490','#06b6d4'],['#15803d','#22c55e'],['#b45309','#f59e0b'],['#be185d','#ec4899'],['#0369a1','#38bdf8'],['#6d28d9','#a78bfa'],['#9f1239','#f43f5e']];let h=0;for(const c of(nome||'A'))h=((h<<5)-h)+c.charCodeAt(0);return paletas[Math.abs(h)%paletas.length]}
-function agServicoCor(status){if(status==='confirmado')return'#22c55e';if(status==='concluido')return'#a78bfa';if(status==='cancelado')return'#f87171';return'#f59e0b'}
-function agDuracao(ag){if(ag.duracao)return ag.duracao+' min';const mapa={'Barba':45,'Corte':60,'Corte + Barba':75,'Sobrancelha':30,'Manicure':50};return(mapa[ag.servico]||30)+' min'}
-function agFmtData(data){if(!data)return'—';const[a,m,d]=data.split('-');return `${d.padStart(2,'0')}/${m.padStart(2,'0')}/${a}`}
-
-function agAtualizarStats(base,mes){
-  const doMes=base.filter(a=>a.data&&a.data.startsWith(mes));const total=doMes.length;const concl=doMes.filter(a=>a.status==='concluido').length;const canc=doMes.filter(a=>a.status==='cancelado').length
-  const pctConc=total?Math.round((concl/total)*100):0;const pctCanc=total?Math.round((canc/total)*100):0
-  const elTotal=document.getElementById('ag-stat-total-num');const elConc=document.getElementById('ag-stat-conc-num');const elCanc=document.getElementById('ag-stat-canc-num');const elPConc=document.getElementById('ag-stat-conc-pct');const elPCanc=document.getElementById('ag-stat-canc-pct')
-  if(elTotal)elTotal.textContent=total;if(elConc)elConc.textContent=concl;if(elCanc)elCanc.textContent=canc;if(elPConc)elPConc.textContent=pctConc+'%';if(elPCanc)elPCanc.textContent=pctCanc+'%'
-}
-
-function agAplicarFiltro(){
-  const base=todosAgendamentos||[];const hoje=new Date().toISOString().split('T')[0]
-  const inicioSemana=(()=>{const d=new Date();d.setDate(d.getDate()-d.getDay());return d.toISOString().split('T')[0]})()
-  const fimSemana=(()=>{const d=new Date();d.setDate(d.getDate()+(6-d.getDay()));return d.toISOString().split('T')[0]})()
-  const mes=new Date().toISOString().slice(0,7)
-  let lista=[...base]
-  if(agFiltroDataAtivo){lista=lista.filter(a=>a.data===agFiltroDataAtivo)}
-  else if(agFiltroAtivo==='hoje')lista=lista.filter(a=>a.data===hoje)
-  else if(agFiltroAtivo==='semana')lista=lista.filter(a=>a.data>=inicioSemana&&a.data<=fimSemana)
-  else if(agFiltroAtivo==='mes')lista=lista.filter(a=>a.data&&a.data.startsWith(mes))
-  else if(agFiltroAtivo==='concluido')lista=lista.filter(a=>a.status==='concluido')
-  else if(agFiltroAtivo==='cancelado')lista=lista.filter(a=>a.status==='cancelado')
-  lista.sort((a,b)=>((b.data||'')+(b.hora||'')).localeCompare((a.data||'')+(a.hora||'')))
-  agListaFiltrada=lista; agPagina=1; agAtualizarStats(base,mes); agRenderTabela()
-}
-
-function agRenderTabela(){
-  const tbody=document.getElementById('ag-nova-tbody');const mcards=document.getElementById('ag-mobile-cards');const pag=document.getElementById('ag-nova-pag')
-  const total=agListaFiltrada.length;const totalPg=Math.ceil(total/agPorPagina);const inicio=(agPagina-1)*agPorPagina;const fim=inicio+agPorPagina;const slice=agListaFiltrada.slice(inicio,fim)
-  if(!total){
-    if(tbody)tbody.innerHTML='<div style="text-align:center;color:var(--text3);padding:52px 20px;font-size:13.5px">Nenhum agendamento encontrado</div>'
-    if(mcards)mcards.innerHTML='<div style="text-align:center;color:var(--text3);padding:36px 18px;font-size:13px">Nenhum agendamento encontrado</div>'
-    if(pag)pag.style.display='none'; return
-  }
-  const statusLabel={confirmado:'confirmado',concluido:'concluído',cancelado:'cancelado',pendente:'pendente',agendado:'agendado'}
-  if(tbody){tbody.innerHTML=slice.map(a=>{const[c1,c2]=agAvatarColor(a.pacienteNome);const ini=(a.pacienteNome||'C')[0].toUpperCase();const corPonto=agServicoCor(a.status);const dur=agDuracao(a);const cls=a.status||'pendente';const label=statusLabel[a.status]||a.status;const nomeSafe=(a.pacienteNome||'').replace(/'/g,"\\'");const telSafe=(a.pacienteTelefone||'').replace(/'/g,"\\'");const acoes=a.status==='confirmado'?`<button class="btn-acao concluir" onclick="atualizar('${a._id}','concluido')" type="button">Concluir</button><button class="btn-acao cancelar" onclick="cancelarComAviso('${a._id}','${nomeSafe}','${telSafe}','${a.data}','${a.hora}')" type="button">Cancelar</button>`:`<button class="ag-ver-btn" type="button">Ver</button>`;return `<div class="ag-nova-row"><div class="ag-nova-cliente"><div class="ag-nova-avatar" style="background:linear-gradient(135deg,${c1},${c2})">${ini}<div class="ag-nova-avatar-dot" style="background:${corPonto}"></div></div><div><div class="ag-nova-nome">${a.pacienteNome||'—'}</div><div class="ag-nova-tel">${a.pacienteTelefone||'—'}</div></div></div><div class="ag-nova-servico"><div class="ag-nova-serv-nome">${a.servico||'—'}</div><div class="ag-nova-serv-dur">${dur}<span class="ag-nova-serv-dur-dot" style="background:${corPonto}"></span></div></div><div class="ag-nova-data"><div class="ag-nova-data-row">${agFmtData(a.data)}</div><div class="ag-nova-data-row">às ${a.hora||'—'}</div></div><div><span class="badge ${cls}">${label}</span></div><div class="ag-nova-acoes">${acoes}</div></div>`}).join('')}
-  if(mcards){mcards.innerHTML=slice.map(a=>{const[c1,c2]=agAvatarColor(a.pacienteNome);const ini=(a.pacienteNome||'C')[0].toUpperCase();const cls=a.status||'pendente';const label=statusLabel[a.status]||a.status;const nomeSafe=(a.pacienteNome||'').replace(/'/g,"\\'");const telSafe=(a.pacienteTelefone||'').replace(/'/g,"\\'");const acoes=a.status==='confirmado'?`<button class="btn-acao concluir" onclick="atualizar('${a._id}','concluido')" type="button">Concluir</button><button class="btn-acao cancelar" onclick="cancelarComAviso('${a._id}','${nomeSafe}','${telSafe}','${a.data}','${a.hora}')" type="button">Cancelar</button>`:`<button class="ag-ver-btn" style="flex:1" type="button">Ver detalhes</button>`;return `<div class="ag-mobile-card"><div class="ag-mobile-top"><div style="display:flex;align-items:center;gap:10px"><div class="ag-nova-avatar" style="background:linear-gradient(135deg,${c1},${c2});width:34px;height:34px;font-size:12px;flex-shrink:0">${ini}</div><div><div class="ag-nova-nome">${a.pacienteNome||'—'}</div><div class="ag-nova-tel">${a.pacienteTelefone||''}</div></div></div><span class="badge ${cls}">${label}</span></div><div class="ag-mobile-chips"><span class="ag-mobile-chip">${agFmtData(a.data)}</span><span class="ag-mobile-chip">às ${a.hora||'—'}</span><span class="ag-mobile-chip">${a.servico||'—'}</span><span class="ag-mobile-chip">${agDuracao(a)}</span></div><div class="ag-mobile-actions">${acoes}</div></div>`}).join('')}
-  if(pag){
-    const elPagInfo=document.getElementById('ag-pag-info');const elPagBtns=document.getElementById('ag-pag-btns')
-    if(elPagInfo)elPagInfo.textContent=`Mostrando ${inicio+1} a ${Math.min(fim,total)} de ${total} agendamentos`
-    if(elPagBtns){let btns=`<button class="ag-pag-btn" onclick="agIrPagina(${agPagina-1})" ${agPagina===1?'disabled':''} type="button">‹</button>`;for(let i=1;i<=totalPg;i++){if(totalPg<=7||i===1||i===totalPg||Math.abs(i-agPagina)<=1)btns+=`<button class="ag-pag-btn ${i===agPagina?'ativo':''}" onclick="agIrPagina(${i})" type="button">${i}</button>`;else if(Math.abs(i-agPagina)===2)btns+=`<span style="color:var(--text3);font-size:12px;padding:0 2px">…</span>`};btns+=`<button class="ag-pag-btn" onclick="agIrPagina(${agPagina+1})" ${agPagina===totalPg?'disabled':''} type="button">›</button>`;elPagBtns.innerHTML=btns}
-    pag.style.display=totalPg>=1?'flex':'none'
-  }
-}
-
-function agFiltrar(filtro,btn){
-  agFiltroAtivo=filtro;agFiltroDataAtivo='';const dataInput=document.getElementById('ag-filtro-data');if(dataInput)dataInput.value=''
-  document.querySelectorAll('.ag-tab').forEach(b=>{b.classList.remove('ativo');b.setAttribute('aria-selected','false')})
-  if(btn){btn.classList.add('ativo');btn.setAttribute('aria-selected','true')}
-  agAplicarFiltro()
-}
-function agFiltrarData(val){
-  agFiltroDataAtivo=val
-  if(val){document.querySelectorAll('.ag-tab').forEach(b=>{b.classList.remove('ativo');b.setAttribute('aria-selected','false')})}
-  agAplicarFiltro()
-}
-function agIrPagina(n){const total=Math.ceil(agListaFiltrada.length/agPorPagina);if(n<1||n>total)return;agPagina=n;agRenderTabela()}
-function agMudarPorPagina(val){agPorPagina=parseInt(val);agPagina=1;agRenderTabela()}
-
-/* ═══════════════════════════════════════════════════
-   CONFIGURAÇÕES — lista de serviços avançada
-═══════════════════════════════════════════════════ */
-const CFG_PALETA=[{bg:'rgba(239,68,68,0.18)',bd:'rgba(239,68,68,0.35)',cor:'#f87171'},{bg:'rgba(249,115,22,0.18)',bd:'rgba(249,115,22,0.35)',cor:'#fb923c'},{bg:'rgba(234,179,8,0.18)',bd:'rgba(234,179,8,0.35)',cor:'#facc15'},{bg:'rgba(16,185,129,0.18)',bd:'rgba(16,185,129,0.35)',cor:'#34d399'},{bg:'rgba(59,130,246,0.18)',bd:'rgba(59,130,246,0.35)',cor:'#60a5fa'},{bg:'rgba(139,92,246,0.18)',bd:'rgba(139,92,246,0.35)',cor:'#a78bfa'},{bg:'rgba(236,72,153,0.18)',bd:'rgba(236,72,153,0.35)',cor:'#f472b6'},{bg:'rgba(6,182,212,0.18)',bd:'rgba(6,182,212,0.35)',cor:'#22d3ee'}]
-function cfgPaletaFor(nome){let h=0;for(const c of(nome||'A'))h=((h<<5)-h)+c.charCodeAt(0);return CFG_PALETA[Math.abs(h)%CFG_PALETA.length]}
-let cfgEditIdx=-1
-
-function cfgRenderServicos(){
-  const lista=servicosAtuais||[]
-  const cont=document.getElementById('cfg-servicos-lista')
-  const badge=document.getElementById('cfg-badge-num')
-  if(badge)badge.textContent=lista.length
-  if(!cont)return
-  if(!lista.length){
-    cont.innerHTML=`<div class="cfg-lista-vazia"><div>Nenhum serviço cadastrado ainda.</div><div style="font-size:12px;color:var(--text3);margin-top:4px">Use o formulário acima para adicionar.</div></div>`
-    return
-  }
-  cont.innerHTML=lista.map((s,i)=>{
-    const nome=typeof s==='object'?s.nome:s
-    const preco=typeof s==='object'?Number(s.preco||0):0
-    const desc=typeof s==='object'?(s.desc||s.descricao||''):''
-    const dur=typeof s==='object'?(s.duracao||0):0
-    const pal=cfgPaletaFor(nome)
-    const ini=(nome||'?')[0].toUpperCase()
-    const precoFmt=preco>0?`R$ ${preco.toFixed(2).replace('.',',')}`:`<span style="color:var(--text3)">—</span>`
-    const durLabel=dur>0?`<span class="cfg-serv-dur">${dur} min</span>`:''
-    const descLabel=desc?`<span class="cfg-serv-desc">${desc}</span>`:''
-    return `<div class="cfg-serv-row" draggable="true" data-idx="${i}">
-      <div class="cfg-drag-handle" title="Arrastar para reordenar">
-        <svg width="12" height="14" viewBox="0 0 12 14" fill="none">
-          <circle cx="4" cy="3" r="1.2" fill="currentColor"/><circle cx="8" cy="3" r="1.2" fill="currentColor"/>
-          <circle cx="4" cy="7" r="1.2" fill="currentColor"/><circle cx="8" cy="7" r="1.2" fill="currentColor"/>
-          <circle cx="4" cy="11" r="1.2" fill="currentColor"/><circle cx="8" cy="11" r="1.2" fill="currentColor"/>
-        </svg>
-      </div>
-      <div class="cfg-serv-avatar" style="background:${pal.bg};border-color:${pal.bd};color:${pal.cor}">${ini}</div>
-      <div class="cfg-serv-info">
-        <div class="cfg-serv-nome">${nome}</div>
-        <div class="cfg-serv-meta">${descLabel}${durLabel}</div>
-      </div>
-      <div class="cfg-serv-preco">${precoFmt}</div>
-      <div class="cfg-serv-acoes">
-        <button class="cfg-act-btn cfg-act-edit" onclick="cfgAbrirModalEditar(${i})" title="Editar" type="button">
-          <svg width="13" height="13" viewBox="0 0 15 15" fill="none"><path d="M10.5 2.5l2 2-8 8H2.5v-2l8-8Z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>
-        </button>
-        <button class="cfg-act-btn cfg-act-del" onclick="cfgRemoverServico(${i})" title="Remover" type="button">
-          <svg width="13" height="13" viewBox="0 0 15 15" fill="none"><path d="M2.5 4h10M5 4V3a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v1M6 7v4M9 7v4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M3.5 4l.5 8a1 1 0 0 0 1 1h5a1 1 0 0 0 1-1l.5-8" stroke="currentColor" stroke-width="1.3"/></svg>
-        </button>
-      </div>
-    </div>`
-  }).join('')
-  cfgInitDragDrop()
-}
-
-function cfgAdicionarServico(){
-  const nomeEl=document.getElementById('cfg-novo-servico')
-  const precoEl=document.getElementById('cfg-novo-preco')
-  const erroEl=document.getElementById('cfg-add-erro')
-  const nome=(nomeEl?nomeEl.value:'').trim()
-  const preco=parseFloat(precoEl?precoEl.value:'')
-  if(erroEl)erroEl.textContent=''
-  if(nomeEl)nomeEl.classList.remove('cfg-input-erro')
-  if(precoEl)precoEl.classList.remove('cfg-input-erro')
-  if(!nome){if(erroEl)erroEl.textContent='⚠ Digite o nome do serviço.';if(nomeEl){nomeEl.classList.add('cfg-input-erro');nomeEl.focus()};return}
-  if(!precoEl||!precoEl.value.trim()||isNaN(preco)||preco<=0){if(erroEl)erroEl.textContent='⚠ O preço é obrigatório e deve ser maior que R$ 0,00.';if(precoEl){precoEl.classList.add('cfg-input-erro');precoEl.focus()};return}
-  if(servicosAtuais.some(s=>(typeof s==='object'?s.nome:s).toLowerCase()===nome.toLowerCase())){if(erroEl)erroEl.textContent='⚠ Já existe um serviço com esse nome.';if(nomeEl){nomeEl.classList.add('cfg-input-erro');nomeEl.focus()};return}
-  servicosAtuais.push({nome,preco})
-  if(nomeEl)nomeEl.value=''
-  if(precoEl)precoEl.value=''
-  if(nomeEl)nomeEl.focus()
-  cfgRenderServicos()
-  renderIntervalosServicos()
-}
-
-function cfgRemoverServico(i){
-  const nome=typeof servicosAtuais[i]==='object'?servicosAtuais[i].nome:servicosAtuais[i]
-  if(intervalosServicos)delete intervalosServicos[nome]
-  servicosAtuais.splice(i,1)
-  cfgRenderServicos()
-  renderIntervalosServicos()
-}
-
-function cfgAbrirModalEditar(i){
-  cfgEditIdx=i
-  const s=servicosAtuais[i]||{}
-  const nomeEl=document.getElementById('cfg-edit-nome')
-  const precoEl=document.getElementById('cfg-edit-preco')
-  const descEl=document.getElementById('cfg-edit-desc')
-  const durEl=document.getElementById('cfg-edit-duracao')
-  if(nomeEl)nomeEl.value=typeof s==='object'?s.nome:s
-  if(precoEl)precoEl.value=typeof s==='object'?(s.preco||''):''
-  if(descEl)descEl.value=typeof s==='object'?(s.desc||s.descricao||''):''
-  if(durEl)durEl.value=typeof s==='object'?(s.duracao||''):''
-  const modal=document.getElementById('cfg-modal-editar')
-  if(modal){modal.style.display='flex';document.body.classList.add('modal-open')}
-}
-
-function cfgFecharModalEditar(){
-  const modal=document.getElementById('cfg-modal-editar')
-  if(modal){modal.style.display='none';document.body.classList.remove('modal-open')}
-  cfgEditIdx=-1
-}
-
-function cfgSalvarEdicao(){
-  if(cfgEditIdx<0)return
-  const nomeEl=document.getElementById('cfg-edit-nome')
-  const precoEl=document.getElementById('cfg-edit-preco')
-  const descEl=document.getElementById('cfg-edit-desc')
-  const durEl=document.getElementById('cfg-edit-duracao')
-  const nome=nomeEl?nomeEl.value.trim():''
-  if(!nome){alert('Digite o nome do serviço.');return}
-  const preco=parseFloat(precoEl?precoEl.value:'')||0
-  const desc=descEl?descEl.value.trim():''
-  const duracao=parseInt(durEl?durEl.value:'')||0
-  servicosAtuais[cfgEditIdx]={nome,preco,desc,duracao}
-  cfgRenderServicos()
-  renderIntervalosServicos()
-  cfgFecharModalEditar()
-}
-
-async function cfgSalvarServicos(){
-  if(!negocioAtual)return
-  const token=localStorage.getItem('token')
-  const btn=document.getElementById('cfg-btn-salvar-servicos')
-  if(btn){btn.disabled=true;btn.textContent='Salvando...'}
-  try{
-    const res=await fetch(`${API}/auth/servicos`,{method:'PATCH',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({negocioId:negocioAtual._id,servicos:servicosAtuais})})
-    if(!res.ok){const err=await res.json();console.error('Erro ao salvar:',err);return}
-    const msg=document.getElementById('cfg-salvo-msg')
-    if(msg){msg.style.display='inline';setTimeout(()=>msg.style.display='none',2500)}
-  }catch(e){console.error('Erro na requisição:',e)}
-  finally{
-    if(btn){btn.disabled=false;btn.innerHTML='<svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg> Salvar alterações'}
-  }
-}
-
-window.salvarServicos = cfgSalvarServicos
-
-function abrirMinhaPagina(e){
-  if(e)e.preventDefault()
-  if(!negocioAtual)return
-  window.open(urlAgendamento(negocioAtual),'_blank')
-}
-
-function cfgInitDragDrop(){
-  let dragSrc=null
-  document.querySelectorAll('.cfg-serv-row').forEach(row=>{
-    row.addEventListener('dragstart',e=>{dragSrc=row;row.classList.add('cfg-dragging')})
-    row.addEventListener('dragend',()=>{document.querySelectorAll('.cfg-serv-row').forEach(r=>r.classList.remove('cfg-dragging','cfg-drag-over'));dragSrc=null})
-    row.addEventListener('dragover',e=>{e.preventDefault();if(row!==dragSrc){document.querySelectorAll('.cfg-serv-row').forEach(r=>r.classList.remove('cfg-drag-over'));row.classList.add('cfg-drag-over')}})
-    row.addEventListener('drop',e=>{
-      e.preventDefault()
-      if(!dragSrc||row===dragSrc)return
-      const src=parseInt(dragSrc.dataset.idx)
-      const dest=parseInt(row.dataset.idx)
-      const tmp=servicosAtuais.splice(src,1)[0]
-      servicosAtuais.splice(dest,0,tmp)
-      cfgRenderServicos()
-    })
-  })
-}
-
-/* ═══════════════════════════════════════════════════
-   PERSISTÊNCIA DE STATS
-═══════════════════════════════════════════════════ */
-function statKey(nid, campo) { return `stat_${campo}_${nid}_${mesAtualChave()}` }
-function getStatSalvo(nid, campo) { const v = localStorage.getItem(statKey(nid, campo)); return v !== null ? parseFloat(v) : null }
-function setStatSalvo(nid, campo, valor) { const atual = getStatSalvo(nid, campo); if (atual === null || valor >= atual) { localStorage.setItem(statKey(nid, campo), String(valor)) } }
-function getStatComFallback(nid, campo, valorCalculado) { const salvo = getStatSalvo(nid, campo) || 0; return Math.max(valorCalculado, salvo) }
-
-/* ═══════════════════════════════════════════════════
-   CACHE LOCAL DE AGENDAMENTOS CONCLUÍDOS
-═══════════════════════════════════════════════════ */
-function cacheKey(nid) { return `ags_concluidos_${nid}` }
-function getCacheConc(nid) { try { return JSON.parse(localStorage.getItem(cacheKey(nid)) || '[]') } catch { return [] } }
-function setCacheConc(nid, lista) {
-  const cutoff = new Date(); cutoff.setMonth(cutoff.getMonth() - 2)
-  const cutStr = cutoff.toISOString().split('T')[0]
-  const filtrado = lista.filter(a => (a.data || '') >= cutStr)
-  try { localStorage.setItem(cacheKey(nid), JSON.stringify(filtrado)) } catch {}
-}
-function mergeComCache(nid, agsDaAPI) {
-  const cache = getCacheConc(nid)
-  const idsAPI = new Set(agsDaAPI.map(a => a._id))
-  const apenasNoCache = cache.filter(a => !idsAPI.has(a._id))
-  return [...agsDaAPI, ...apenasNoCache]
-}
-function salvarConcluidosNoCache(nid, ags) {
-  const cache = getCacheConc(nid)
-  const cacheMap = {}
-  cache.forEach(a => cacheMap[a._id] = a)
-  ags.filter(a => a.status === 'concluido').forEach(a => cacheMap[a._id] = a)
-  setCacheConc(nid, Object.values(cacheMap))
-}
-
-document.addEventListener('DOMContentLoaded',()=>{
-  const nEl=document.getElementById('cfg-novo-servico')
-  const pEl=document.getElementById('cfg-novo-preco')
+  const nEl=document.getElementById('cfg-novo-servico'); const pEl=document.getElementById('cfg-novo-preco')
   if(nEl)nEl.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();cfgAdicionarServico()}})
   if(pEl)pEl.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();cfgAdicionarServico()}})
+
+  setInterval(() => { fetch(`${API}/health`).catch(() => {}) }, 10 * 60 * 1000)
 })
 
 /* ═══════════════════════════════════════════════════
    INIT
-   CORRIGIDO: sem fallback de cache — token inválido
-   sempre redireciona para /auth.html
 ═══════════════════════════════════════════════════ */
 carregarTema()
 
