@@ -34,7 +34,7 @@ function gerarCodigo() {
   return String(crypto.randomInt(100000, 999999))
 }
 
-// ── Schema de verificação (sem índice unique) ─────────
+// ── Schema de verificação ─────────────────────────────
 const codigoSchema = new mongoose.Schema({
   email:      { type: String, required: true },
   codigo:     { type: String, required: true },
@@ -87,7 +87,7 @@ async function enviarEmail(email, nome, codigo, tipo) {
   if (error) throw new Error(`Resend erro: ${JSON.stringify(error)}`)
 }
 
-// ── Salvar código (delete + create, sem upsert) ───────
+// ── Salvar código ─────────────────────────────────────
 async function salvarCodigo(email, tipo, codigo) {
   await CodigoVerificacao.deleteMany({ email: email.toLowerCase(), tipo })
   await CodigoVerificacao.create({
@@ -102,6 +102,12 @@ async function salvarCodigo(email, tipo, codigo) {
 // ══════════════════════════════════════════════════════
 // ROTAS
 // ══════════════════════════════════════════════════════
+
+// ── HEALTH CHECK — mantém o Render acordado ───────────
+// ✅ ADICIONADO: evita hibernação do servidor gratuito
+router.get('/health', (req, res) => {
+  res.json({ ok: true, ts: Date.now() })
+})
 
 // ── ENVIAR CÓDIGO (pré-cadastro) ──────────────────────
 router.post('/enviar-codigo', async (req, res) => {
@@ -164,8 +170,7 @@ router.post('/verificar-codigo', async (req, res) => {
   }
 })
 
-// ── CADASTRO (após verificar código) ─────────────────
-// CORRIGIDO: removido bcrypt.hash manual — o pre('save') do User já faz o hash
+// ── CADASTRO ──────────────────────────────────────────
 router.post('/cadastro', async (req, res) => {
   try {
     const { nome, email, senha, negocio, segmento, servicos } = req.body
@@ -180,14 +185,14 @@ router.post('/cadastro', async (req, res) => {
     let user = await User.findOne({ email: email.toLowerCase(), verificado: false })
     if (user) {
       user.nome       = nome
-      user.senha      = senha   // ← sem hash manual; pre('save') cuida disso
+      user.senha      = senha
       user.verificado = true
       await user.save()
     } else {
       user = await User.create({
         nome,
         email:      email.toLowerCase(),
-        senha,       // ← sem hash manual; pre('save') cuida disso
+        senha,
         verificado: true,
       })
     }
@@ -272,8 +277,6 @@ router.post('/recuperar-senha', async (req, res) => {
 })
 
 // ── NOVA SENHA ────────────────────────────────────────
-// CORRIGIDO: usa user.save() em vez de updateOne+bcrypt manual,
-// para o pre('save') fazer o hash corretamente
 router.post('/nova-senha', async (req, res) => {
   try {
     const { email, senha } = req.body
@@ -294,7 +297,7 @@ router.post('/nova-senha', async (req, res) => {
     if (!user)
       return res.status(404).json({ erro: 'Usuário não encontrado' })
 
-    user.senha      = senha   // ← sem hash manual; pre('save') cuida disso
+    user.senha      = senha
     user.verificado = true
     await user.save()
 

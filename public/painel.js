@@ -374,62 +374,47 @@ async function criarNegocio() {
 }
 
 /* ═══════════════════════════════════════════════════
-   PAINEL — carregamento inicial
-   CORRIGIDO: tratamento de erro robusto, token expirado,
-   e fallback com dados do localStorage
+   PAINEL — CARREGAMENTO INICIAL
+   CORRIGIDO: valida token no servidor obrigatoriamente,
+   sem fallback de cache que permitia acesso sem login
 ═══════════════════════════════════════════════════ */
 async function mostrarPainel() {
   const token = localStorage.getItem('token')
 
-  // Sem token → redireciona
+  // Sem token → redireciona imediatamente
   if (!token) {
     window.location.href = '/auth.html'
     return
   }
 
-  // Mostra dados do localStorage imediatamente (evita tela em branco)
-  const savedId   = localStorage.getItem('negocioId')
-  const savedNome = localStorage.getItem('negocio')
-  if (savedId && savedNome) {
-    negocioAtual = { _id: savedId, nome: savedNome }
-    todosNegocios = [negocioAtual]
-    atualizarSidebarNegocio()
-    renderDropdown()
-    carregarStatsSalvas()
-  }
-
   try {
+    // ✅ SEMPRE valida o token no servidor antes de mostrar qualquer dado
     const res = await fetch(`${API}/auth/negocios`, {
       headers: { 'Authorization': `Bearer ${token}` }
     })
 
-    // Token expirado ou inválido
+    // Token inválido ou expirado → logout obrigatório
     if (res.status === 401) {
       localStorage.clear()
       window.location.href = '/auth.html'
       return
     }
 
-    if (!res.ok) {
-      throw new Error(`Erro ${res.status}`)
-    }
+    if (!res.ok) throw new Error(`Erro ${res.status}`)
 
     const data = await res.json()
 
-    // Garante que é um array válido
     if (!Array.isArray(data) || data.length === 0) {
-      console.warn('Nenhum negócio encontrado para este usuário.')
       mostrarErroPainel('Nenhum painel encontrado. Entre em contato com o suporte.')
       return
     }
 
     todosNegocios = data
+    const savedId = localStorage.getItem('negocioId')
     negocioAtual  = todosNegocios.find(n => n._id === savedId) || todosNegocios[0]
 
-    if (negocioAtual) {
-      localStorage.setItem('negocioId', negocioAtual._id)
-      localStorage.setItem('negocio', negocioAtual.nome)
-    }
+    localStorage.setItem('negocioId', negocioAtual._id)
+    localStorage.setItem('negocio',   negocioAtual.nome)
 
     renderDropdown()
     atualizarSidebarNegocio()
@@ -442,14 +427,10 @@ async function mostrarPainel() {
 
   } catch (err) {
     console.error('Erro ao carregar painel:', err.message)
-
-    // Se já temos dados no localStorage, continua funcionando offline
-    if (negocioAtual) {
-      console.warn('Usando dados em cache do localStorage.')
-      carregarDadosNegocio()
-    } else {
-      mostrarErroPainel('Erro de conexão. Verifique sua internet e recarregue a página.')
-    }
+    // ❌ REMOVIDO: antes entrava via cache quando servidor hibernava
+    // Agora: qualquer falha de conexão = logout forçado por segurança
+    localStorage.clear()
+    window.location.href = '/auth.html'
   }
 }
 
@@ -458,7 +439,6 @@ function mostrarErroPainel(msg) {
   const el = document.getElementById('neg-nome-sidebar')
   if (el) el.textContent = 'Erro ao carregar'
   console.error('[Painel]', msg)
-  // Mostra banner de erro no topo do painel
   const main = document.querySelector('.main')
   if (main && !document.getElementById('painel-erro-banner')) {
     const banner = document.createElement('div')
@@ -523,7 +503,6 @@ async function carregarAgendamentos() {
 
     let agsDaAPI = await res.json()
 
-    // Marca como concluído os agendamentos passados
     const agora = new Date()
     const passados = agsDaAPI.filter(a => {
       if (a.status !== 'confirmado' || !a.data || !a.hora) return false
@@ -601,7 +580,6 @@ async function carregarAgendamentos() {
 
   } catch (err) {
     console.error('Erro ao carregar agendamentos:', err.message)
-    // Usa cache local se disponível
     const cache = getCacheConc(negocioAtual._id)
     if (cache.length) {
       todosAgendamentos = filtrarExpirados(cache)
@@ -1295,6 +1273,11 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   document.querySelectorAll('.page').forEach(p=>{if(!p.classList.contains('ativo'))p.setAttribute('aria-hidden','true')})
+
+  // ✅ Keep-alive: mantém o servidor Render acordado com ping a cada 10 minutos
+  setInterval(() => {
+    fetch(`${API}/health`).catch(() => {})
+  }, 10 * 60 * 1000)
 })
 
 /* ═══════════════════════════════════════════════════
@@ -1797,11 +1780,14 @@ document.addEventListener('DOMContentLoaded',()=>{
 
 /* ═══════════════════════════════════════════════════
    INIT
+   CORRIGIDO: sem fallback de cache — token inválido
+   sempre redireciona para /auth.html
 ═══════════════════════════════════════════════════ */
 carregarTema()
+
 const _token = localStorage.getItem('token')
-if (_token) {
-  mostrarPainel()
-} else {
+if (!_token) {
   window.location.href = '/auth.html'
+} else {
+  mostrarPainel()
 }

@@ -120,6 +120,27 @@ body {
 .terms { font-size: 12px; color: var(--text3); margin-top: 16px; text-align: center; line-height: 1.5; }
 .terms a { color: var(--accent); text-decoration: none; }
 
+/* Loading overlay para validação do token */
+.checking-overlay {
+  position: fixed; inset: 0;
+  background: #fff;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 14px;
+}
+.checking-spinner {
+  width: 32px; height: 32px;
+  border: 3px solid rgba(37,99,235,0.15);
+  border-top-color: #2563eb;
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.checking-text { font-size: 14px; color: #9a9aaa; font-family: 'Inter', sans-serif; }
+
 /* ADMIN REDIRECT OVERLAY */
 .admin-redirect {
   position: fixed; inset: 0;
@@ -168,6 +189,12 @@ body {
 </style>
 </head>
 <body>
+
+<!-- ✅ Loading overlay — exibido enquanto valida token no servidor -->
+<div class="checking-overlay" id="checking-overlay" style="display:none">
+  <div class="checking-spinner"></div>
+  <div class="checking-text">Verificando sessão...</div>
+</div>
 
 <!-- ADMIN REDIRECT MODAL -->
 <div class="admin-redirect" id="admin-redirect">
@@ -338,13 +365,10 @@ body {
 <script>
 const API = 'https://agendafacil-wf3q.onrender.com/api'
 
-// ═══ EMAILS DE ADMIN (configure aqui ou use campo admin no JWT) ═══
-// Para marcar um usuário como admin, configure no backend com campo admin:true no JWT
-// OU adicione o email aqui para acesso local de emergência
+// ═══ EMAILS DE ADMIN ═══
 const ADMIN_EMAILS = [
   'junqueirafreitasl@gmail.com',
   'ljunqueirafreitas@gmail.com',
-  // adicione outros emails admin aqui
 ]
 
 const servicosPorSegmento = {
@@ -377,13 +401,11 @@ function mascaraTel(inp) {
   inp.value=v
 }
 
-// ═══ VERIFICAR SE É ADMIN ═══
+// ═══ VERIFICAR SE É ADMIN (via JWT ou email) ═══
 function verificarSeAdmin(token, email) {
   try {
     const payload = JSON.parse(atob(token.split('.')[1]))
-    // Admin pelo campo no JWT
     if (payload.admin === true || payload.role === 'admin') return true
-    // Admin pelo email
     if (ADMIN_EMAILS.includes(email || payload.email || '')) return true
   } catch(e) {}
   return false
@@ -409,11 +431,12 @@ async function fazerLogin() {
     const res  = await fetch(`${API}/auth/login`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,senha})})
     const data = await res.json()
     if(!res.ok) throw new Error(data.erro||'Email ou senha incorretos')
-    
+
     // Salva sessão
     localStorage.setItem('token', data.token)
-    localStorage.setItem('negocio', data.negocio)
+    localStorage.setItem('negocio', data.negocio || '')
     localStorage.setItem('userEmail', email)
+    if (data.negocioId) localStorage.setItem('negocioId', data.negocioId)
     try {
       const payload = JSON.parse(atob(data.token.split('.')[1]))
       localStorage.setItem('userId', payload.id)
@@ -542,8 +565,9 @@ async function salvarNovaSenha() {
 
 function salvarSessao(data, email) {
   localStorage.setItem('token', data.token)
-  localStorage.setItem('negocio', data.negocio)
+  localStorage.setItem('negocio', data.negocio || '')
   localStorage.setItem('userEmail', email || '')
+  if (data.negocioId) localStorage.setItem('negocioId', data.negocioId)
   try {
     const payload = JSON.parse(atob(data.token.split('.')[1]))
     localStorage.setItem('userId', payload.id)
@@ -572,16 +596,49 @@ function iniciarTimer(timerId, btnId) {
   timerInt = setInterval(()=>{ s--; const el=document.getElementById(timerId); if(el)el.textContent=s; if(s<=0){clearInterval(timerInt);btn.disabled=false;btn.textContent='Reenviar código'} }, 1000)
 }
 
-// Redireciona se já estiver logado
-if(localStorage.getItem('token')) {
+/* ═══════════════════════════════════════════════════
+   ✅ CORRIGIDO: Validação do token no servidor antes
+   de redirecionar. Não usa mais só localStorage.
+═══════════════════════════════════════════════════ */
+;(async () => {
   const tk = localStorage.getItem('token')
-  const em = localStorage.getItem('userEmail') || ''
-  if(verificarSeAdmin(tk, em)) {
-    window.location.href = '/admin.html'
-  } else {
-    window.location.href = '/painel.html'
+
+  // Sem token → fica na tela de login normalmente
+  if (!tk) return
+
+  // Mostra loading enquanto valida
+  const overlay = document.getElementById('checking-overlay')
+  if (overlay) overlay.style.display = 'flex'
+
+  try {
+    // ✅ Valida o token no servidor
+    const res = await fetch(`${API}/auth/negocios`, {
+      headers: { 'Authorization': `Bearer ${tk}` }
+    })
+
+    if (!res.ok) {
+      // Token inválido ou expirado — limpa e mostra tela de login
+      localStorage.clear()
+      if (overlay) overlay.style.display = 'none'
+      return
+    }
+
+    // Token válido — redireciona
+    const em = localStorage.getItem('userEmail') || ''
+    if (verificarSeAdmin(tk, em)) {
+      window.location.href = '/admin.html'
+    } else {
+      window.location.href = '/painel.html'
+    }
+
+  } catch (err) {
+    // ✅ Servidor offline (Render hibernando) — NÃO redireciona
+    // Usuário precisa fazer login normalmente
+    console.warn('[auth] Servidor indisponível, aguardando login manual.')
+    localStorage.clear()
+    if (overlay) overlay.style.display = 'none'
   }
-}
+})()
 </script>
 </body>
 </html>
