@@ -1,15 +1,6 @@
 /**
- * routes/assinatura.js
- *
- * CORREÇÃO PRINCIPAL:
- * O erro "card_token_id is required" ocorre quando o plano no Mercado Pago
- * está configurado para cobrança direta (sem link de checkout).
- * Solução: criar a pré-aprovação passando os dados do plano manualmente
- * (valor, frequência, etc.) em vez de referenciar o preapproval_plan_id,
- * assim o MP sempre devolve um init_point (link de checkout) válido.
- *
- * Se quiser manter os planos cadastrados no painel do MP, verifique se eles
- * estão como "Assinatura com link de pagamento" (não "cobrança direta").
+ * routes/assinatura.js — PRODUÇÃO
+ * Mercado Pago Assinaturas (preapproval)
  */
 
 const express  = require('express')
@@ -41,39 +32,34 @@ const MP_API = axios.create({
   headers: { Authorization: `Bearer ${MP_TOKEN}` },
 })
 
-/* Definição manual dos planos como fallback */
+/* Configuração dos planos */
 const PLANOS_CONFIG = {
   basico: {
-    nome:           'AgendoRapido Básico',
-    valor:          29.90,
-    frequencia:     1,
+    nome:            'AgendoRapido Básico',
+    valor:           29.90,
+    frequencia:      1,
     tipo_frequencia: 'months',
-    planId:         PLAN_BASICO,
+    planId:          PLAN_BASICO,
   },
   profissional: {
-    nome:           'AgendoRapido Profissional',
-    valor:          49.90,
-    frequencia:     1,
+    nome:            'AgendoRapido Profissional',
+    valor:           49.90,
+    frequencia:      1,
     tipo_frequencia: 'months',
-    planId:         PLAN_PRO,
+    planId:          PLAN_PRO,
   },
   pro: {
-    nome:           'AgendoRapido Profissional',
-    valor:          49.90,
-    frequencia:     1,
+    nome:            'AgendoRapido Profissional',
+    valor:           49.90,
+    frequencia:      1,
     tipo_frequencia: 'months',
-    planId:         PLAN_PRO,
+    planId:          PLAN_PRO,
   },
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
    POST /api/assinatura/criar
    POST /api/assinatura/checkout  (alias retrocompatível)
-
-   ESTRATÉGIA:
-   1. Tenta criar a pré-aprovação via preapproval_plan_id (plano do painel MP)
-   2. Se o MP retornar erro sobre card_token_id ou 400/422, cria manualmente
-      passando reason + auto_recurring, o que SEMPRE gera um init_point
 ───────────────────────────────────────────────────────────────────────────── */
 async function criarAssinatura(req, res) {
   try {
@@ -87,7 +73,7 @@ async function criarAssinatura(req, res) {
 
     let mpData = null
 
-    /* ── Tentativa 1: via preapproval_plan_id ── */
+    /* Tentativa 1: via preapproval_plan_id (plano criado no painel MP) */
     if (config.planId) {
       try {
         const resp = await MP_API.post('/preapproval', {
@@ -101,13 +87,10 @@ async function criarAssinatura(req, res) {
       } catch (errPlan) {
         const mpErr = errPlan?.response?.data
         console.warn('[criarAssinatura] Falha via plan_id, tentando manual:', mpErr?.message || mpErr)
-        // Continua para tentativa 2
       }
     }
 
-    /* ── Tentativa 2: criação manual com auto_recurring ──
-       Isso SEMPRE gera init_point sem precisar de cartão.
-       O pagador escolhe o método no checkout do MP.            */
+    /* Tentativa 2: criação manual com auto_recurring — sempre gera init_point */
     if (!mpData || !mpData.init_point) {
       const resp = await MP_API.post('/preapproval', {
         reason:             config.nome,
@@ -115,17 +98,17 @@ async function criarAssinatura(req, res) {
         back_url:           `${FRONTEND_URL}/planos.html?assinatura=sucesso`,
         external_reference: user._id.toString(),
         auto_recurring: {
-          frequency:        config.frequencia,
-          frequency_type:   config.tipo_frequencia,
+          frequency:          config.frequencia,
+          frequency_type:     config.tipo_frequencia,
           transaction_amount: config.valor,
-          currency_id:      'BRL',
+          currency_id:        'BRL',
         },
       })
       mpData = resp.data
       console.log('[criarAssinatura] Criado via auto_recurring manual:', mpData.id)
     }
 
-    /* ── Salva no usuário ── */
+    /* Salva no usuário */
     user.mp_preapproval_id = mpData.id
     user.mp_plano          = plano
     user.mp_status         = mpData.status
@@ -143,11 +126,10 @@ async function criarAssinatura(req, res) {
     const mpErr = err?.response?.data
     console.error('[criarAssinatura] Erro final:', mpErr || err.message)
 
-    // Mensagem amigável baseada no erro do MP
     let msg = 'Erro ao criar assinatura'
-    if (mpErr?.message)  msg = mpErr.message
+    if (mpErr?.message)   msg = mpErr.message
     else if (mpErr?.error) msg = mpErr.error
-    else if (err.message) msg = err.message
+    else if (err.message)  msg = err.message
 
     return res.status(500).json({ erro: msg })
   }
