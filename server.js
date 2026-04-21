@@ -1,85 +1,68 @@
-const express = require('express')
+const express  = require('express')
 const mongoose = require('mongoose')
-const cors = require('cors')
+const cors     = require('cors')
 require('dotenv').config()
 
 const app = express()
 app.use(cors())
 
+// ── Webhooks precisam de raw body ANTES do express.json ───────
 app.use('/api/assinatura/webhook', express.raw({ type: 'application/json' }))
-app.use('/api/pagamento/webhook', express.raw({ type: 'application/json' }))
+app.use('/api/pagamento/webhook',  express.raw({ type: 'application/json' }))
 
 app.use(express.json({ limit: '10mb' }))
 app.use(express.urlencoded({ limit: '10mb', extended: true }))
 app.use(express.static('public', { extensions: ['html'] }))
 
+// ── Rotas da API ───────────────────────────────────────────────
 app.use('/api/auth',         require('./routes/auth'))
 app.use('/api/agendamentos', require('./routes/appointments'))
 app.use('/api/upload',       require('./routes/upload'))
-app.use('/api/assinatura',   require('./routes/assinatura'))
+app.use('/api/assinatura',   require('./routes/assinatura'))  // ← apenas UMA vez
 app.use('/api/pagamento',    require('./routes/pagamento'))
 
+// ── Páginas estáticas ──────────────────────────────────────────
 app.get('/', (req, res) => {
   res.sendFile('index.html', { root: 'public' })
 })
 
-// ── Bio por slug ───────────────────────────────────────────────
 app.get('/bio/:slug', (req, res) => {
   res.sendFile('bio.html', { root: 'public' })
 })
 
-// ── Páginas estáticas de landing ──────────────────────────────
 const PAGINAS_ESTATICAS = [
-  'barbearia',
-  'salao-de-beleza',
-  'clinica',
-  'pet-shop',
-  'academia',
-  'tatuagem',
-  'painel',
-  'auth',
-  'planos'
+  'barbearia', 'salao-de-beleza', 'clinica', 'pet-shop',
+  'academia', 'tatuagem', 'painel', 'auth', 'planos'
 ]
 
 app.get('/:slug', async (req, res) => {
   const slug = req.params.slug
-
-  // Ignora requisições de arquivos estáticos
   if (slug.includes('.')) return res.status(404).sendFile('404.html', { root: 'public' })
+  if (PAGINAS_ESTATICAS.includes(slug)) return res.sendFile(`${slug}.html`, { root: 'public' })
 
-  // Serve páginas estáticas conhecidas
-  if (PAGINAS_ESTATICAS.includes(slug)) {
-    return res.sendFile(`${slug}.html`, { root: 'public' })
-  }
-
-  // Verifica se existe um negócio com esse ID no banco
   try {
     const Negocio = require('./models/Negocio')
     const negocio = await Negocio.findById(slug)
     if (!negocio) return res.status(404).sendFile('404.html', { root: 'public' })
     res.sendFile('agendar.html', { root: 'public' })
-  } catch (e) {
-    // ID inválido (formato errado pro MongoDB) ou qualquer outro erro
+  } catch {
     return res.status(404).sendFile('404.html', { root: 'public' })
   }
 })
 
-const assinaturaRoutes = require('./routes/assinatura')
-app.use('/api/assinatura', assinaturaRoutes)
-
-// ── LIMPEZA AUTOMÁTICA ─────────────────────────────────────────
+// ── Limpeza automática de agendamentos antigos ─────────────────
 async function limparAgendamentos() {
   try {
     const Appointment = require('./models/Appointment')
     const umaHoraAtras = new Date(Date.now() - 60 * 60 * 1000)
     const result = await Appointment.deleteMany({
-      status: { $in: ['concluido', 'cancelado'] },
+      status:       { $in: ['concluido', 'cancelado'] },
       atualizadoEm: { $lt: umaHoraAtras }
     })
     if (result.deletedCount > 0) {
       console.log(`[limpeza] ${result.deletedCount} agendamentos removidos`)
     }
-  } catch(e) {
+  } catch (e) {
     console.error('[limpeza] erro:', e.message)
   }
 }
