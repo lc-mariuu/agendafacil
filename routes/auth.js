@@ -165,6 +165,7 @@ router.post('/verificar-codigo', async (req, res) => {
 })
 
 // ── CADASTRO (após verificar código) ─────────────────
+// CORRIGIDO: removido bcrypt.hash manual — o pre('save') do User já faz o hash
 router.post('/cadastro', async (req, res) => {
   try {
     const { nome, email, senha, negocio, segmento, servicos } = req.body
@@ -176,19 +177,17 @@ router.post('/cadastro', async (req, res) => {
     if (userVerificado)
       return res.status(400).json({ erro: 'Email já cadastrado' })
 
-    const senhaCriptografada = await bcrypt.hash(senha, 10)
-
     let user = await User.findOne({ email: email.toLowerCase(), verificado: false })
     if (user) {
       user.nome       = nome
-      user.senha      = senhaCriptografada
+      user.senha      = senha   // ← sem hash manual; pre('save') cuida disso
       user.verificado = true
       await user.save()
     } else {
       user = await User.create({
         nome,
-        email: email.toLowerCase(),
-        senha: senhaCriptografada,
+        email:      email.toLowerCase(),
+        senha,       // ← sem hash manual; pre('save') cuida disso
         verificado: true,
       })
     }
@@ -273,6 +272,8 @@ router.post('/recuperar-senha', async (req, res) => {
 })
 
 // ── NOVA SENHA ────────────────────────────────────────
+// CORRIGIDO: usa user.save() em vez de updateOne+bcrypt manual,
+// para o pre('save') fazer o hash corretamente
 router.post('/nova-senha', async (req, res) => {
   try {
     const { email, senha } = req.body
@@ -289,13 +290,13 @@ router.post('/nova-senha', async (req, res) => {
     if (!registro)
       return res.status(403).json({ erro: 'Verificação não concluída. Solicite um novo código.' })
 
-    const hash = await bcrypt.hash(senha, 10)
-    const resultado = await User.updateOne(
-      { email: email.toLowerCase() },
-      { $set: { senha: hash, verificado: true } }
-    )
-    if (resultado.matchedCount === 0)
+    const user = await User.findOne({ email: email.toLowerCase() })
+    if (!user)
       return res.status(404).json({ erro: 'Usuário não encontrado' })
+
+    user.senha      = senha   // ← sem hash manual; pre('save') cuida disso
+    user.verificado = true
+    await user.save()
 
     await CodigoVerificacao.deleteMany({ email: email.toLowerCase(), tipo: 'recuperacao' })
     res.json({ ok: true })
@@ -353,7 +354,6 @@ router.delete('/negocios/:negocioId', autenticar, async (req, res) => {
 })
 
 // ── GET negócio por ID ────────────────────────────────
-// CORRIGIDO: retorna lembrete1h e posAtendimento
 router.get('/negocio/:id', async (req, res) => {
   try {
     let neg = await Negocio.findById(req.params.id)
@@ -368,8 +368,8 @@ router.get('/negocio/:id', async (req, res) => {
         pagamentos:         neg.pagamentos || {},
         bio:                neg.bio,
         lembrete:           neg.lembrete,
-        lembrete1h:         neg.lembrete1h,       // ← ADICIONADO
-        posAtendimento:     neg.posAtendimento,   // ← ADICIONADO
+        lembrete1h:         neg.lembrete1h,
+        posAtendimento:     neg.posAtendimento,
         intervalosServicos: neg.intervalosServicos || {},
       })
     }
@@ -385,8 +385,8 @@ router.get('/negocio/:id', async (req, res) => {
         intervalo:      negUser.intervalo,
         bio:            negUser.bio,
         lembrete:       negUser.lembrete,
-        lembrete1h:     negUser.lembrete1h,       // ← ADICIONADO
-        posAtendimento: negUser.posAtendimento,   // ← ADICIONADO
+        lembrete1h:     negUser.lembrete1h,
+        posAtendimento: negUser.posAtendimento,
       })
     }
     res.status(404).json({ erro: 'Negócio não encontrado' })
@@ -471,26 +471,22 @@ router.patch('/negocios/:negocioId', autenticar, async (req, res) => {
 })
 
 // ── PATCH lembretes ───────────────────────────────────
-// CORRIGIDO: usa o campo dinâmico (lembrete | lembrete1h | posAtendimento)
 router.patch('/lembretes', autenticar, async (req, res) => {
   try {
     const { negocioId, campo, ativo, mensagem } = req.body
- 
-    // Mapa de campos permitidos → chave no documento Negocio
+
     const camposPermitidos = {
-      'lembrete':        'lembrete',
-      'lembrete1h':      'lembrete1h',
-      'posAtendimento':  'posAtendimento',
+      'lembrete':       'lembrete',
+      'lembrete1h':     'lembrete1h',
+      'posAtendimento': 'posAtendimento',
     }
- 
-    // Se vier o campo "campo" usa atualização granular,
-    // caso contrário mantém compatibilidade com o formato antigo
+
     if (campo && camposPermitidos[campo]) {
       const chave = camposPermitidos[campo]
       const update = {}
       update[`${chave}.ativo`]    = !!ativo
       if (mensagem !== undefined) update[`${chave}.mensagem`] = mensagem
- 
+
       const neg = await Negocio.findOneAndUpdate(
         { _id: negocioId, userId: req.userId },
         { $set: update },
@@ -499,8 +495,8 @@ router.patch('/lembretes', autenticar, async (req, res) => {
       if (!neg) return res.status(404).json({ erro: 'Negócio não encontrado' })
       return res.json({ ok: true, campo, ativo: !!ativo })
     }
- 
-    // Fallback: formato legado (só salva lembrete principal)
+
+    // Fallback: formato legado
     const neg = await Negocio.findOneAndUpdate(
       { _id: negocioId, userId: req.userId },
       { $set: { 'lembrete.ativo': !!ativo, ...(mensagem !== undefined ? { 'lembrete.mensagem': mensagem } : {}) } },
