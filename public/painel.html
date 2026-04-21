@@ -49,10 +49,8 @@
   }
   </script>
 
-  <!-- ✅ CORREÇÃO: painel.js carregado ANTES do body, sem defer,
-       para que irPara(), toggleDropdown() etc. estejam disponíveis
-       quando os onclick inline do HTML forem chamados. -->
-  <script src="./painel.js"></script>
+  <!-- ✅ CORREÇÃO: painel.js removido do <head> e movido para o final do <body>
+       para garantir que document.body existe quando o script executa. -->
 </head>
 <body>
 
@@ -1276,8 +1274,12 @@ Estamos te esperando! 🙏</textarea>
   </button>
 </div>
 
-<!-- ✅ CORREÇÃO: Script inline de assinatura sem redeclarar API.
-     A variável API já existe no painel.js carregado no <head>. -->
+<!-- ✅ CORREÇÃO PRINCIPAL: painel.js carregado aqui, no final do <body>,
+     garantindo que document.body já existe quando o script executa.
+     Isso corrige o erro: Cannot read properties of null (reading 'classList') -->
+<script src="./painel.js"></script>
+
+<!-- Script de assinatura (usa a variável API definida no painel.js acima) -->
 <script>
 async function assinar(plano) {
   const token = localStorage.getItem('token')
