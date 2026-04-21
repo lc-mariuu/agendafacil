@@ -145,7 +145,7 @@ nav {
 }
 .plan.featured .check { background: rgba(22,163,74,0.2); }
 
-/* ── BOTÕES CORRIGIDOS E ESTILIZADOS ── */
+/* ── BOTÕES ── */
 .btn-plan {
   display: block; width: 100%; padding: 14px;
   text-align: center; border-radius: 10px;
@@ -157,7 +157,6 @@ nav {
 .btn-plan:active:not(:disabled) { transform: scale(0.98); }
 .btn-plan:disabled { opacity: 0.6; cursor: not-allowed; transform: none !important; }
 
-/* Básico — borda azul, fundo claro */
 .btn-plan.btn-basico {
   background: var(--accent-light);
   color: var(--accent);
@@ -168,7 +167,6 @@ nav {
   color: #fff;
 }
 
-/* Profissional — fundo azul sólido */
 .btn-plan.btn-profissional {
   background: #fff;
   color: var(--text);
@@ -182,7 +180,7 @@ nav {
 .err-txt { color: #dc2626; font-size: 13px; text-align: center; margin-top: 8px; min-height: 18px; }
 .plan.featured .err-txt { color: rgba(255,200,200,0.9); }
 
-/* ── MENSAGEM DE SUCESSO ── */
+/* ── SUCESSO ── */
 .sucesso-banner {
   position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
   background: #10b981; color: white; padding: 14px 28px;
@@ -223,7 +221,6 @@ nav {
 
 <div class="page">
 
-  <!-- STATUS DO PLANO ATUAL -->
   <div class="status-card" id="status-card" style="display:none">
     <div>
       <div class="status-label">Plano atual</div>
@@ -263,7 +260,6 @@ nav {
         <li><div class="check"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5L8 3" stroke="#16a34a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>Painel de gestão completo</li>
         <li><div class="check"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5L8 3" stroke="#16a34a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>App instalável no celular</li>
       </ul>
-      <!-- CORREÇÃO: id correto + classe estilizada -->
       <button id="btn-basico" class="btn-plan btn-basico" onclick="assinar('basico')">Começar grátis</button>
       <div class="err-txt" id="err-basico"></div>
     </div>
@@ -282,7 +278,6 @@ nav {
         <li><div class="check"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5L8 3" stroke="#4ade80" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>Lembretes automáticos</li>
         <li><div class="check"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5L8 3" stroke="#4ade80" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>Suporte prioritário</li>
       </ul>
-      <!-- CORREÇÃO: id correto + classe estilizada -->
       <button id="btn-profissional" class="btn-plan btn-profissional" onclick="assinar('profissional')">Começar grátis</button>
       <div class="err-txt" id="err-profissional"></div>
     </div>
@@ -314,8 +309,25 @@ nav {
 const API = 'https://agendafacil-wf3q.onrender.com/api'
 
 /* ──────────────────────────────────────────
-   ASSINAR — corrigido: não precisa de btn
-   como parâmetro, busca pelo id
+   Utilitários
+────────────────────────────────────────── */
+function setErro(plano, msg) {
+  const id = plano === 'profissional' ? 'err-profissional' : 'err-basico'
+  const el = document.getElementById(id)
+  if (el) el.textContent = msg
+}
+
+function setBotoes(disabled) {
+  const btnBasico = document.getElementById('btn-basico')
+  const btnPro    = document.getElementById('btn-profissional')
+  if (btnBasico && !btnBasico.dataset.planoAtual) btnBasico.disabled = disabled
+  if (btnPro    && !btnPro.dataset.planoAtual)    btnPro.disabled    = disabled
+}
+
+/* ──────────────────────────────────────────
+   ASSINAR
+   Fluxo: tenta /assinatura/criar → fallback /assinatura/checkout
+   O backend deve retornar { link } ou { url } com o link do MP
 ────────────────────────────────────────── */
 async function assinar(plano) {
   const token = localStorage.getItem('token')
@@ -326,22 +338,15 @@ async function assinar(plano) {
     return
   }
 
-  // Desabilita AMBOS os botões durante o processo
-  const btnBasico = document.getElementById('btn-basico')
-  const btnPro    = document.getElementById('btn-profissional')
-  const errEl     = document.getElementById(plano === 'profissional' ? 'err-profissional' : 'err-basico')
-  const btnAtual  = document.getElementById(`btn-${plano}`)
+  const btnAtual = document.getElementById(`btn-${plano}`)
+  const textoOriginal = btnAtual ? btnAtual.textContent : 'Começar grátis'
 
-  const textoOriginal = btnAtual.textContent
-
-  if (btnBasico)  btnBasico.disabled  = true
-  if (btnPro)     btnPro.disabled     = true
-  if (errEl)      errEl.textContent   = ''
-  if (btnAtual)   btnAtual.textContent = 'Aguarde...'
+  setErro(plano, '')
+  setBotoes(true)
+  if (btnAtual) btnAtual.textContent = 'Aguarde...'
 
   try {
-    /* Tenta a rota nova primeiro (/assinatura/criar),
-       com fallback para a rota antiga (/assinatura/checkout) */
+    // ── Tentativa 1: rota nova /assinatura/criar ──
     let res = await fetch(`${API}/assinatura/criar`, {
       method: 'POST',
       headers: {
@@ -351,8 +356,8 @@ async function assinar(plano) {
       body: JSON.stringify({ plano }),
     })
 
-    // fallback para rota antiga se a nova não existir (404)
-    if (res.status === 404) {
+    // ── Fallback: rota antiga /assinatura/checkout ──
+    if (res.status === 404 || res.status === 405) {
       res = await fetch(`${API}/assinatura/checkout`, {
         method: 'POST',
         headers: {
@@ -363,24 +368,43 @@ async function assinar(plano) {
       })
     }
 
-    const data = await res.json()
+    // Tenta parsear JSON mesmo em caso de erro para pegar a mensagem
+    let data = {}
+    try { data = await res.json() } catch (_) {}
 
     if (!res.ok) {
-      throw new Error(data.erro || data.message || 'Erro ao iniciar assinatura')
+      // Mensagens de erro mais amigáveis
+      const erroServidor = data.erro || data.error || data.message || ''
+      let msgAmigavel = 'Erro ao iniciar assinatura. Tente novamente.'
+
+      if (res.status === 401 || res.status === 403) {
+        msgAmigavel = 'Sessão expirada. Faça login novamente.'
+        setTimeout(() => { window.location.href = '/auth.html?redirect=planos' }, 1500)
+      } else if (res.status === 500) {
+        // Erro interno — pode ser configuração do Mercado Pago no servidor
+        msgAmigavel = 'Erro no servidor. Por favor, tente em alguns instantes.'
+        console.error('[Assinar] Erro 500 — detalhe do servidor:', erroServidor)
+      } else if (erroServidor) {
+        msgAmigavel = erroServidor
+      }
+
+      throw new Error(msgAmigavel)
     }
 
-    // Suporta tanto { link } (MP) quanto { url } (AbacatePay)
-    const destino = data.link || data.url
-    if (!destino) throw new Error('Link de pagamento não recebido')
+    // Suporta { link }, { url }, { checkout_url }, { init_point }
+    const destino = data.link || data.url || data.checkout_url || data.init_point
+    if (!destino) {
+      console.error('[Assinar] Resposta sem link:', data)
+      throw new Error('Link de pagamento não recebido. Contate o suporte.')
+    }
 
     window.location.href = destino
 
   } catch (err) {
-    console.error('[Assinar]', err)
-    if (errEl) errEl.textContent = err.message || 'Erro de conexão. Tente novamente.'
+    console.error('[Assinar] Erro:', err)
+    setErro(plano, err.message || 'Erro de conexão. Verifique sua internet.')
     if (btnAtual) btnAtual.textContent = textoOriginal
-    if (btnBasico)  btnBasico.disabled  = false
-    if (btnPro)     btnPro.disabled     = false
+    setBotoes(false)
   }
 }
 
@@ -393,8 +417,8 @@ async function abrirPortal() {
   const erroEl = document.getElementById('portal-erro')
   const textoOriginal = btn.textContent
 
-  btn.disabled     = true
-  btn.textContent  = 'Abrindo...'
+  btn.disabled         = true
+  btn.textContent      = 'Abrindo...'
   erroEl.style.display = 'none'
 
   try {
@@ -402,18 +426,19 @@ async function abrirPortal() {
       method: 'POST',
       headers: { 'Authorization': `Bearer ${token}` },
     })
-    const data = await res.json()
+    let data = {}
+    try { data = await res.json() } catch (_) {}
 
-    if (res.ok && data.url) {
-      window.location.href = data.url
+    if (res.ok && (data.url || data.link)) {
+      window.location.href = data.url || data.link
     } else {
-      throw new Error(data.erro || 'Erro ao abrir gerenciamento')
+      throw new Error(data.erro || data.error || data.message || 'Erro ao abrir gerenciamento')
     }
   } catch (e) {
     erroEl.textContent   = e.message
     erroEl.style.display = 'block'
-    btn.disabled    = false
-    btn.textContent = textoOriginal
+    btn.disabled         = false
+    btn.textContent      = textoOriginal
   }
 }
 
@@ -425,7 +450,7 @@ async function carregarStatus() {
   if (!token) return
 
   try {
-    const res  = await fetch(`${API}/assinatura/status`, {
+    const res = await fetch(`${API}/assinatura/status`, {
       headers: { 'Authorization': `Bearer ${token}` },
     })
     if (!res.ok) return
@@ -454,13 +479,14 @@ async function carregarStatus() {
       badge.className   = 'status-badge sb-ativo'
       document.getElementById('btn-portal').style.display = 'block'
 
-      // Desabilita o plano que o usuário já tem
-      const planoAtual = data.plano
-      const btnDoPlano = document.getElementById(`btn-${planoAtual}`)
+      // Marca o botão do plano atual como desativado
+      const planoAtual  = data.plano
+      const btnDoPlano  = document.getElementById(`btn-${planoAtual}`)
       if (btnDoPlano) {
-        btnDoPlano.textContent = 'Plano atual'
-        btnDoPlano.disabled    = true
-        btnDoPlano.style.opacity = '0.6'
+        btnDoPlano.textContent       = 'Plano atual'
+        btnDoPlano.disabled          = true
+        btnDoPlano.style.opacity     = '0.6'
+        btnDoPlano.dataset.planoAtual = '1' // flag para não reativar no setBotoes
       }
     } else {
       badge.textContent = 'Inativo'
@@ -496,7 +522,7 @@ document.addEventListener('DOMContentLoaded', () => {
   verificarSucesso()
   carregarStatus()
 
-  // Se voltou do auth com plano já escolhido
+  // Retoma assinatura após login
   const planoEscolhido = localStorage.getItem('plano_escolhido')
   if (planoEscolhido && localStorage.getItem('token')) {
     localStorage.removeItem('plano_escolhido')
