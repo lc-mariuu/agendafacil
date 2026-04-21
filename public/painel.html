@@ -48,6 +48,11 @@
     "operatingSystem": "Web"
   }
   </script>
+
+  <!-- ✅ CORREÇÃO: painel.js carregado ANTES do body, sem defer,
+       para que irPara(), toggleDropdown() etc. estejam disponíveis
+       quando os onclick inline do HTML forem chamados. -->
+  <script src="./painel.js"></script>
 </head>
 <body>
 
@@ -1271,28 +1276,25 @@ Estamos te esperando! 🙏</textarea>
   </button>
 </div>
 
-<script src="./painel.js" defer></script>
-
+<!-- ✅ CORREÇÃO: Script inline de assinatura sem redeclarar API.
+     A variável API já existe no painel.js carregado no <head>. -->
 <script>
- const API = 'https://agendafacil-wf3q.onrender.com/api'
- 
 async function assinar(plano) {
   const token = localStorage.getItem('token')
- 
-  // Se não estiver logado, manda para o login primeiro
+
   if (!token) {
     localStorage.setItem('plano_escolhido', plano)
     window.location.href = '/auth.html?redirect=planos'
     return
   }
- 
+
   const btn = document.getElementById(`btn-${plano}`)
   if (btn) {
     btn.disabled     = true
     btn.textContent  = 'Aguarde...'
     btn.style.opacity = '0.7'
   }
- 
+
   try {
     const res = await fetch(`${API}/assinatura/criar`, {
       method: 'POST',
@@ -1302,31 +1304,28 @@ async function assinar(plano) {
       },
       body: JSON.stringify({ plano }),
     })
- 
+
     const data = await res.json()
- 
+
     if (!res.ok) {
       alert('Erro ao iniciar assinatura: ' + (data.erro || 'Tente novamente'))
       if (btn) { btn.disabled = false; btn.textContent = 'Começar grátis'; btn.style.opacity = '1' }
       return
     }
- 
-    // Redireciona para a página de pagamento do Mercado Pago
+
     window.location.href = data.link
- 
+
   } catch (err) {
     console.error('Erro:', err)
     alert('Erro de conexão. Tente novamente.')
     if (btn) { btn.disabled = false; btn.textContent = 'Começar grátis'; btn.style.opacity = '1' }
   }
 }
- 
-// Verifica se voltou do pagamento com sucesso
+
 window.addEventListener('DOMContentLoaded', () => {
   const params = new URLSearchParams(window.location.search)
- 
+
   if (params.get('assinatura') === 'ok') {
-    // Mostra mensagem de sucesso
     const banner = document.createElement('div')
     banner.style.cssText = `
       position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
@@ -1337,12 +1336,13 @@ window.addEventListener('DOMContentLoaded', () => {
     `
     banner.innerHTML = '✅ Assinatura ativada! Redirecionando...'
     document.body.appendChild(banner)
- 
+
     setTimeout(() => {
       window.location.href = '/painel.html'
     }, 2500)
   }
 })
- </script>
+</script>
+
 </body>
 </html>
