@@ -55,7 +55,7 @@ srStyle.textContent = `
 document.head.appendChild(srStyle)
 
 /* ═══════════════════════════════════════════════════
-   LINKS — usa ?id= para compatibilidade com o backend
+   LINKS
 ═══════════════════════════════════════════════════ */
 const BASE_URL = 'https://agendorapido.com.br'
 
@@ -97,14 +97,12 @@ function atualizarTodosLinks(negocio) {
 
 /* ═══════════════════════════════════════════════════
    EXPIRAÇÃO VISUAL DE CONCLUÍDOS (1 hora)
-   Lucros, stats e insights ficam intactos no localStorage
 ═══════════════════════════════════════════════════ */
 function conclusaoKey(id) {
   return `ag_concluido_em_${id}`
 }
 
 function registrarConclusao(id) {
-  // Só registra se ainda não tiver — preserva o timestamp original
   if (!localStorage.getItem(conclusaoKey(id))) {
     localStorage.setItem(conclusaoKey(id), String(Date.now()))
   }
@@ -117,8 +115,6 @@ function concluídoExpirado(id) {
   return (Date.now() - Number(salvo)) > HORA_EM_MS
 }
 
-// Filtra a lista removendo concluídos com mais de 1h — só visual
-// Lucros e stats já foram calculados antes desta chamada
 function filtrarExpirados(lista) {
   return lista.filter(a => {
     if (a.status !== 'concluido') return true
@@ -379,17 +375,98 @@ async function criarNegocio() {
 
 /* ═══════════════════════════════════════════════════
    PAINEL — carregamento inicial
+   CORRIGIDO: tratamento de erro robusto, token expirado,
+   e fallback com dados do localStorage
 ═══════════════════════════════════════════════════ */
 async function mostrarPainel() {
   const token = localStorage.getItem('token')
-  const res = await fetch(`${API}/auth/negocios`,{headers:{'Authorization':`Bearer ${token}`}})
-  todosNegocios = await res.json()
-  const savedId = localStorage.getItem('negocioId')
-  negocioAtual = todosNegocios.find(n => n._id===savedId)||todosNegocios[0]
-  if (negocioAtual) { localStorage.setItem('negocioId',negocioAtual._id); localStorage.setItem('negocio',negocioAtual.nome) }
-  renderDropdown(); atualizarSidebarNegocio()
-  const fd = document.getElementById('filtro-data'); if (fd) fd.value = new Date().toISOString().split('T')[0]
-  carregarDadosNegocio(); verificarAcesso()
+
+  // Sem token → redireciona
+  if (!token) {
+    window.location.href = '/auth.html'
+    return
+  }
+
+  // Mostra dados do localStorage imediatamente (evita tela em branco)
+  const savedId   = localStorage.getItem('negocioId')
+  const savedNome = localStorage.getItem('negocio')
+  if (savedId && savedNome) {
+    negocioAtual = { _id: savedId, nome: savedNome }
+    todosNegocios = [negocioAtual]
+    atualizarSidebarNegocio()
+    renderDropdown()
+    carregarStatsSalvas()
+  }
+
+  try {
+    const res = await fetch(`${API}/auth/negocios`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    })
+
+    // Token expirado ou inválido
+    if (res.status === 401) {
+      localStorage.clear()
+      window.location.href = '/auth.html'
+      return
+    }
+
+    if (!res.ok) {
+      throw new Error(`Erro ${res.status}`)
+    }
+
+    const data = await res.json()
+
+    // Garante que é um array válido
+    if (!Array.isArray(data) || data.length === 0) {
+      console.warn('Nenhum negócio encontrado para este usuário.')
+      mostrarErroPainel('Nenhum painel encontrado. Entre em contato com o suporte.')
+      return
+    }
+
+    todosNegocios = data
+    negocioAtual  = todosNegocios.find(n => n._id === savedId) || todosNegocios[0]
+
+    if (negocioAtual) {
+      localStorage.setItem('negocioId', negocioAtual._id)
+      localStorage.setItem('negocio', negocioAtual.nome)
+    }
+
+    renderDropdown()
+    atualizarSidebarNegocio()
+
+    const fd = document.getElementById('filtro-data')
+    if (fd) fd.value = new Date().toISOString().split('T')[0]
+
+    carregarDadosNegocio()
+    verificarAcesso()
+
+  } catch (err) {
+    console.error('Erro ao carregar painel:', err.message)
+
+    // Se já temos dados no localStorage, continua funcionando offline
+    if (negocioAtual) {
+      console.warn('Usando dados em cache do localStorage.')
+      carregarDadosNegocio()
+    } else {
+      mostrarErroPainel('Erro de conexão. Verifique sua internet e recarregue a página.')
+    }
+  }
+}
+
+// Exibe erro amigável na sidebar em vez de travar silenciosamente
+function mostrarErroPainel(msg) {
+  const el = document.getElementById('neg-nome-sidebar')
+  if (el) el.textContent = 'Erro ao carregar'
+  console.error('[Painel]', msg)
+  // Mostra banner de erro no topo do painel
+  const main = document.querySelector('.main')
+  if (main && !document.getElementById('painel-erro-banner')) {
+    const banner = document.createElement('div')
+    banner.id = 'painel-erro-banner'
+    banner.style.cssText = 'background:#fef2f2;border:1px solid rgba(220,38,38,0.2);color:#dc2626;padding:12px 18px;border-radius:10px;font-size:13px;font-weight:500;margin:16px 0;display:flex;align-items:center;gap:10px'
+    banner.innerHTML = `<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="#dc2626" stroke-width="1.4"/><path d="M8 5v4M8 11v.5" stroke="#dc2626" stroke-width="1.5" stroke-linecap="round"/></svg> ${msg} <button onclick="window.location.reload()" style="margin-left:auto;background:#dc2626;color:#fff;border:none;padding:5px 12px;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit">Recarregar</button>`
+    main.prepend(banner)
+  }
 }
 
 function carregarDadosNegocio() {
@@ -436,99 +513,102 @@ async function carregarAgendamentos() {
   const nid = negocioAtual._id
   const token = localStorage.getItem('token')
 
-  const res = await fetch(`${API}/agendamentos?negocioId=${nid}`, {
-    headers: { 'Authorization': `Bearer ${token}` }
-  })
-  let agsDaAPI = await res.json()
+  try {
+    const res = await fetch(`${API}/agendamentos?negocioId=${nid}`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    })
 
-  // Marca como concluído os agendamentos passados
-  const agora = new Date()
-  const passados = agsDaAPI.filter(a => {
-    if (a.status !== 'confirmado' || !a.data || !a.hora) return false
-    const [ano, mes, dia] = a.data.split('-').map(Number)
-    const [h, m] = a.hora.split(':').map(Number)
-    return new Date(ano, mes - 1, dia, h, m).getTime() < agora.getTime()
-  })
+    if (res.status === 401) { localStorage.clear(); window.location.href = '/auth.html'; return }
+    if (!res.ok) throw new Error(`Erro ${res.status}`)
 
-  if (passados.length > 0) {
-    await Promise.all(passados.map(a =>
-      fetch(`${API}/agendamentos/${a._id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-        body: JSON.stringify({ status: 'concluido' })
+    let agsDaAPI = await res.json()
+
+    // Marca como concluído os agendamentos passados
+    const agora = new Date()
+    const passados = agsDaAPI.filter(a => {
+      if (a.status !== 'confirmado' || !a.data || !a.hora) return false
+      const [ano, mes, dia] = a.data.split('-').map(Number)
+      const [h, m] = a.hora.split(':').map(Number)
+      return new Date(ano, mes - 1, dia, h, m).getTime() < agora.getTime()
+    })
+
+    if (passados.length > 0) {
+      await Promise.all(passados.map(a =>
+        fetch(`${API}/agendamentos/${a._id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+          body: JSON.stringify({ status: 'concluido' })
+        })
+      ))
+      agsDaAPI = agsDaAPI.map(a => {
+        const foi = passados.find(p => p._id === a._id)
+        if (!foi) return a
+        const c = { ...a, status: 'concluido' }
+        registrarLucro(c)
+        return c
       })
-    ))
-    agsDaAPI = agsDaAPI.map(a => {
-      const foi = passados.find(p => p._id === a._id)
-      if (!foi) return a
-      const c = { ...a, status: 'concluido' }
-      registrarLucro(c)
-      return c
-    })
-  }
+    }
 
-  // Salva concluídos no cache ANTES de qualquer merge
-  salvarConcluidosNoCache(nid, agsDaAPI)
+    salvarConcluidosNoCache(nid, agsDaAPI)
+    const listaMerged = mergeComCache(nid, agsDaAPI)
 
-  // Mescla com o cache
-  const listaMerged = mergeComCache(nid, agsDaAPI)
-
-  // ── Registra timestamps de conclusão para todos os concluídos ──
-  // Isso garante que o filtro visual funcione corretamente
-  const hoje = new Date().toISOString().split('T')[0]
-  agsDaAPI
-    .filter(a => a.status === 'concluido')
-    .forEach(a => {
-      if (!localStorage.getItem(conclusaoKey(a._id))) {
-        if (a.data < hoje) {
-          // Agendamento de dia anterior → já expirado (marca 2h atrás)
-          localStorage.setItem(conclusaoKey(a._id), String(Date.now() - 2 * 60 * 60 * 1000))
-        } else {
-          // Concluído hoje sem registro → trata como recém-concluído
-          registrarConclusao(a._id)
+    const hoje = new Date().toISOString().split('T')[0]
+    agsDaAPI
+      .filter(a => a.status === 'concluido')
+      .forEach(a => {
+        if (!localStorage.getItem(conclusaoKey(a._id))) {
+          if (a.data < hoje) {
+            localStorage.setItem(conclusaoKey(a._id), String(Date.now() - 2 * 60 * 60 * 1000))
+          } else {
+            registrarConclusao(a._id)
+          }
         }
-      }
-    })
+      })
 
-  // ── Stats de hoje e semana — calculados sobre lista COMPLETA ──
-  const semana = new Date(Date.now() + 7 * 86400000).toISOString().split('T')[0]
-  const qtdHoje   = listaMerged.filter(a => a.data === hoje).length
-  const qtdSemana = listaMerged.filter(a => a.data >= hoje && a.data <= semana).length
+    const semana = new Date(Date.now() + 7 * 86400000).toISOString().split('T')[0]
+    const qtdHoje   = listaMerged.filter(a => a.data === hoje).length
+    const qtdSemana = listaMerged.filter(a => a.data >= hoje && a.data <= semana).length
 
-  const savedHoje   = parseInt(localStorage.getItem(`stat_hoje_${nid}`)) || 0
-  const savedSemana = parseInt(localStorage.getItem(`stat_semana_${nid}`)) || 0
-  const finalHoje   = Math.max(qtdHoje, savedHoje)
-  const finalSemana = Math.max(qtdSemana, savedSemana)
-  localStorage.setItem(`stat_hoje_${nid}`, String(finalHoje))
-  localStorage.setItem(`stat_semana_${nid}`, String(finalSemana))
+    const savedHoje   = parseInt(localStorage.getItem(`stat_hoje_${nid}`)) || 0
+    const savedSemana = parseInt(localStorage.getItem(`stat_semana_${nid}`)) || 0
+    const finalHoje   = Math.max(qtdHoje, savedHoje)
+    const finalSemana = Math.max(qtdSemana, savedSemana)
+    localStorage.setItem(`stat_hoje_${nid}`, String(finalHoje))
+    localStorage.setItem(`stat_semana_${nid}`, String(finalSemana))
 
-  const elH = document.getElementById('stat-hoje')
-  const elS = document.getElementById('stat-semana')
-  if (elH) elH.textContent = finalHoje
-  if (elS) elS.textContent = finalSemana
+    const elH = document.getElementById('stat-hoje')
+    const elS = document.getElementById('stat-semana')
+    if (elH) elH.textContent = finalHoje
+    if (elS) elS.textContent = finalSemana
 
-  // ── Lucro calculado sobre lista COMPLETA ──
-  seedLucroDoMes(listaMerged)
-  exibirLucro()
+    seedLucroDoMes(listaMerged)
+    exibirLucro()
 
-  // ── Insights calculados sobre lista COMPLETA ──
-  // Guardamos temporariamente a lista completa para atualizarInsights()
-  todosAgendamentos = listaMerged
-  atualizarInsights()
+    todosAgendamentos = listaMerged
+    atualizarInsights()
 
-  // ── Agora aplica o filtro visual (concluídos com +1h somem da lista) ──
-  todosAgendamentos = filtrarExpirados(listaMerged)
+    todosAgendamentos = filtrarExpirados(listaMerged)
 
-  // ── Renders ──
-  renderHistorico()
-  filtrarData()
-  agAplicarFiltro()
-  renderDashboardHoje()
+    renderHistorico()
+    filtrarData()
+    agAplicarFiltro()
+    renderDashboardHoje()
 
-  const dot = document.getElementById('notif-dot')
-  if (dot) dot.style.display = finalHoje > 0 ? 'block' : 'none'
-  const dotMobile = document.getElementById('notif-dot-mobile')
-  if (dotMobile) dotMobile.style.display = finalHoje > 0 ? 'block' : 'none'
+    const dot = document.getElementById('notif-dot')
+    if (dot) dot.style.display = finalHoje > 0 ? 'block' : 'none'
+    const dotMobile = document.getElementById('notif-dot-mobile')
+    if (dotMobile) dotMobile.style.display = finalHoje > 0 ? 'block' : 'none'
+
+  } catch (err) {
+    console.error('Erro ao carregar agendamentos:', err.message)
+    // Usa cache local se disponível
+    const cache = getCacheConc(negocioAtual._id)
+    if (cache.length) {
+      todosAgendamentos = filtrarExpirados(cache)
+      renderDashboardHoje()
+      agAplicarFiltro()
+    }
+  }
 }
 
 const POR_PAGINA = 8
@@ -606,9 +686,7 @@ async function atualizar(id, status) {
     const ag = todosAgendamentos.find(a => a._id === id)
     if (ag) {
       registrarLucro(ag)
-      // Registra o timestamp de conclusão agora (para controle de expiração de 1h)
       registrarConclusao(id)
-      // Salva imediatamente no cache ao concluir manualmente
       if (nid) {
         const agConcluido = { ...ag, status: 'concluido' }
         const cache = getCacheConc(nid)
@@ -626,10 +704,8 @@ async function atualizar(id, status) {
     body: JSON.stringify({ status })
   })
 
-  // Atualiza lista completa com novo status
   const listaCompleta = todosAgendamentos.map(a => a._id === id ? { ...a, status } : a)
 
-  // Atualiza cache com o novo status
   if (nid) salvarConcluidosNoCache(nid, listaCompleta)
 
   const hoje   = new Date().toISOString().split('T')[0]
@@ -639,13 +715,10 @@ async function atualizar(id, status) {
     listaCompleta.filter(a => a.data >= hoje && a.data <= semana).length
   )
 
-  // Recalcula insights/lucro sobre lista completa ANTES do filtro visual
-  const listaParaInsights = listaCompleta
-  todosAgendamentos = listaParaInsights
+  todosAgendamentos = listaCompleta
   atualizarInsights()
   exibirLucro()
 
-  // Aplica filtro visual
   todosAgendamentos = filtrarExpirados(listaCompleta)
 
   renderHistorico()
@@ -900,10 +973,13 @@ async function salvarConfLembrete() {
 ═══════════════════════════════════════════════════ */
 async function verificarAcesso() {
   const token=localStorage.getItem('token'); if(!token) return
-  const res=await fetch(`${API}/assinatura/status`,{headers:{'Authorization':`Bearer ${token}`}}); const data=await res.json()
-  localStorage.setItem('plano',data.plano||'trial'); localStorage.setItem('assinaturaAtiva',data.assinaturaAtiva?'true':'false')
-  if(!data.temAcesso){document.getElementById('bloqueio').style.display='flex';return}
-  if(data.plano==='trial'&&data.diasRestantes<=7){const banner=document.createElement('div');banner.className='trial-banner';banner.innerHTML=`<p>⏰ Seu trial expira em <strong>${data.diasRestantes} dias</strong>. Assine para não perder o acesso.</p><button class="btn-assinar-banner" onclick="window.location.href='/planos.html'" type="button">Ver planos</button>`;const main=document.querySelector('.main');if(main)main.prepend(banner)}
+  try {
+    const res=await fetch(`${API}/assinatura/status`,{headers:{'Authorization':`Bearer ${token}`}}); if(!res.ok) return
+    const data=await res.json()
+    localStorage.setItem('plano',data.plano||'trial'); localStorage.setItem('assinaturaAtiva',data.assinaturaAtiva?'true':'false')
+    if(!data.temAcesso){document.getElementById('bloqueio').style.display='flex';return}
+    if(data.plano==='trial'&&data.diasRestantes<=7){const banner=document.createElement('div');banner.className='trial-banner';banner.innerHTML=`<p>⏰ Seu trial expira em <strong>${data.diasRestantes} dias</strong>. Assine para não perder o acesso.</p><button class="btn-assinar-banner" onclick="window.location.href='/planos.html'" type="button">Ver planos</button>`;const main=document.querySelector('.main');if(main)main.prepend(banner)}
+  } catch(e) { console.warn('Erro ao verificar acesso:', e.message) }
 }
 
 /* ═══════════════════════════════════════════════════
@@ -933,28 +1009,22 @@ function historicoIrPara(offset){if(offset>0)return;historicoMesOffset=offset;re
 
 /* ═══════════════════════════════════════════════════
    INSIGHTS
-   ATENÇÃO: atualizarInsights() deve ser chamado com
-   todosAgendamentos ainda COMPLETO (antes de filtrarExpirados)
 ═══════════════════════════════════════════════════ */
 function atualizarInsights() {
   const ags = todosAgendamentos || []
   const nid = negocioAtual?._id
   if (!nid) return
 
-  // ── Melhor horário ──
   if (ags.length) {
     const freqHora = {}
     ags.forEach(a => { if (a.hora) freqHora[a.hora] = (freqHora[a.hora] || 0) + 1 })
     const topHora = Object.entries(freqHora).sort((a, b) => b[1] - a[1])[0]
-    if (topHora) {
-      localStorage.setItem(`insight_melhorHorario_${nid}`, topHora[0])
-    }
+    if (topHora) localStorage.setItem(`insight_melhorHorario_${nid}`, topHora[0])
   }
   const melhorHorario = localStorage.getItem(`insight_melhorHorario_${nid}`) || '—'
   const elH = document.getElementById('insight-melhor-horario')
   if (elH) elH.textContent = melhorHorario
 
-  // ── Serviço mais lucrativo ──
   if (ags.length) {
     const freqServ = {}
     ags.forEach(a => {
@@ -982,7 +1052,6 @@ function atualizarInsights() {
       : `${topServicoQtd} agendamento${topServicoQtd !== 1 ? 's' : ''}`
   }
 
-  // ── Clientes inativos ──
   const cutoff = new Date()
   cutoff.setDate(cutoff.getDate() - 30)
   const cutStr = cutoff.toISOString().split('T')[0]
@@ -990,9 +1059,7 @@ function atualizarInsights() {
     const recentes = new Set(ags.filter(a => a.data >= cutStr).map(a => a.pacienteNome))
     const todos    = new Set(ags.map(a => a.pacienteNome))
     const inativos = [...todos].filter(c => !recentes.has(c)).length
-    if (inativos > 0 || todos.size > 0) {
-      localStorage.setItem(`insight_inativos_${nid}`, inativos)
-    }
+    if (inativos > 0 || todos.size > 0) localStorage.setItem(`insight_inativos_${nid}`, inativos)
   }
   const inativosSalvo = parseInt(localStorage.getItem(`insight_inativos_${nid}`)) || 0
   const elI  = document.getElementById('insight-inativos')
@@ -1006,7 +1073,6 @@ function atualizarInsights() {
     if (t) t.innerHTML = `<strong>${inativosSalvo} clientes estão inativos</strong>, mande uma promoção para reativá-los`
   }
 
-  // ── Lucro da semana ──
   const hoje    = new Date().toISOString().split('T')[0]
   const semStart = new Date(); semStart.setDate(semStart.getDate() - 7)
   const lucroSemCalc = ags
@@ -1017,7 +1083,6 @@ function atualizarInsights() {
   const elTotal  = document.getElementById('stat-total')
   if (elTotal) elTotal.textContent = fmtBRL(lucroSem)
 
-  // ── Finance card (este mês) ──
   const lucroMes    = getLucroMes(nid) || 0
   const idsDoMes    = getLucroIds(nid)
   const atendMesCalc = idsDoMes.length
@@ -1237,52 +1302,49 @@ document.addEventListener('DOMContentLoaded', () => {
 ═══════════════════════════════════════════════════ */
 ;(function () {
   let tipoSelecionado = '24h'
- 
+
   const mensagensAuto = {
     '24h': 'Olá {nome}! 👋\nLembramos que você tem um agendamento amanhã, {data}, às {hora} — {servico}.\nEstamos te esperando! 🙏',
     '1h':  'Olá {nome}! ⏰\nSeu agendamento é em 1 hora — {hora}. Serviço: {servico}.\nTe esperamos em breve! 😊',
     'pos': 'Olá {nome}! 🙏\nObrigado por nos visitar hoje! Foi um prazer te atender.\nAgende seu próximo horário: {link}',
   }
- 
+
   const titulos = {
     '24h': 'Editar lembrete 24h antes',
     '1h':  'Editar lembrete 1h antes',
     'pos': 'Editar mensagem pós-atendimento',
   }
- 
+
   const campoBanco = {
     '24h': 'lembrete',
     '1h':  'lembrete1h',
     'pos': 'posAtendimento',
   }
- 
+
   const estadoTipos = {
     '24h': { ativo: true,  mensagem: mensagensAuto['24h'] },
     '1h':  { ativo: true,  mensagem: mensagensAuto['1h']  },
     'pos': { ativo: false, mensagem: mensagensAuto['pos'] },
   }
- 
-  // ─── Lê o textarea e atualiza o estado do tipo selecionado ───────
+
   function syncTextareaParaEstado() {
     const ta = document.getElementById('auto-mensagem-textarea')
     if (ta) estadoTipos[tipoSelecionado].mensagem = ta.value
   }
- 
-  // ─── Lê o toggle do editor e atualiza o estado do tipo selecionado
+
   function syncToggleEditorParaEstado() {
     const toggleEditor = document.getElementById('toggle-editor-main')
     if (toggleEditor) {
       estadoTipos[tipoSelecionado].ativo = toggleEditor.classList.contains('on')
     }
   }
- 
-  // ─── Carrega configuração real do banco ao inicializar ───────────
+
   async function carregarAutomacaoDoServidor() {
     if (!window.negocioAtual) return
     try {
       const res  = await fetch(`${window.API}/auth/negocio/${window.negocioAtual._id}`)
       const data = await res.json()
- 
+
       if (data.lembrete) {
         estadoTipos['24h'].ativo    = !!data.lembrete.ativo
         estadoTipos['24h'].mensagem = data.lembrete.mensagem || mensagensAuto['24h']
@@ -1295,15 +1357,14 @@ document.addEventListener('DOMContentLoaded', () => {
         estadoTipos['pos'].ativo    = !!data.posAtendimento.ativo
         estadoTipos['pos'].mensagem = data.posAtendimento.mensagem || mensagensAuto['pos']
       }
- 
+
       atualizarTodosToggleCards()
       atualizarEditor(tipoSelecionado)
     } catch (e) {
       console.error('[Automação] Erro ao carregar do servidor:', e)
     }
   }
- 
-  // ─── Atualiza os card-toggles com o estado atual ─────────────────
+
   function atualizarTodosToggleCards() {
     ;['24h', '1h', 'pos'].forEach(tipo => {
       const toggle = document.getElementById('toggle-' + tipo)
@@ -1320,144 +1381,90 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     })
   }
- 
-  // ─── Atualiza o painel editor com o tipo selecionado ─────────────
+
   function atualizarEditor(tipo) {
     const estado = estadoTipos[tipo]
- 
+
     const headerTitle = document.querySelector('.auto-editor-header-title')
     if (headerTitle) headerTitle.textContent = titulos[tipo] || 'Editar mensagem'
- 
+
     const textarea = document.getElementById('auto-mensagem-textarea')
     if (textarea) {
       textarea.value = estado.mensagem
       atualizarPreviewAuto()
     }
- 
+
     const toggleEditor = document.getElementById('toggle-editor-main')
     if (toggleEditor) {
       toggleEditor.className    = 'auto-tipo-toggle ' + (estado.ativo ? 'on' : 'off')
       toggleEditor.setAttribute('aria-checked', estado.ativo)
     }
- 
+
     const labelAtivo = document.querySelector('.auto-ativo-label')
     if (labelAtivo) {
       labelAtivo.textContent = estado.ativo ? 'Ativo' : 'Inativo'
       labelAtivo.style.color = estado.ativo ? '#34d399' : 'var(--text3)'
     }
   }
- 
-  // ─── Selecionar tipo no card ──────────────────────────────────────
+
   window.selecionarTipoAuto = function (tipo, card) {
-    // Salva o estado do textarea ANTES de trocar de tipo
     syncTextareaParaEstado()
     syncToggleEditorParaEstado()
- 
     tipoSelecionado = tipo
- 
-    document.querySelectorAll('.auto-tipo-card').forEach(c =>
-      c.classList.remove('ativo-selected')
-    )
+    document.querySelectorAll('.auto-tipo-card').forEach(c => c.classList.remove('ativo-selected'))
     card.classList.add('ativo-selected')
- 
     atualizarEditor(tipo)
   }
- 
-  // ─── Toggle no card (ativa/desativa e salva imediatamente) ───────
+
   window.toggleAutoTipo = function (tipo, toggleEl) {
     const isOn = toggleEl.classList.contains('on')
     const novoAtivo = !isOn
- 
-    // 1. Atualiza estado local
     estadoTipos[tipo].ativo = novoAtivo
- 
-    // 2. Se for o tipo editado no momento, também sincroniza a mensagem do textarea
-    if (tipo === tipoSelecionado) {
-      syncTextareaParaEstado()
-    }
- 
-    // 3. Atualiza visual do card
+    if (tipo === tipoSelecionado) syncTextareaParaEstado()
     toggleEl.className = 'auto-tipo-toggle ' + (novoAtivo ? 'on' : 'off')
     toggleEl.setAttribute('aria-checked', novoAtivo)
- 
     const card = toggleEl.closest('.auto-tipo-card')
     if (card) {
       const badge = card.querySelector('.auto-tipo-badge')
-      if (badge) {
-        badge.textContent = novoAtivo ? 'Ativo' : 'Inativo'
-        badge.className   = 'auto-tipo-badge ' + (novoAtivo ? 'ativo' : 'inativo')
-      }
+      if (badge) { badge.textContent = novoAtivo ? 'Ativo' : 'Inativo'; badge.className = 'auto-tipo-badge ' + (novoAtivo ? 'ativo' : 'inativo') }
     }
- 
-    // 4. Se for o tipo editado, atualiza o editor principal também
     if (tipo === tipoSelecionado) {
       const toggleEditor = document.getElementById('toggle-editor-main')
-      if (toggleEditor) {
-        toggleEditor.className = 'auto-tipo-toggle ' + (novoAtivo ? 'on' : 'off')
-        toggleEditor.setAttribute('aria-checked', novoAtivo)
-      }
+      if (toggleEditor) { toggleEditor.className = 'auto-tipo-toggle ' + (novoAtivo ? 'on' : 'off'); toggleEditor.setAttribute('aria-checked', novoAtivo) }
       const labelAtivo = document.querySelector('.auto-ativo-label')
-      if (labelAtivo) {
-        labelAtivo.textContent = novoAtivo ? 'Ativo' : 'Inativo'
-        labelAtivo.style.color = novoAtivo ? '#34d399' : 'var(--text3)'
-      }
+      if (labelAtivo) { labelAtivo.textContent = novoAtivo ? 'Ativo' : 'Inativo'; labelAtivo.style.color = novoAtivo ? '#34d399' : 'var(--text3)' }
     }
- 
-    // 5. Persiste imediatamente no banco
     salvarTipo(tipo)
   }
- 
-  // ─── Toggle no editor principal ──────────────────────────────────
+
   window.toggleEditorMain = function (toggleEl) {
     const isOn = toggleEl.classList.contains('on')
     const novoAtivo = !isOn
- 
-    // 1. Atualiza estado
     estadoTipos[tipoSelecionado].ativo = novoAtivo
     syncTextareaParaEstado()
- 
-    // 2. Atualiza visual do editor
     toggleEl.className = 'auto-tipo-toggle ' + (novoAtivo ? 'on' : 'off')
     toggleEl.setAttribute('aria-checked', novoAtivo)
- 
     const labelAtivo = document.querySelector('.auto-ativo-label')
-    if (labelAtivo) {
-      labelAtivo.textContent = novoAtivo ? 'Ativo' : 'Inativo'
-      labelAtivo.style.color = novoAtivo ? '#34d399' : 'var(--text3)'
-    }
- 
-    // 3. Sincroniza o card correspondente
+    if (labelAtivo) { labelAtivo.textContent = novoAtivo ? 'Ativo' : 'Inativo'; labelAtivo.style.color = novoAtivo ? '#34d399' : 'var(--text3)' }
     const cardToggle = document.getElementById('toggle-' + tipoSelecionado)
     if (cardToggle) {
       cardToggle.className = 'auto-tipo-toggle ' + (novoAtivo ? 'on' : 'off')
       cardToggle.setAttribute('aria-checked', novoAtivo)
       const card = cardToggle.closest('.auto-tipo-card')
-      if (card) {
-        const badge = card.querySelector('.auto-tipo-badge')
-        if (badge) {
-          badge.textContent = novoAtivo ? 'Ativo' : 'Inativo'
-          badge.className   = 'auto-tipo-badge ' + (novoAtivo ? 'ativo' : 'inativo')
-        }
-      }
+      if (card) { const badge = card.querySelector('.auto-tipo-badge'); if (badge) { badge.textContent = novoAtivo ? 'Ativo' : 'Inativo'; badge.className = 'auto-tipo-badge ' + (novoAtivo ? 'ativo' : 'inativo') } }
     }
- 
-    // 4. Persiste imediatamente no banco
     salvarTipo(tipoSelecionado)
   }
- 
-  // ─── Inserir variável no textarea ────────────────────────────────
+
   window.inserirVarAuto = function (variavel) {
     const ta = document.getElementById('auto-mensagem-textarea')
     if (!ta) return
-    const start = ta.selectionStart
-    const end   = ta.selectionEnd
+    const start = ta.selectionStart; const end = ta.selectionEnd
     ta.value = ta.value.substring(0, start) + variavel + ta.value.substring(end)
     ta.selectionStart = ta.selectionEnd = start + variavel.length
-    ta.focus()
-    atualizarPreviewAuto()
+    ta.focus(); atualizarPreviewAuto()
   }
- 
-  // ─── Preview WhatsApp ─────────────────────────────────────────────
+
   window.atualizarPreviewAuto = function () {
     const ta     = document.getElementById('auto-mensagem-textarea')
     const bubble = document.getElementById('auto-preview-bubble')
@@ -1466,7 +1473,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const linkAgendamento = window.negocioAtual
       ? `https://agendorapido.com.br/agendar.html?id=${window.negocioAtual._id}`
       : 'agendorapido.com.br/agendar.html?id=...'
- 
+
     let txt = ta.value
       .replace(/\{nome\}/g,    'Carlos')
       .replace(/\{data\}/g,    '23/05')
@@ -1474,7 +1481,7 @@ document.addEventListener('DOMContentLoaded', () => {
       .replace(/\{servico\}/g, 'Barba')
       .replace(/\{negocio\}/g, negNome)
       .replace(/\{link\}/g,    linkAgendamento)
- 
+
     bubble.innerHTML =
       txt.split('\n').map(l => l || '<br>').join('<br>') +
       `<div class="auto-wpp-bubble-time">10:30
@@ -1485,67 +1492,40 @@ document.addEventListener('DOMContentLoaded', () => {
         </svg>
       </div>`
   }
- 
-  // ─── Salvar UM tipo específico no banco ──────────────────────────
-  // CORREÇÃO: sempre usa o estado já atualizado em estadoTipos[tipo]
+
   async function salvarTipo(tipo) {
     if (!window.negocioAtual) return
     const token = localStorage.getItem('token')
     const campo = campoBanco[tipo]
     const estado = estadoTipos[tipo]
- 
     try {
-      const res = await fetch(`${window.API}/auth/lembretes`, {
+      await fetch(`${window.API}/auth/lembretes`, {
         method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          negocioId: window.negocioAtual._id,
-          campo,
-          ativo: estado.ativo,
-          mensagem: estado.mensagem,
-        }),
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({ negocioId: window.negocioAtual._id, campo, ativo: estado.ativo, mensagem: estado.mensagem }),
       })
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}))
-        console.error('[Automação] Erro ao salvar tipo', tipo, err)
-      }
-    } catch (e) {
-      console.error('[Automação] Erro de rede ao salvar tipo', tipo, e)
-    }
+    } catch (e) { console.error('[Automação] Erro ao salvar tipo', tipo, e) }
   }
- 
-  // ─── Botão "Salvar alterações" no editor ─────────────────────────
+
   window.salvarAutomacao = async function () {
     syncTextareaParaEstado()
     syncToggleEditorParaEstado()
- 
     const btn = document.querySelector('.auto-btn-salvar')
     if (btn) { btn.disabled = true; btn.innerHTML = 'Salvando...' }
- 
     await salvarTipo(tipoSelecionado)
- 
     if (btn) {
-      btn.disabled = false
-      btn.innerHTML = '✓ Salvo!'
-      setTimeout(() => {
-        btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg> Salvar alterações'
-      }, 2000)
+      btn.disabled = false; btn.innerHTML = '✓ Salvo!'
+      setTimeout(() => { btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg> Salvar alterações' }, 2000)
     }
   }
- 
-  // ─── Botão "Enviar teste" ─────────────────────────────────────────
+
   window.enviarTesteAuto = function () {
-    const btn = document.querySelector('.auto-btn-teste')
-    if (!btn) return
+    const btn = document.querySelector('.auto-btn-teste'); if (!btn) return
     const orig = btn.innerHTML
-    btn.innerHTML    = '✓ Teste enviado!'
-    btn.style.color  = '#34d399'
+    btn.innerHTML = '✓ Teste enviado!'; btn.style.color = '#34d399'
     setTimeout(() => { btn.innerHTML = orig; btn.style.color = '' }, 2500)
   }
- 
+
   window.carregarAutomacaoDoServidor = carregarAutomacaoDoServidor
 })()
 
@@ -1776,52 +1756,30 @@ function cfgInitDragDrop(){
 }
 
 /* ═══════════════════════════════════════════════════
-   PERSISTÊNCIA DE STATS — nunca regride para zero
+   PERSISTÊNCIA DE STATS
 ═══════════════════════════════════════════════════ */
-function statKey(nid, campo) {
-  return `stat_${campo}_${nid}_${mesAtualChave()}`
-}
-
-function getStatSalvo(nid, campo) {
-  const v = localStorage.getItem(statKey(nid, campo))
-  return v !== null ? parseFloat(v) : null
-}
-
-function setStatSalvo(nid, campo, valor) {
-  const atual = getStatSalvo(nid, campo)
-  if (atual === null || valor >= atual) {
-    localStorage.setItem(statKey(nid, campo), String(valor))
-  }
-}
-
-function getStatComFallback(nid, campo, valorCalculado) {
-  const salvo = getStatSalvo(nid, campo) || 0
-  return Math.max(valorCalculado, salvo)
-}
+function statKey(nid, campo) { return `stat_${campo}_${nid}_${mesAtualChave()}` }
+function getStatSalvo(nid, campo) { const v = localStorage.getItem(statKey(nid, campo)); return v !== null ? parseFloat(v) : null }
+function setStatSalvo(nid, campo, valor) { const atual = getStatSalvo(nid, campo); if (atual === null || valor >= atual) { localStorage.setItem(statKey(nid, campo), String(valor)) } }
+function getStatComFallback(nid, campo, valorCalculado) { const salvo = getStatSalvo(nid, campo) || 0; return Math.max(valorCalculado, salvo) }
 
 /* ═══════════════════════════════════════════════════
    CACHE LOCAL DE AGENDAMENTOS CONCLUÍDOS
 ═══════════════════════════════════════════════════ */
 function cacheKey(nid) { return `ags_concluidos_${nid}` }
-
-function getCacheConc(nid) {
-  try { return JSON.parse(localStorage.getItem(cacheKey(nid)) || '[]') } catch { return [] }
-}
-
+function getCacheConc(nid) { try { return JSON.parse(localStorage.getItem(cacheKey(nid)) || '[]') } catch { return [] } }
 function setCacheConc(nid, lista) {
   const cutoff = new Date(); cutoff.setMonth(cutoff.getMonth() - 2)
   const cutStr = cutoff.toISOString().split('T')[0]
   const filtrado = lista.filter(a => (a.data || '') >= cutStr)
   try { localStorage.setItem(cacheKey(nid), JSON.stringify(filtrado)) } catch {}
 }
-
 function mergeComCache(nid, agsDaAPI) {
   const cache = getCacheConc(nid)
   const idsAPI = new Set(agsDaAPI.map(a => a._id))
   const apenasNoCache = cache.filter(a => !idsAPI.has(a._id))
   return [...agsDaAPI, ...apenasNoCache]
 }
-
 function salvarConcluidosNoCache(nid, ags) {
   const cache = getCacheConc(nid)
   const cacheMap = {}
@@ -1842,4 +1800,8 @@ document.addEventListener('DOMContentLoaded',()=>{
 ═══════════════════════════════════════════════════ */
 carregarTema()
 const _token = localStorage.getItem('token')
-if(_token){ mostrarPainel() } else { window.location.href = '/auth.html' }
+if (_token) {
+  mostrarPainel()
+} else {
+  window.location.href = '/auth.html'
+}
