@@ -1,5 +1,5 @@
 /**
- * models/User.js  —  modelo completo e corrigido
+ * models/User.js
  */
 
 const mongoose = require('mongoose')
@@ -11,6 +11,9 @@ const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true, lowercase: true, trim: true },
   senha: { type: String, required: true },
 
+  // ── Verificação ──────────────────────────────────────────
+  verificado: { type: Boolean, default: false },
+
   // ── Trial ────────────────────────────────────────────────
   trialExpira: {
     type:    Date,
@@ -18,24 +21,25 @@ const userSchema = new mongoose.Schema({
   },
 
   // ── Plano e assinatura ───────────────────────────────────
-  plano:                { type: String, default: 'trial' },  // 'trial' | 'basico' | 'profissional' | 'inativo'
+  plano:                { type: String, default: 'trial' }, // 'trial' | 'basico' | 'profissional' | 'inativo'
   assinaturaAtiva:      { type: Boolean, default: false },
   assinaturaVencimento: { type: Date,    default: null },
 
   // ── Mercado Pago ─────────────────────────────────────────
-  mp_preapproval_id: { type: String, default: null },  // ID da assinatura no MP
-  mp_plano:          { type: String, default: null },  // 'basico' | 'profissional'
-  mp_status:         { type: String, default: null },  // 'authorized' | 'paused' | 'cancelled'
+  mp_preapproval_id: { type: String, default: null },
+  mp_plano:          { type: String, default: null },
+  mp_status:         { type: String, default: null },
 
 }, { timestamps: true })
 
 /* ─────────────────────────────────────────────────────
    HASH DA SENHA antes de salvar
+   CORRIGIDO: removido parâmetro "next" — em hooks async
+   o Mongoose moderno aguarda a Promise, não usa callback
 ───────────────────────────────────────────────────── */
-userSchema.pre('save', async function (next) {
-  if (!this.isModified('senha')) return next()
+userSchema.pre('save', async function () {
+  if (!this.isModified('senha')) return
   this.senha = await bcrypt.hash(this.senha, 10)
-  next()
 })
 
 /* ─────────────────────────────────────────────────────
