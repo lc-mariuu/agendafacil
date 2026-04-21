@@ -24,7 +24,6 @@ function autenticar(req, res, next) {
     req.usuario = jwt.verify(auth.split(' ')[1], process.env.JWT_SECRET)
     next()
   } catch (e) {
-    console.error('[autenticar] token inválido:', e.message)
     return res.status(401).json({ erro: 'Token inválido', detalhe: e.message })
   }
 }
@@ -63,9 +62,19 @@ router.post('/criar', async (req, res) => {
 
     const cobranca = result.data
     const expiresAt = new Date(Date.now() + 60 * 60 * 1000)
-    const pagamento = await Pagamento.create({ negocioId, agendamentoId: agendamentoId || undefined, pixId: cobranca.id, status: 'pendente', valor: Number(valor), qrCode: cobranca.brCode, qrCodeImage: cobranca.qrCodeImage, expiresAt })
+    const pagamento = await Pagamento.create({
+      negocioId,
+      agendamentoId: agendamentoId || undefined,
+      pixId:       cobranca.id,
+      status:      'pendente',
+      valor:       Number(valor),
+      qrCode:      cobranca.brCode,
+      qrCodeImage: cobranca.qrCodeImage,
+      expiresAt,
+    })
 
-    if (agendamentoId) await Appointment.findByIdAndUpdate(agendamentoId, { status: 'aguardando_pagamento', pagamentoId: pagamento._id })
+    if (agendamentoId)
+      await Appointment.findByIdAndUpdate(agendamentoId, { status: 'aguardando_pagamento', pagamentoId: pagamento._id })
 
     return res.json({ pixId: pagamento.pixId, qrCode: pagamento.qrCode, qrCodeImage: pagamento.qrCodeImage, valor: pagamento.valor, expiresAt, status: 'pendente' })
   } catch (err) {
@@ -91,7 +100,10 @@ router.get('/status/:pixId', async (req, res) => {
       return res.json({ status: 'pago', paidAt: pag?.paidAt })
     }
     if (cobranca.status === 'EXPIRED') {
-      if (pag && pag.status === 'pendente') { pag.status = 'expirado'; await pag.save(); if (pag.agendamentoId) await Appointment.findByIdAndUpdate(pag.agendamentoId, { status: 'cancelado' }) }
+      if (pag && pag.status === 'pendente') {
+        pag.status = 'expirado'; await pag.save()
+        if (pag.agendamentoId) await Appointment.findByIdAndUpdate(pag.agendamentoId, { status: 'cancelado' })
+      }
       return res.json({ status: 'expirado' })
     }
     if (cobranca.status === 'CANCELED') {
@@ -107,30 +119,41 @@ router.get('/status/:pixId', async (req, res) => {
 
 // ─────────────────────────────────────────────────────────────
 // POST /api/pagamento/webhook
+// raw body já tratado no server.js — NÃO usar express.raw aqui
 // ─────────────────────────────────────────────────────────────
-router.post('/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
+router.post('/webhook', async (req, res) => {
   try {
-    const sig = req.headers['abacatepay-signature']
+    const sig    = req.headers['abacatepay-signature']
     const secret = process.env.ABACATEPAY_WEBHOOK_SECRET
+
     if (secret && sig) {
-      const expected = crypto.createHmac('sha256', secret).update(req.body).digest('hex')
+      const raw = Buffer.isBuffer(req.body) ? req.body : Buffer.from(JSON.stringify(req.body))
+      const expected = crypto.createHmac('sha256', secret).update(raw).digest('hex')
       if (sig !== expected) return res.status(400).send('Assinatura inválida')
     }
-    let event
-    try { event = JSON.parse(req.body.toString()) } catch { return res.status(400).send('Payload inválido') }
+
+    const event = Buffer.isBuffer(req.body)
+      ? JSON.parse(req.body.toString())
+      : req.body
+
     console.log('[webhook/abacate]', event.event)
+
     if (event.event === 'pixQrCode.paid') {
       const cobranca = event.data || {}
       const { negocioId, agendamentoId, pacienteNome, pacienteTelefone, servico, data, hora } = cobranca.metadata || {}
+
       const pag = await Pagamento.findOne({ pixId: cobranca.id })
       if (pag && pag.status !== 'aprovado') { pag.status = 'aprovado'; pag.paidAt = new Date(); await pag.save() }
+
       if (negocioId && data && hora) {
         const jaExiste = await Appointment.findOne({ clinicaId: negocioId, data, hora, status: { $ne: 'cancelado' } })
-        if (!jaExiste) await Appointment.create({ clinicaId: negocioId, pacienteNome, pacienteTelefone: pacienteTelefone || '', servico, data, hora, pagamento: { status: 'pago', valor: cobranca.amount / 100, pixId: cobranca.id } })
+        if (!jaExiste)
+          await Appointment.create({ clinicaId: negocioId, pacienteNome, pacienteTelefone: pacienteTelefone || '', servico, data, hora, pagamento: { status: 'pago', valor: cobranca.amount / 100, pixId: cobranca.id } })
       } else if (agendamentoId) {
         await Appointment.findByIdAndUpdate(agendamentoId, { status: 'confirmado', pagamentoPix: true })
       }
     }
+
     return res.json({ received: true })
   } catch (err) {
     console.error('[webhook/abacate]', err.message)
@@ -160,7 +183,7 @@ router.post('/reembolsar', autenticar, async (req, res) => {
 // ─────────────────────────────────────────────────────────────
 // GET /api/pagamento/config/:negocioId
 // ─────────────────────────────────────────────────────────────
-router.get('/config/:negocioId', async (req, res) => {
+router.get('/config/:negocioId', autenticar, async (req, res) => {
   try {
     const negocio = await Negocio.findById(req.params.negocioId).select('pixConfig')
     if (!negocio) return res.status(404).json({ erro: 'Negócio não encontrado' })
@@ -174,11 +197,9 @@ router.get('/config/:negocioId', async (req, res) => {
 // ─────────────────────────────────────────────────────────────
 // PATCH /api/pagamento/config
 // ─────────────────────────────────────────────────────────────
-router.patch('/config', async (req, res) => {
+router.patch('/config', autenticar, async (req, res) => {
   try {
     const { negocioId, chavePix, tipoPix, servicos } = req.body
-    console.log('[config/patch] recebido:', { negocioId, chavePix, tipoPix })
-
     if (!negocioId) return res.status(400).json({ erro: 'negocioId obrigatório' })
 
     const negocio = await Negocio.findById(negocioId)
@@ -193,10 +214,9 @@ router.patch('/config', async (req, res) => {
 
     await negocio.save()
     return res.json({ ok: true, pixConfig: negocio.pixConfig })
-
   } catch (err) {
     console.error('[config/patch] ERRO:', err.message)
-    return res.status(500).json({ erro: err.message, stack: err.stack })
+    return res.status(500).json({ erro: err.message })
   }
 })
 
