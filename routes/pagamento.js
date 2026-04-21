@@ -383,5 +383,29 @@ router.patch('/config', autenticar, async (req, res) => {
   }
 })
 
+router.patch('/config', autenticar, async (req, res) => {
+  try {
+    const { negocioId, chavePix, tipoPix, servicos } = req.body
+    if (!negocioId) return res.status(400).json({ erro: 'negocioId obrigatório' })
+
+    const negocio = await Negocio.findById(negocioId)
+    if (!negocio) return res.status(404).json({ erro: 'Negócio não encontrado' })
+
+    negocio.pixConfig = {
+      chavePix:  chavePix  ?? negocio.pixConfig?.chavePix  ?? '',
+      tipoPix:   tipoPix   ?? negocio.pixConfig?.tipoPix   ?? 'cpf',
+      servicos:  servicos  ?? negocio.pixConfig?.servicos  ?? {},
+      updatedAt: new Date(),
+    }
+
+    await negocio.save()
+    return res.json({ ok: true, pixConfig: negocio.pixConfig })
+
+  } catch (err) {
+    console.error('[config/patch] ERRO COMPLETO:', err) // já existe
+    return res.status(500).json({ erro: err.message, stack: err.stack }) // ← troque esta linha
+  }
+})
+
 // ── Exportar apenas o router ─────────────────────────────────
 module.exports = router
