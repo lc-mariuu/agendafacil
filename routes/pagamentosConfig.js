@@ -1,8 +1,5 @@
 /**
  * routes/pagamentosConfig.js
- *
- * Adicione no server.js (depois da linha do /api/pagamento existente):
- *   app.use('/api/pagamentos', require('./routes/pagamentosConfig'))
  */
 
 const express = require('express')
@@ -22,11 +19,34 @@ const CONFIG_DEFAULT = {
   reembolsoVoce:    true,
 }
 
+// ── GET /api/pagamentos/config-publica/:negocioId  (SEM autenticação) ────────
+// Usado pelo frontend público de agendamento para saber se deve cobrar Pix
+router.get('/config-publica/:negocioId', async (req, res) => {
+  try {
+    const negocio = await Negocio.findById(req.params.negocioId)
+      .select('pagamentosConfig')
+      .lean()
+
+    if (!negocio) {
+      return res.status(404).json({ success: false, message: 'Negócio não encontrado' })
+    }
+
+    const config = {
+      ...CONFIG_DEFAULT,
+      ...(negocio.pagamentosConfig || {}),
+    }
+
+    return res.json({ success: true, ...config })
+  } catch (err) {
+    console.error('[pagamentos] GET /config-publica:', err)
+    return res.status(500).json({ success: false, message: 'Erro interno' })
+  }
+})
+
 // ── GET /api/pagamentos/config ───────────────────────────────────────────────
 router.get('/config', autenticar, verificarAcesso, async (req, res) => {
   try {
-    const userId = req.userId
-
+    const userId    = req.userId
     const negocioId = req.query.negocioId
     const filtro    = negocioId ? { _id: negocioId, userId } : { userId }
 
@@ -49,7 +69,7 @@ router.get('/config', autenticar, verificarAcesso, async (req, res) => {
 // ── POST /api/pagamentos/config ──────────────────────────────────────────────
 router.post('/config', autenticar, verificarAcesso, async (req, res) => {
   try {
-    const userId = req.userId
+    const userId          = req.userId
     const { config, negocioId } = req.body
 
     if (!config || typeof config !== 'object') {
