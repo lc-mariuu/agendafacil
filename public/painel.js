@@ -1514,3 +1514,36 @@ if (!_token) {
 } else {
   mostrarPainel()
 }
+
+var mpagPct = 50;
+ 
+function mpagChangePct(delta) {
+  mpagPct = Math.max(10, Math.min(100, mpagPct + delta));
+  var el = document.getElementById('mpag-pct-display');
+  if (el) el.textContent = mpagPct + '%';
+  var info = document.getElementById('mpag-info-text');
+  if (info) info.textContent = 'O cliente pagará ' + mpagPct + '% do valor do serviço para confirmar o agendamento.';
+}
+ 
+document.addEventListener('DOMContentLoaded', function() {
+  var opts = document.querySelectorAll('.mpag-radio-opt');
+  opts.forEach(function(opt) {
+    opt.addEventListener('click', function() {
+      opts.forEach(function(o) {
+        o.classList.remove('mpag-radio-active');
+        var dot = o.querySelector('.mpag-radio-dot');
+        if (dot) { dot.classList.remove('mpag-radio-dot-active'); }
+      });
+      opt.classList.add('mpag-radio-active');
+      var dot = opt.querySelector('.mpag-radio-dot');
+      if (dot) dot.classList.add('mpag-radio-dot-active');
+    });
+  });
+  var tog = document.getElementById('mpag-toggle-adiantado');
+  if (tog) {
+    tog.addEventListener('change', function() {
+      var content = document.getElementById('mpag-adiantado-content');
+      if (content) content.style.opacity = this.checked ? '1' : '0.4';
+    });
+  }
+});

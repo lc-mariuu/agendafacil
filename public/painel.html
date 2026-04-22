@@ -1195,173 +1195,354 @@ Estamos te esperando! 🙏</textarea>
 
   <!-- ══════════════════ PAGE: PAGAMENTOS ══════════════════ -->
   <section class="page" id="page-pagamentos" aria-label="Pagamentos">
-
-    <!-- CHAVE PIX -->
-    <div class="section-block">
-      <div class="section-block-header">
-        <div class="section-block-icon" aria-hidden="true">
-          <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
-            <rect x="2" y="5" width="16" height="13" rx="2.5" stroke="var(--accent)" stroke-width="1.6"/>
-            <path d="M2 9h16M6 13h4" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round"/>
-          </svg>
-        </div>
-        <div>
-          <div class="section-block-title">Sua chave Pix</div>
-          <div class="section-block-sub">Configure a chave que receberá os pagamentos antecipados dos clientes</div>
+ 
+  <!-- HERO -->
+  <div class="mpag-hero">
+    <div class="mpag-hero-left">
+      <div class="mpag-hero-icon-wrap">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+          <rect x="2" y="5" width="20" height="16" rx="3" stroke="#34d399" stroke-width="1.8"/>
+          <path d="M2 10h20" stroke="#34d399" stroke-width="1.8" stroke-linecap="round"/>
+          <path d="M6 15h4" stroke="#34d399" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div>
+        <div class="mpag-hero-title">Pagamentos</div>
+        <div class="mpag-hero-sub">Receba pagamentos antecipados e garanta mais segurança<br>para o seu negócio e para seus clientes.</div>
+      </div>
+    </div>
+    <div class="mpag-hero-right">
+      <div class="mpag-card-white">
+        <div class="mpag-card-white-title">Pagamento 100% seguro</div>
+        <div class="mpag-card-white-sub">Processado pelo</div>
+        <div class="mpag-card-white-logos">
+          <div class="mpag-logo-mp">
+            <svg width="22" height="22" viewBox="0 0 32 32" fill="none">
+              <circle cx="16" cy="16" r="14" fill="#009ee3"/>
+              <path d="M9 16a7 7 0 1 1 14 0" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+              <circle cx="16" cy="16" r="2.5" fill="white"/>
+            </svg>
+            <div class="mpag-logo-mp-text"><span>mercado</span><span>pago</span></div>
+          </div>
+          <div class="mpag-logo-pix">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <path d="M12 3L3 12l9 9 9-9-9-9Z" stroke="#32BCAD" stroke-width="1.8" stroke-linejoin="round"/>
+              <path d="M8 12l2 2 4-4" stroke="#32BCAD" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span class="mpag-logo-pix-text">PIX</span>
+          </div>
         </div>
       </div>
-      <div class="section-block-body">
-
-        <!-- INFO BANNER -->
-        <div style="display:flex;gap:12px;padding:13px 15px;background:var(--accent-light);border:1px solid var(--accent-mid);border-radius:10px;margin-bottom:18px">
-          <svg width="15" height="15" viewBox="0 0 16 16" fill="none" style="flex-shrink:0;margin-top:1px" aria-hidden="true">
-            <circle cx="8" cy="8" r="6.5" stroke="#60a5fa" stroke-width="1.4"/>
-            <path d="M8 7v4M8 5.5v.5" stroke="#60a5fa" stroke-width="1.5" stroke-linecap="round"/>
-          </svg>
-          <div style="font-size:12.5px;color:var(--text2);line-height:1.65">
-            <strong style="color:var(--text)">Como funciona:</strong> quando ativado, o cliente só confirma o agendamento após pagar via Pix. O valor cai direto na sua chave cadastrada aqui.
+      <div class="mpag-hero-phone">
+        <svg width="72" height="130" viewBox="0 0 72 130" fill="none">
+          <rect x="2" y="2" width="68" height="126" rx="12" fill="#0a1628" stroke="rgba(255,255,255,0.15)" stroke-width="1.5"/>
+          <rect x="8" y="10" width="56" height="110" rx="8" fill="#0f1e35"/>
+          <rect x="26" y="4" width="20" height="4" rx="2" fill="rgba(255,255,255,0.1)"/>
+          <rect x="14" y="22" width="44" height="6" rx="3" fill="rgba(59,130,246,0.3)"/>
+          <rect x="14" y="32" width="30" height="4" rx="2" fill="rgba(255,255,255,0.12)"/>
+          <rect x="14" y="44" width="44" height="32" rx="6" fill="rgba(59,130,246,0.15)" stroke="rgba(59,130,246,0.25)" stroke-width="1"/>
+          <path d="M26 60l4 4 8-8" stroke="#34d399" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <rect x="14" y="84" width="20" height="4" rx="2" fill="rgba(255,255,255,0.12)"/>
+          <rect x="14" y="92" width="34" height="4" rx="2" fill="rgba(255,255,255,0.08)"/>
+          <rect x="14" y="102" width="44" height="10" rx="5" fill="rgba(59,130,246,0.3)"/>
+        </svg>
+      </div>
+      <div class="mpag-hero-shield">
+        <svg width="38" height="38" viewBox="0 0 48 48" fill="none">
+          <circle cx="24" cy="24" r="22" fill="#1e3a8a" stroke="rgba(96,165,250,0.5)" stroke-width="2"/>
+          <path d="M24 8L10 14v10c0 9 6.5 17 14 19.5C31.5 41 38 33 38 24V14L24 8Z" fill="#2563eb" stroke="rgba(96,165,250,0.4)" stroke-width="1.5" stroke-linejoin="round"/>
+          <path d="M18 24l4 4 8-8" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+ 
+  <!-- MAIN GRID -->
+  <div class="mpag-grid">
+    <div class="mpag-col-left">
+ 
+      <!-- BLOCO 1: Pagamento adiantado -->
+      <div class="mpag-block">
+        <div class="mpag-block-body">
+          <!-- Toggle row -->
+          <div class="mpag-toggle-main-row">
+            <div>
+              <div class="mpag-section-title">Pagamento adiantado</div>
+              <div class="mpag-section-sub">Ative para solicitar pagamento antecipado no momento do agendamento.</div>
+            </div>
+            <label class="mpag-toggle-sw">
+              <input type="checkbox" checked id="mpag-toggle-adiantado">
+              <span class="mpag-toggle-track"><span class="mpag-toggle-thumb"></span></span>
+            </label>
           </div>
-        </div>
-
-        <!-- TIPO DE CHAVE -->
-        <div style="margin-bottom:14px">
-          <div style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px">Tipo de chave</div>
-          <div style="display:flex;gap:6px;flex-wrap:wrap" id="pix-tipo-tabs">
-            <button class="pix-tipo-tab ativo" data-tipo="cpf"       onclick="pixSelecionarTipo('cpf',this)"       type="button">CPF</button>
-            <button class="pix-tipo-tab"       data-tipo="cnpj"      onclick="pixSelecionarTipo('cnpj',this)"      type="button">CNPJ</button>
-            <button class="pix-tipo-tab"       data-tipo="email"     onclick="pixSelecionarTipo('email',this)"     type="button">E-mail</button>
-            <button class="pix-tipo-tab"       data-tipo="telefone"  onclick="pixSelecionarTipo('telefone',this)"  type="button">Telefone</button>
-            <button class="pix-tipo-tab"       data-tipo="aleatoria" onclick="pixSelecionarTipo('aleatoria',this)" type="button">Chave aleatória</button>
-          </div>
-        </div>
-
-        <!-- INPUT CHAVE -->
-        <div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;margin-bottom:8px">
-          <div style="flex:1;min-width:200px">
-            <label style="display:block;font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:7px" id="pix-key-label">Chave CPF</label>
-            <div style="position:relative;display:flex;align-items:center">
-              <svg width="14" height="14" viewBox="0 0 16 16" fill="none" style="position:absolute;left:12px;color:var(--text3)" aria-hidden="true">
-                <rect x="2" y="3" width="12" height="10" rx="2" stroke="currentColor" stroke-width="1.3"/>
-                <path d="M5 7h3M5 9.5h5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
-              </svg>
-              <input type="text" id="pix-chave-input"
-                style="width:100%;background:var(--bg-input,#1a2236);border:1px solid var(--border2);border-radius:9px;color:var(--text);font-size:13px;font-family:inherit;padding:9px 12px 9px 34px;outline:none;transition:border-color .15s"
-                placeholder="000.000.000-00"
-                oninput="pixFormatarChave(this)"
-                onfocus="this.style.borderColor='var(--accent)'"
-                onblur="this.style.borderColor='var(--border2)'"
-                autocomplete="off">
+ 
+          <div id="mpag-adiantado-content">
+            <!-- Valor a ser cobrado -->
+            <div class="mpag-subsection-title">Valor a ser cobrado</div>
+            <div class="mpag-subsection-sub">Escolha quanto do valor do serviço será cobrado antecipadamente.</div>
+ 
+            <div class="mpag-radio-grid">
+              <label class="mpag-radio-opt mpag-radio-active" id="mpag-opt-total">
+                <input type="radio" name="mpag-valor" value="total" checked hidden>
+                <div class="mpag-radio-dot mpag-radio-dot-active"></div>
+                <div>
+                  <div class="mpag-radio-label">Valor total</div>
+                  <div class="mpag-radio-desc">100% do valor do serviço</div>
+                </div>
+              </label>
+              <label class="mpag-radio-opt" id="mpag-opt-personalizado">
+                <input type="radio" name="mpag-valor" value="personalizado" hidden>
+                <div class="mpag-radio-dot"></div>
+                <div>
+                  <div class="mpag-radio-label">Valor personalizado</div>
+                  <div class="mpag-radio-desc">Definir uma porcentagem</div>
+                </div>
+              </label>
+              <label class="mpag-radio-opt" id="mpag-opt-fixo">
+                <input type="radio" name="mpag-valor" value="fixo" hidden>
+                <div class="mpag-radio-dot"></div>
+                <div>
+                  <div class="mpag-radio-label">Valor fixo</div>
+                  <div class="mpag-radio-desc">Definir um valor específico</div>
+                </div>
+              </label>
+            </div>
+ 
+            <!-- Porcentagem do serviço -->
+            <div class="mpag-pct-row">
+              <div>
+                <div class="mpag-subsection-title" style="margin-bottom:2px">Porcentagem do serviço</div>
+                <div class="mpag-subsection-sub">Defina a porcentagem do valor do serviço que será cobrada antecipadamente.</div>
+              </div>
+              <div class="mpag-pct-control">
+                <button class="mpag-pct-btn" onclick="mpagChangePct(-10)">−</button>
+                <div class="mpag-pct-value" id="mpag-pct-display">50%</div>
+                <button class="mpag-pct-btn" onclick="mpagChangePct(10)">+</button>
+              </div>
+            </div>
+ 
+            <!-- Info -->
+            <div class="mpag-info-bar">
+              <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="#60a5fa" stroke-width="1.4"/><path d="M8 7v4M8 5.5v.5" stroke="#60a5fa" stroke-width="1.5" stroke-linecap="round"/></svg>
+              <span id="mpag-info-text">O cliente pagará 50% do valor do serviço para confirmar o agendamento.</span>
             </div>
           </div>
-          <button onclick="pixSalvarChave()" type="button" id="btn-salvar-pix-chave"
-            style="display:flex;align-items:center;gap:7px;background:var(--accent);color:white;border:none;padding:9px 18px;border-radius:9px;font-size:12.5px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .18s;white-space:nowrap">
-            <svg width="12" height="12" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-              <path d="M2 7l3.5 3.5L12 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            Salvar chave
-          </button>
-          <span id="pix-chave-salvo" style="display:none;color:var(--green);font-size:12.5px;font-weight:700">✓ Salvo!</span>
-        </div>
-
-        <!-- PREVIEW CHAVE SALVA -->
-        <div id="pix-chave-preview" style="display:none;margin-top:14px;padding:11px 14px;background:var(--green-bg);border:1px solid var(--green-border);border-radius:9px;display:none;align-items:center;gap:10px;font-size:12.5px;color:var(--green)">
-          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-            <path d="M2 9l4 4L14 3" stroke="#10b981" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          Chave Pix cadastrada: <strong id="pix-chave-preview-val">—</strong>
         </div>
       </div>
-    </div>
-
-    <!-- COBRANÇA POR SERVIÇO -->
-    <div class="section-block">
-      <div class="section-block-header">
-        <div class="section-block-icon" aria-hidden="true">
-          <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
-            <path d="M3 5h14M3 10h8M3 15h10" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round"/>
-          </svg>
-        </div>
-        <div style="flex:1">
-          <div class="section-block-title">Cobrança antecipada por serviço</div>
-          <div class="section-block-sub">Ative o Pix e defina o valor cobrado antes do atendimento</div>
-        </div>
-        <div id="pag-badge-ativados" style="font-size:11.5px;font-weight:700;color:var(--text3);white-space:nowrap">0 ativados</div>
-      </div>
-      <div class="section-block-body" style="padding-bottom:4px">
-
-        <!-- CABEÇALHO TABELA (desktop) -->
-        <div style="display:grid;grid-template-columns:1fr 130px 90px 60px;gap:8px;padding:8px 12px;background:var(--bg3,#1a2236);border-radius:8px;margin-bottom:10px;font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.07em" aria-hidden="true">
-          <div>Serviço</div>
-          <div>Valor Pix (R$)</div>
-          <div>% do preço</div>
-          <div style="text-align:center">Ativo</div>
-        </div>
-
-        <div id="pag-servicos-lista" aria-live="polite"></div>
-
-        <!-- RESUMO -->
-        <div id="pag-resumo" style="display:none;align-items:center;gap:10px;margin-top:14px;padding:11px 14px;background:var(--green-bg);border:1px solid var(--green-border);border-radius:9px;font-size:12.5px;color:var(--green);font-weight:600">
-          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-            <path d="M2 9l4 4L14 3" stroke="#10b981" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          <span id="pag-resumo-txt">Pix ativo em 0 serviços</span>
-        </div>
-      </div>
-
-      <!-- FOOTER SALVAR -->
-      <div style="display:flex;align-items:center;gap:12px;padding:0 20px 18px">
-        <button onclick="salvarPagamentos()" type="button" id="btn-salvar-pag"
-          style="display:flex;align-items:center;gap:7px;background:var(--accent);color:white;border:none;padding:9px 18px;border-radius:9px;font-size:12.5px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .18s">
-          <svg width="12" height="12" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-            <path d="M2 7l3.5 3.5L12 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          Salvar configurações
-        </button>
-        <span id="pag-salvo-msg" style="display:none;color:var(--green);font-size:12.5px;font-weight:700" role="status" aria-live="polite">✓ Salvo!</span>
-      </div>
-    </div>
-
-    <!-- COMO FUNCIONA -->
-    <div class="section-block">
-      <div class="section-block-header">
-        <div class="section-block-icon" aria-hidden="true">
-          <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
-            <circle cx="10" cy="10" r="7.5" stroke="var(--accent)" stroke-width="1.6"/>
-            <path d="M10 6.5v4M10 13v.5" stroke="var(--accent)" stroke-width="1.8" stroke-linecap="round"/>
-          </svg>
-        </div>
-        <div>
-          <div class="section-block-title">Como funciona para o cliente</div>
-          <div class="section-block-sub">Fluxo automático de cobrança antecipada via Pix</div>
-        </div>
-      </div>
-      <div class="section-block-body">
-        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px">
-          <div style="background:var(--bg3,#1a2236);border:1px solid var(--border);border-radius:11px;padding:16px;text-align:center">
-            <div style="width:32px;height:32px;border-radius:50%;background:var(--accent-light);border:1px solid var(--accent-mid);color:#60a5fa;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;margin:0 auto 10px">1</div>
-            <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:5px">Cliente agenda</div>
-            <div style="font-size:11.5px;color:var(--text3);line-height:1.55">Escolhe serviço, data e horário na página de agendamento.</div>
-          </div>
-          <div style="background:var(--bg3,#1a2236);border:1px solid var(--border);border-radius:11px;padding:16px;text-align:center">
-            <div style="width:32px;height:32px;border-radius:50%;background:var(--accent-light);border:1px solid var(--accent-mid);color:#60a5fa;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;margin:0 auto 10px">2</div>
-            <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:5px">QR Code gerado</div>
-            <div style="font-size:11.5px;color:var(--text3);line-height:1.55">Sistema gera automaticamente o QR Code Pix com o valor configurado.</div>
-          </div>
-          <div style="background:var(--bg3,#1a2236);border:1px solid var(--border);border-radius:11px;padding:16px;text-align:center">
-            <div style="width:32px;height:32px;border-radius:50%;background:var(--accent-light);border:1px solid var(--accent-mid);color:#60a5fa;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;margin:0 auto 10px">3</div>
-            <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:5px">Pix confirmado</div>
-            <div style="font-size:11.5px;color:var(--text3);line-height:1.55">Após o pagamento, o agendamento é confirmado instantaneamente.</div>
-          </div>
-          <div style="background:var(--bg3,#1a2236);border:1px solid var(--border);border-radius:11px;padding:16px;text-align:center">
-            <div style="width:32px;height:32px;border-radius:50%;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.25);color:#10b981;font-size:14px;font-weight:800;display:flex;align-items:center;justify-content:center;margin:0 auto 10px">✓</div>
-            <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:5px">Você recebe direto</div>
-            <div style="font-size:11.5px;color:var(--text3);line-height:1.55">O valor cai na sua chave Pix. Zero intermediários, zero taxas nossas.</div>
+ 
+      <!-- BLOCO 2: Forma de pagamento -->
+      <div class="mpag-block">
+        <div class="mpag-block-body">
+          <div class="mpag-subsection-title" style="margin-bottom:4px">Forma de pagamento</div>
+          <div class="mpag-subsection-sub" style="margin-bottom:14px">Receba pagamentos via Mercado Pago.</div>
+ 
+          <div class="mpag-fp-card">
+            <div class="mpag-fp-row">
+              <!-- Ícone MP -->
+              <div class="mpag-fp-icon">
+                <svg width="22" height="22" viewBox="0 0 32 32" fill="none">
+                  <rect width="32" height="32" rx="8" fill="#009ee3"/>
+                  <path d="M8 16a8 8 0 1 1 16 0" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+                  <circle cx="16" cy="16" r="3" fill="white"/>
+                </svg>
+              </div>
+              <!-- Info -->
+              <div class="mpag-fp-info">
+                <div class="mpag-fp-name">
+                  PIX
+                  <span class="mpag-fp-badge-mp">Mercado Pago</span>
+                </div>
+                <div class="mpag-fp-sub">Pagamento instantâneo</div>
+              </div>
+              <!-- Divider vertical -->
+              <div class="mpag-fp-divider"></div>
+              <!-- Desc -->
+              <div class="mpag-fp-desc">O pagamento é confirmado na hora e o agendamento é liberado automaticamente.</div>
+              <!-- Status -->
+              <div class="mpag-fp-status">
+                <span class="mpag-badge-ativo">Ativo</span>
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M6 4l4 4-4 4" stroke="rgba(255,255,255,0.35)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+            </div>
+            <div class="mpag-fp-security">
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M8 1.5L2 4v6c0 3.5 2.6 6.8 6 7.5 3.4-.7 6-4 6-7.5V4L8 1.5Z" stroke="rgba(255,255,255,0.25)" stroke-width="1.3" stroke-linejoin="round"/></svg>
+              <span>Seus pagamentos são processados com segurança pelo Mercado Pago.</span>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-
-  </section>
+ 
+      <!-- BLOCO 3: Reembolso automático -->
+      <div class="mpag-block">
+        <div class="mpag-block-body">
+          <!-- Toggle row -->
+          <div class="mpag-toggle-main-row" style="margin-bottom:20px">
+            <div>
+              <div class="mpag-section-title">Reembolso automático</div>
+              <div class="mpag-section-sub">Configure o reembolso automático caso o cliente cancele o agendamento.</div>
+            </div>
+            <label class="mpag-toggle-sw">
+              <input type="checkbox" checked>
+              <span class="mpag-toggle-track"><span class="mpag-toggle-thumb"></span></span>
+            </label>
+          </div>
+ 
+          <div class="mpag-subsection-title" style="margin-bottom:2px">Reembolsar automaticamente quando</div>
+          <div class="mpag-subsection-sub" style="margin-bottom:14px">O reembolso será processado de forma automática nas situações abaixo.</div>
+ 
+          <div class="mpag-reimb-list">
+            <!-- Item 1 -->
+            <div class="mpag-reimb-item">
+              <div class="mpag-reimb-icon mpag-reimb-purple">
+                <svg width="17" height="17" viewBox="0 0 20 20" fill="none">
+                  <rect x="2" y="2" width="16" height="16" rx="8" fill="rgba(139,92,246,0.2)"/>
+                  <path d="M7 13l6-6M13 13L7 7" stroke="#a78bfa" stroke-width="1.6" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <div class="mpag-reimb-text">
+                <div class="mpag-reimb-name">Cancelamento pelo cliente</div>
+                <div class="mpag-reimb-sub">Reembolso automático quando o cliente cancelar o agendamento.</div>
+              </div>
+              <label class="mpag-toggle-sw">
+                <input type="checkbox" checked>
+                <span class="mpag-toggle-track"><span class="mpag-toggle-thumb"></span></span>
+              </label>
+            </div>
+            <!-- Item 2 -->
+            <div class="mpag-reimb-item">
+              <div class="mpag-reimb-icon mpag-reimb-orange">
+                <svg width="17" height="17" viewBox="0 0 20 20" fill="none">
+                  <circle cx="10" cy="10" r="8" fill="rgba(249,115,22,0.2)"/>
+                  <path d="M10 7v4" stroke="#fb923c" stroke-width="1.8" stroke-linecap="round"/>
+                  <circle cx="10" cy="14" r="0.8" fill="#fb923c"/>
+                </svg>
+              </div>
+              <div class="mpag-reimb-text">
+                <div class="mpag-reimb-name">Cancelamento por você</div>
+                <div class="mpag-reimb-sub">Reembolso automático quando o agendamento for cancelado por você.</div>
+              </div>
+              <label class="mpag-toggle-sw">
+                <input type="checkbox" checked>
+                <span class="mpag-toggle-track"><span class="mpag-toggle-thumb"></span></span>
+              </label>
+            </div>
+          </div>
+ 
+          <div class="mpag-info-bar" style="margin-top:16px">
+            <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="#60a5fa" stroke-width="1.4"/><path d="M8 7v4M8 5.5v.5" stroke="#60a5fa" stroke-width="1.5" stroke-linecap="round"/></svg>
+            <span>O reembolso será feito automaticamente via PIX para a conta do cliente.</span>
+          </div>
+        </div>
+      </div>
+ 
+    </div><!-- /col-left -->
+ 
+    <!-- COLUNA DIREITA -->
+    <div class="mpag-col-right">
+ 
+      <!-- Como funciona -->
+      <div class="mpag-side-block">
+        <div class="mpag-side-title">Como funciona</div>
+        <div class="mpag-steps">
+ 
+          <div class="mpag-step">
+            <div class="mpag-step-icon mpag-step-purple">
+              <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+                <rect x="2.5" y="3.5" width="15" height="13.5" rx="2.5" stroke="#a78bfa" stroke-width="1.6"/>
+                <path d="M2.5 7.5h15M7 2v3M13 2v3" stroke="#a78bfa" stroke-width="1.6" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div class="mpag-step-body">
+              <div class="mpag-step-title">Cliente faz o agendamento</div>
+              <div class="mpag-step-desc">O cliente escolhe o serviço, data e horário.</div>
+            </div>
+          </div>
+ 
+          <div class="mpag-step">
+            <div class="mpag-step-icon mpag-step-blue">
+              <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+                <rect x="2" y="5" width="16" height="13" rx="2.5" stroke="#60a5fa" stroke-width="1.6"/>
+                <path d="M2 9h16M6 13h4" stroke="#60a5fa" stroke-width="1.6" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div class="mpag-step-body">
+              <div class="mpag-step-title">Pagamento antecipado</div>
+              <div class="mpag-step-desc">O cliente realiza o pagamento via PIX e o agendamento é confirmado.</div>
+            </div>
+          </div>
+ 
+          <div class="mpag-step">
+            <div class="mpag-step-icon mpag-step-green">
+              <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+                <circle cx="10" cy="10" r="7.5" stroke="#34d399" stroke-width="1.6"/>
+                <path d="M6.5 10l2.5 2.5 5-5" stroke="#34d399" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div class="mpag-step-body">
+              <div class="mpag-step-title">Você recebe o pagamento</div>
+              <div class="mpag-step-desc">O valor entra na sua conta via Mercado Pago.</div>
+            </div>
+          </div>
+ 
+          <div class="mpag-step">
+            <div class="mpag-step-icon mpag-step-orange">
+              <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+                <circle cx="10" cy="10" r="7.5" stroke="#fb923c" stroke-width="1.6"/>
+                <path d="M10 7v4" stroke="#fb923c" stroke-width="1.8" stroke-linecap="round"/>
+                <circle cx="10" cy="14.5" r="0.9" fill="#fb923c"/>
+              </svg>
+            </div>
+            <div class="mpag-step-body">
+              <div class="mpag-step-title">Cancelamento e reembolso</div>
+              <div class="mpag-step-desc">Se houver cancelamento, o reembolso é feito automaticamente via PIX.</div>
+            </div>
+          </div>
+ 
+        </div>
+      </div>
+ 
+      <!-- Resumo -->
+      <div class="mpag-side-block mpag-resumo-block">
+        <div class="mpag-side-title">Resumo</div>
+        <div class="mpag-resumo-rows">
+          <div class="mpag-resumo-row">
+            <span class="mpag-resumo-key">Meio de pagamento</span>
+            <span class="mpag-resumo-val">PIX via Mercado Pago</span>
+          </div>
+          <div class="mpag-resumo-row">
+            <span class="mpag-resumo-key">Taxa por transação</span>
+            <span class="mpag-resumo-val">0,99%</span>
+          </div>
+          <div class="mpag-resumo-row">
+            <span class="mpag-resumo-key">Prazo para recebimento</span>
+            <span class="mpag-resumo-val">Na hora</span>
+          </div>
+          <div class="mpag-resumo-row">
+            <span class="mpag-resumo-key">Reembolso automático</span>
+            <span class="mpag-resumo-val mpag-resumo-green">Ativado</span>
+          </div>
+        </div>
+        <div class="mpag-ver-btn">
+          <span style="display:flex;align-items:center;gap:8px">
+            <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M2 12.5L13 7.5 2 2.5v4l8 1-8 1v4Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
+            Ver pagamentos recebidos
+          </span>
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="mpag-mp-footer">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M8 1.5L2 4v6c0 3.5 2.6 6.8 6 7.5 3.4-.7 6-4 6-7.5V4L8 1.5Z" stroke="rgba(255,255,255,0.3)" stroke-width="1.3" stroke-linejoin="round"/></svg>
+          <span>Seus pagamentos são 100% seguros com o Mercado Pago.</span>
+          <div class="mpag-mp-logo-small">
+            <svg width="16" height="16" viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="14" fill="#009ee3"/><path d="M9 16a7 7 0 1 1 14 0" stroke="white" stroke-width="2.5" stroke-linecap="round"/><circle cx="16" cy="16" r="2.5" fill="white"/></svg>
+            <span>mercado pago</span>
+          </div>
+        </div>
+      </div>
+ 
+    </div><!-- /col-right -->
+  </div><!-- /mpag-grid -->
+ 
+</section>
 
   <!-- ══════════════════ PAGE: SUPORTE ══════════════════ -->
   <section class="page" id="page-suporte" aria-label="Suporte">

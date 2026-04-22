@@ -6,22 +6,28 @@ require('dotenv').config()
 const app = express()
 app.use(cors())
 
-// ── Webhooks precisam de raw body ANTES do express.json ───────
-app.use('/api/assinatura/webhook', express.raw({ type: 'application/json' }))
-app.use('/api/pagamento/webhook',  express.raw({ type: 'application/json' }))
+// ── Webhook raw body — path EXATO, antes do express.json ──────
+// Usa função condicional para não afetar outras rotas de /api/pagamento
+app.use((req, res, next) => {
+  if (req.path === '/api/pagamento/webhook' || req.path === '/api/assinatura/webhook') {
+    express.raw({ type: '*/*' })(req, res, next)
+  } else {
+    next()
+  }
+})
 
 app.use(express.json({ limit: '10mb' }))
 app.use(express.urlencoded({ limit: '10mb', extended: true }))
 app.use(express.static('public', { extensions: ['html'] }))
 
-// ── Rotas da API ───────────────────────────────────────────────
+// ── Rotas da API ──────────────────────────────────────────────
 app.use('/api/auth',         require('./routes/auth'))
 app.use('/api/agendamentos', require('./routes/appointments'))
 app.use('/api/upload',       require('./routes/upload'))
-app.use('/api/assinatura',   require('./routes/assinatura'))  // ← apenas UMA vez
+app.use('/api/assinatura',   require('./routes/assinatura'))
 app.use('/api/pagamento',    require('./routes/pagamento'))
 
-// ── Páginas estáticas ──────────────────────────────────────────
+// ── Páginas estáticas ─────────────────────────────────────────
 app.get('/', (req, res) => {
   res.sendFile('index.html', { root: 'public' })
 })
@@ -39,7 +45,6 @@ app.get('/:slug', async (req, res) => {
   const slug = req.params.slug
   if (slug.includes('.')) return res.status(404).sendFile('404.html', { root: 'public' })
   if (PAGINAS_ESTATICAS.includes(slug)) return res.sendFile(`${slug}.html`, { root: 'public' })
-
   try {
     const Negocio = require('./models/Negocio')
     const negocio = await Negocio.findById(slug)
@@ -50,7 +55,7 @@ app.get('/:slug', async (req, res) => {
   }
 })
 
-// ── Limpeza automática de agendamentos antigos ─────────────────
+// ── Limpeza automática de agendamentos antigos ────────────────
 async function limparAgendamentos() {
   try {
     const Appointment = require('./models/Appointment')
@@ -59,9 +64,8 @@ async function limparAgendamentos() {
       status:       { $in: ['concluido', 'cancelado'] },
       atualizadoEm: { $lt: umaHoraAtras }
     })
-    if (result.deletedCount > 0) {
+    if (result.deletedCount > 0)
       console.log(`[limpeza] ${result.deletedCount} agendamentos removidos`)
-    }
   } catch (e) {
     console.error('[limpeza] erro:', e.message)
   }
