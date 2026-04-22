@@ -1,436 +1,226 @@
 /* ═══════════════════════════════════════════════════
    pagamentos-fix.js
    Conecta a nova UI de Pagamentos (mpag-*) ao backend
-   já existente em /api/pagamento/config
 ═══════════════════════════════════════════════════ */
 
 (function () {
   'use strict';
 
-  /* ── Estado local da página de pagamentos ── */
+  // API é "const" no painel.js — não fica em window. Acessamos pelo escopo.
+  function _getAPI() {
+    try { if (typeof API !== 'undefined' && API) return API; } catch(e) {}
+    return 'https://agendafacil-wf3q.onrender.com/api';
+  }
+
+  function _getNegocio() {
+    try { if (typeof negocioAtual !== 'undefined' && negocioAtual && negocioAtual._id) return negocioAtual; } catch(e) {}
+    return (window.negocioAtual && window.negocioAtual._id) ? window.negocioAtual : null;
+  }
+
+  async function _esperarNegocio(maxMs) {
+    var tentativas = Math.ceil((maxMs || 6000) / 300);
+    for (var i = 0; i < tentativas; i++) {
+      var neg = _getNegocio();
+      if (neg) return neg;
+      await new Promise(function(r) { setTimeout(r, 300); });
+    }
+    return null;
+  }
+
   var _cfg = {
-    adiantado:        false,
-    tipoValor:        'total',   // 'total' | 'personalizado' | 'fixo'
-    porcentagem:      50,
-    reembolso:        true,
-    reembolsoCliente: true,
-    reembolsoNegocio: true,
+    adiantado: false, tipoValor: 'total', porcentagem: 50,
+    reembolso: true, reembolsoCliente: true, reembolsoNegocio: true,
   };
 
-  /* ─────────────────────────────────────────
-     CARREGAR config do backend e popular UI
-  ───────────────────────────────────────── */
   async function mpagCarregar() {
-    // Aguardar negocioAtual estar disponível (pode demorar pois é async)
-    var tentativas = 0;
-    while ((!window.negocioAtual || !window.negocioAtual._id) && tentativas < 20) {
-      await new Promise(function(r) { setTimeout(r, 300); });
-      tentativas++;
-    }
-    var negocioId = window.negocioAtual && window.negocioAtual._id;
-    if (!negocioId) return;
-
+    var neg = await _esperarNegocio(6000);
+    if (!neg) { console.warn('[pagamentos-fix] negocioAtual indisponível'); return; }
     try {
-      var token = localStorage.getItem('token');
-      var res   = await fetch(window.API + '/pagamento/config/' + negocioId, {
-        headers: { 'Authorization': 'Bearer ' + token }
+      var res = await fetch(_getAPI() + '/pagamento/config/' + neg._id, {
+        headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
       });
-
       if (!res.ok) return;
-      var data = await res.json();
-
-      // Persistir no estado local
-      _cfg.adiantado        = !!data.adiantado;
-      _cfg.tipoValor        = data.tipoValor        || 'total';
-      _cfg.porcentagem      = Number(data.porcentagem)  || 50;
-      _cfg.reembolso        = data.reembolso        !== false;
-      _cfg.reembolsoCliente = data.reembolsoCliente !== false;
-      _cfg.reembolsoNegocio = data.reembolsoNegocio !== false;
-
+      var d = await res.json();
+      _cfg.adiantado        = !!d.adiantado;
+      _cfg.tipoValor        = d.tipoValor || 'total';
+      _cfg.porcentagem      = Number(d.porcentagem) || 50;
+      _cfg.reembolso        = d.reembolso !== false;
+      _cfg.reembolsoCliente = d.reembolsoCliente !== false;
+      _cfg.reembolsoNegocio = d.reembolsoNegocio !== false;
       mpagPopularUI();
-    } catch (e) {
-      console.warn('[pagamentos-fix] Erro ao carregar config:', e.message);
-    }
+    } catch(e) { console.warn('[pagamentos-fix] carregar:', e.message); }
   }
 
-  /* ─────────────────────────────────────────
-     Popular todos os controles da UI
-  ───────────────────────────────────────── */
   function mpagPopularUI() {
-    /* Toggle principal — Pagamento adiantado */
-    var togAdiantado = document.getElementById('mpag-toggle-adiantado');
-    if (togAdiantado) togAdiantado.checked = _cfg.adiantado;
-    _mpagAtualizarConteudoAdiantado(_cfg.adiantado);
+    var tog = document.getElementById('mpag-toggle-adiantado');
+    if (tog) tog.checked = _cfg.adiantado;
+    _atualizarOpacidade(_cfg.adiantado);
 
-    /* Radio buttons de tipo de valor */
-    var radios = document.querySelectorAll('input[name="mpag-valor"]');
-    radios.forEach(function (r) {
+    document.querySelectorAll('input[name="mpag-valor"]').forEach(function(r) {
       r.checked = (r.value === _cfg.tipoValor);
     });
-    _mpagAtualizarEstiloRadios(_cfg.tipoValor);
-    _mpagAtualizarVisibilidadePct(_cfg.tipoValor);
+    _atualizarRadios(_cfg.tipoValor);
+    _atualizarPctVisivel(_cfg.tipoValor);
 
-    /* Porcentagem */
     window.mpagPct = _cfg.porcentagem;
-    var elPct = document.getElementById('mpag-pct-display');
-    if (elPct) elPct.textContent = _cfg.porcentagem + '%';
-    _mpagAtualizarInfoBar();
+    var elP = document.getElementById('mpag-pct-display');
+    if (elP) elP.textContent = _cfg.porcentagem + '%';
+    _atualizarInfoBar();
 
-    /* Reembolso automático */
-    _mpagSetToggle('mpag-toggle-reembolso-main',    _cfg.reembolso);
-    _mpagSetToggle('mpag-toggle-reembolso-cliente', _cfg.reembolsoCliente);
-    _mpagSetToggle('mpag-toggle-reembolso-negocio', _cfg.reembolsoNegocio);
-
-    /* Resumo lateral */
-    _mpagAtualizarResumo();
+    _setToggle('mpag-toggle-reembolso-main',    _cfg.reembolso);
+    _setToggle('mpag-toggle-reembolso-cliente', _cfg.reembolsoCliente);
+    _setToggle('mpag-toggle-reembolso-negocio', _cfg.reembolsoNegocio);
+    _atualizarResumo();
   }
 
-  /* ─────────────────────────────────────────
-     SALVAR config no backend
-  ───────────────────────────────────────── */
   async function mpagSalvar() {
-    var tentativas = 0;
-    while ((!window.negocioAtual || !window.negocioAtual._id) && tentativas < 10) {
-      await new Promise(function(r) { setTimeout(r, 300); });
-      tentativas++;
-    }
-    var negocioId = window.negocioAtual && window.negocioAtual._id;
-    if (!negocioId) { alert('Painel ainda carregando, tente novamente.'); return; }
-
-    /* Ler estado atual da UI antes de salvar */
-    _mpagLerUI();
-
-    var token = localStorage.getItem('token');
-    var btn   = document.getElementById('mpag-btn-salvar');
-
+    var neg = await _esperarNegocio(3000);
+    if (!neg) { alert('Painel ainda carregando. Aguarde e tente novamente.'); return; }
+    _lerUI();
+    var btn = document.getElementById('mpag-btn-salvar');
     if (btn) { btn.disabled = true; btn.textContent = 'Salvando...'; }
-
     try {
-      var res = await fetch(window.API + '/pagamento/config', {
-        method:  'PATCH',
-        headers: {
-          'Content-Type':  'application/json',
-          'Authorization': 'Bearer ' + token,
-        },
+      var res = await fetch(_getAPI() + '/pagamento/config', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('token') },
         body: JSON.stringify({
-          negocioId:        negocioId,
-          adiantado:        _cfg.adiantado,
-          tipoValor:        _cfg.tipoValor,
-          porcentagem:      _cfg.porcentagem,
-          reembolso:        _cfg.reembolso,
-          reembolsoCliente: _cfg.reembolsoCliente,
-          reembolsoNegocio: _cfg.reembolsoNegocio,
+          negocioId: neg._id,
+          adiantado: _cfg.adiantado, tipoValor: _cfg.tipoValor,
+          porcentagem: _cfg.porcentagem, reembolso: _cfg.reembolso,
+          reembolsoCliente: _cfg.reembolsoCliente, reembolsoNegocio: _cfg.reembolsoNegocio,
         }),
       });
-
       if (!res.ok) throw new Error('HTTP ' + res.status);
-
-      _mpagFlashSalvo();
-    } catch (e) {
-      console.error('[pagamentos-fix] Erro ao salvar:', e.message);
+      if (btn) { btn.textContent = '✓ Salvo!'; btn.style.background = '#10b981'; }
+      setTimeout(function() {
+        if (btn) { btn.style.background = ''; btn.innerHTML = _btnHTML(); btn.disabled = false; }
+      }, 2500);
+    } catch(e) {
+      console.error('[pagamentos-fix] salvar:', e.message);
       alert('Erro ao salvar. Verifique sua conexão e tente novamente.');
-    } finally {
-      if (btn) {
-        btn.disabled    = false;
-        btn.textContent = 'Salvar configurações';
-      }
+      if (btn) { btn.disabled = false; btn.innerHTML = _btnHTML(); }
     }
   }
 
-  /* ─────────────────────────────────────────
-     Ler todos os controles da UI → _cfg
-  ───────────────────────────────────────── */
-  function _mpagLerUI() {
-    var togAdiantado = document.getElementById('mpag-toggle-adiantado');
-    if (togAdiantado) _cfg.adiantado = togAdiantado.checked;
-
-    var radioSel = document.querySelector('input[name="mpag-valor"]:checked');
-    if (radioSel) _cfg.tipoValor = radioSel.value;
-
-    _cfg.porcentagem = window.mpagPct || 50;
-
-    _cfg.reembolso        = _mpagGetToggle('mpag-toggle-reembolso-main');
-    _cfg.reembolsoCliente = _mpagGetToggle('mpag-toggle-reembolso-cliente');
-    _cfg.reembolsoNegocio = _mpagGetToggle('mpag-toggle-reembolso-negocio');
+  function _lerUI() {
+    var tog = document.getElementById('mpag-toggle-adiantado');
+    if (tog) _cfg.adiantado = tog.checked;
+    var r = document.querySelector('input[name="mpag-valor"]:checked');
+    if (r) _cfg.tipoValor = r.value;
+    _cfg.porcentagem      = window.mpagPct || 50;
+    _cfg.reembolso        = _getToggle('mpag-toggle-reembolso-main');
+    _cfg.reembolsoCliente = _getToggle('mpag-toggle-reembolso-cliente');
+    _cfg.reembolsoNegocio = _getToggle('mpag-toggle-reembolso-negocio');
   }
 
-  /* ─────────────────────────────────────────
-     Helpers de toggle (label > input[checkbox])
-  ───────────────────────────────────────── */
-  function _mpagGetToggle(id) {
-    var el = document.getElementById(id);
-    return el ? el.checked : true;
-  }
-  function _mpagSetToggle(id, val) {
-    var el = document.getElementById(id);
-    if (el) el.checked = !!val;
+  function _getToggle(id) { var el = document.getElementById(id); return el ? el.checked : true; }
+  function _setToggle(id, val) { var el = document.getElementById(id); if (el) el.checked = !!val; }
+
+  function _atualizarOpacidade(on) {
+    var c = document.getElementById('mpag-adiantado-content');
+    if (c) c.style.opacity = on ? '1' : '0.4';
   }
 
-  /* ─────────────────────────────────────────
-     Atualizar opacidade do bloco "adiantado"
-  ───────────────────────────────────────── */
-  function _mpagAtualizarConteudoAdiantado(isOn) {
-    var content = document.getElementById('mpag-adiantado-content');
-    if (content) content.style.opacity = isOn ? '1' : '0.4';
-  }
-
-  /* ─────────────────────────────────────────
-     Atualizar estilos dos radio buttons
-  ───────────────────────────────────────── */
-  function _mpagAtualizarEstiloRadios(tipo) {
-    var mapa = {
-      'total':         'mpag-opt-total',
-      'personalizado': 'mpag-opt-personalizado',
-      'fixo':          'mpag-opt-fixo',
-    };
-    Object.keys(mapa).forEach(function (k) {
-      var el  = document.getElementById(mapa[k]);
+  function _atualizarRadios(tipo) {
+    var map = { total: 'mpag-opt-total', personalizado: 'mpag-opt-personalizado', fixo: 'mpag-opt-fixo' };
+    Object.keys(map).forEach(function(k) {
+      var el = document.getElementById(map[k]);
       var dot = el && el.querySelector('.mpag-radio-dot');
       if (!el) return;
-      if (k === tipo) {
-        el.classList.add('mpag-radio-active');
-        if (dot) dot.classList.add('mpag-radio-dot-active');
-      } else {
-        el.classList.remove('mpag-radio-active');
-        if (dot) dot.classList.remove('mpag-radio-dot-active');
-      }
+      el.classList.toggle('mpag-radio-active', k === tipo);
+      if (dot) dot.classList.toggle('mpag-radio-dot-active', k === tipo);
     });
   }
 
-  /* ─────────────────────────────────────────
-     Mostrar/ocultar controle de porcentagem
-  ───────────────────────────────────────── */
-  function _mpagAtualizarVisibilidadePct(tipo) {
+  function _atualizarPctVisivel(tipo) {
     var row = document.querySelector('.mpag-pct-row');
-    if (!row) return;
-    // Mostra para 'personalizado'; esconde para 'total' e 'fixo'
-    row.style.display = (tipo === 'personalizado') ? 'flex' : 'none';
+    if (row) row.style.display = (tipo === 'personalizado') ? 'flex' : 'none';
   }
 
-  /* ─────────────────────────────────────────
-     Atualizar texto informativo
-  ───────────────────────────────────────── */
-  function _mpagAtualizarInfoBar() {
+  function _atualizarInfoBar() {
     var el = document.getElementById('mpag-info-text');
     if (!el) return;
     var pct = window.mpagPct || 50;
-    if (_cfg.tipoValor === 'total') {
-      el.textContent = 'O cliente pagará 100% do valor do serviço para confirmar o agendamento.';
-    } else if (_cfg.tipoValor === 'fixo') {
-      el.textContent = 'O cliente pagará um valor fixo definido por serviço para confirmar o agendamento.';
-    } else {
-      el.textContent = 'O cliente pagará ' + pct + '% do valor do serviço para confirmar o agendamento.';
-    }
+    var txt = { total: 'O cliente pagará 100% do valor do serviço para confirmar o agendamento.',
+                fixo:  'O cliente pagará um valor fixo para confirmar o agendamento.' };
+    el.textContent = txt[_cfg.tipoValor] || ('O cliente pagará ' + pct + '% do valor do serviço para confirmar o agendamento.');
   }
 
-  /* ─────────────────────────────────────────
-     Atualizar painel de Resumo (lateral)
-  ───────────────────────────────────────── */
-  function _mpagAtualizarResumo() {
-    /* Reembolso automático no resumo */
-    var elReemb = document.querySelector('.mpag-resumo-green');
-    if (elReemb) {
-      elReemb.textContent = _cfg.reembolso ? 'Ativado' : 'Desativado';
-      elReemb.style.color = _cfg.reembolso ? '' : 'var(--red, #ef4444)';
-    }
+  function _atualizarResumo() {
+    var el = document.querySelector('.mpag-resumo-green');
+    if (el) { el.textContent = _cfg.reembolso ? 'Ativado' : 'Desativado'; el.style.color = _cfg.reembolso ? '' : '#ef4444'; }
   }
 
-  /* ─────────────────────────────────────────
-     Flash de salvo
-  ───────────────────────────────────────── */
-  function _mpagFlashSalvo() {
-    var btn = document.getElementById('mpag-btn-salvar');
-    if (btn) {
-      btn.textContent = '✓ Salvo!';
-      btn.style.background = '#10b981';
-      setTimeout(function () {
-        btn.textContent      = 'Salvar configurações';
-        btn.style.background = '';
-      }, 2500);
-    }
-  }
-
-  /* ─────────────────────────────────────────
-     Substituir mpagChangePct para também
-     atualizar _cfg e a info bar
-  ───────────────────────────────────────── */
-  window.mpagChangePct = function (delta) {
+  window.mpagChangePct = function(delta) {
     window.mpagPct = Math.max(10, Math.min(100, (window.mpagPct || 50) + delta));
     _cfg.porcentagem = window.mpagPct;
     var el = document.getElementById('mpag-pct-display');
     if (el) el.textContent = window.mpagPct + '%';
-    _mpagAtualizarInfoBar();
+    _atualizarInfoBar();
   };
 
-  /* ─────────────────────────────────────────
-     Injetar botão "Salvar configurações" na
-     página de pagamentos (abaixo do bloco de
-     reembolso, antes do fim do mpag-col-left)
-  ───────────────────────────────────────── */
-  function _mpagInjetarBotaoSalvar() {
-    if (document.getElementById('mpag-btn-salvar')) return; // já existe
+  function _btnHTML() {
+    return '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" style="flex-shrink:0"><path d="M2 7l3.5 3.5L12 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg> Salvar configurações';
+  }
 
-    var colLeft = document.querySelector('.mpag-col-left');
-    if (!colLeft) return;
-
-    var wrapper = document.createElement('div');
-    wrapper.style.cssText = [
-      'display:flex',
-      'align-items:center',
-      'gap:14px',
-      'padding:4px 0 20px',
-    ].join(';');
-
+  function _injetarBotao() {
+    if (document.getElementById('mpag-btn-salvar')) return;
+    var col = document.querySelector('.mpag-col-left');
+    if (!col) return;
+    var wrap = document.createElement('div');
+    wrap.style.cssText = 'display:flex;align-items:center;gap:14px;padding:4px 0 20px';
     var btn = document.createElement('button');
-    btn.id        = 'mpag-btn-salvar';
-    btn.type      = 'button';
-    btn.textContent = 'Salvar configurações';
-    btn.onclick   = mpagSalvar;
-    btn.style.cssText = [
-      'display:flex',
-      'align-items:center',
-      'gap:8px',
-      'background:var(--accent,#2563eb)',
-      'color:#fff',
-      'border:none',
-      'padding:10px 22px',
-      'border-radius:10px',
-      'font-size:13.5px',
-      'font-weight:600',
-      'cursor:pointer',
-      'font-family:inherit',
-      'transition:background .18s,opacity .18s',
-      'box-shadow:0 2px 12px rgba(37,99,235,.35)',
-    ].join(';');
-
-    // SVG de check
-    btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" style="flex-shrink:0"><path d="M2 7l3.5 3.5L12 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg> Salvar configurações';
-
-    wrapper.appendChild(btn);
-    colLeft.appendChild(wrapper);
+    btn.id = 'mpag-btn-salvar'; btn.type = 'button'; btn.onclick = mpagSalvar;
+    btn.innerHTML = _btnHTML();
+    btn.style.cssText = 'display:flex;align-items:center;gap:8px;background:var(--accent,#2563eb);color:#fff;border:none;padding:10px 22px;border-radius:10px;font-size:13.5px;font-weight:600;cursor:pointer;font-family:inherit;transition:background .18s;box-shadow:0 2px 12px rgba(37,99,235,.35)';
+    wrap.appendChild(btn); col.appendChild(wrap);
   }
 
-  /* ─────────────────────────────────────────
-     Vincular eventos aos controles existentes
-  ───────────────────────────────────────── */
-  function _mpagVincularEventos() {
+  function _vincularEventos() {
+    var tog = document.getElementById('mpag-toggle-adiantado');
+    if (tog && !tog._fix) { tog._fix = true; tog.addEventListener('change', function() { _cfg.adiantado = this.checked; _atualizarOpacidade(this.checked); }); }
 
-    /* Toggle — Pagamento adiantado */
-    var togAdiantado = document.getElementById('mpag-toggle-adiantado');
-    if (togAdiantado) {
-      togAdiantado.addEventListener('change', function () {
-        _cfg.adiantado = this.checked;
-        _mpagAtualizarConteudoAdiantado(this.checked);
-      });
-    }
-
-    /* Radio buttons */
-    var radios = document.querySelectorAll('input[name="mpag-valor"]');
-    radios.forEach(function (r) {
-      r.addEventListener('change', function () {
-        _cfg.tipoValor = this.value;
-        _mpagAtualizarEstiloRadios(this.value);
-        _mpagAtualizarVisibilidadePct(this.value);
-        _mpagAtualizarInfoBar();
-      });
-    });
-
-    /* Clique nos labels dos radio buttons (melhor UX) */
-    ['mpag-opt-total','mpag-opt-personalizado','mpag-opt-fixo'].forEach(function (id) {
+    ['mpag-opt-total','mpag-opt-personalizado','mpag-opt-fixo'].forEach(function(id) {
       var el = document.getElementById(id);
-      if (!el) return;
-      el.addEventListener('click', function () {
-        var radio = this.querySelector('input[type="radio"]');
-        if (radio) {
-          radio.checked  = true;
-          _cfg.tipoValor = radio.value;
-          _mpagAtualizarEstiloRadios(radio.value);
-          _mpagAtualizarVisibilidadePct(radio.value);
-          _mpagAtualizarInfoBar();
-        }
+      if (!el || el._fix) return;
+      el._fix = true;
+      el.addEventListener('click', function() {
+        var r = this.querySelector('input[type="radio"]');
+        if (!r) return;
+        r.checked = true; _cfg.tipoValor = r.value;
+        _atualizarRadios(r.value); _atualizarPctVisivel(r.value); _atualizarInfoBar();
       });
     });
 
-    /* Toggles de reembolso — os elementos são <label> wrappando <input> */
-    /* Precisamos dar IDs às checkboxes do HTML. Como o HTML não tem IDs
-       nessas checkboxes, vamos selecioná-las por posição dentro do bloco */
-    var blocoReembolso = document.querySelector('.mpag-reimb-list');
-    if (blocoReembolso) {
-      var checkboxes = blocoReembolso.querySelectorAll('input[type="checkbox"]');
-      if (checkboxes[0]) {
-        checkboxes[0].id = 'mpag-toggle-reembolso-cliente';
-        checkboxes[0].addEventListener('change', function () {
-          _cfg.reembolsoCliente = this.checked;
-          _mpagAtualizarResumo();
-        });
-      }
-      if (checkboxes[1]) {
-        checkboxes[1].id = 'mpag-toggle-reembolso-negocio';
-        checkboxes[1].addEventListener('change', function () {
-          _cfg.reembolsoNegocio = this.checked;
-          _mpagAtualizarResumo();
-        });
-      }
+    var lista = document.querySelector('.mpag-reimb-list');
+    if (lista) {
+      var cbs = lista.querySelectorAll('input[type="checkbox"]');
+      if (cbs[0] && !cbs[0].id) { cbs[0].id = 'mpag-toggle-reembolso-cliente'; cbs[0].addEventListener('change', function() { _cfg.reembolsoCliente = this.checked; }); }
+      if (cbs[1] && !cbs[1].id) { cbs[1].id = 'mpag-toggle-reembolso-negocio'; cbs[1].addEventListener('change', function() { _cfg.reembolsoNegocio = this.checked; }); }
     }
 
-    /* Toggle principal de reembolso automático */
-    var togReembolso = document.querySelector('.mpag-block:nth-child(3) .mpag-toggle-main-row input[type="checkbox"]');
-    if (togReembolso) {
-      togReembolso.id = 'mpag-toggle-reembolso-main';
-      togReembolso.addEventListener('change', function () {
-        _cfg.reembolso = this.checked;
-        _mpagAtualizarResumo();
-      });
-    }
-
-    /* Botão "Ver pagamentos recebidos" → abre histórico (placeholder) */
-    var btnVer = document.querySelector('.mpag-ver-btn');
-    if (btnVer) {
-      btnVer.style.cursor = 'pointer';
-      btnVer.addEventListener('click', function () {
-        alert('Histórico de pagamentos: em breve disponível no painel.');
-      });
+    var mainTog = document.querySelector('.mpag-block:nth-child(3) .mpag-toggle-main-row input[type="checkbox"]');
+    if (mainTog && !mainTog.id) {
+      mainTog.id = 'mpag-toggle-reembolso-main';
+      mainTog.addEventListener('change', function() { _cfg.reembolso = this.checked; _atualizarResumo(); });
     }
   }
 
-  /* ─────────────────────────────────────────
-     renderPagamentos — substituir a função
-     original que era para a UI antiga
-  ───────────────────────────────────────── */
-  window.renderPagamentos = function () {
-    _mpagInjetarBotaoSalvar();
-    _mpagVincularEventos();
-    mpagCarregar();
-  };
+  function _init() { _injetarBotao(); _vincularEventos(); mpagCarregar(); }
 
-  /* ─────────────────────────────────────────
-     Hook: quando a página de pagamentos for
-     aberta via irPara(), carregar os dados
-  ───────────────────────────────────────── */
-  var _irParaOriginal = window.irPara;
-  window.irPara = function (pagina, btn) {
-    _irParaOriginal(pagina, btn);
-    if (pagina === 'pagamentos') {
-      // Pequeno delay para o DOM estar visível
-      setTimeout(function () {
-        _mpagInjetarBotaoSalvar();
-        _mpagVincularEventos();
-        mpagCarregar();
-      }, 80);
-    }
-  };
+  window.renderPagamentos = _init;
 
-  /* ─────────────────────────────────────────
-     Se a página de pagamentos já estiver ativa
-     ao carregar (ex: deep link), inicializar
-  ───────────────────────────────────────── */
-  document.addEventListener('DOMContentLoaded', function () {
-    var pagePag = document.getElementById('page-pagamentos');
-    if (pagePag && pagePag.classList.contains('ativo')) {
-      _mpagInjetarBotaoSalvar();
-      _mpagVincularEventos();
-      mpagCarregar();
-    }
+  var _orig = window.irPara;
+  if (typeof _orig === 'function') {
+    window.irPara = function(pagina, btn) {
+      _orig(pagina, btn);
+      if (pagina === 'pagamentos') setTimeout(_init, 100);
+    };
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    var p = document.getElementById('page-pagamentos');
+    if (p && p.classList.contains('ativo')) _init();
   });
 
 })();
