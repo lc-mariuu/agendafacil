@@ -1514,12 +1514,3 @@ if (!_token) {
 } else {
   mostrarPainel()
 }
-
-carregarTema()
-
-const _token = localStorage.getItem('token')
-if (!_token) {
-  window.location.href = '/auth.html'
-} else {
-  mostrarPainel()
-}
