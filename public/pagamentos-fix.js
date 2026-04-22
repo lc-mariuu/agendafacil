@@ -34,8 +34,8 @@
     return h;
   }
   function apiUrl(path) {
-    const base = (typeof API !== 'undefined' ? API : '') || '';
-    return base + path;
+    // Sempre usa caminho relativo — funciona em qualquer domínio
+    return path;
   }
 
   // ─── Toast ────────────────────────────────────────────────────────────────
