@@ -6,10 +6,14 @@ require('dotenv').config()
 const app = express()
 app.use(cors())
 
-// ── Webhook raw body — path EXATO, antes do express.json ──────
-// Usa função condicional para não afetar outras rotas de /api/pagamento
+// ── Webhook raw body — ANTES do express.json ──────────────────
+// req.path aqui ainda é o path completo (antes de montar nas rotas)
 app.use((req, res, next) => {
-  if (req.path === '/api/pagamento/webhook' || req.path === '/api/assinatura/webhook') {
+  const rawPaths = [
+    '/api/pagamento/webhook',
+    '/api/assinatura/webhook',
+  ]
+  if (rawPaths.includes(req.path)) {
     express.raw({ type: '*/*' })(req, res, next)
   } else {
     next()
@@ -25,7 +29,7 @@ app.use('/api/auth',         require('./routes/auth'))
 app.use('/api/agendamentos', require('./routes/appointments'))
 app.use('/api/upload',       require('./routes/upload'))
 app.use('/api/assinatura',   require('./routes/assinatura'))
-app.use('/api/pagamento',    require('./routes/pagamento'))
+app.use('/api/pagamento',    require('./routes/pagamento'))  // ← só uma vez
 
 // ── Páginas estáticas ─────────────────────────────────────────
 app.get('/', (req, res) => {
@@ -36,17 +40,14 @@ app.get('/bio/:slug', (req, res) => {
   res.sendFile('bio.html', { root: 'public' })
 })
 
-const pagamentoRoutes = require('./routes/pagamento')
-app.use('/api/pagamento', pagamentoRoutes)
-
 const PAGINAS_ESTATICAS = [
   'barbearia', 'salao-de-beleza', 'clinica', 'pet-shop',
-  'academia', 'tatuagem', 'painel', 'auth', 'planos'
+  'academia', 'tatuagem', 'painel', 'auth', 'planos',
 ]
 
 app.get('/:slug', async (req, res) => {
   const slug = req.params.slug
-  if (slug.includes('.')) return res.status(404).sendFile('404.html', { root: 'public' })
+  if (slug.includes('.'))              return res.status(404).sendFile('404.html', { root: 'public' })
   if (PAGINAS_ESTATICAS.includes(slug)) return res.sendFile(`${slug}.html`, { root: 'public' })
   try {
     const Negocio = require('./models/Negocio')
@@ -65,7 +66,7 @@ async function limparAgendamentos() {
     const umaHoraAtras = new Date(Date.now() - 60 * 60 * 1000)
     const result = await Appointment.deleteMany({
       status:       { $in: ['concluido', 'cancelado'] },
-      atualizadoEm: { $lt: umaHoraAtras }
+      atualizadoEm: { $lt: umaHoraAtras },
     })
     if (result.deletedCount > 0)
       console.log(`[limpeza] ${result.deletedCount} agendamentos removidos`)
@@ -74,6 +75,7 @@ async function limparAgendamentos() {
   }
 }
 
+// ── Inicialização ─────────────────────────────────────────────
 const PORT = process.env.PORT || 3000
 
 mongoose.connect(process.env.MONGO_URI)
