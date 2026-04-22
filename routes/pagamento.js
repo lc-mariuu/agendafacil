@@ -1,222 +1,220 @@
 // routes/pagamento.js
-const express     = require('express')
-const router      = express.Router()
-const axios       = require('axios')
-const crypto      = require('crypto')
-const jwt         = require('jsonwebtoken')
-const Appointment = require('../models/Appointment')
-const Negocio     = require('../models/Negocio')
-const Pagamento   = require('../models/Pagamento')
+// ─────────────────────────────────────────────────────────────────────────────
+// Rotas de configuração de pagamento + lógica de taxa SaaS (R$ 0,50/transação)
+// ─────────────────────────────────────────────────────────────────────────────
 
-const abacate = axios.create({
-  baseURL: 'https://api.abacatepay.com/v1',
-  headers: {
-    Authorization: `Bearer ${process.env.ABACATEPAY_API_KEY}`,
-    'Content-Type': 'application/json',
-  },
-})
+const express  = require('express')
+const router   = express.Router()
+const jwt      = require('jsonwebtoken')
+const Negocio  = require('../models/Negocio')
+const Pagamento = require('../models/Pagamento') // modelo de transações (crie se não existir)
 
-function autenticar(req, res, next) {
-  const auth = req.headers.authorization
-  if (!auth || !auth.startsWith('Bearer '))
-    return res.status(401).json({ erro: 'Token ausente' })
+// ── Middleware de autenticação ────────────────────────────────────────────────
+function auth(req, res, next) {
+  const header = req.headers['authorization'] || ''
+  const token  = header.replace('Bearer ', '').trim()
+  if (!token) return res.status(401).json({ erro: 'Token não fornecido' })
   try {
-    req.usuario = jwt.verify(auth.split(' ')[1], process.env.JWT_SECRET)
+    req.user = jwt.verify(token, process.env.JWT_SECRET)
     next()
-  } catch (e) {
-    return res.status(401).json({ erro: 'Token inválido', detalhe: e.message })
+  } catch {
+    res.status(401).json({ erro: 'Token inválido' })
   }
 }
 
-// ─────────────────────────────────────────────────────────────
-// POST /api/pagamento/criar
-// ─────────────────────────────────────────────────────────────
-router.post('/criar', async (req, res) => {
+// ── Constante da taxa SaaS ────────────────────────────────────────────────────
+const TAXA_SAAS_CENTAVOS = 50          // R$ 0,50 em centavos
+const TAXA_MP_PCT        = 0.0099      // 0,99% Mercado Pago
+
+// ── GET /api/pagamento/config/:negocioId ─────────────────────────────────────
+// Retorna as configurações de pagamento do negócio
+router.get('/config/:negocioId', auth, async (req, res) => {
   try {
-    const { negocioId, agendamentoId, pacienteNome, pacienteEmail, pacienteTelefone, servico, data, hora, valor } = req.body
-    if (!negocioId || !valor) return res.status(400).json({ erro: 'negocioId e valor são obrigatórios' })
-
-    if (data && hora) {
-      const jaExiste = await Appointment.findOne({ clinicaId: negocioId, data, hora, status: { $ne: 'cancelado' } })
-      if (jaExiste) return res.status(400).json({ erro: 'Horário já ocupado' })
-    }
-
-    const negocio = await Negocio.findById(negocioId)
+    const negocio = await Negocio.findById(req.params.negocioId).lean()
     if (!negocio) return res.status(404).json({ erro: 'Negócio não encontrado' })
 
-    if (agendamentoId) {
-      const existente = await Pagamento.findOne({ agendamentoId, status: 'pendente' })
-      if (existente && existente.expiresAt > new Date()) {
-        return res.json({ pixId: existente.pixId, qrCode: existente.qrCode, qrCodeImage: existente.qrCodeImage, valor: existente.valor, expiresAt: existente.expiresAt, status: existente.status })
+    const cfg = negocio.pagamentosConfig || {}
+    res.json({
+      adiantado:        cfg.adiantado        ?? false,
+      tipoValor:        cfg.tipoValor        ?? 'total',
+      porcentagem:      cfg.porcentagem      ?? 50,
+      valorFixo:        cfg.valorFixo        ?? 50,
+      reembolso:        cfg.reembolso        ?? true,
+      reembolsoCliente: cfg.reembolsoCliente ?? true,
+      reembolsoNegocio: cfg.reembolsoNegocio ?? true,
+      taxaSaasCentavos: TAXA_SAAS_CENTAVOS,
+      servicos:         cfg.servicos         ?? {},
+    })
+  } catch (err) {
+    console.error('[GET /pagamento/config]', err)
+    res.status(500).json({ erro: 'Erro interno' })
+  }
+})
+
+// ── PATCH /api/pagamento/config ───────────────────────────────────────────────
+// Salva as configurações de pagamento do negócio
+router.patch('/config', auth, async (req, res) => {
+  const {
+    negocioId,
+    adiantado,
+    tipoValor,
+    porcentagem,
+    valorFixo,
+    reembolso,
+    reembolsoCliente,
+    reembolsoNegocio,
+    servicos,
+    // chavePix / tipoPix (retrocompatibilidade)
+    chavePix,
+    tipoPix,
+  } = req.body
+
+  if (!negocioId) return res.status(400).json({ erro: 'negocioId é obrigatório' })
+
+  try {
+    const update = {
+      $set: {
+        'pagamentosConfig.adiantado':        !!adiantado,
+        'pagamentosConfig.tipoValor':        tipoValor        || 'total',
+        'pagamentosConfig.porcentagem':      Number(porcentagem) || 50,
+        'pagamentosConfig.valorFixo':        Number(valorFixo)   || 50,
+        'pagamentosConfig.reembolso':        reembolso !== undefined ? !!reembolso : true,
+        'pagamentosConfig.reembolsoCliente': reembolsoCliente !== undefined ? !!reembolsoCliente : true,
+        'pagamentosConfig.reembolsoNegocio': reembolsoNegocio !== undefined ? !!reembolsoNegocio : true,
+        'pagamentosConfig.taxaSaasCentavos': TAXA_SAAS_CENTAVOS,
+        'pagamentosConfig.updatedAt':        new Date(),
       }
-      if (existente) { existente.status = 'expirado'; await existente.save() }
     }
 
-    const { data: result } = await abacate.post('/pixQrCode/create', {
-      amount: Math.round(Number(valor) * 100),
-      description: `${servico || 'Serviço'} — ${negocio.nome}`,
-      expiresIn: 3600,
-      customer: { name: pacienteNome || 'Cliente', email: pacienteEmail || undefined, cellphone: pacienteTelefone || undefined },
-      metadata: { negocioId, agendamentoId: agendamentoId || '', pacienteNome: pacienteNome || '', pacienteTelefone: pacienteTelefone || '', servico: servico || '', data: data || '', hora: hora || '', negocioNome: negocio.nome },
-    })
+    if (servicos)  update.$set['pagamentosConfig.servicos'] = servicos
+    if (chavePix)  update.$set['pagamentosConfig.chavePix'] = chavePix
+    if (tipoPix)   update.$set['pagamentosConfig.tipoPix']  = tipoPix
 
-    const cobranca = result.data
-    const expiresAt = new Date(Date.now() + 60 * 60 * 1000)
-    const pagamento = await Pagamento.create({
+    await Negocio.findByIdAndUpdate(negocioId, update)
+    res.json({ ok: true })
+  } catch (err) {
+    console.error('[PATCH /pagamento/config]', err)
+    res.status(500).json({ erro: 'Erro ao salvar configurações' })
+  }
+})
+
+// ── POST /api/pagamento/processar ─────────────────────────────────────────────
+// Processa um pagamento e desconta a taxa SaaS de R$ 0,50
+// Chamado pelo webhook do Mercado Pago OU pelo seu backend ao confirmar pagamento
+router.post('/processar', auth, async (req, res) => {
+  const { negocioId, agendamentoId, valorBruto } = req.body
+
+  if (!negocioId || !agendamentoId || !valorBruto) {
+    return res.status(400).json({ erro: 'Campos obrigatórios: negocioId, agendamentoId, valorBruto' })
+  }
+
+  const valorBrutoCentavos = Math.round(Number(valorBruto) * 100)
+
+  // Calcular taxas
+  const taxaSaas   = TAXA_SAAS_CENTAVOS                              // R$ 0,50 fixo
+  const taxaMP     = Math.round(valorBrutoCentavos * TAXA_MP_PCT)    // 0,99%
+  const totalTaxas = taxaSaas + taxaMP
+  const valorLiquido = Math.max(0, valorBrutoCentavos - totalTaxas)  // valor que o usuário recebe
+
+  try {
+    // Registra a transação no banco
+    const transacao = await Pagamento.create({
       negocioId,
-      agendamentoId: agendamentoId || undefined,
-      pixId:       cobranca.id,
-      status:      'pendente',
-      valor:       Number(valor),
-      qrCode:      cobranca.brCode,
-      qrCodeImage: cobranca.qrCodeImage,
-      expiresAt,
+      agendamentoId,
+      valorBrutoCentavos,
+      taxaSaasCentavos:   taxaSaas,
+      taxaMPCentavos:     taxaMP,
+      totalTaxasCentavos: totalTaxas,
+      valorLiquidoCentavos: valorLiquido,
+      status: 'processado',
+      criadoEm: new Date(),
     })
 
-    if (agendamentoId)
-      await Appointment.findByIdAndUpdate(agendamentoId, { status: 'aguardando_pagamento', pagamentoId: pagamento._id })
-
-    return res.json({ pixId: pagamento.pixId, qrCode: pagamento.qrCode, qrCodeImage: pagamento.qrCodeImage, valor: pagamento.valor, expiresAt, status: 'pendente' })
+    res.json({
+      ok: true,
+      transacaoId:   transacao._id,
+      valorBruto:    (valorBrutoCentavos / 100).toFixed(2),
+      taxaSaas:      (taxaSaas           / 100).toFixed(2),
+      taxaMP:        (taxaMP             / 100).toFixed(2),
+      totalTaxas:    (totalTaxas         / 100).toFixed(2),
+      valorLiquido:  (valorLiquido       / 100).toFixed(2),
+    })
   } catch (err) {
-    console.error('[pagamento/criar]', err.message)
-    return res.status(500).json({ erro: 'Erro ao criar cobrança Pix', detalhe: err.message })
+    console.error('[POST /pagamento/processar]', err)
+    res.status(500).json({ erro: 'Erro ao processar pagamento' })
   }
 })
 
-// ─────────────────────────────────────────────────────────────
-// GET /api/pagamento/status/:pixId
-// ─────────────────────────────────────────────────────────────
-router.get('/status/:pixId', async (req, res) => {
+// ── GET /api/pagamento/historico/:negocioId ───────────────────────────────────
+// Retorna o histórico de transações do negócio com detalhamento de taxas
+router.get('/historico/:negocioId', auth, async (req, res) => {
   try {
-    const { data: result } = await abacate.get(`/pixQrCode/${req.params.pixId}`)
-    const cobranca = result.data
-    const pag = await Pagamento.findOne({ pixId: req.params.pixId })
+    const { page = 1, limit = 20 } = req.query
+    const skip = (Number(page) - 1) * Number(limit)
 
-    if (cobranca.status === 'PAID') {
-      if (pag && pag.status !== 'aprovado') {
-        pag.status = 'aprovado'; pag.paidAt = new Date(); await pag.save()
-        if (pag.agendamentoId) await Appointment.findByIdAndUpdate(pag.agendamentoId, { status: 'confirmado', pagamentoPix: true })
-      }
-      return res.json({ status: 'pago', paidAt: pag?.paidAt })
-    }
-    if (cobranca.status === 'EXPIRED') {
-      if (pag && pag.status === 'pendente') {
-        pag.status = 'expirado'; await pag.save()
-        if (pag.agendamentoId) await Appointment.findByIdAndUpdate(pag.agendamentoId, { status: 'cancelado' })
-      }
-      return res.json({ status: 'expirado' })
-    }
-    if (cobranca.status === 'CANCELED') {
-      if (pag && pag.status === 'pendente') { pag.status = 'cancelado'; await pag.save() }
-      return res.json({ status: 'cancelado' })
-    }
-    return res.json({ status: 'aguardando', qrCode: cobranca.brCode, qrCodeImage: cobranca.qrCodeImage })
+    const [transacoes, total] = await Promise.all([
+      Pagamento.find({ negocioId: req.params.negocioId })
+               .sort({ criadoEm: -1 })
+               .skip(skip)
+               .limit(Number(limit))
+               .lean(),
+      Pagamento.countDocuments({ negocioId: req.params.negocioId }),
+    ])
+
+    // Totais agregados
+    const totalBruto   = transacoes.reduce((s, t) => s + (t.valorBrutoCentavos    || 0), 0)
+    const totalTaxasSaas = transacoes.reduce((s, t) => s + (t.taxaSaasCentavos    || 0), 0)
+    const totalLiquido = transacoes.reduce((s, t) => s + (t.valorLiquidoCentavos  || 0), 0)
+
+    res.json({
+      transacoes: transacoes.map(t => ({
+        ...t,
+        valorBruto:   ((t.valorBrutoCentavos    || 0) / 100).toFixed(2),
+        taxaSaas:     ((t.taxaSaasCentavos       || 0) / 100).toFixed(2),
+        taxaMP:       ((t.taxaMPCentavos         || 0) / 100).toFixed(2),
+        valorLiquido: ((t.valorLiquidoCentavos   || 0) / 100).toFixed(2),
+      })),
+      resumo: {
+        totalTransacoes:   total,
+        totalBruto:        (totalBruto          / 100).toFixed(2),
+        totalTaxasSaas:    (totalTaxasSaas      / 100).toFixed(2),
+        totalLiquido:      (totalLiquido        / 100).toFixed(2),
+      },
+      pagina:       Number(page),
+      totalPaginas: Math.ceil(total / Number(limit)),
+    })
   } catch (err) {
-    console.error('[pagamento/status]', err.message)
-    return res.status(500).json({ erro: 'Erro ao verificar pagamento' })
+    console.error('[GET /pagamento/historico]', err)
+    res.status(500).json({ erro: 'Erro ao buscar histórico' })
   }
 })
 
-// ─────────────────────────────────────────────────────────────
-// POST /api/pagamento/webhook
-// raw body já tratado no server.js — NÃO usar express.raw aqui
-// ─────────────────────────────────────────────────────────────
-router.post('/webhook', async (req, res) => {
+// ── POST /api/pagamento/webhook-mp ────────────────────────────────────────────
+// Webhook do Mercado Pago — confirma pagamento e registra taxa
+router.post('/webhook-mp', async (req, res) => {
+  // O MP envia um notification_url com o tipo e o id do pagamento
+  const { type, data } = req.body
+
+  if (type !== 'payment') return res.sendStatus(200)
+
   try {
-    const sig    = req.headers['abacatepay-signature']
-    const secret = process.env.ABACATEPAY_WEBHOOK_SECRET
+    const mpPaymentId = data?.id
+    if (!mpPaymentId) return res.sendStatus(200)
 
-    if (secret && sig) {
-      const raw = Buffer.isBuffer(req.body) ? req.body : Buffer.from(JSON.stringify(req.body))
-      const expected = crypto.createHmac('sha256', secret).update(raw).digest('hex')
-      if (sig !== expected) return res.status(400).send('Assinatura inválida')
-    }
+    // Aqui você buscaria o pagamento no MP via SDK/API deles:
+    // const mp = new MercadoPago({ accessToken: process.env.MP_ACCESS_TOKEN })
+    // const payment = await mp.payment.get(mpPaymentId)
 
-    const event = Buffer.isBuffer(req.body)
-      ? JSON.parse(req.body.toString())
-      : req.body
+    // Por ora, apenas logamos e confirmamos recebimento
+    console.log('[WEBHOOK MP] Pagamento recebido:', mpPaymentId)
 
-    console.log('[webhook/abacate]', event.event)
+    // TODO: buscar o agendamentoId associado ao external_reference do MP
+    // e chamar a lógica de /processar internamente
 
-    if (event.event === 'pixQrCode.paid') {
-      const cobranca = event.data || {}
-      const { negocioId, agendamentoId, pacienteNome, pacienteTelefone, servico, data, hora } = cobranca.metadata || {}
-
-      const pag = await Pagamento.findOne({ pixId: cobranca.id })
-      if (pag && pag.status !== 'aprovado') { pag.status = 'aprovado'; pag.paidAt = new Date(); await pag.save() }
-
-      if (negocioId && data && hora) {
-        const jaExiste = await Appointment.findOne({ clinicaId: negocioId, data, hora, status: { $ne: 'cancelado' } })
-        if (!jaExiste)
-          await Appointment.create({ clinicaId: negocioId, pacienteNome, pacienteTelefone: pacienteTelefone || '', servico, data, hora, pagamento: { status: 'pago', valor: cobranca.amount / 100, pixId: cobranca.id } })
-      } else if (agendamentoId) {
-        await Appointment.findByIdAndUpdate(agendamentoId, { status: 'confirmado', pagamentoPix: true })
-      }
-    }
-
-    return res.json({ received: true })
+    res.sendStatus(200)
   } catch (err) {
-    console.error('[webhook/abacate]', err.message)
-    return res.sendStatus(500)
-  }
-})
-
-// ─────────────────────────────────────────────────────────────
-// POST /api/pagamento/reembolsar
-// ─────────────────────────────────────────────────────────────
-router.post('/reembolsar', autenticar, async (req, res) => {
-  try {
-    const { appointmentId } = req.body
-    const appt = await Appointment.findById(appointmentId)
-    if (!appt) return res.status(404).json({ erro: 'Agendamento não encontrado' })
-    const pixId = appt.pagamento?.pixId
-    if (!pixId) return res.status(400).json({ erro: 'Agendamento sem pagamento Pix' })
-    try { await abacate.post(`/pixQrCode/${pixId}/refund`) } catch (e) { console.warn('[reembolso]', e.message) }
-    await Pagamento.findOneAndUpdate({ pixId }, { status: 'reembolsado' })
-    await Appointment.findByIdAndUpdate(appointmentId, { status: 'cancelado', 'pagamento.status': 'reembolsado', atualizadoEm: new Date() })
-    return res.json({ ok: true })
-  } catch (err) {
-    return res.status(500).json({ erro: err.message })
-  }
-})
-
-// ─────────────────────────────────────────────────────────────
-// GET /api/pagamento/config/:negocioId
-// ─────────────────────────────────────────────────────────────
-router.get('/config/:negocioId', autenticar, async (req, res) => {
-  try {
-    const negocio = await Negocio.findById(req.params.negocioId).select('pixConfig')
-    if (!negocio) return res.status(404).json({ erro: 'Negócio não encontrado' })
-    return res.json(negocio.pixConfig || {})
-  } catch (err) {
-    console.error('[config/get]', err.message)
-    return res.status(500).json({ erro: err.message })
-  }
-})
-
-// ─────────────────────────────────────────────────────────────
-// PATCH /api/pagamento/config
-// ─────────────────────────────────────────────────────────────
-router.patch('/config', autenticar, async (req, res) => {
-  try {
-    const { negocioId, chavePix, tipoPix, servicos } = req.body
-    if (!negocioId) return res.status(400).json({ erro: 'negocioId obrigatório' })
-
-    const negocio = await Negocio.findById(negocioId)
-    if (!negocio) return res.status(404).json({ erro: 'Negócio não encontrado' })
-
-    negocio.pixConfig = {
-      chavePix:  chavePix  ?? negocio.pixConfig?.chavePix  ?? '',
-      tipoPix:   tipoPix   ?? negocio.pixConfig?.tipoPix   ?? 'cpf',
-      servicos:  servicos  ?? negocio.pixConfig?.servicos  ?? {},
-      updatedAt: new Date(),
-    }
-
-    await negocio.save()
-    return res.json({ ok: true, pixConfig: negocio.pixConfig })
-  } catch (err) {
-    console.error('[config/patch] ERRO:', err.message)
-    return res.status(500).json({ erro: err.message })
+    console.error('[WEBHOOK MP]', err)
+    res.sendStatus(500)
   }
 })
 

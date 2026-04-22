@@ -36,6 +36,9 @@ app.get('/bio/:slug', (req, res) => {
   res.sendFile('bio.html', { root: 'public' })
 })
 
+const pagamentoRoutes = require('./routes/pagamento')
+app.use('/api/pagamento', pagamentoRoutes)
+
 const PAGINAS_ESTATICAS = [
   'barbearia', 'salao-de-beleza', 'clinica', 'pet-shop',
   'academia', 'tatuagem', 'painel', 'auth', 'planos'
