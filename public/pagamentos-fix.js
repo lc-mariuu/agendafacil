@@ -21,6 +21,12 @@
      CARREGAR config do backend e popular UI
   ───────────────────────────────────────── */
   async function mpagCarregar() {
+    // Aguardar negocioAtual estar disponível (pode demorar pois é async)
+    var tentativas = 0;
+    while ((!window.negocioAtual || !window.negocioAtual._id) && tentativas < 20) {
+      await new Promise(function(r) { setTimeout(r, 300); });
+      tentativas++;
+    }
     var negocioId = window.negocioAtual && window.negocioAtual._id;
     if (!negocioId) return;
 
@@ -83,8 +89,13 @@
      SALVAR config no backend
   ───────────────────────────────────────── */
   async function mpagSalvar() {
+    var tentativas = 0;
+    while ((!window.negocioAtual || !window.negocioAtual._id) && tentativas < 10) {
+      await new Promise(function(r) { setTimeout(r, 300); });
+      tentativas++;
+    }
     var negocioId = window.negocioAtual && window.negocioAtual._id;
-    if (!negocioId) { alert('Nenhum painel selecionado.'); return; }
+    if (!negocioId) { alert('Painel ainda carregando, tente novamente.'); return; }
 
     /* Ler estado atual da UI antes de salvar */
     _mpagLerUI();
