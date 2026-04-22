@@ -65,13 +65,10 @@ nav{background:rgba(255,255,255,0.95);backdrop-filter:blur(16px);border-bottom:1
 .resumo-row:last-child{border-bottom:none}
 .resumo-label{color:var(--text3);font-weight:500}
 .resumo-val{color:var(--text);font-weight:600;text-align:right;max-width:60%}
-
-/* ── Badge de pagamento na tela de confirmação ── */
 .pagamento-badge{display:flex;align-items:center;gap:10px;background:var(--accent-light);border:1.5px solid rgba(37,99,235,0.2);border-radius:10px;padding:12px 16px;margin-bottom:16px}
 .pagamento-badge-icon{font-size:20px;flex-shrink:0}
 .pagamento-badge-text{font-size:13px;color:var(--accent);font-weight:500;line-height:1.4}
 .pagamento-badge-valor{font-weight:700;font-size:15px;color:var(--accent)}
-
 .btn-submit{width:100%;padding:13px;background:var(--accent);color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;transition:background .15s,transform .1s;display:flex;align-items:center;justify-content:center;gap:8px}
 .btn-submit:hover:not(:disabled){background:var(--accent-hover);transform:translateY(-1px)}
 .btn-submit:disabled{opacity:.6;cursor:not-allowed;transform:none}
@@ -79,8 +76,6 @@ nav{background:rgba(255,255,255,0.95);backdrop-filter:blur(16px);border-bottom:1
 .btn-back:hover{background:var(--bg2)}
 .err{background:#fef2f2;border:1px solid rgba(220,38,38,0.2);border-radius:8px;padding:10px 14px;font-size:13px;color:var(--red);margin-bottom:14px;display:none}
 .err.show{display:block}
-
-/* ── Tela Pix ── */
 .pix-qr-box{text-align:center;padding:20px 0 12px}
 .pix-qr-box img{width:200px;height:200px;border-radius:12px;border:2px solid var(--border)}
 .pix-valor-big{font-size:36px;font-weight:700;color:var(--text);letter-spacing:-0.02em}
@@ -92,8 +87,6 @@ nav{background:rgba(255,255,255,0.95);backdrop-filter:blur(16px);border-bottom:1
 .pix-copia-row input{flex:1;padding:9px 12px;border:1.5px solid var(--border2);border-radius:8px;font-size:11px;font-family:monospace;background:var(--bg2);outline:none;overflow:hidden;text-overflow:ellipsis}
 .pix-copia-row button{background:var(--accent);color:#fff;border:none;padding:9px 14px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;font-family:inherit}
 .pix-hint{font-size:11px;color:var(--text3);text-align:center;margin-bottom:16px}
-
-/* ── Sucesso ── */
 .sucesso-wrap{text-align:center;padding:8px 0 16px}
 .sucesso-icon{width:72px;height:72px;border-radius:50%;background:var(--green-light);display:flex;align-items:center;justify-content:center;margin:0 auto 20px}
 .sucesso-wrap h2{font-size:22px;font-weight:700;letter-spacing:-0.02em;margin-bottom:8px}
@@ -192,8 +185,6 @@ nav{background:rgba(255,255,255,0.95);backdrop-filter:blur(16px);border-bottom:1
         <div><div class="card-title">Confirmar agendamento</div><div class="card-sub">Revise os detalhes abaixo</div></div>
       </div>
       <div class="err" id="err4"></div>
-
-      <!-- Badge de pagamento (só aparece quando há cobrança) -->
       <div class="pagamento-badge" id="pagamento-badge" style="display:none">
         <div class="pagamento-badge-icon">💳</div>
         <div class="pagamento-badge-text">
@@ -201,7 +192,6 @@ nav{background:rgba(255,255,255,0.95);backdrop-filter:blur(16px);border-bottom:1
           <span class="pagamento-badge-valor" id="pagamento-badge-valor"></span>
         </div>
       </div>
-
       <div class="resumo">
         <div class="resumo-row"><span class="resumo-label">Nome</span><span class="resumo-val" id="r-nome">—</span></div>
         <div class="resumo-row"><span class="resumo-label">WhatsApp</span><span class="resumo-val" id="r-tel">—</span></div>
@@ -228,18 +218,14 @@ nav{background:rgba(255,255,255,0.95);backdrop-filter:blur(16px);border-bottom:1
         </div>
         <div><div class="card-title">Pagamento via Pix</div><div class="card-sub">Escaneie o QR Code para confirmar</div></div>
       </div>
-
       <div id="pix-resumo" class="resumo" style="margin-bottom:16px"></div>
-
       <div style="text-align:center;padding:12px 0 8px">
         <div style="font-size:13px;color:var(--text3);margin-bottom:6px">Valor a pagar</div>
         <div class="pix-valor-big" id="pix-valor">R$ 0,00</div>
       </div>
-
       <div class="pix-qr-box" id="pix-qr-wrap">
         <div style="font-size:13px;color:var(--text2)">Carregando QR Code...</div>
       </div>
-
       <div class="pix-copia" id="pix-copia-cola" style="display:none">
         <div class="pix-copia-label">Pix Copia e Cola</div>
         <div class="pix-copia-row">
@@ -247,7 +233,6 @@ nav{background:rgba(255,255,255,0.95);backdrop-filter:blur(16px);border-bottom:1
           <button onclick="copiarPix()" id="btn-copiar-pix">Copiar</button>
         </div>
       </div>
-
       <div class="pix-status" id="pix-status-msg">⏳ Aguardando pagamento...</div>
       <div class="pix-hint">O QR Code expira em 30 minutos. Após o pagamento, o agendamento é confirmado automaticamente.</div>
       <button class="btn-back" onclick="irTela(4)">← Voltar</button>
@@ -296,15 +281,7 @@ async function resolverClinicaId() {
 // ── Estado global ──────────────────────────────────────────────
 let servicoSel = '', dataSel = '', horarioSel = ''
 let servicosDisponiveis = []
-
-// ── Configuração de pagamento do negócio (lida do backend) ────
-// pagCfg.adiantado = true/false
-// pagCfg.tipoValor = 'total' | 'personalizado' | 'fixo'
-// pagCfg.porcentagem = 50
-// pagCfg.valorFixo = 0
 let pagCfg = { adiantado: false, tipoValor: 'total', porcentagem: 50, valorFixo: 0 }
-
-// ID do agendamento criado no backend (necessário para criar preferência de pagamento)
 let agendamentoId = null
 let pixPollInterval = null
 
@@ -355,13 +332,24 @@ function calcularValorPagamento(precoServico) {
   return preco // 'total'
 }
 
-// ── Retorna o preço do serviço selecionado ────────────────────
 function getPrecoServico() {
   const s = servicosDisponiveis.find(s => {
     const nome = typeof s === 'object' ? s.nome : s
     return nome === servicoSel
   })
   return s && typeof s === 'object' ? Number(s.preco) || 0 : 0
+}
+
+// ── Aplicar config de pagamento (centralizado) ─────────────────
+function aplicarConfigPagamento(cfg) {
+  if (!cfg) return
+  // Suporta tanto { adiantado, tipoValor, ... } quanto { pagamentosConfig: { adiantado, ... } }
+  const fonte = cfg.pagamentosConfig || cfg
+  pagCfg.adiantado   = !!fonte.adiantado
+  pagCfg.tipoValor   = fonte.tipoValor   || 'total'
+  pagCfg.porcentagem = Number(fonte.porcentagem) || 50
+  pagCfg.valorFixo   = Number(fonte.valorFixo)   || 0
+  console.log('[pagCfg]', pagCfg)
 }
 
 // ── Navegação entre telas ──────────────────────────────────────
@@ -388,14 +376,12 @@ function irTela4() {
   if(!dataSel) { showErr('err3','Selecione uma data'); return }
   if(!horarioSel) { showErr('err3','Selecione um horário disponível'); return }
 
-  // Preenche resumo
   document.getElementById('r-nome').textContent = document.getElementById('nome').value.trim()
   document.getElementById('r-tel').textContent = document.getElementById('telefone').value.trim()
   document.getElementById('r-servico').textContent = servicoSel
   document.getElementById('r-data').textContent = formatarData(dataSel)
   document.getElementById('r-hora').textContent = horarioSel
 
-  // Mostra badge de pagamento se houver cobrança
   const preco = getPrecoServico()
   const valorPagar = calcularValorPagamento(preco)
   const badge = document.getElementById('pagamento-badge')
@@ -415,11 +401,6 @@ function irTela4() {
 }
 
 // ── Confirmar agendamento ──────────────────────────────────────
-// FLUXO CORRETO:
-// 1. Cria o agendamento no backend → obtém agendamentoId
-// 2. Se pagamento obrigatório → chama /api/pagamento/criar-preferencia com agendamentoId
-// 3. Exibe tela Pix com QR Code
-// 4. Se sem pagamento → vai direto para tela de sucesso
 async function confirmarAgendamento() {
   hideErr('err4')
   const btn = document.getElementById('btn-confirmar')
@@ -430,7 +411,6 @@ async function confirmarAgendamento() {
   const telefone = document.getElementById('telefone').value.trim()
   const preco = getPrecoServico()
 
-  // PASSO 1: Criar agendamento
   let resposta = {}
   try {
     const res = await fetch(`${API}/agendamentos`, {
@@ -464,11 +444,9 @@ async function confirmarAgendamento() {
 
   agendamentoId = resposta._id
 
-  // PASSO 2: Verificar se precisa pagar
   const valorPagar = calcularValorPagamento(preco)
 
   if (pagCfg.adiantado && valorPagar > 0 && agendamentoId) {
-    // Criar preferência de pagamento Pix
     document.getElementById('btn-confirmar-txt').textContent = 'Criando Pix...'
     await irTelaPix(valorPagar)
     btn.disabled = false
@@ -476,7 +454,6 @@ async function confirmarAgendamento() {
     return
   }
 
-  // PASSO 3: Sem pagamento → sucesso direto
   btn.disabled = false
   document.getElementById('btn-confirmar-txt').textContent = 'Confirmar agendamento'
   mostrarSucesso(nome, telefone, false)
@@ -484,18 +461,11 @@ async function confirmarAgendamento() {
 
 // ── Tela Pix ──────────────────────────────────────────────────
 async function irTelaPix(valorPagar) {
-  const nome = document.getElementById('nome').value.trim()
-  const telefone = document.getElementById('telefone').value.trim()
-
   try {
-    // Chama a rota correta do backend
     const res = await fetch(`${API}/pagamento/criar-preferencia`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        agendamentoId,
-        negocioId: clinicaId
-      })
+      body: JSON.stringify({ agendamentoId, negocioId: clinicaId })
     })
     const data = await res.json()
 
@@ -504,7 +474,6 @@ async function irTelaPix(valorPagar) {
       return
     }
 
-    // Monta tela Pix
     const partes = dataSel.split('-')
     const d = partes[2], m = partes[1], a = partes[0]
     document.getElementById('pix-resumo').innerHTML = `
@@ -514,17 +483,14 @@ async function irTelaPix(valorPagar) {
     `
     document.getElementById('pix-valor').textContent = `R$ ${Number(data.valorCobrado || valorPagar).toFixed(2).replace('.', ',')}`
 
-    // QR Code — o endpoint retorna linkPix (qr_code_base64 ou url)
     const qrWrap = document.getElementById('pix-qr-wrap')
     if (data.linkPix) {
-      // qr_code é o texto do pix copia-cola, qr_code_base64 é a imagem
       qrWrap.innerHTML = data.pixBase64
         ? `<img src="data:image/png;base64,${data.pixBase64}" style="width:200px;height:200px;border-radius:12px;border:2px solid var(--border)" />`
         : '<div style="font-size:13px;color:var(--text2)">Use o Pix Copia e Cola abaixo</div>'
       document.getElementById('pix-code').value = data.linkPix
       document.getElementById('pix-copia-cola').style.display = 'block'
     } else if (data.linkPagamento) {
-      // Fallback: botão para abrir link do MP
       qrWrap.innerHTML = `<a href="${data.linkPagamento}" target="_blank" style="display:inline-flex;align-items:center;gap:8px;background:var(--accent);color:#fff;padding:12px 24px;border-radius:10px;text-decoration:none;font-weight:600;font-size:14px">Pagar via Mercado Pago →</a>`
     } else {
       qrWrap.innerHTML = '<div style="font-size:13px;color:var(--text2)">QR Code indisponível. Tente o link de pagamento.</div>'
@@ -544,14 +510,12 @@ function copiarPix() {
   btn.textContent = 'Copiado!'; setTimeout(() => btn.textContent = 'Copiar', 2000)
 }
 
-// ── Polling: verifica se pagamento foi confirmado ─────────────
 function iniciarPollingPagamento() {
   if (pixPollInterval) clearInterval(pixPollInterval)
   if (!agendamentoId) return
 
   pixPollInterval = setInterval(async () => {
     try {
-      // Verifica o status do agendamento (que é atualizado pelo webhook MP)
       const res = await fetch(`${API}/agendamentos/${agendamentoId}`)
       if (!res.ok) return
       const ag = await res.json()
@@ -574,7 +538,6 @@ function iniciarPollingPagamento() {
   }, 4000)
 }
 
-// ── Tela de sucesso ────────────────────────────────────────────
 function mostrarSucesso(nome, telefone, pago) {
   if (pixPollInterval) { clearInterval(pixPollInterval); pixPollInterval = null }
 
@@ -603,6 +566,8 @@ function mostrarSucesso(nome, telefone, pago) {
 }
 
 // ── Carregar dados do negócio ──────────────────────────────────
+// CORREÇÃO PRINCIPAL: lê pagamentosConfig diretamente da resposta do negócio
+// e também tenta o endpoint dedicado como primeiro passo
 async function carregarClinica() {
   if(!clinicaId) { document.getElementById('hero-nome').textContent = 'Link inválido'; return }
   try {
@@ -618,38 +583,38 @@ async function carregarClinica() {
     servicosDisponiveis = (data.servicos || []).map(s => typeof s === 'object' ? s : { nome: s, preco: 0 })
     renderServicos()
 
-    // ── CORREÇÃO: carregar config de pagamento separadamente ──
-    // O endpoint /auth/negocio/:id pode não retornar pagamentosConfig,
-    // por isso consultamos o endpoint dedicado (sem auth, apenas leitura pública)
-    await carregarConfigPagamento()
+    // ── CORREÇÃO: tenta carregar config de pagamento de 3 formas ──
+    await carregarConfigPagamento(data)
 
   } catch(e) { console.error('[carregarClinica]', e) }
 }
 
-async function carregarConfigPagamento() {
+async function carregarConfigPagamento(dadosNegocio) {
+  // Fonte 1: endpoint dedicado (mais atualizado)
   try {
-    // Tenta primeiro via endpoint dedicado
     const res = await fetch(`${API}/pagamento/config-publica/${clinicaId}`)
     if (res.ok) {
       const cfg = await res.json()
-      pagCfg.adiantado   = !!cfg.adiantado
-      pagCfg.tipoValor   = cfg.tipoValor   || 'total'
-      pagCfg.porcentagem = Number(cfg.porcentagem) || 50
-      pagCfg.valorFixo   = Number(cfg.valorFixo)   || 0
+      aplicarConfigPagamento(cfg)
       return
     }
-  } catch(e) {}
+  } catch(e) { console.warn('[pagamento] endpoint dedicado falhou:', e) }
 
-  // Fallback: tenta ler do campo pagamentosConfig retornado pelo negócio
+  // Fonte 2: campo pagamentosConfig dentro dos dados do negócio já carregados
+  if (dadosNegocio && dadosNegocio.pagamentosConfig) {
+    aplicarConfigPagamento(dadosNegocio.pagamentosConfig)
+    return
+  }
+
+  // Fonte 3: re-busca o negócio e lê pagamentosConfig
   try {
     const res = await fetch(`${API}/auth/negocio/${clinicaId}`)
-    const data = await res.json()
-    const cfg = data.pagamentosConfig || {}
-    pagCfg.adiantado   = !!cfg.adiantado
-    pagCfg.tipoValor   = cfg.tipoValor   || 'total'
-    pagCfg.porcentagem = Number(cfg.porcentagem) || 50
-    pagCfg.valorFixo   = Number(cfg.valorFixo)   || 0
-  } catch(e) {}
+    if (res.ok) {
+      const data = await res.json()
+      // Tenta tanto data.pagamentosConfig quanto data direto (caso a chave seja no root)
+      aplicarConfigPagamento(data.pagamentosConfig || data)
+    }
+  } catch(e) { console.warn('[pagamento] fallback final falhou:', e) }
 }
 
 // ── Renderizar serviços ────────────────────────────────────────
