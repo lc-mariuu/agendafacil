@@ -6,7 +6,7 @@ const Appointment = require('../models/Appointment')
 
 // ── Mercado Pago config ──────────────────────────────────────
 const client = new MercadoPagoConfig({
-  accessToken: process.env.MERCADO_PAGO_ACCESS_TOKEN,
+  accessToken: process.env.MP_ACCESS_TOKEN,
 })
 const payment = new Payment(client)
 
