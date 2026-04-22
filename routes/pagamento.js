@@ -1,6 +1,6 @@
 const express = require('express')
 const router  = express.Router()
-const { MercadoPagoConfig, Payment, Refund } = require('mercadopago')
+const { MercadoPagoConfig, Payment } = require('mercadopago')
 const Negocio     = require('../models/Negocio')
 const Appointment = require('../models/Appointment')
 
@@ -9,7 +9,6 @@ const client = new MercadoPagoConfig({
   accessToken: process.env.MERCADO_PAGO_ACCESS_TOKEN,
 })
 const payment = new Payment(client)
-const refund  = new Refund(client)
 
 // ── GET /api/pagamento/config-publica/:negocioId (SEM auth) ──
 router.get('/config-publica/:negocioId', async (req, res) => {
@@ -154,7 +153,7 @@ router.post('/webhook', async (req, res) => {
       if (cfg.reembolso && agendamento.pagamento?.paymentIntentId) {
         try {
           // ✅ SDK v2: refund.create({ payment_id, body: {} })
-          await refund.create({ payment_id: paymentId, body: {} })
+          await payment.refund({ id: paymentId, body: {} })
           console.log(`[webhook] Reembolso criado — pagamento ${paymentId}`)
         } catch (e) {
           console.warn('[webhook] Erro ao reembolsar:', e.message)
@@ -183,7 +182,7 @@ router.post('/reembolsar', async (req, res) => {
     if (!paymentId) return res.status(400).json({ erro: 'Sem pagamento registrado' })
 
     // ✅ SDK v2: refund.create({ payment_id, body: {} })
-    await refund.create({ payment_id: Number(paymentId), body: {} })
+    await payment.refund({ id: Number(paymentId), body: {} })
 
     await Appointment.findByIdAndUpdate(agendamentoId, {
       'pagamento.status': 'reembolsado',
