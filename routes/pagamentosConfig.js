@@ -1,9 +1,8 @@
 /**
- * routes/pagamento.js
+ * routes/pagamentosConfig.js
  *
- * Adicione no server.js:
- *   const pagamentoRoutes = require('./routes/pagamento')
- *   app.use('/api/pagamentos', pagamentoRoutes)
+ * Adicione no server.js (depois da linha do /api/pagamento existente):
+ *   app.use('/api/pagamentos', require('./routes/pagamentosConfig'))
  */
 
 const express = require('express')

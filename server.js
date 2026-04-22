@@ -7,7 +7,6 @@ const app = express()
 app.use(cors())
 
 // ── Webhook raw body — ANTES do express.json ──────────────────
-// req.path aqui ainda é o path completo (antes de montar nas rotas)
 app.use((req, res, next) => {
   const rawPaths = [
     '/api/pagamento/webhook',
@@ -29,7 +28,8 @@ app.use('/api/auth',         require('./routes/auth'))
 app.use('/api/agendamentos', require('./routes/appointments'))
 app.use('/api/upload',       require('./routes/upload'))
 app.use('/api/assinatura',   require('./routes/assinatura'))
-app.use('/api/pagamento',    require('./routes/pagamento'))  // ← só uma vez
+app.use('/api/pagamento',    require('./routes/pagamento'))
+app.use('/api/pagamentos',   require('./routes/pagamentosConfig')) // ← config da página de pagamentos
 
 // ── Páginas estáticas ─────────────────────────────────────────
 app.get('/', (req, res) => {
@@ -47,7 +47,7 @@ const PAGINAS_ESTATICAS = [
 
 app.get('/:slug', async (req, res) => {
   const slug = req.params.slug
-  if (slug.includes('.'))              return res.status(404).sendFile('404.html', { root: 'public' })
+  if (slug.includes('.'))               return res.status(404).sendFile('404.html', { root: 'public' })
   if (PAGINAS_ESTATICAS.includes(slug)) return res.sendFile(`${slug}.html`, { root: 'public' })
   try {
     const Negocio = require('./models/Negocio')
