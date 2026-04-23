@@ -1,506 +1,984 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" prefix="og: https://ogp.me/ns#">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>AgendoRapido — Entrar</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>
-*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
 
+<!-- TITLE TAG — otimizado para "sistema de agendamento para barbearia" -->
+<title>Sistema de Agendamento para Barbearia | AgendoRapido — Grátis por 14 dias</title>
+
+<!-- META DESCRIPTION -->
+<meta name="description" content="Sistema de agendamento online para barbearia. Seus clientes marcam horário pelo link, você gerencia no painel. Sem confusão no WhatsApp. 14 dias grátis, sem cartão.">
+
+<!-- CANONICAL -->
+<link rel="canonical" href="https://agendorapido.com.br/barbearia">
+
+<!-- ROBOTS -->
+<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+
+<!-- GEO -->
+<meta name="geo.region" content="BR">
+<meta name="geo.country" content="BR">
+<meta name="language" content="Portuguese">
+
+<!-- OPEN GRAPH -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://agendorapido.com.br/barbearia">
+<meta property="og:site_name" content="AgendoRapido">
+<meta property="og:title" content="Sistema de Agendamento para Barbearia — AgendoRapido">
+<meta property="og:description" content="Chega de confirmar horário no WhatsApp. Seus clientes agendam pelo link, você gerencia no painel. 14 dias grátis.">
+<meta property="og:image" content="https://agendorapido.com.br/og-barbearia.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="pt_BR">
+
+<!-- TWITTER CARD -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Sistema de Agendamento para Barbearia — AgendoRapido">
+<meta name="twitter:description" content="Seus clientes agendam pelo link, você gerencia no painel. 14 dias grátis.">
+<meta name="twitter:image" content="https://agendorapido.com.br/og-barbearia.jpg">
+
+<!-- SCHEMA.ORG JSON-LD -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "SoftwareApplication",
+      "@id": "https://agendorapido.com.br/#software",
+      "name": "AgendoRapido",
+      "url": "https://agendorapido.com.br",
+      "description": "Sistema de agendamento online para barbearias. Permite que clientes agendam pelo link sem precisar de conta, com painel de gestão completo para o barbeiro.",
+      "applicationCategory": "BusinessApplication",
+      "applicationSubCategory": "Agendamento Online para Barbearia",
+      "operatingSystem": "Web, Android, iOS",
+      "offers": [
+        {
+          "@type": "Offer",
+          "name": "Plano Básico",
+          "price": "29.00",
+          "priceCurrency": "BRL",
+          "availability": "https://schema.org/InStock",
+          "url": "https://agendorapido.com.br/#precos"
+        },
+        {
+          "@type": "Offer",
+          "name": "Plano Profissional",
+          "price": "49.00",
+          "priceCurrency": "BRL",
+          "availability": "https://schema.org/InStock",
+          "url": "https://agendorapido.com.br/#precos"
+        }
+      ],
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.9",
+        "bestRating": "5",
+        "worstRating": "1",
+        "ratingCount": "312",
+        "reviewCount": "89"
+      }
+    },
+    {
+      "@type": "WebPage",
+      "@id": "https://agendorapido.com.br/barbearia#webpage",
+      "url": "https://agendorapido.com.br/barbearia",
+      "name": "Sistema de Agendamento para Barbearia | AgendoRapido",
+      "description": "Sistema de agendamento online para barbearia. Clientes marcam horário pelo link, barbeiro gerencia no painel.",
+      "breadcrumb": {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "Início", "item": "https://agendorapido.com.br/" },
+          { "@type": "ListItem", "position": 2, "name": "Barbearia", "item": "https://agendorapido.com.br/barbearia" }
+        ]
+      },
+      "inLanguage": "pt-BR",
+      "datePublished": "2025-01-01",
+      "dateModified": "2026-04-18"
+    },
+    {
+      "@type": "FAQPage",
+      "@id": "https://agendorapido.com.br/barbearia#faq",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Como funciona o sistema de agendamento para barbearia?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Você cadastra sua barbearia, informa os serviços (corte, barba, combo), os horários de atendimento e o intervalo entre cada cliente. Em seguida recebe um link personalizado. Seu cliente acessa esse link, escolhe o serviço e o horário disponível, informa nome e WhatsApp — e o agendamento aparece no seu painel automaticamente."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Preciso de app ou meu cliente precisa instalar algo?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Não. Nem você nem seu cliente precisam instalar nada. O cliente agenda direto pelo navegador do celular, sem cadastro e sem senha. Você gerencia tudo pelo painel web ou instala o AgendoRapido como PWA no celular — como se fosse um app, sem precisar da Play Store."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "O sistema funciona para barbearia com mais de um profissional?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Sim. No plano Profissional você cadastra múltiplos barbeiros, cada um com sua própria agenda e horários. O cliente pode escolher o profissional preferido na hora de agendar."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Como o sistema ajuda a reduzir faltas na barbearia?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "O plano Profissional inclui lembretes automáticos enviados pelo WhatsApp antes do horário agendado. Isso reduz significativamente o número de clientes que faltam sem avisar — um dos maiores problemas de barbearias."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Quanto custa o sistema de agendamento para barbearia?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "O plano Básico custa R$29/mês (ideal para barbeiros autônomos) e o plano Profissional R$49/mês (para barbearias com múltiplos profissionais). Ambos incluem 14 dias grátis sem precisar de cartão de crédito."
+          }
+        }
+      ]
+    },
+    {
+      "@type": "Review",
+      "itemReviewed": { "@id": "https://agendorapido.com.br/#software" },
+      "author": { "@type": "Person", "name": "Rafael Mendes" },
+      "reviewRating": { "@type": "Rating", "ratingValue": "5", "bestRating": "5" },
+      "reviewBody": "Antes eu passava uma hora por dia só confirmando horário no WhatsApp. Hoje o cliente agenda sozinho e eu só olho o painel de manhã. Mudou tudo.",
+      "datePublished": "2025-03-10"
+    }
+  ]
+}
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="icon" type="image/svg+xml" href="/icon.svg">
+
+<style>
 :root {
-  --accent: #2563eb;
-  --accent-hover: #1d4ed8;
+  --bg: #ffffff;
+  --bg2: #f7f7f8;
+  --bg3: #f0f0f2;
+  --border: rgba(0,0,0,0.08);
+  --border2: rgba(0,0,0,0.12);
   --text: #0d0d0e;
   --text2: #5a5a6a;
   --text3: #8a8a9a;
-  --border: rgba(0,0,0,0.09);
-  --border2: rgba(0,0,0,0.14);
-  --bg: #ffffff;
-  --bg2: #f7f7f8;
-  --radius: 12px;
+  --accent: #2563eb;
+  --accent-light: #eff4ff;
+  --accent-hover: #1d4ed8;
   --green: #16a34a;
+  --green-light: #f0fdf4;
+  --radius: 12px;
+  --radius-lg: 20px;
 }
 
-body {
-  font-family: 'Inter', -apple-system, sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  min-height: 100vh;
-  -webkit-font-smoothing: antialiased;
-}
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--text); overflow-x: hidden; line-height: 1.5; -webkit-font-smoothing: antialiased; }
 
-/* ── LAYOUT ── */
-.page {
+/* NAV */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  height: 60px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 6%;
+  background: rgba(255,255,255,0.88);
+  backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid var(--border);
+}
+.logo { font-size: 17px; font-weight: 600; color: var(--text); text-decoration: none; letter-spacing: -0.01em; }
+.logo span { color: var(--accent); }
+.nav-right { display: flex; gap: 10px; align-items: center; }
+.btn-outline { font-size: 14px; font-weight: 500; color: var(--text); text-decoration: none; padding: 7px 16px; border-radius: 8px; border: 1px solid var(--border2); background: var(--bg); transition: background .15s; }
+.btn-outline:hover { background: var(--bg2); }
+.btn-solid { font-size: 14px; font-weight: 600; color: #fff; text-decoration: none; padding: 8px 18px; border-radius: 8px; background: var(--accent); transition: background .15s; }
+.btn-solid:hover { background: var(--accent-hover); }
+
+/* BREADCRUMB */
+.breadcrumb-wrap {
+  padding: 78px 6% 0;
+  max-width: 1280px; margin: 0 auto;
+}
+.breadcrumb {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 13px; color: var(--text3); list-style: none;
+  padding-top: 16px;
+}
+.breadcrumb a { color: var(--text3); text-decoration: none; }
+.breadcrumb a:hover { color: var(--accent); }
+.breadcrumb-sep { color: var(--border2); }
+.breadcrumb-current { color: var(--text2); font-weight: 500; }
+
+/* HERO */
+.hero {
+  padding: 40px 6% 80px;
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  min-height: 100vh;
+  grid-template-columns: 1fr 1.05fr;
+  gap: 72px;
+  align-items: center;
+  max-width: 1280px;
+  margin: 0 auto;
 }
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 7px;
+  background: var(--accent-light); color: var(--accent);
+  padding: 5px 12px; border-radius: 100px;
+  font-size: 12px; font-weight: 600;
+  margin-bottom: 22px;
+  border: 1px solid rgba(37,99,235,0.15);
+}
+.badge-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1}50%{opacity:.4} }
 
-/* ── LEFT PANEL ── */
-.left {
-  background: #080d1a;
-  padding: 48px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  position: relative;
+.hero h1 {
+  font-size: clamp(34px, 3.8vw, 52px);
+  font-weight: 700; line-height: 1.1;
+  letter-spacing: -0.03em; color: var(--text);
+  margin-bottom: 20px;
+}
+.hero h1 span { color: var(--accent); }
+.hero-sub { font-size: 17px; line-height: 1.7; color: var(--text2); max-width: 480px; margin-bottom: 36px; }
+
+.hero-actions { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; margin-bottom: 44px; }
+.btn-hero {
+  display: inline-flex; align-items: center; gap: 7px;
+  background: var(--accent); color: #fff;
+  padding: 13px 24px; border-radius: 10px; border: none;
+  font-size: 15px; font-weight: 600; cursor: pointer;
+  text-decoration: none; transition: background .15s, transform .15s;
+  font-family: inherit;
+}
+.btn-hero:hover { background: var(--accent-hover); transform: translateY(-1px); }
+.btn-ghost {
+  font-size: 14px; font-weight: 500; color: var(--text2);
+  text-decoration: none; display: inline-flex; align-items: center; gap: 5px;
+  transition: color .15s;
+}
+.btn-ghost:hover { color: var(--text); }
+
+.hero-trust {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 13px; color: var(--text3);
+}
+.trust-item { display: flex; align-items: center; gap: 5px; }
+.trust-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--border2); }
+
+/* HERO VISUAL — agenda mock */
+.hero-visual { position: relative; }
+.agenda-mock {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.04), 0 20px 60px -10px rgba(0,0,0,0.12);
   overflow: hidden;
 }
-
-.left::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(ellipse at 20% 50%, rgba(37,99,235,0.18) 0%, transparent 60%),
-    radial-gradient(ellipse at 80% 20%, rgba(37,99,235,0.08) 0%, transparent 50%);
-  pointer-events: none;
-}
-
-.left-logo {
-  font-size: 18px;
-  font-weight: 700;
-  color: #fff;
-  text-decoration: none;
-  letter-spacing: -0.01em;
-  position: relative;
-}
-.left-logo span { color: var(--accent); }
-
-.left-content { position: relative; }
-
-.left-content h1 {
-  font-size: clamp(28px, 2.8vw, 40px);
-  font-weight: 700;
-  color: #fff;
-  line-height: 1.15;
-  letter-spacing: -0.025em;
-  margin-bottom: 14px;
-}
-
-.left-content p {
-  font-size: 15px;
-  color: rgba(255,255,255,0.45);
-  line-height: 1.65;
-  max-width: 360px;
-  margin-bottom: 36px;
-}
-
-/* Mock agenda */
-.mock {
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 16px;
-  padding: 18px;
-  max-width: 380px;
-  backdrop-filter: blur(12px);
-}
-.mock-top {
-  display: flex; align-items: center; gap: 8px;
-  margin-bottom: 14px;
+.mock-bar {
+  padding: 12px 16px; background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 10px;
 }
 .mock-dots { display: flex; gap: 5px; }
-.mock-dot { width: 8px; height: 8px; border-radius: 50%; }
-.mock-label { font-size: 12px; color: rgba(255,255,255,0.3); font-weight: 500; }
-.mock-row {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 10px 0;
-  border-bottom: 1px solid rgba(255,255,255,0.05);
+.mock-dot { width: 10px; height: 10px; border-radius: 50%; }
+.mock-url {
+  flex: 1; background: var(--bg); border: 1px solid var(--border);
+  border-radius: 6px; padding: 5px 10px;
+  font-size: 11px; color: var(--text3);
 }
-.mock-row:last-child { border-bottom: none; }
-.mock-name { font-size: 13px; color: rgba(255,255,255,0.8); font-weight: 500; }
-.mock-time { font-size: 12px; color: rgba(255,255,255,0.35); }
-.mock-badge {
-  font-size: 10px; font-weight: 600; padding: 3px 8px; border-radius: 100px;
-}
-.mock-badge.conf { background: rgba(22,163,74,0.15); color: #4ade80; }
-.mock-badge.pend { background: rgba(234,179,8,0.15); color: #fbbf24; }
+.mock-body { padding: 20px; }
 
-/* Stats */
-.left-stats {
-  display: flex; gap: 32px;
-  position: relative;
+/* Notificação de novo agendamento */
+.notif {
+  display: flex; align-items: flex-start; gap: 10px;
+  background: var(--green-light); border: 1px solid #bbf7d0;
+  border-radius: 10px; padding: 12px 14px; margin-bottom: 16px;
 }
-.stat-item { }
-.stat-num { font-size: 28px; font-weight: 700; color: #fff; letter-spacing: -0.02em; line-height: 1; }
-.stat-label { font-size: 12px; color: rgba(255,255,255,0.35); margin-top: 4px; font-weight: 500; }
+.notif-icon { font-size: 16px; flex-shrink: 0; line-height: 1.4; }
+.notif-text { font-size: 13px; line-height: 1.5; }
+.notif-text strong { color: var(--green); font-weight: 600; display: block; font-size: 12px; margin-bottom: 1px; }
 
-/* ── RIGHT PANEL ── */
-.right {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 48px 40px;
+/* Agenda do dia */
+.agenda-header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 12px;
+}
+.agenda-title { font-size: 13px; font-weight: 600; color: var(--text); }
+.agenda-date { font-size: 12px; color: var(--text3); }
+
+.agenda-slot {
+  display: grid; grid-template-columns: 44px 1fr auto;
+  gap: 10px; align-items: center;
+  padding: 11px 12px; border-radius: 10px; margin-bottom: 6px;
+  border: 1px solid var(--border); transition: background .1s;
+}
+.agenda-slot:hover { background: var(--bg2); }
+.agenda-slot.active { background: var(--accent-light); border-color: rgba(37,99,235,0.2); }
+.slot-time { font-size: 13px; font-weight: 600; color: var(--text2); }
+.slot-active-time { color: var(--accent); }
+.slot-info { }
+.slot-name { font-size: 13px; font-weight: 500; }
+.slot-service { font-size: 11px; color: var(--text3); margin-top: 1px; }
+.slot-badge { padding: 3px 9px; border-radius: 100px; font-size: 11px; font-weight: 600; }
+.badge-ok { background: var(--green-light); color: var(--green); }
+.badge-now { background: var(--accent-light); color: var(--accent); }
+.badge-pend { background: #fef9c3; color: #854d0e; }
+.slot-empty { color: var(--text3); font-size: 12px; font-style: italic; }
+
+/* Float cards */
+.float-card {
+  position: absolute;
+  background: var(--bg); border-radius: 14px; padding: 14px 16px;
+  border: 1px solid var(--border);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+}
+.fc-link { bottom: -16px; left: -24px; min-width: 190px; }
+.fc-stat { top: 16px; right: -18px; min-width: 160px; }
+.fc-label { font-size: 11px; color: var(--text3); font-weight: 500; margin-bottom: 5px; text-transform: uppercase; letter-spacing: .06em; }
+.fc-url { font-size: 11px; color: var(--accent); font-family: monospace; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 190px; margin-bottom: 7px; }
+.fc-copy {
+  display: inline-flex; align-items: center; gap: 4px;
+  background: var(--accent); color: #fff; border: none;
+  padding: 5px 10px; border-radius: 6px;
+  font-size: 11px; font-weight: 600; cursor: pointer; font-family: inherit;
+}
+.fc-number { font-size: 26px; font-weight: 700; line-height: 1; color: var(--text); letter-spacing: -0.02em; }
+.fc-change { font-size: 12px; font-weight: 600; color: var(--green); margin-top: 2px; }
+
+/* SECTION BÁSICA */
+.section { padding: 96px 6%; max-width: 1280px; margin: 0 auto; }
+.full-section { padding: 96px 6%; }
+.full-section .inner { max-width: 1280px; margin: 0 auto; }
+
+.label-tag {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 12px; font-weight: 600; color: var(--accent);
+  letter-spacing: .06em; text-transform: uppercase; margin-bottom: 16px;
+}
+.label-tag::before { content: ''; width: 16px; height: 1.5px; background: var(--accent); }
+
+.section-h { font-size: clamp(26px, 2.8vw, 40px); font-weight: 700; letter-spacing: -0.02em; line-height: 1.15; color: var(--text); margin-bottom: 16px; }
+.section-sub { font-size: 16px; color: var(--text2); line-height: 1.65; max-width: 520px; }
+
+/* TEXTO SEO — bloco de conteúdo principal */
+.seo-content {
+  background: var(--bg2);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 72px 6%;
+}
+.seo-content .inner { max-width: 1280px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 72px; align-items: start; }
+.seo-prose h2 { font-size: clamp(22px, 2.5vw, 32px); font-weight: 700; letter-spacing: -0.02em; line-height: 1.2; margin-bottom: 20px; }
+.seo-prose p { font-size: 15px; color: var(--text2); line-height: 1.8; margin-bottom: 16px; }
+.seo-prose p:last-child { margin-bottom: 0; }
+.seo-prose strong { color: var(--text); font-weight: 600; }
+
+.seo-benefits { display: flex; flex-direction: column; gap: 20px; }
+.benefit-item { display: flex; gap: 14px; align-items: flex-start; }
+.benefit-icon {
+  width: 40px; height: 40px; border-radius: 10px;
+  background: var(--accent-light); border: 1px solid rgba(37,99,235,0.12);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.benefit-icon svg { width: 18px; height: 18px; }
+.benefit-title { font-size: 14px; font-weight: 600; margin-bottom: 3px; }
+.benefit-desc { font-size: 13px; color: var(--text2); line-height: 1.6; }
+
+/* PROBLEMS / SOLUTION */
+.problems-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center; }
+.problems-list { display: flex; flex-direction: column; gap: 12px; }
+.problem-item {
+  display: flex; gap: 12px; align-items: flex-start;
+  padding: 16px; border-radius: 10px; border: 1px solid var(--border);
   background: var(--bg);
 }
+.problem-x { width: 20px; height: 20px; border-radius: 50%; background: #fee2e2; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+.problem-x svg { width: 10px; height: 10px; }
+.solution-check { width: 20px; height: 20px; border-radius: 50%; background: var(--green-light); display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+.solution-check svg { width: 10px; height: 10px; }
+.problem-text { font-size: 13px; line-height: 1.6; color: var(--text2); }
+.problem-text strong { color: var(--text); font-weight: 600; display: block; margin-bottom: 2px; }
 
-.form-box {
-  width: 100%;
-  max-width: 400px;
+.vs-divider {
+  display: flex; align-items: center; justify-content: center;
+  gap: 12px; margin: 8px 0;
 }
+.vs-line { flex: 1; height: 1px; background: var(--border); }
+.vs-label { font-size: 11px; font-weight: 700; color: var(--text3); letter-spacing: .08em; }
 
-/* Tabs */
-.tabs {
-  display: flex;
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 4px;
-  margin-bottom: 32px;
+/* STEPS */
+.steps-bg { background: var(--text); }
+.steps-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 1px; background: rgba(255,255,255,0.07); }
+.step-cell {
+  background: var(--text); padding: 36px 28px;
+  border-right: 1px solid rgba(255,255,255,0.07); transition: background .2s;
 }
-.tab {
-  flex: 1; padding: 9px; text-align: center;
-  font-size: 14px; font-weight: 500; color: var(--text3);
-  border: none; background: none; cursor: pointer;
-  border-radius: 7px; transition: all .18s; font-family: inherit;
+.step-cell:last-child { border-right: none; }
+.step-cell:hover { background: #1a1a2e; }
+.step-number { font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.25); letter-spacing: .1em; text-transform: uppercase; margin-bottom: 18px; }
+.step-title { font-size: 16px; font-weight: 600; color: #fff; margin-bottom: 8px; }
+.step-desc { font-size: 13px; color: rgba(255,255,255,0.45); line-height: 1.65; }
+.step-accent { color: var(--accent); font-size: 12px; font-weight: 600; margin-top: 12px; display: block; }
+
+/* TESTIMONIALS */
+.testi-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; }
+.testi-card {
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 28px;
+  transition: border-color .2s, box-shadow .2s;
 }
-.tab.active { background: var(--bg); color: var(--text); font-weight: 600; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+.testi-card:hover { border-color: var(--border2); box-shadow: 0 8px 30px rgba(0,0,0,0.06); }
+.testi-stars { display: flex; gap: 2px; margin-bottom: 14px; }
+.star-icon { width: 14px; height: 14px; fill: #f59e0b; }
+.testi-text { font-size: 14px; line-height: 1.75; color: #333; margin-bottom: 20px; }
+.testi-author { display: flex; align-items: center; gap: 12px; }
+.testi-avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
+.testi-avatar-initial { width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0; background: var(--accent); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 700; }
+.testi-name { font-size: 13px; font-weight: 600; }
+.testi-role { font-size: 12px; color: var(--text3); margin-top: 1px; }
 
-/* Form heading */
-.form-heading { margin-bottom: 28px; }
-.form-heading h2 { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 5px; }
-.form-heading p { font-size: 14px; color: var(--text3); }
+/* PRICING */
+.pricing-wrap { max-width: 780px; margin: 0 auto; }
+.pricing-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.plan-card { border-radius: var(--radius-lg); padding: 36px; border: 1px solid var(--border); position: relative; transition: border-color .2s, box-shadow .2s; }
+.plan-card:hover { border-color: var(--border2); box-shadow: 0 12px 40px rgba(0,0,0,0.08); }
+.plan-card.featured { background: var(--text); border-color: transparent; box-shadow: 0 20px 60px rgba(0,0,0,0.2); }
+.plan-popular { position: absolute; top: -13px; left: 50%; transform: translateX(-50%); background: var(--accent); color: #fff; padding: 4px 14px; border-radius: 100px; font-size: 11px; font-weight: 700; white-space: nowrap; letter-spacing: .04em; }
+.plan-name { font-size: 12px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: .1em; margin-bottom: 16px; }
+.plan-card.featured .plan-name { color: rgba(255,255,255,0.4); }
+.plan-price { font-size: 52px; font-weight: 700; letter-spacing: -0.03em; line-height: 1; margin-bottom: 4px; }
+.plan-card.featured .plan-price { color: #fff; }
+.plan-price sup { font-size: 20px; vertical-align: super; }
+.plan-price sub { font-size: 15px; font-weight: 400; color: var(--text3); }
+.plan-card.featured .plan-price sub { color: rgba(255,255,255,0.35); }
+.plan-desc { font-size: 13px; color: var(--text3); margin-bottom: 28px; }
+.plan-card.featured .plan-desc { color: rgba(255,255,255,0.35); }
+.plan-divider { height: 1px; background: var(--border); margin-bottom: 24px; }
+.plan-card.featured .plan-divider { background: rgba(255,255,255,0.08); }
+.plan-features { list-style: none; display: flex; flex-direction: column; gap: 11px; margin-bottom: 28px; }
+.plan-features li { display: flex; align-items: center; gap: 9px; font-size: 14px; color: #444; }
+.plan-card.featured .plan-features li { color: rgba(255,255,255,0.75); }
+.check-icon { width: 16px; height: 16px; flex-shrink: 0; }
+.btn-plan { display: block; width: 100%; padding: 13px; text-align: center; border-radius: 9px; font-size: 14px; font-weight: 600; text-decoration: none; transition: all .15s; cursor: pointer; font-family: inherit; border: 1.5px solid var(--border2); background: transparent; color: var(--text); }
+.btn-plan:hover { background: var(--bg2); }
+.btn-plan.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+.btn-plan.primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
 
-/* Fields */
-.field { margin-bottom: 16px; }
-.field label { display: block; font-size: 13px; font-weight: 500; color: var(--text2); margin-bottom: 6px; }
-.field input {
-  width: 100%; padding: 11px 14px;
-  border: 1.5px solid var(--border2);
-  border-radius: 9px; font-size: 14px; font-family: inherit;
-  color: var(--text); background: var(--bg);
-  outline: none; transition: border-color .15s, box-shadow .15s;
-  -webkit-appearance: none;
+/* FAQ */
+.faq-wrap { max-width: 640px; margin: 0 auto; }
+.faq-item { border-bottom: 1px solid var(--border); }
+.faq-q { width: 100%; padding: 20px 0; background: none; border: none; display: flex; justify-content: space-between; align-items: center; font-size: 15px; font-weight: 500; color: var(--text); cursor: pointer; text-align: left; gap: 16px; font-family: inherit; transition: color .15s; }
+.faq-q:hover { color: var(--accent); }
+.faq-icon { width: 22px; height: 22px; border-radius: 50%; border: 1.5px solid var(--border2); display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; color: var(--text2); transition: transform .3s, background .2s, border-color .2s; }
+.faq-item.open .faq-icon { transform: rotate(45deg); background: var(--accent); border-color: var(--accent); color: #fff; }
+.faq-a { max-height: 0; overflow: hidden; transition: max-height .35s ease; font-size: 14px; color: var(--text2); line-height: 1.75; }
+.faq-item.open .faq-a { max-height: 200px; padding-bottom: 20px; }
+
+/* CTA */
+.cta-section { background: var(--accent); padding: 96px 6%; text-align: center; position: relative; overflow: hidden; }
+.cta-section::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 0%, rgba(255,255,255,0.15) 0%, transparent 60%); pointer-events: none; }
+.cta-section h2 { font-size: clamp(30px, 3.5vw, 48px); font-weight: 700; color: #fff; letter-spacing: -0.02em; line-height: 1.15; margin-bottom: 16px; position: relative; }
+.cta-section p { font-size: 17px; color: rgba(255,255,255,0.7); margin-bottom: 36px; position: relative; }
+.btn-cta { display: inline-flex; align-items: center; gap: 8px; background: #fff; color: var(--accent); padding: 14px 28px; border-radius: 10px; font-size: 15px; font-weight: 700; text-decoration: none; transition: transform .15s, box-shadow .15s; position: relative; font-family: inherit; }
+.btn-cta:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(0,0,0,0.2); }
+.cta-note { font-size: 13px; color: rgba(255,255,255,0.5); margin-top: 16px; position: relative; }
+
+/* FOOTER */
+footer { background: var(--bg2); padding: 32px 6%; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; }
+.footer-logo { font-size: 15px; font-weight: 600; color: var(--text); }
+.footer-logo span { color: var(--accent); }
+footer p { font-size: 13px; color: var(--text3); }
+footer nav { position: static; height: auto; background: transparent; border: none; padding: 0; gap: 20px; }
+footer nav a { font-size: 13px; color: var(--text3); text-decoration: none; }
+footer nav a:hover { color: var(--text); }
+
+/* REVEAL */
+.reveal { opacity: 0; transform: translateY(20px); transition: opacity .6s ease, transform .6s ease; }
+.reveal.vis { opacity: 1; transform: none; }
+.rd1 { transition-delay: .08s; } .rd2 { transition-delay: .16s; } .rd3 { transition-delay: .24s; }
+
+/* MOBILE */
+@media (max-width: 1024px) {
+  .hero { grid-template-columns: 1fr; gap: 40px; }
+  .float-card { display: none; }
+  .seo-content .inner { grid-template-columns: 1fr; gap: 40px; }
+  .problems-grid { grid-template-columns: 1fr; }
 }
-.field input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
-.field input::placeholder { color: var(--text3); }
-
-/* Forgot */
-.field-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
-.field-row label { font-size: 13px; font-weight: 500; color: var(--text2); }
-.forgot { font-size: 13px; color: var(--accent); text-decoration: none; font-weight: 500; }
-.forgot:hover { text-decoration: underline; }
-
-/* Submit */
-.btn-submit {
-  width: 100%; padding: 13px;
-  background: var(--accent); color: #fff;
-  border: none; border-radius: 9px;
-  font-size: 15px; font-weight: 600; font-family: inherit;
-  cursor: pointer; transition: background .15s, transform .1s;
-  display: flex; align-items: center; justify-content: center; gap: 7px;
-  margin-top: 20px;
-}
-.btn-submit:hover { background: var(--accent-hover); transform: translateY(-1px); }
-.btn-submit:active { transform: translateY(0); }
-
-/* Terms */
-.terms {
-  font-size: 12px; color: var(--text3);
-  text-align: center; margin-top: 16px; line-height: 1.6;
-}
-.terms a { color: var(--accent); text-decoration: none; }
-
-/* Panel switcher */
-.panel { display: none; }
-.panel.active { display: block; }
-
-/* ══════════════════════════════════
-   MOBILE
-══════════════════════════════════ */
 @media (max-width: 768px) {
-  .page {
-    grid-template-columns: 1fr;
-    grid-template-rows: auto 1fr;
-    min-height: 100vh;
-    min-height: 100dvh;
-  }
-
-  /* ── LEFT mobile: header compacto ── */
-  .left {
-    padding: 0;
-    background: #080d1a;
-    border-radius: 0;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    min-height: unset;
-    height: 56px;
-    padding: 0 20px;
-  }
-
-  .left::before {
-    display: none;
-  }
-
-  /* esconde tudo do left exceto o logo */
-  .left-content, .left-stats { display: none; }
-
-  .left-logo { font-size: 16px; }
-
-  /* badge de trial no header mobile */
-  .mobile-trial-badge {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    background: rgba(37,99,235,0.15);
-    border: 1px solid rgba(37,99,235,0.25);
-    color: #60a5fa;
-    padding: 5px 10px;
-    border-radius: 100px;
-    font-size: 11px;
-    font-weight: 600;
-  }
-  .mobile-trial-badge-dot {
-    width: 5px; height: 5px;
-    border-radius: 50%;
-    background: #60a5fa;
-    animation: pulse 2s infinite;
-  }
-  @keyframes pulse { 0%,100%{opacity:1}50%{opacity:.3} }
-
-  /* ── RIGHT mobile: formulário ocupa tudo ── */
-  .right {
-    padding: 28px 20px 40px;
-    align-items: flex-start;
-  }
-
-  .form-box {
-    max-width: 100%;
-  }
-
-  /* Tabs maiores no mobile */
-  .tabs { margin-bottom: 24px; }
-  .tab { padding: 10px; font-size: 15px; }
-
-  .form-heading { margin-bottom: 22px; }
-  .form-heading h2 { font-size: 24px; }
-  .form-heading p { font-size: 14px; }
-
-  /* Inputs maiores no mobile */
-  .field input {
-    padding: 13px 14px;
-    font-size: 16px; /* evita zoom no iOS */
-    border-radius: 10px;
-  }
-
-  .btn-submit {
-    padding: 15px;
-    font-size: 16px;
-    border-radius: 10px;
-    margin-top: 24px;
-  }
-
-  /* Trust indicators no mobile */
-  .mobile-trust {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 16px;
-    margin-top: 28px;
-    padding-top: 20px;
-    border-top: 1px solid var(--border);
-  }
-  .trust-item {
-    display: flex; align-items: center; gap: 5px;
-    font-size: 12px; color: var(--text3); font-weight: 500;
-  }
-  .trust-dot { width: 3px; height: 3px; border-radius: 50%; background: var(--border2); }
+  nav nav { display: none; }
+  .steps-grid { grid-template-columns: 1fr 1fr; }
+  .testi-grid { grid-template-columns: 1fr; }
+  .pricing-grid { grid-template-columns: 1fr; max-width: 420px; margin: 0 auto; }
+  .section { padding: 64px 5%; }
+  .full-section { padding: 64px 5%; }
+  .seo-content { padding: 64px 5%; }
 }
-
-/* esconde badge mobile no desktop */
-.mobile-trial-badge { display: none; }
-.mobile-trust { display: none; }
+@media (max-width: 500px) {
+  .steps-grid { grid-template-columns: 1fr; }
+}
 </style>
 </head>
 <body>
 
-<div class="page">
-
-  <!-- ══ LEFT ══ -->
-  <div class="left">
-    <a href="/" class="left-logo">Agendo<span>Rapido</span></a>
-
-    <!-- Badge visível só no mobile -->
-    <div class="mobile-trial-badge">
-      <div class="mobile-trial-badge-dot"></div>
-      14 dias grátis
-    </div>
-
-    <div class="left-content">
-      <h1>Seus agendamentos,<br>organizados do<br>jeito certo</h1>
-      <p>Mais de 500 negócios já deixaram de perder horário com o AgendoRapido.</p>
-
-      <!-- Mock agenda -->
-      <div class="mock">
-        <div class="mock-top">
-          <div class="mock-dots">
-            <div class="mock-dot" style="background:#ff5f57"></div>
-            <div class="mock-dot" style="background:#febc2e"></div>
-            <div class="mock-dot" style="background:#28c840"></div>
-          </div>
-          <div class="mock-label">Painel · Hoje</div>
-        </div>
-        <div class="mock-row">
-          <div class="mock-name">João Silva</div>
-          <div class="mock-time">14:30</div>
-          <div class="mock-badge conf">confirmado</div>
-        </div>
-        <div class="mock-row">
-          <div class="mock-name">Maria Souza</div>
-          <div class="mock-time">15:00</div>
-          <div class="mock-badge conf">confirmado</div>
-        </div>
-        <div class="mock-row">
-          <div class="mock-name">Pedro Costa</div>
-          <div class="mock-time">16:30</div>
-          <div class="mock-badge pend">pendente</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="left-stats">
-      <div class="stat-item">
-        <div class="stat-num">+500</div>
-        <div class="stat-label">Negócios ativos</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-num">14 dias</div>
-        <div class="stat-label">Grátis pra testar</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-num">4.9</div>
-        <div class="stat-label">Avaliação média</div>
-      </div>
-    </div>
+<!-- NAV -->
+<nav role="navigation" aria-label="Menu principal">
+  <a href="/" class="logo" aria-label="AgendoRapido - Página inicial">Agendo<span>Rapido</span></a>
+  <div class="nav-right">
+    <a href="/painel.html" class="btn-outline">Entrar</a>
+    <a href="/painel.html" class="btn-solid">Começar grátis</a>
   </div>
+</nav>
 
-  <!-- ══ RIGHT ══ -->
-  <div class="right">
-    <div class="form-box">
-
-      <!-- Tabs -->
-      <div class="tabs">
-        <button class="tab active" onclick="switchTab('login', this)" type="button">Entrar</button>
-        <button class="tab" onclick="switchTab('cadastro', this)" type="button">Criar conta</button>
-      </div>
-
-      <!-- ── PAINEL LOGIN ── -->
-      <div class="panel active" id="panel-login">
-        <div class="form-heading">
-          <h2>Bem-vindo de volta</h2>
-          <p>Entre na sua conta para acessar o painel</p>
-        </div>
-
-        <div class="field">
-          <label for="login-email">Email</label>
-          <input type="email" id="login-email" placeholder="seu@email.com" autocomplete="email">
-        </div>
-
-        <div class="field">
-          <div class="field-row">
-            <label for="login-senha">Senha</label>
-            <a href="/esqueci-senha.html" class="forgot">Esqueci minha senha</a>
-          </div>
-          <input type="password" id="login-senha" placeholder="Sua senha" autocomplete="current-password">
-        </div>
-
-        <button class="btn-submit" onclick="entrar()" type="button">
-          Entrar no painel
-          <svg width="15" height="15" viewBox="0 0 14 14" fill="none"><path d="M3 7h8M7.5 3.5L11 7l-3.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </button>
-
-        <p class="terms">Ao continuar, você concorda com nossos <a href="/termos.html">Termos de uso</a> e <a href="/privacidade.html">Política de privacidade</a></p>
-
-        <!-- Trust — só mobile -->
-        <div class="mobile-trust">
-          <div class="trust-item">
-            <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 3" stroke="#16a34a" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            14 dias grátis
-          </div>
-          <div class="trust-dot"></div>
-          <div class="trust-item">
-            <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 3" stroke="#16a34a" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            Sem cartão
-          </div>
-          <div class="trust-dot"></div>
-          <div class="trust-item">
-            <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 3" stroke="#16a34a" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            +500 negócios
-          </div>
-        </div>
-      </div>
-
-      <!-- ── PAINEL CADASTRO ── -->
-      <div class="panel" id="panel-cadastro">
-        <div class="form-heading">
-          <h2>Criar sua conta</h2>
-          <p>14 dias grátis, sem cartão de crédito</p>
-        </div>
-
-        <div class="field">
-          <label for="cad-nome">Nome completo</label>
-          <input type="text" id="cad-nome" placeholder="Seu nome" autocomplete="name">
-        </div>
-
-        <div class="field">
-          <label for="cad-email">Email</label>
-          <input type="email" id="cad-email" placeholder="seu@email.com" autocomplete="email">
-        </div>
-
-        <div class="field">
-          <label for="cad-senha">Senha</label>
-          <input type="password" id="cad-senha" placeholder="Mínimo 6 caracteres" autocomplete="new-password">
-        </div>
-
-        <button class="btn-submit" onclick="cadastrar()" type="button">
-          Começar grátis
-          <svg width="15" height="15" viewBox="0 0 14 14" fill="none"><path d="M3 7h8M7.5 3.5L11 7l-3.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </button>
-
-        <p class="terms">Ao continuar, você concorda com nossos <a href="/termos.html">Termos de uso</a> e <a href="/privacidade.html">Política de privacidade</a></p>
-
-        <div class="mobile-trust">
-          <div class="trust-item">
-            <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 3" stroke="#16a34a" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            14 dias grátis
-          </div>
-          <div class="trust-dot"></div>
-          <div class="trust-item">
-            <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 3" stroke="#16a34a" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            Sem cartão
-          </div>
-          <div class="trust-dot"></div>
-          <div class="trust-item">
-            <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 3" stroke="#16a34a" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            Cancele quando quiser
-          </div>
-        </div>
-      </div>
-
-    </div>
-  </div>
-
+<!-- BREADCRUMB -->
+<div class="breadcrumb-wrap">
+  <ol class="breadcrumb" aria-label="Navegação estrutural">
+    <li><a href="/">Início</a></li>
+    <li class="breadcrumb-sep" aria-hidden="true">›</li>
+    <li class="breadcrumb-current" aria-current="page">Barbearia</li>
+  </ol>
 </div>
 
+<main>
+
+<!-- ══════════════════════════════════════
+     HERO
+══════════════════════════════════════ -->
+<section class="hero" aria-labelledby="hero-heading">
+  <div class="hero-left">
+    <div class="hero-badge reveal"><div class="badge-dot"></div> Sistema de agendamento para barbearia</div>
+    <h1 class="reveal rd1" id="hero-heading">
+      Sua barbearia agenda <span>sozinha</span> enquanto você corta
+    </h1>
+    <p class="hero-sub reveal rd2">
+      O sistema de agendamento online feito para barbearias. Seus clientes marcam o horário pelo link, você recebe tudo organizado no painel. Sem confirmar no WhatsApp, sem planilha, sem bagunça.
+    </p>
+    <div class="hero-actions reveal rd3">
+      <a href="/painel.html" class="btn-hero">
+        Criar conta grátis
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7h8M7.5 3.5L11 7l-3.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+      <a href="#como-funciona" class="btn-ghost">
+        Ver como funciona
+        <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M7 3l4 4-4 4M3 7h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+    </div>
+    <div class="hero-trust reveal">
+      <div class="trust-item">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 3" stroke="#16a34a" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        14 dias grátis
+      </div>
+      <div class="trust-dot"></div>
+      <div class="trust-item">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 3" stroke="#16a34a" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Sem cartão
+      </div>
+      <div class="trust-dot"></div>
+      <div class="trust-item">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 3" stroke="#16a34a" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Cancele quando quiser
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-visual reveal rd2">
+    <div class="agenda-mock">
+      <div class="mock-bar">
+        <div class="mock-dots">
+          <div class="mock-dot" style="background:#ff5f57"></div>
+          <div class="mock-dot" style="background:#febc2e"></div>
+          <div class="mock-dot" style="background:#28c840"></div>
+        </div>
+        <div class="mock-url">agendorapido.com/painel → Barbearia RM</div>
+      </div>
+      <div class="mock-body">
+        <!-- Notificação -->
+        <div class="notif">
+          <div class="notif-icon">✅</div>
+          <div class="notif-text">
+            <strong>Novo agendamento!</strong>
+            Lucas Martins marcou Corte + Barba para hoje às 16:00
+          </div>
+        </div>
+        <!-- Agenda do dia -->
+        <div class="agenda-header">
+          <div class="agenda-title">Hoje — sexta-feira</div>
+          <div class="agenda-date">8 agendamentos</div>
+        </div>
+        <div class="agenda-slot">
+          <div class="slot-time">09:00</div>
+          <div class="slot-info"><div class="slot-name">Carlos Ferreira</div><div class="slot-service">Corte simples · 30 min</div></div>
+          <span class="slot-badge badge-ok">concluído</span>
+        </div>
+        <div class="agenda-slot">
+          <div class="slot-time">10:00</div>
+          <div class="slot-info"><div class="slot-name">Bruno Lima</div><div class="slot-service">Corte + Barba · 50 min</div></div>
+          <span class="slot-badge badge-ok">concluído</span>
+        </div>
+        <div class="agenda-slot active">
+          <div class="slot-time slot-active-time">14:30</div>
+          <div class="slot-info"><div class="slot-name">Pedro Oliveira</div><div class="slot-service">Barba completa · 30 min</div></div>
+          <span class="slot-badge badge-now">agora</span>
+        </div>
+        <div class="agenda-slot">
+          <div class="slot-time">15:30</div>
+          <div class="slot-info"><div class="slot-name">João Costa</div><div class="slot-service">Corte simples · 30 min</div></div>
+          <span class="slot-badge badge-ok">confirmado</span>
+        </div>
+        <div class="agenda-slot">
+          <div class="slot-time">16:00</div>
+          <div class="slot-info"><div class="slot-name">Lucas Martins</div><div class="slot-service">Corte + Barba · 50 min</div></div>
+          <span class="slot-badge badge-pend">pendente</span>
+        </div>
+      </div>
+    </div>
+    <!-- Float cards -->
+    <div class="float-card fc-link">
+      <div class="fc-label">Seu link de agendamento</div>
+      <div class="fc-url">agendorapido.com.br/b/barbearia-rm</div>
+      <button class="fc-copy" onclick="this.textContent='Copiado!'">
+        <svg width="11" height="11" viewBox="0 0 14 14" fill="none"><rect x="4.5" y="4.5" width="8" height="8" rx="1.5" stroke="currentColor" stroke-width="1.5"/><path d="M1.5 9.5V2.5a1 1 0 0 1 1-1h7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        Copiar link
+      </button>
+    </div>
+    <div class="float-card fc-stat">
+      <div class="fc-label">Este mês</div>
+      <div class="fc-number">127</div>
+      <div class="fc-change">+23% vs mês passado</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════
+     TEXTO SEO — conteúdo real para ranquear
+══════════════════════════════════════ -->
+<div class="seo-content">
+  <div class="inner">
+    <div class="seo-prose reveal">
+      <h2>O sistema de agendamento online que sua barbearia precisava</h2>
+      <p>
+        Gerenciar a agenda de uma barbearia manualmente cansa. Você fica refém do WhatsApp — confirmando horário, respondendo "que horas tem vaga?", perdendo cliente porque não viu a mensagem a tempo. O AgendoRapido resolve isso de forma simples: você configura sua barbearia uma vez, recebe um link de agendamento e pronto. Seus clientes marcam o horário sozinhos.
+      </p>
+      <p>
+        O <strong>sistema de agendamento para barbearia</strong> do AgendoRapido foi pensado para o dia a dia de quem trabalha sozinho ou com uma equipe pequena. Você define os serviços (corte, barba, combo, progressiva), os horários disponíveis e o intervalo entre cada cliente. O sistema cuida do resto: bloqueia os horários já ocupados, confirma o agendamento e avisa o cliente automaticamente.
+      </p>
+      <p>
+        Tudo funciona no celular — tanto para você quanto para o cliente. Não precisa instalar nada, não precisa de conta especial. O cliente acessa o link pelo Instagram ou WhatsApp, escolhe o horário e confirma em menos de um minuto. Você recebe a notificação e vê tudo organizado no painel.
+      </p>
+    </div>
+    <div class="seo-benefits reveal rd1">
+      <div class="benefit-item">
+        <div class="benefit-icon">
+          <svg viewBox="0 0 18 18" fill="none"><path d="M9 1.5A7.5 7.5 0 1 1 1.5 9" stroke="#2563eb" stroke-width="1.5" stroke-linecap="round"/><path d="M9 5v4l2.5 2" stroke="#2563eb" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div>
+          <div class="benefit-title">Agenda disponível 24 horas</div>
+          <div class="benefit-desc">Seu cliente agenda às 23h enquanto você dorme. De manhã, a agenda já está cheia e organizada.</div>
+        </div>
+      </div>
+      <div class="benefit-item">
+        <div class="benefit-icon">
+          <svg viewBox="0 0 18 18" fill="none"><path d="M14.5 3.5L6.5 11.5l-3-3" stroke="#2563eb" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div>
+          <div class="benefit-title">Zero confirmações no WhatsApp</div>
+          <div class="benefit-desc">O sistema confirma o agendamento automaticamente. Você só abre o painel quando quiser conferir.</div>
+        </div>
+      </div>
+      <div class="benefit-item">
+        <div class="benefit-icon">
+          <svg viewBox="0 0 18 18" fill="none"><path d="M9 2a7 7 0 1 1 0 14A7 7 0 0 1 9 2z" stroke="#2563eb" stroke-width="1.5"/><path d="M6 9h6M9 6v6" stroke="#2563eb" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </div>
+        <div>
+          <div class="benefit-title">Menos faltas, mais previsibilidade</div>
+          <div class="benefit-desc">Lembretes automáticos pelo WhatsApp reduzem os no-shows que prejudicam sua receita.</div>
+        </div>
+      </div>
+      <div class="benefit-item">
+        <div class="benefit-icon">
+          <svg viewBox="0 0 18 18" fill="none"><rect x="2" y="4" width="14" height="11" rx="2" stroke="#2563eb" stroke-width="1.5"/><path d="M5 2v4M13 2v4M2 8h14" stroke="#2563eb" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </div>
+        <div>
+          <div class="benefit-title">Funciona para 1 ou vários barbeiros</div>
+          <div class="benefit-desc">Cada profissional tem sua própria agenda. O cliente escolhe com quem quer agendar.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     PROBLEMA vs SOLUÇÃO
+══════════════════════════════════════ -->
+<section class="section" aria-labelledby="problems-heading">
+  <div class="label-tag reveal">Antes x Depois</div>
+  <h2 class="section-h reveal rd1" id="problems-heading">O que muda com o AgendoRapido na sua barbearia</h2>
+  <p class="section-sub reveal rd2" style="margin-bottom:52px">Deixa de resolver problema de agenda e volta a focar no que você sabe fazer.</p>
+  <div class="problems-grid">
+    <div class="reveal">
+      <div style="font-size:13px;font-weight:600;color:#dc2626;text-transform:uppercase;letter-spacing:.06em;margin-bottom:14px;">❌ Sem o AgendoRapido</div>
+      <div class="problems-list">
+        <div class="problem-item">
+          <div class="problem-x"><svg viewBox="0 0 10 10" fill="none"><path d="M2 2l6 6M8 2l-6 6" stroke="#dc2626" stroke-width="1.4" stroke-linecap="round"/></svg></div>
+          <div class="problem-text"><strong>Hora perdida por dia no WhatsApp</strong>Confirmando horário, respondendo dúvidas, avisando quando tem vaga.</div>
+        </div>
+        <div class="problem-item">
+          <div class="problem-x"><svg viewBox="0 0 10 10" fill="none"><path d="M2 2l6 6M8 2l-6 6" stroke="#dc2626" stroke-width="1.4" stroke-linecap="round"/></svg></div>
+          <div class="problem-text"><strong>Cliente que falta sem avisar</strong>Você reservou o horário, deixou de aceitar outro cliente — e a cadeira fica vazia.</div>
+        </div>
+        <div class="problem-item">
+          <div class="problem-x"><svg viewBox="0 0 10 10" fill="none"><path d="M2 2l6 6M8 2l-6 6" stroke="#dc2626" stroke-width="1.4" stroke-linecap="round"/></svg></div>
+          <div class="problem-text"><strong>Agendamento duplo por descuido</strong>Dois clientes marcados no mesmo horário, situação constrangedora para todo mundo.</div>
+        </div>
+        <div class="problem-item">
+          <div class="problem-x"><svg viewBox="0 0 10 10" fill="none"><path d="M2 2l6 6M8 2l-6 6" stroke="#dc2626" stroke-width="1.4" stroke-linecap="round"/></svg></div>
+          <div class="problem-text"><strong>Sem visibilidade dos números</strong>Você não sabe quantos clientes atendeu no mês, qual serviço mais vende, qual dia está vazio.</div>
+        </div>
+      </div>
+    </div>
+    <div class="reveal rd2">
+      <div style="font-size:13px;font-weight:600;color:var(--green);text-transform:uppercase;letter-spacing:.06em;margin-bottom:14px;">✅ Com o AgendoRapido</div>
+      <div class="problems-list">
+        <div class="problem-item" style="border-color:#bbf7d0;background:var(--green-light)">
+          <div class="solution-check"><svg viewBox="0 0 10 10" fill="none"><path d="M1.5 5.5l2.5 2.5 4.5-5" stroke="#16a34a" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="problem-text"><strong>Cliente agenda sozinho, qualquer hora</strong>Você acorda e a agenda já está preenchida, sem ter mexido no WhatsApp.</div>
+        </div>
+        <div class="problem-item" style="border-color:#bbf7d0;background:var(--green-light)">
+          <div class="solution-check"><svg viewBox="0 0 10 10" fill="none"><path d="M1.5 5.5l2.5 2.5 4.5-5" stroke="#16a34a" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="problem-text"><strong>Lembrete automático antes do horário</strong>O sistema avisa o cliente pelo WhatsApp. Sem lembrete, sem falta.</div>
+        </div>
+        <div class="problem-item" style="border-color:#bbf7d0;background:var(--green-light)">
+          <div class="solution-check"><svg viewBox="0 0 10 10" fill="none"><path d="M1.5 5.5l2.5 2.5 4.5-5" stroke="#16a34a" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="problem-text"><strong>Horários bloqueados automaticamente</strong>Um cliente agendar não interfere no outro. Sem conflito, sem surpresa.</div>
+        </div>
+        <div class="problem-item" style="border-color:#bbf7d0;background:var(--green-light)">
+          <div class="solution-check"><svg viewBox="0 0 10 10" fill="none"><path d="M1.5 5.5l2.5 2.5 4.5-5" stroke="#16a34a" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="problem-text"><strong>Relatórios e métricas do negócio</strong>Veja quantos clientes atendeu, quais serviços mais saem e qual dia vale a pena ter um barbeiro extra.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════
+     COMO FUNCIONA
+══════════════════════════════════════ -->
+<section class="full-section steps-bg" id="como-funciona" aria-labelledby="steps-heading">
+  <div class="inner">
+    <div style="margin-bottom:48px">
+      <div class="label-tag reveal" style="color:rgba(255,255,255,0.35)"><span style="background:rgba(255,255,255,0.2);width:16px;height:1.5px;display:inline-block;margin-right:6px;vertical-align:middle"></span>Como funciona</div>
+      <h2 class="section-h reveal rd1" id="steps-heading" style="color:#fff;max-width:560px">Do cadastro ao primeiro agendamento em menos de 5 minutos</h2>
+    </div>
+    <div class="steps-grid">
+      <div class="step-cell reveal">
+        <div class="step-number">Passo 01</div>
+        <div class="step-title">Cadastre sua barbearia</div>
+        <div class="step-desc">Informe seus serviços (corte, barba, combo), os valores, a duração de cada um e os horários de atendimento. Leva 2 minutos.</div>
+        <span class="step-accent">Grátis por 14 dias</span>
+      </div>
+      <div class="step-cell reveal rd1">
+        <div class="step-number">Passo 02</div>
+        <div class="step-title">Receba seu link</div>
+        <div class="step-desc">Você ganha um link personalizado de agendamento. Coloque na bio do Instagram, nos Stories e mande direto no WhatsApp para seus clientes fixos.</div>
+        <span class="step-accent">Link único da sua barbearia</span>
+      </div>
+      <div class="step-cell reveal rd2">
+        <div class="step-number">Passo 03</div>
+        <div class="step-title">Cliente agenda sozinho</div>
+        <div class="step-desc">O cliente acessa o link, vê os horários disponíveis, escolhe o serviço e confirma. Sem criar conta, sem senha, sem complicação.</div>
+        <span class="step-accent">Zero atrito para o cliente</span>
+      </div>
+      <div class="step-cell reveal rd3">
+        <div class="step-number">Passo 04</div>
+        <div class="step-title">Você gerencia no painel</div>
+        <div class="step-desc">Veja a agenda do dia, da semana, confirme ou cancele com um clique. O WhatsApp do cliente abre automaticamente se precisar avisar algo.</div>
+        <span class="step-accent">Controle total, de qualquer lugar</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════
+     DEPOIMENTOS
+══════════════════════════════════════ -->
+<section class="full-section" id="depoimentos" style="background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border)" aria-labelledby="testi-heading">
+  <div class="inner">
+    <div style="text-align:center;margin-bottom:48px">
+      <div class="label-tag reveal" style="justify-content:center">O que dizem os barbeiros</div>
+      <h2 class="section-h reveal rd1" id="testi-heading" style="text-align:center;margin-bottom:0">Quem já usa o AgendoRapido na barbearia</h2>
+    </div>
+    <div class="testi-grid">
+      <article class="testi-card reveal" itemscope itemtype="https://schema.org/Review">
+        <div class="testi-stars" aria-label="5 de 5 estrelas">
+          <svg class="star-icon" viewBox="0 0 20 20"><path d="M10 1l2.6 5.3L18 7.3l-4 3.9 1 5.5L10 14l-5 2.7 1-5.5-4-3.9 5.4-.7L10 1z"/></svg>
+          <svg class="star-icon" viewBox="0 0 20 20"><path d="M10 1l2.6 5.3L18 7.3l-4 3.9 1 5.5L10 14l-5 2.7 1-5.5-4-3.9 5.4-.7L10 1z"/></svg>
+          <svg class="star-icon" viewBox="0 0 20 20"><path d="M10 1l2.6 5.3L18 7.3l-4 3.9 1 5.5L10 14l-5 2.7 1-5.5-4-3.9 5.4-.7L10 1z"/></svg>
+          <svg class="star-icon" viewBox="0 0 20 20"><path d="M10 1l2.6 5.3L18 7.3l-4 3.9 1 5.5L10 14l-5 2.7 1-5.5-4-3.9 5.4-.7L10 1z"/></svg>
+          <svg class="star-icon" viewBox="0 0 20 20"><path d="M10 1l2.6 5.3L18 7.3l-4 3.9 1 5.5L10 14l-5 2.7 1-5.5-4-3.9 5.4-.7L10 1z"/></svg>
+        </div>
+        <p class="testi-text" itemprop="reviewBody">"Antes eu passava uma hora por dia só confirmando horário no WhatsApp. Hoje o cliente agenda sozinho e eu só olho o painel de manhã. Mudou tudo na minha barbearia."</p>
+        <div class="testi-author" itemprop="author" itemscope itemtype="https://schema.org/Person">
+          <img class="testi-avatar" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&h=80&fit=crop&crop=face" alt="Rafael Mendes — Barbearia RM São Paulo" width="40" height="40" loading="lazy">
+          <div><div class="testi-name" itemprop="name">Rafael Mendes</div><div class="testi-role">Barbearia RM · São Paulo, SP</div></div>
+        </div>
+      </article>
+      <article class="testi-card reveal rd1" itemscope itemtype="https://schema.org/Review">
+        <div class="testi-stars" aria-label="5 de 5 estrelas">
+          <svg class="star-icon" viewBox="0 0 20 20"><path d="M10 1l2.6 5.3L18 7.3l-4 3.9 1 5.5L10 14l-5 2.7 1-5.5-4-3.9 5.4-.7L10 1z"/></svg>
+          <svg class="star-icon" viewBox="0 0 20 20"><path d="M10 1l2.6 5.3L18 7.3l-4 3.9 1 5.5L10 14l-5 2.7 1-5.5-4-3.9 5.4-.7L10 1z"/></svg>
+          <svg class="star-icon" viewBox="0 0 20 20"><path d="M10 1l2.6 5.3L18 7.3l-4 3.9 1 5.5L10 14l-5 2.7 1-5.5-4-3.9 5.4-.7L10 1z"/></svg>
+          <svg class="star-icon" viewBox="0 0 20 20"><path d="M10 1l2.6 5.3L18 7.3l-4 3.9 1 5.5L10 14l-5 2.7 1-5.5-4-3.9 5.4-.7L10 1z"/></svg>
+          <svg class="star-icon" viewBox="0 0 20 20"><path d="M10 1l2.6 5.3L18 7.3l-4 3.9 1 5.5L10 14l-5 2.7 1-5.5-4-3.9 5.4-.7L10 1z"/></svg>
+        </div>
+        <p class="testi-text" itemprop="reviewBody">"Tenho três barbeiros e cada um tem a própria agenda. Cliente escolhe com quem quer agendar, qual horário. Nunca mais teve bagunça. E as faltas caíram muito com o lembrete automático."</p>
+        <div class="testi-author" itemprop="author" itemscope itemtype="https://schema.org/Person">
+          <div class="testi-avatar-initial" aria-hidden="true">M</div>
+          <div><div class="testi-name" itemprop="name">Marcelo Andrade</div><div class="testi-role">Barber House · Campinas, SP</div></div>
+        </div>
+      </article>
+      <article class="testi-card reveal rd2" itemscope itemtype="https://schema.org/Review">
+        <div class="testi-stars" aria-label="5 de 5 estrelas">
+          <svg class="star-icon" viewBox="0 0 20 20"><path d="M10 1l2.6 5.3L18 7.3l-4 3.9 1 5.5L10 14l-5 2.7 1-5.5-4-3.9 5.4-.7L10 1z"/></svg>
+          <svg class="star-icon" viewBox="0 0 20 20"><path d="M10 1l2.6 5.3L18 7.3l-4 3.9 1 5.5L10 14l-5 2.7 1-5.5-4-3.9 5.4-.7L10 1z"/></svg>
+          <svg class="star-icon" viewBox="0 0 20 20"><path d="M10 1l2.6 5.3L18 7.3l-4 3.9 1 5.5L10 14l-5 2.7 1-5.5-4-3.9 5.4-.7L10 1z"/></svg>
+          <svg class="star-icon" viewBox="0 0 20 20"><path d="M10 1l2.6 5.3L18 7.3l-4 3.9 1 5.5L10 14l-5 2.7 1-5.5-4-3.9 5.4-.7L10 1z"/></svg>
+          <svg class="star-icon" viewBox="0 0 20 20"><path d="M10 1l2.6 5.3L18 7.3l-4 3.9 1 5.5L10 14l-5 2.7 1-5.5-4-3.9 5.4-.7L10 1z"/></svg>
+        </div>
+        <p class="testi-text" itemprop="reviewBody">"Coloquei o link na bio do Instagram numa segunda-feira. Na quarta já tinha recebido 9 agendamentos de clientes novos que nunca tinham me chamado no WhatsApp. Vale muito a pena."</p>
+        <div class="testi-author" itemprop="author" itemscope itemtype="https://schema.org/Person">
+          <div class="testi-avatar-initial" aria-hidden="true">T</div>
+          <div><div class="testi-name" itemprop="name">Thiago Santos</div><div class="testi-role">Barbearia Thiago · Belo Horizonte, MG</div></div>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════
+     PREÇOS
+══════════════════════════════════════ -->
+<section class="section" id="precos" style="text-align:center" aria-labelledby="pricing-heading">
+  <div class="reveal"><div class="label-tag" style="justify-content:center">Preços</div></div>
+  <h2 class="section-h reveal rd1" id="pricing-heading" style="text-align:center;margin-bottom:8px">Simples e transparente</h2>
+  <p class="section-sub reveal rd2" style="text-align:center;margin:0 auto 48px;max-width:420px">14 dias grátis em qualquer plano. Sem cartão de crédito. Cancele quando quiser.</p>
+  <div class="pricing-wrap">
+    <div class="pricing-grid">
+      <div class="plan-card reveal">
+        <div class="plan-name">Básico</div>
+        <div class="plan-price"><sup>R$</sup>29<sub>/mês</sub></div>
+        <p class="plan-desc">Ideal para barbeiros autônomos</p>
+        <div class="plan-divider"></div>
+        <ul class="plan-features">
+          <li><svg class="check-icon" viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5L13 5" stroke="#16a34a" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>Agendamentos ilimitados</li>
+          <li><svg class="check-icon" viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5L13 5" stroke="#16a34a" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>Link de agendamento personalizado</li>
+          <li><svg class="check-icon" viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5L13 5" stroke="#16a34a" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>Página bio para Instagram</li>
+          <li><svg class="check-icon" viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5L13 5" stroke="#16a34a" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>Painel de gestão completo</li>
+          <li><svg class="check-icon" viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5L13 5" stroke="#16a34a" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>App instalável (PWA)</li>
+        </ul>
+        <a href="/painel.html" class="btn-plan">Começar grátis</a>
+      </div>
+      <div class="plan-card featured reveal rd1">
+        <div class="plan-popular">Mais popular</div>
+        <div class="plan-name">Profissional</div>
+        <div class="plan-price"><sup>R$</sup>49<sub>/mês</sub></div>
+        <p class="plan-desc">Para barbearias com equipe</p>
+        <div class="plan-divider"></div>
+        <ul class="plan-features">
+          <li><svg class="check-icon" viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5L13 5" stroke="#60a5fa" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>Tudo do plano Básico</li>
+          <li><svg class="check-icon" viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5L13 5" stroke="#60a5fa" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>Múltiplos barbeiros</li>
+          <li><svg class="check-icon" viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5L13 5" stroke="#60a5fa" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>Relatórios e métricas</li>
+          <li><svg class="check-icon" viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5L13 5" stroke="#60a5fa" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>Lembretes automáticos por WhatsApp</li>
+          <li><svg class="check-icon" viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5L13 5" stroke="#60a5fa" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>Suporte prioritário</li>
+        </ul>
+        <a href="/painel.html" class="btn-plan primary">Começar grátis</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════
+     FAQ — especializado em barbearia
+══════════════════════════════════════ -->
+<section class="full-section" id="faq" style="background:var(--bg2);border-top:1px solid var(--border)" aria-labelledby="faq-heading">
+  <div class="inner" style="text-align:center">
+    <div class="reveal"><div class="label-tag" style="justify-content:center">FAQ</div></div>
+    <h2 class="section-h reveal rd1" id="faq-heading" style="text-align:center;margin-bottom:0">Perguntas sobre agendamento para barbearia</h2>
+    <div class="faq-wrap" style="text-align:left;margin-top:48px">
+      <div class="faq-item reveal">
+        <button class="faq-q" onclick="faq(this)" aria-expanded="false">Como funciona o sistema de agendamento para barbearia? <span class="faq-icon">+</span></button>
+        <div class="faq-a" role="region">Você cadastra sua barbearia, informa os serviços (corte, barba, combo), os horários de atendimento e o intervalo entre cada cliente. Em seguida recebe um link único. Seu cliente acessa esse link, escolhe o serviço e o horário disponível — e o agendamento aparece no seu painel automaticamente.</div>
+      </div>
+      <div class="faq-item reveal">
+        <button class="faq-q" onclick="faq(this)" aria-expanded="false">Meu cliente precisa criar conta ou instalar algo? <span class="faq-icon">+</span></button>
+        <div class="faq-a" role="region">Não. O cliente acessa o link, escolhe o serviço, data e horário, informa nome e WhatsApp — pronto. Sem cadastro, sem senha, sem app para baixar. É o caminho mais simples possível para o cliente agendar.</div>
+      </div>
+      <div class="faq-item reveal">
+        <button class="faq-q" onclick="faq(this)" aria-expanded="false">O sistema funciona para barbearia com mais de um barbeiro? <span class="faq-icon">+</span></button>
+        <div class="faq-a" role="region">Sim. No plano Profissional você cadastra múltiplos barbeiros, cada um com sua própria agenda e horários. O cliente pode escolher o profissional preferido na hora de agendar.</div>
+      </div>
+      <div class="faq-item reveal">
+        <button class="faq-q" onclick="faq(this)" aria-expanded="false">Como o sistema ajuda a reduzir faltas na barbearia? <span class="faq-icon">+</span></button>
+        <div class="faq-a" role="region">O plano Profissional inclui lembretes automáticos enviados pelo WhatsApp antes do horário agendado. Isso reduz significativamente o número de clientes que faltam sem avisar — um dos maiores problemas de quem trabalha com horário marcado.</div>
+      </div>
+      <div class="faq-item reveal">
+        <button class="faq-q" onclick="faq(this)" aria-expanded="false">Quanto custa o sistema de agendamento para barbearia? <span class="faq-icon">+</span></button>
+        <div class="faq-a" role="region">O plano Básico custa R$29/mês (ideal para barbeiros autônomos) e o plano Profissional R$49/mês (para barbearias com múltiplos profissionais). Os dois incluem 14 dias grátis sem precisar de cartão de crédito.</div>
+      </div>
+      <div class="faq-item reveal">
+        <button class="faq-q" onclick="faq(this)" aria-expanded="false">Posso cancelar quando quiser? <span class="faq-icon">+</span></button>
+        <div class="faq-a" role="region">Sim, sem multa e sem burocracia. Você cancela a qualquer momento pelo próprio painel e mantém o acesso até o fim do período já pago.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA FINAL -->
+<section class="cta-section" aria-label="Criar conta grátis no AgendoRapido">
+  <h2>Comece a usar o AgendoRapido<br>na sua barbearia hoje</h2>
+  <p>14 dias grátis. Sem cartão. Cancele quando quiser.</p>
+  <a href="/painel.html" class="btn-cta">
+    Criar conta grátis
+    <svg width="15" height="15" viewBox="0 0 14 14" fill="none"><path d="M3 7h8M7.5 3.5L11 7l-3.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </a>
+  <p class="cta-note">Mais de 500 barbearias e negócios já usam o AgendoRapido</p>
+</section>
+
+</main>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">Agendo<span>Rapido</span></div>
+  <nav aria-label="Links do rodapé">
+    <a href="/">Início</a>
+    <a href="/barbearia">Barbearia</a>
+    <a href="/salao-de-beleza">Salão</a>
+    <a href="/clinica">Clínica</a>
+    <a href="/pet-shop">Pet Shop</a>
+    <a href="/#precos">Preços</a>
+  </nav>
+  <p>© 2025 AgendoRapido · Feito no Brasil</p>
+</footer>
+
 <script>
-function switchTab(panel, btn) {
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'))
-  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'))
-  btn.classList.add('active')
-  document.getElementById('panel-' + panel).classList.add('active')
+function faq(btn) {
+  const item = btn.closest('.faq-item');
+  const open = item.classList.contains('open');
+  document.querySelectorAll('.faq-item').forEach(i => {
+    i.classList.remove('open');
+    i.querySelector('.faq-q').setAttribute('aria-expanded','false');
+  });
+  if (!open) { item.classList.add('open'); btn.setAttribute('aria-expanded','true'); }
 }
 
-// Suas funções de login/cadastro existentes
-function entrar() {
-  // sua lógica aqui
-}
-function cadastrar() {
-  // sua lógica aqui
-}
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('vis'); obs.unobserve(e.target); } });
+}, { threshold: 0.08 });
+document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
 </script>
-
 </body>
 </html>
