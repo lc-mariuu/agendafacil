@@ -392,252 +392,214 @@
   </div>
 
   <!-- ══════════════════ PAGE: DASHBOARD ══════════════════ -->
-  <h2 class="sr-only">Dashboard AgendoRapido — faturamento, agendamentos do dia, saldo disponível, transações recentes, ações rápidas e insights do negócio.</h2>
-
-<div class="db">
-  <div class="db-header">
-    <div>
-      <div class="db-hello">Olá, Lucio!</div>
-      <div class="db-sub">Aqui está o resumo do seu negócio hoje.</div>
-    </div>
-    <div class="db-date">
-      <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><rect x="2" y="3" width="12" height="11" rx="2" stroke="currentColor" stroke-width="1.3"/><path d="M2 7h12M5 1.5v2M11 1.5v2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
-      Hoje, 23 de Abril
-    </div>
-  </div>
-
-  <div class="kpi-row">
-    <div class="kpi">
-      <div class="kpi-icon" style="background:#EAF3DE">
-        <svg viewBox="0 0 16 16" fill="none"><rect x="2" y="4" width="12" height="9" rx="1.5" stroke="#1D9E75" stroke-width="1.3"/><path d="M2 7h12M6 10h3" stroke="#1D9E75" stroke-width="1.3" stroke-linecap="round"/></svg>
-      </div>
-      <div class="kpi-label">faturamento hoje</div>
-      <div class="kpi-val">R$ 1.250,00</div>
-      <div class="kpi-delta up">
-        <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M5 8V2M2 5l3-3 3 3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        +24%
-      </div>
-      <div class="kpi-vs">vs. ontem</div>
-    </div>
-    <div class="kpi">
-      <div class="kpi-icon" style="background:#E6F1FB">
-        <svg viewBox="0 0 16 16" fill="none"><rect x="2" y="2.5" width="12" height="11" rx="1.5" stroke="#185FA5" stroke-width="1.3"/><path d="M5 1.5v2M11 1.5v2M2 6h12" stroke="#185FA5" stroke-width="1.3" stroke-linecap="round"/></svg>
-      </div>
-      <div class="kpi-label">agendamentos</div>
-      <div class="kpi-val">8</div>
-      <div class="kpi-delta up">
-        <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M5 8V2M2 5l3-3 3 3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        +54%
-      </div>
-      <div class="kpi-vs">vs. ontem</div>
-    </div>
-    <div class="kpi">
-      <div class="kpi-icon" style="background:#EEEDFE">
-        <svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="5.5" r="2.5" stroke="#534AB7" stroke-width="1.3"/><path d="M2.5 14c0-3 2.5-5 5.5-5s5.5 2 5.5 5" stroke="#534AB7" stroke-width="1.3" stroke-linecap="round"/></svg>
-      </div>
-      <div class="kpi-label">clientes ativos</div>
-      <div class="kpi-val">32</div>
-      <div class="kpi-delta up">
-        <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M5 8V2M2 5l3-3 3 3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        +6%
-      </div>
-      <div class="kpi-vs">vs. ontem</div>
-    </div>
-    <div class="kpi">
-      <div class="kpi-icon" style="background:#FAEEDA">
-        <svg viewBox="0 0 16 16" fill="none"><path d="M8 2l1.5 4H14l-3.5 2.5 1.5 4L8 10l-4 2.5 1.5-4L2 6h4.5L8 2Z" stroke="#854F0B" stroke-width="1.3" stroke-linejoin="round"/></svg>
-      </div>
-      <div class="kpi-label">ticket médio</div>
-      <div class="kpi-val">R$ 156,25</div>
-      <div class="kpi-delta up">
-        <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M5 8V2M2 5l3-3 3 3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        +12%
-      </div>
-      <div class="kpi-vs">vs. ontem</div>
-    </div>
-  </div>
-
-  <div class="main-row">
-    <div class="card">
-      <div class="card-hdr">
-        <div>
-          <div class="fat-big" id="fat-val">R$ 18.750,00</div>
-          <div class="fat-sub">
-            <span class="fat-badge up">
-              <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M5 8V2M2 5l3-3 3 3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              +32%
-            </span>
-            vs. mês passado
-          </div>
-        </div>
-        <div style="display:flex;align-items:center;gap:6px">
-          <div class="period-tabs">
-            <button class="ptab" onclick="setPeriod('7d',this)">7d</button>
-            <button class="ptab act" onclick="setPeriod('mes',this)">mês</button>
-            <button class="ptab" onclick="setPeriod('ano',this)">ano</button>
-          </div>
-        </div>
-      </div>
-      <div style="position:relative;width:100%;height:180px">
-        <canvas id="fatChart" role="img" aria-label="Gráfico de linha do faturamento ao longo do mês de abril, atingindo R$18.750 no dia 23.">Faturamento de abril: crescimento de R$0 até R$18.750.</canvas>
-      </div>
-    </div>
-
-    <div style="display:flex;flex-direction:column;gap:10px">
-      <div class="saldo-card">
-        <div class="saldo-label">
-          <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><rect x="1.5" y="4" width="13" height="9" rx="2" stroke="currentColor" stroke-width="1.3"/><path d="M1.5 7.5h13" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><circle cx="5" cy="10.5" r="1" fill="currentColor"/></svg>
-          saldo disponível
-        </div>
-        <div class="saldo-val">R$ 5.680,50</div>
-        <div class="saldo-sub">Disponível para saque</div>
-        <div class="saldo-btns">
-          <button class="sbtn primary" onclick="sendPrompt('Como transferir ou sacar o saldo disponível no AgendoRapido?')">
-            <svg viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            Transferir ↗
-          </button>
-          <button class="sbtn" onclick="sendPrompt('Como solicitar saque do saldo no AgendoRapido via Mercado Pago?')">
-            <svg viewBox="0 0 16 16" fill="none"><path d="M8 3v10M4 9l4 4 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            Sacar ↗
-          </button>
-        </div>
-      </div>
-
-      <div class="card" style="padding:14px 16px">
-        <div class="card-hdr">
-          <span class="card-title">transações recentes</span>
-          <button class="card-link" onclick="sendPrompt('Ver todas as transações financeiras do AgendoRapido.')">ver todas ↗</button>
-        </div>
-        <div class="tx-list">
-          <div class="tx">
-            <div class="tx-ico g">↓</div>
-            <div class="tx-body"><div class="tx-name">Pix recebido</div><div class="tx-meta">23 Abr · 14:30</div></div>
-            <span class="tx-val g">+R$ 120</span>
-          </div>
-          <div class="tx">
-            <div class="tx-ico r">↑</div>
-            <div class="tx-body"><div class="tx-name">Saque enviado</div><div class="tx-meta">23 Abr · 10:15</div></div>
-            <span class="tx-val r">-R$ 300</span>
-          </div>
-          <div class="tx">
-            <div class="tx-ico g">↓</div>
-            <div class="tx-body"><div class="tx-name">Pix recebido</div><div class="tx-meta">23 Abr · 09:42</div></div>
-            <span class="tx-val g">+R$ 80</span>
-          </div>
-          <div class="tx">
-            <div class="tx-ico g">↓</div>
-            <div class="tx-body"><div class="tx-name">Pix recebido</div><div class="tx-meta">22 Abr · 18:20</div></div>
-            <span class="tx-val g">+R$ 150</span>
-          </div>
-          <div class="tx">
-            <div class="tx-ico a">T</div>
-            <div class="tx-body"><div class="tx-name">Taxa de serviço</div><div class="tx-meta">22 Abr · 16:20</div></div>
-            <span class="tx-val a">-R$ 2,50</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="bot-row">
-    <div class="card">
-      <div class="card-hdr">
-        <span class="card-title">próximos agendamentos</span>
-        <button class="card-link" onclick="sendPrompt('Ver todos os agendamentos do dia no AgendoRapido.')">ver todos ↗</button>
-      </div>
+  <section class="page ativo" id="page-dashboard" aria-label="Dashboard">
+    <div class="link-card">
       <div>
-        <div class="ag-item">
-          <div class="ag-av" style="background:#E6F1FB;color:#185FA5">MS</div>
-          <div class="ag-info"><div class="ag-name">Maria Silva</div><div class="ag-serv">Corte de cabelo</div></div>
-          <div class="ag-time"><div class="ag-hora">14:00</div><div class="ag-dia">Hoje</div><span class="badge-conf">Confirmado</span></div>
+        <div class="link-card-label">Link de agendamento</div>
+        <div class="link-card-url" id="link-agendamento">https://agendorapido.com.br/agendar.html?id=—</div>
+      </div>
+      <button class="btn-copiar" id="btn-copiar-agendamento" onclick="copiarLink()" type="button">
+        <svg width="11" height="11" viewBox="0 0 12 12" fill="none" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M1 8.5V2a1 1 0 0 1 1-1h6.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+        Copiar link
+      </button>
+    </div>
+
+    <div class="stats" role="list" aria-label="Estatísticas rápidas">
+      <div class="stat-card" role="listitem">
+        <div class="stat-card-inner">
+          <div class="stat-icon" aria-hidden="true">
+            <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="7.5" r="5.5" stroke="var(--accent)" stroke-width="1.4"/><path d="M7.5 4.5V8l2 2" stroke="var(--accent)" stroke-width="1.4" stroke-linecap="round"/></svg>
+          </div>
+          <div class="stat-valor" id="stat-hoje" aria-label="Agendamentos hoje">0</div>
+          <div class="stat-label">Hoje</div>
         </div>
-        <div class="ag-item">
-          <div class="ag-av" style="background:#EEEDFE;color:#534AB7">JP</div>
-          <div class="ag-info"><div class="ag-name">João Pedro</div><div class="ag-serv">Barba</div></div>
-          <div class="ag-time"><div class="ag-hora">15:30</div><div class="ag-dia">Hoje</div><span class="badge-conf">Confirmado</span></div>
+      </div>
+      <div class="stat-card" role="listitem">
+        <div class="stat-card-inner">
+          <div class="stat-icon" aria-hidden="true">
+            <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><rect x="1.5" y="2.5" width="12" height="11" rx="1.5" stroke="var(--accent)" stroke-width="1.4"/><path d="M5 1.5v2M10 1.5v2M1.5 5.5h12" stroke="var(--accent)" stroke-width="1.4" stroke-linecap="round"/></svg>
+          </div>
+          <div class="stat-valor" id="stat-semana" aria-label="Agendamentos esta semana">0</div>
+          <div class="stat-label">Esta semana</div>
         </div>
-        <div class="ag-item">
-          <div class="ag-av" style="background:#FAEEDA;color:#633806">AC</div>
-          <div class="ag-info"><div class="ag-name">Ana Clara</div><div class="ag-serv">Luzes</div></div>
-          <div class="ag-time"><div class="ag-hora">16:45</div><div class="ag-dia">Hoje</div><span class="badge-conf">Confirmado</span></div>
+      </div>
+      <div class="stat-card card-lucro-semana" role="listitem">
+        <div class="stat-card-inner">
+          <div class="stat-icon green-icon" aria-hidden="true">
+            <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M1.5 11L5.5 7l3 3L13.5 4" stroke="var(--green)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="stat-label" style="margin-bottom:6px">Lucro da semana</div>
+          <div class="stat-valor" id="stat-total" style="font-size:20px;color:#34d399" aria-label="Lucro da semana">R$ 0,00</div>
+        </div>
+        <div class="stat-mini-chart" aria-hidden="true">
+          <svg viewBox="0 0 200 60" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#10b981" stop-opacity="0.6"/>
+                <stop offset="100%" stop-color="#10b981" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <path d="M0 50 L30 42 L60 38 L90 30 L120 20 L150 15 L180 10 L200 5 L200 60 L0 60 Z" fill="url(#chartGrad)"/>
+            <path d="M0 50 L30 42 L60 38 L90 30 L120 20 L150 15 L180 10 L200 5" stroke="#10b981" stroke-width="2" fill="none"/>
+          </svg>
         </div>
       </div>
     </div>
 
-    <div class="card">
-      <div class="card-hdr"><span class="card-title">ações rápidas</span></div>
-      <div class="qact-grid">
-        <button class="qact" onclick="sendPrompt('Criar um novo agendamento manual no AgendoRapido.')">
-          <div class="qact-icon" style="background:#E6F1FB">
-            <svg viewBox="0 0 16 16" fill="none" style="color:#185FA5"><rect x="2" y="2.5" width="12" height="11" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M5 1.5v2M11 1.5v2M2 6h12M8 9v3M6.5 10.5h3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
-          </div>
-          <span class="qact-label">Novo agendamento</span>
-          <span class="qact-sub">Criar um agendamento</span>
-        </button>
-        <button class="qact" onclick="sendPrompt('Cadastrar um novo cliente no AgendoRapido.')">
-          <div class="qact-icon" style="background:#EAF3DE">
-            <svg viewBox="0 0 16 16" fill="none" style="color:#3B6D11"><circle cx="8" cy="5.5" r="2.5" stroke="currentColor" stroke-width="1.3"/><path d="M2.5 14c0-3 2.5-5 5.5-5s5.5 2 5.5 5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><path d="M11 3v4M9 5h4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
-          </div>
-          <span class="qact-label">Novo cliente</span>
-          <span class="qact-sub">Cadastrar cliente</span>
-        </button>
-        <button class="qact" onclick="sendPrompt('Como enviar mensagem via WhatsApp para clientes no AgendoRapido?')">
-          <div class="qact-icon" style="background:#FAEEDA">
-            <svg viewBox="0 0 16 16" fill="none" style="color:#854F0B"><path d="M13 8.5a5 5 0 1 1-10 0 5 5 0 0 1 10 0Z" stroke="currentColor" stroke-width="1.3"/><path d="M6 8.5h4M8 6.5v4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
-          </div>
-          <span class="qact-label">Enviar mensagem</span>
-          <span class="qact-sub">WhatsApp ou SMS</span>
-        </button>
-        <button class="qact" onclick="sendPrompt('Ver relatório completo de desempenho do negócio no AgendoRapido.')">
-          <div class="qact-icon" style="background:#EEEDFE">
-            <svg viewBox="0 0 16 16" fill="none" style="color:#534AB7"><path d="M2 12.5l3-3.5 2.5 2.5L11 6l3 3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </div>
-          <span class="qact-label">Ver relatórios</span>
-          <span class="qact-sub">Desempenho do negócio</span>
-        </button>
+    <div class="alert-banner" id="alert-clientes-inativos" style="display:none" role="alert" aria-live="polite">
+      <span class="alert-banner-icon" aria-hidden="true">⚠</span>
+      <div class="alert-banner-text" id="alert-clientes-texto">
+        <strong>Clientes inativos</strong>, mande uma promoção para reativá-los
       </div>
+      <button class="alert-banner-btn" onclick="irPara('whatsapp', document.getElementById('menu-whatsapp'))" type="button">Enviar mensagem</button>
     </div>
 
-    <div class="card">
-      <div class="card-hdr">
-        <span class="card-title">insights do negócio</span>
-        <button class="card-link" onclick="sendPrompt('Ver relatório completo de insights e desempenho do meu negócio.')">relatório completo ↗</button>
+    <div class="dashboard-grid">
+      <div>
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Agendamentos de hoje</div>
+            <div class="card-actions">
+              <button class="btn-novo" onclick="irPara('agendamentos', document.getElementById('menu-agendamentos'))" type="button">
+                Ver todos
+              </button>
+              <button class="btn-novo" onclick="abrirModalNovoAgendamento()" type="button">
+                <svg width="11" height="11" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+                Novo
+              </button>
+            </div>
+          </div>
+          <div class="tabela-scroll" id="tabela-desktop-dash">
+            <div id="tbody-rows-dash" aria-live="polite"></div>
+          </div>
+          <div class="ag-cards" id="ag-cards-dash" aria-live="polite"></div>
+        </div>
+
+        <!-- HISTÓRICO MENSAL -->
+        <div class="section-block">
+          <div class="section-block-header">
+            <div class="section-block-icon" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><rect x="2.5" y="3.5" width="15" height="13.5" rx="2.5" stroke="var(--accent)" stroke-width="1.6"/><path d="M2.5 7.5h15M7 2v3M13 2v3" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round"/></svg>
+            </div>
+            <div style="flex:1">
+              <div class="section-block-title">Histórico de lucro mensal</div>
+              <div class="section-block-sub">Receita acumulada dos últimos meses</div>
+            </div>
+            <div class="hist-nav" role="group" aria-label="Navegação por mês">
+              <button class="hist-nav-btn" id="hist-prev" onclick="historicoPaginar(-1)" aria-label="Mês anterior" type="button">‹</button>
+              <span class="hist-mes-label" id="hist-mes-label" aria-live="polite">—</span>
+              <button class="hist-nav-btn" id="hist-next" onclick="historicoPaginar(1)" aria-label="Próximo mês" type="button">›</button>
+            </div>
+          </div>
+          <div class="section-block-body" style="padding-bottom:24px">
+            <div class="hist-cards" role="list" aria-label="Resumo do mês">
+              <div class="hist-stat" role="listitem">
+                <div class="hist-stat-icon" style="background:var(--green-bg);border-color:var(--green-border)" aria-hidden="true"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><rect x="1.5" y="3" width="13" height="10" rx="1.5" stroke="var(--green)" stroke-width="1.4"/><path d="M1.5 6.5h13M5 9.5h3" stroke="var(--green)" stroke-width="1.4" stroke-linecap="round"/></svg></div>
+                <div><div class="hist-stat-valor" id="hist-lucro" aria-label="Lucro total do mês">R$ 0,00</div><div class="hist-stat-label">Lucro total</div></div>
+              </div>
+              <div class="hist-stat" role="listitem">
+                <div class="hist-stat-icon" aria-hidden="true"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M2 12.5l3.5-3.5 2.5 2.5L13 5" stroke="var(--accent)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div><div class="hist-stat-valor" id="hist-atend" aria-label="Atendimentos concluídos">0</div><div class="hist-stat-label">Concluídos</div></div>
+              </div>
+              <div class="hist-stat" role="listitem">
+                <div class="hist-stat-icon" style="background:var(--purple-bg);border-color:var(--purple-border)" aria-hidden="true"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="6" r="2.5" stroke="var(--purple)" stroke-width="1.4"/><path d="M2.5 14c0-3 2.5-5 5.5-5s5.5 2 5.5 5" stroke="var(--purple)" stroke-width="1.4" stroke-linecap="round"/></svg></div>
+                <div><div class="hist-stat-valor" id="hist-ticket" aria-label="Ticket médio">R$ 0,00</div><div class="hist-stat-label">Ticket médio</div></div>
+              </div>
+            </div>
+            <div class="hist-grafico-wrap">
+              <div class="hist-grafico-title">Evolução dos últimos 6 meses</div>
+              <div class="hist-grafico" id="hist-grafico" role="img" aria-label="Gráfico de barras com evolução mensal"></div>
+              <div class="hist-grafico-labels" id="hist-grafico-labels" aria-hidden="true"></div>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="insight-grid">
-        <div class="ins-item">
-          <div class="ins-icon" style="background:#EAF3DE">
-            <svg viewBox="0 0 16 16" fill="none" style="color:#1D9E75"><rect x="2" y="2.5" width="12" height="11" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M5 1.5v2M11 1.5v2M2 6h12" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+
+      <!-- INSIGHTS PANEL -->
+      <aside class="insights-panel" aria-label="Insights e finanças">
+        <div class="insight-card">
+          <div class="insight-header">
+            <div class="insight-title">Insights Inteligentes</div>
+            <div class="insight-dots" aria-hidden="true">
+              <div class="insight-dot"></div>
+              <div class="insight-dot"></div>
+              <div class="insight-dot"></div>
+            </div>
           </div>
-          <div>
-            <div class="ins-label">melhor dia da semana</div>
-            <div class="ins-val">Quintas</div>
-            <div class="ins-sub">R$ 3.240 · 48% dos agendamentos</div>
+          <dl>
+            <div class="insight-item">
+              <div class="insight-item-icon" aria-hidden="true">
+                <svg width="14" height="14" viewBox="0 0 15 15" fill="none"><rect x="1.5" y="2.5" width="12" height="11" rx="1.5" stroke="var(--accent)" stroke-width="1.3"/><path d="M5 1.5v2M10 1.5v2M1.5 5.5h12" stroke="var(--accent)" stroke-width="1.3" stroke-linecap="round"/></svg>
+              </div>
+              <div class="insight-item-body">
+                <dt class="insight-item-label">Melhor agendamento</dt>
+                <dd class="insight-item-value" id="insight-melhor-horario">—</dd>
+                <dd class="insight-item-sub">Horário mais reservado</dd>
+              </div>
+            </div>
+            <div class="insight-item">
+              <div class="insight-item-icon green" aria-hidden="true">
+                <svg width="14" height="14" viewBox="0 0 15 15" fill="none"><path d="M2 4h11v8a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V4Z" stroke="var(--green)" stroke-width="1.3"/><path d="M5 8h5" stroke="var(--green)" stroke-width="1.3" stroke-linecap="round"/></svg>
+              </div>
+              <div class="insight-item-body">
+                <dt class="insight-item-label">Serviço mais lucrativo</dt>
+                <dd class="insight-item-value" id="insight-servico-top">—</dd>
+                <dd class="insight-item-sub" id="insight-servico-receita">no mês</dd>
+              </div>
+            </div>
+            <div class="insight-item">
+              <div class="insight-item-icon purple" aria-hidden="true">
+                <svg width="14" height="14" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="5" r="2.5" stroke="var(--purple)" stroke-width="1.3"/><path d="M2 13c0-2.8 2.5-5 5.5-5s5.5 2.2 5.5 5" stroke="var(--purple)" stroke-width="1.3" stroke-linecap="round"/></svg>
+              </div>
+              <div class="insight-item-body">
+                <dt class="insight-item-label">Clientes sem agendar</dt>
+                <dd class="insight-item-value" id="insight-inativos">—</dd>
+                <dd class="insight-item-sub warning" id="insight-inativos-sub">há mais de 30 dias</dd>
+              </div>
+            </div>
+          </dl>
+        </div>
+
+        <!-- FINANCE CARD -->
+        <div class="finance-card">
+          <div class="finance-header">
+            <div class="finance-title">Este mês</div>
+            <button class="finance-period" onclick="irPara('pagamentos', document.getElementById('menu-pagamentos'))" type="button" aria-label="Ver histórico de pagamentos">
+              <span>Ver histórico</span>
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true"><path d="M3 4l2 2 2-2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+          </div>
+          <div class="finance-body">
+            <div class="finance-amount" aria-label="Receita do mês"><span>R$</span> <span id="finance-amount-val">0,00</span></div>
+            <div class="finance-meta" id="finance-meta">Movidas: 0 agendamentos</div>
+            <div class="finance-mini-chart" aria-hidden="true">
+              <svg viewBox="0 0 280 70" preserveAspectRatio="none">
+                <defs>
+                  <linearGradient id="finGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.25"/>
+                    <stop offset="100%" stop-color="#3b82f6" stop-opacity="0"/>
+                  </linearGradient>
+                </defs>
+                <path d="M0 60 L40 52 L80 48 L120 35 L160 28 L200 20 L240 12 L280 8 L280 70 L0 70 Z" fill="url(#finGrad)"/>
+                <path d="M0 60 L40 52 L80 48 L120 35 L160 28 L200 20 L240 12 L280 8" stroke="#3b82f6" stroke-width="2" fill="none" stroke-linejoin="round"/>
+                <text x="260" y="12" font-size="9" fill="#3b82f6" text-anchor="middle" font-family="Inter" font-weight="700" id="finance-chart-label">R$0</text>
+              </svg>
+            </div>
+            <div class="finance-stats">
+              <div class="finance-stat">
+                <div class="finance-stat-label">Atendimentos</div>
+                <div class="finance-stat-value" id="finance-atend">0</div>
+              </div>
+              <div class="finance-stat">
+                <div class="finance-stat-label">Pix Recebidos</div>
+                <div class="finance-stat-value" id="finance-pix">0%</div>
+              </div>
+            </div>
           </div>
         </div>
-        <div class="ins-item">
-          <div class="ins-icon" style="background:#E6F1FB">
-            <svg viewBox="0 0 16 16" fill="none" style="color:#185FA5"><circle cx="8" cy="8" r="5.5" stroke="currentColor" stroke-width="1.3"/><path d="M8 5v3.5l2 2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
-          </div>
-          <div>
-            <div class="ins-label">horário mais reservado</div>
-            <div class="ins-val">16:00 – 18:00</div>
-            <div class="ins-sub">pico de agendamentos</div>
-          </div>
-        </div>
-        <div class="ins-item">
-          <div class="ins-icon" style="background:#EEEDFE">
-            <svg viewBox="0 0 16 16" fill="none" style="color:#534AB7"><path d="M2 11.5l3-3.5 2.5 2.5L11 5l3 3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </div>
-          <div>
-            <div class="ins-label">taxa de presença</div>
-            <div class="ins-val">92%</div>
-            <div class="ins-sub">+6% vs. mês passado</div>
-          </div>
-        </div>
-      </div>
+      </aside>
     </div>
-  </div>
-</div>
+  </section>
 
   <!-- ══════════════════ PAGE: AGENDAMENTOS ══════════════════ -->
   <section class="page" id="page-agendamentos" aria-label="Agendamentos">
@@ -1651,7 +1613,6 @@ Estamos te esperando! 🙏</textarea>
      Isso corrige o erro: Cannot read properties of null (reading 'classList') -->
 <script src="./painel.js"></script>
 <script src="./pagamentos-fix.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 
 <!-- Script de assinatura (usa a variável API definida no painel.js acima) -->
 <script>
@@ -1718,60 +1679,7 @@ window.addEventListener('DOMContentLoaded', () => {
     }, 2500)
   }
 })
-
-const datasets = {
-  mes: { labels: ['1 Abr','5 Abr','10 Abr','15 Abr','20 Abr','23 Abr'], data: [0,2100,5400,9800,14200,18750], label: 'R$ 18.750,00' },
-  '7d': { labels: ['17 Abr','18 Abr','19 Abr','20 Abr','21 Abr','22 Abr','23 Abr'], data: [1800,2200,1600,2800,3100,2400,3200], label: 'R$ 3.200,00' },
-  ano: { labels: ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov'], data: [9200,10500,12800,18750,0,0,0,0,0,0,0], label: 'R$ 51.250,00' }
-};
-let activeChart = null;
-function buildChart(period) {
-  const d = datasets[period];
-  if (activeChart) activeChart.destroy();
-  const isDark = matchMedia('(prefers-color-scheme: dark)').matches;
-  const gridColor = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)';
-  const labelColor = isDark ? '#888780' : '#5F5E5A';
-  const lineColor = '#1D9E75';
-  const fillColor = isDark ? 'rgba(29,158,117,0.12)' : 'rgba(29,158,117,0.08)';
-  activeChart = new Chart(document.getElementById('fatChart'), {
-    type: 'line',
-    data: {
-      labels: d.labels,
-      datasets: [{
-        label: 'Faturamento',
-        data: d.data,
-        borderColor: lineColor,
-        borderWidth: 2,
-        pointBackgroundColor: lineColor,
-        pointRadius: 3,
-        pointHoverRadius: 5,
-        fill: true,
-        backgroundColor: fillColor,
-        tension: 0.4
-      }]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          callbacks: { label: ctx => 'R$ ' + ctx.parsed.y.toLocaleString('pt-BR') }
-        }
-      },
-      scales: {
-        x: { grid: { color: gridColor }, ticks: { color: labelColor, font: { size: 11 }, autoSkip: false, maxRotation: 0 } },
-        y: { grid: { color: gridColor }, ticks: { color: labelColor, font: { size: 11 }, callback: v => 'R$' + (v >= 1000 ? Math.round(v/1000) + 'k' : v) }, beginAtZero: true }
-      }
-    }
-  });
-  document.getElementById('fat-val').textContent = d.label;
-}
-function setPeriod(p, btn) {
-  document.querySelectorAll('.ptab').forEach(b => b.classList.remove('act'));
-  btn.classList.add('act');
-  buildChart(p);
-}
-buildChart('mes');
 </script>
+
 </body>
 </html>
