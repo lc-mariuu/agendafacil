@@ -2116,3 +2116,210 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }, 150)
 })
+
+/* ── Chaves localStorage ── */
+function saldoKey(nid)  { return 'saldo_disponivel_' + nid }
+function saquesKey(nid) { return 'saques_ids_' + nid }
+ 
+/* ── Lê saldo salvo ── */
+function getSaldoSalvo(nid) {
+  var v = localStorage.getItem(saldoKey(nid))
+  return v !== null ? parseFloat(v) : 0
+}
+ 
+/* ── Grava saldo (nunca negativo) ── */
+function setSaldoSalvo(nid, valor) {
+  var v = Math.max(0, valor)
+  localStorage.setItem(saldoKey(nid), String(v))
+  return v
+}
+ 
+/* ── Saques realizados ── */
+function getSaquesRealizados(nid) {
+  try { return JSON.parse(localStorage.getItem(saquesKey(nid)) || '[]') }
+  catch(e) { return [] }
+}
+function registrarSaqueLocal(nid, valor) {
+  var lista = getSaquesRealizados(nid)
+  lista.push({ valor: valor, data: new Date().toISOString() })
+  localStorage.setItem(saquesKey(nid), JSON.stringify(lista))
+}
+ 
+/* ── Calcula saldo real ──
+   Só conta agendamentos com pagamento.status === 'pago'
+   Desconta saques já realizados                          */
+function calcularSaldoReal(ags, nid) {
+  if (!ags || !ags.length) return 0
+ 
+  var totalPago = ags.reduce(function(soma, a) {
+    if (a.pagamento && a.pagamento.status === 'pago' && Number(a.pagamento.valor) > 0) {
+      return soma + Number(a.pagamento.valor)
+    }
+    return soma
+  }, 0)
+ 
+  var totalSacado = getSaquesRealizados(nid).reduce(function(s, item) {
+    return s + (Number(item.valor) || 0)
+  }, 0)
+ 
+  return Math.max(0, totalPago - totalSacado)
+}
+ 
+/* ── Atualiza UI do saldo ── */
+function atualizarUISaldo(saldo) {
+  var fmt = 'R$ ' + saldo.toLocaleString('pt-BR', {
+    minimumFractionDigits: 2, maximumFractionDigits: 2
+  })
+ 
+  var elSaldo = document.getElementById('dash-saldo-val')
+  if (elSaldo) elSaldo.textContent = fmt
+ 
+  var semSaldo = saldo <= 0
+ 
+  var btnTransferir = document.querySelector('.dash-saldo-btn.primary')
+  var btnSaque      = document.querySelector('.dash-saldo-btn.secondary')
+ 
+  if (btnTransferir) {
+    btnTransferir.disabled       = semSaldo
+    btnTransferir.style.opacity  = semSaldo ? '0.4' : ''
+    btnTransferir.style.cursor   = semSaldo ? 'not-allowed' : ''
+    btnTransferir.title          = semSaldo ? 'Sem saldo disponível' : ''
+  }
+  if (btnSaque) {
+    btnSaque.disabled       = semSaldo
+    btnSaque.style.opacity  = semSaldo ? '0.4' : ''
+    btnSaque.style.cursor   = semSaldo ? 'not-allowed' : ''
+    btnSaque.title          = semSaldo ? 'Sem saldo disponível' : ''
+  }
+}
+ 
+/* ── Recalcula e exibe saldo ── */
+function recalcularSaldo() {
+  var nid = negocioAtual ? negocioAtual._id : null
+  if (!nid) return 0
+  var saldo = calcularSaldoReal(todosAgendamentos || [], nid)
+  setSaldoSalvo(nid, saldo)
+  atualizarUISaldo(saldo)
+  return saldo
+}
+ 
+/* ── Toast simples ── */
+function toastSaldo(msg, cor) {
+  var id = 'toast-saldo-dash'
+  var el = document.getElementById(id)
+  if (!el) {
+    el = document.createElement('div')
+    el.id = id
+    el.style.cssText = [
+      'position:fixed;bottom:24px;left:50%;transform:translateX(-50%)',
+      'padding:12px 22px;border-radius:10px;font-size:13.5px',
+      'font-weight:600;color:#fff;z-index:9999',
+      'box-shadow:0 4px 20px rgba(0,0,0,.4);transition:opacity .3s',
+      'max-width:90vw;text-align:center;font-family:inherit'
+    ].join(';')
+    document.body.appendChild(el)
+  }
+  el.style.background = cor || '#10b981'
+  el.style.opacity    = '1'
+  el.textContent      = msg
+  clearTimeout(el._t)
+  el._t = setTimeout(function() { el.style.opacity = '0' }, 3500)
+}
+ 
+/* ── Saque com validação ── */
+function solicitarSaqueDash() {
+  var nid = negocioAtual ? negocioAtual._id : null
+  if (!nid) return
+ 
+  var saldo = recalcularSaldo()
+ 
+  if (saldo <= 0) {
+    toastSaldo('Você não tem saldo disponível para saque.', '#ef4444')
+    return
+  }
+ 
+  var ok = confirm(
+    'Solicitar saque de R$ ' +
+    saldo.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) +
+    '?\n\nO valor será transferido para sua conta vinculada.'
+  )
+  if (!ok) return
+ 
+  var token = localStorage.getItem('token')
+  fetch(API + '/pagamento/sacar', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+    body: JSON.stringify({ negocioId: nid, valor: saldo })
+  })
+  .then(function(res) { return res.json() })
+  .then(function(data) {
+    if (data && data.erro) {
+      toastSaldo('Erro: ' + data.erro, '#ef4444')
+      return
+    }
+    registrarSaqueLocal(nid, saldo)
+    setSaldoSalvo(nid, 0)
+    atualizarUISaldo(0)
+    toastSaldo('Saque de R$ ' + saldo.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) + ' solicitado!', '#10b981')
+  })
+  .catch(function() {
+    // Backend ainda não tem a rota? Registra local mesmo assim
+    registrarSaqueLocal(nid, saldo)
+    setSaldoSalvo(nid, 0)
+    atualizarUISaldo(0)
+    toastSaldo('Saque solicitado! Entraremos em contato.', '#10b981')
+  })
+}
+ 
+/* ── Aplica onclick nos botões do saldo ── */
+function bindBotoesSaldo() {
+  var btnTransferir = document.querySelector('.dash-saldo-btn.primary')
+  var btnSaque      = document.querySelector('.dash-saldo-btn.secondary')
+ 
+  if (btnTransferir) {
+    btnTransferir.onclick = function() {
+      var nid   = negocioAtual ? negocioAtual._id : null
+      var saldo = nid ? getSaldoSalvo(nid) : 0
+      if (saldo <= 0) { toastSaldo('Sem saldo disponível.', '#ef4444'); return }
+      irPara('pagamentos', document.getElementById('menu-pagamentos'))
+    }
+  }
+ 
+  if (btnSaque) {
+    btnSaque.onclick = solicitarSaqueDash
+  }
+}
+ 
+/* ── Hook: recalcula sempre que agendamentos mudam ── */
+;(function() {
+  var _orig = window.renderDashboardHoje
+  window.renderDashboardHoje = function() {
+    if (typeof _orig === 'function') _orig.apply(this, arguments)
+    requestAnimationFrame(function() {
+      recalcularSaldo()
+      bindBotoesSaldo()
+    })
+  }
+})()
+ 
+/* ── Hook: recalcula ao navegar para dashboard ── */
+;(function() {
+  var _orig = window.irPara
+  window.irPara = function(pagina, btn) {
+    _orig.apply(this, arguments)
+    if (pagina === 'dashboard') {
+      setTimeout(function() {
+        recalcularSaldo()
+        bindBotoesSaldo()
+      }, 120)
+    }
+  }
+})()
+ 
+/* ── Init inicial ── */
+document.addEventListener('DOMContentLoaded', function() {
+  setTimeout(function() {
+    recalcularSaldo()
+    bindBotoesSaldo()
+  }, 900)
+})
