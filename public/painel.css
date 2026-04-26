@@ -5174,3 +5174,18 @@ body.light-mode #page-dashboard .dash-acao-btn { background: var(--bg); }
     order: -1;
   }
 }
+
+@media (max-width: 768px) {
+  .modal-overlay {
+    align-items: center;
+    padding: 16px;
+    overflow-y: auto;
+  }
+
+  .modal, .modal-neg {
+    border-radius: 14px;
+    max-height: 90vh;
+    overflow-y: auto;
+    margin: 0;
+  }
+}
