@@ -5167,3 +5167,28 @@ body.light-mode #page-dashboard .dash-acao-btn { background: var(--bg); }
   #page-dashboard .dash-acoes-grid { gap: 7px; padding: 10px; }
   #page-dashboard .dash-acao-btn   { padding: 10px; }
 }
+
+/* Saldo no topo no mobile */
+@media (max-width: 768px) {
+  #page-dashboard .dash-main-grid {
+    display: flex;
+    flex-direction: column;
+  }
+
+  #page-dashboard .dash-col-right {
+    order: -1; /* move para o topo */
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  #page-dashboard .dash-saldo-card {
+    order: -1;
+  }
+
+  /* Esconde transações e insights no mobile pra não poluir */
+  #page-dashboard .dash-trans-card,
+  #page-dashboard .dash-insights-card {
+    display: none;
+  }
+}
