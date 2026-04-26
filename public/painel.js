@@ -1514,3 +1514,605 @@ if (!_token) {
 } else {
   mostrarPainel()
 }
+
+;(function () {
+ 
+  var dashChart = {
+    canvas:  null,
+    tooltip: null,
+    data:    [],
+    labels:  [],
+    values:  [],   // acumulado diário
+    maxY:    0,
+    rafId:   null,
+  }
+ 
+  /* Gera dados acumulados a partir dos agendamentos reais */
+  function buildChartData () {
+    var ags = todosAgendamentos || []
+    var mes = new Date().toISOString().slice(0, 7) // "2025-04"
+    var hoje = new Date()
+    var diaHoje = hoje.getDate()
+    var nomeMes = hoje.toLocaleDateString('pt-BR', { month: 'short', day: 'numeric' })
+ 
+    // Soma por dia
+    var porDia = {}
+    ags.forEach(function (a) {
+      if (!a.data || !a.data.startsWith(mes)) return
+      if (a.status !== 'concluido') return
+      var dia = parseInt(a.data.split('-')[2], 10)
+      porDia[dia] = (porDia[dia] || 0) + (Number(a.preco) || 0)
+    })
+ 
+    // Monta série do dia 1 até hoje
+    var labels = [], dailyVals = [], acum = [], total = 0
+    for (var d = 1; d <= diaHoje; d++) {
+      total += (porDia[d] || 0)
+      labels.push(d === 1 ? '1 Abr' : d === diaHoje ? 'hoje' : (d % 5 === 0 ? d + ' Abr' : ''))
+      dailyVals.push(porDia[d] || 0)
+      acum.push(total)
+    }
+ 
+    // Se não houver dados reais, usa curva demo para não ficar vazio
+    if (total === 0) {
+      var demo = [820,1050,980,1200,1100,1350,1480,1300,1600,1750,
+                  1650,1900,2100,2050,2300,2500,2450,2700,2900,3100,
+                  3300,3550,3800]
+      var days = Math.min(diaHoje, demo.length)
+      labels = []; acum = []; total = 0
+      for (var i = 0; i < days; i++) {
+        total += demo[i]
+        labels.push(i === 0 ? '1 Abr' : i === days - 1 ? 'hoje' : ((i + 1) % 5 === 0 ? (i + 1) + ' Abr' : ''))
+        acum.push(total)
+      }
+    }
+ 
+    dashChart.labels = labels
+    dashChart.values = acum
+    dashChart.data   = dailyVals
+    dashChart.maxY   = Math.max.apply(null, acum) || 1
+    return total
+  }
+ 
+  function fmtBRLShort (v) {
+    if (v >= 1000) return 'R$' + (v / 1000).toFixed(1).replace('.0', '') + 'k'
+    return 'R$' + Math.round(v)
+  }
+ 
+  /* Actualiza eixo Y com valores reais */
+  function updateYLabels () {
+    var el = document.getElementById('dash-y-labels')
+    if (!el) return
+    var max = dashChart.maxY
+    var steps = [0, 0.2, 0.4, 0.6, 0.8, 1].reverse()
+    el.innerHTML = steps.map(function (s) {
+      return '<span>' + fmtBRLShort(max * s) + '</span>'
+    }).join('')
+  }
+ 
+  /* Actualiza X labels — mostra apenas alguns rótulos */
+  function updateXLabels () {
+    var el = document.getElementById('dash-x-labels')
+    if (!el) return
+    var n = dashChart.labels.length
+    var show = []
+    dashChart.labels.forEach(function (l, i) {
+      if (i === 0 || i === n - 1 || l !== '') show.push(l)
+      else if (i === Math.floor(n / 4) || i === Math.floor(n / 2) || i === Math.floor(3 * n / 4)) {
+        show.push((i + 1) + ' Abr')
+      } else show.push('')
+    })
+    // Mostra apenas 6 slots
+    var slots = 6
+    var step  = Math.max(1, Math.floor(n / (slots - 1)))
+    var html  = ''
+    for (var s = 0; s < slots; s++) {
+      var idx = Math.min(s * step, n - 1)
+      if (s === slots - 1) idx = n - 1
+      html += '<span>' + ((idx + 1) + (s === slots - 1 ? ' Abr' : ' Abr')) + '</span>'
+    }
+    // Simplificado: rótulos fixos baseados no mês
+    var hoje = new Date().getDate()
+    var labels6 = ['1 Abr', '5 Abr', '10 Abr', '15 Abr', '20 Abr', hoje + ' Abr']
+    el.innerHTML = labels6.map(function (l) { return '<span>' + l + '</span>' }).join('')
+  }
+ 
+  /* Desenha o canvas */
+  function drawChart () {
+    var canvas = dashChart.canvas
+    if (!canvas) return
+    var wrap = canvas.parentElement
+    if (!wrap) return
+ 
+    var dpr = window.devicePixelRatio || 1
+    var W   = wrap.clientWidth
+    var H   = wrap.clientHeight || 180
+ 
+    if (canvas.width !== W * dpr || canvas.height !== H * dpr) {
+      canvas.width  = W * dpr
+      canvas.height = H * dpr
+      canvas.style.width  = W + 'px'
+      canvas.style.height = H + 'px'
+    }
+ 
+    var ctx = canvas.getContext('2d')
+    ctx.clearRect(0, 0, canvas.width, canvas.height)
+ 
+    var CW = canvas.width
+    var CH = canvas.height
+    var padL = 0, padR = 8 * dpr, padT = 10 * dpr, padB = 4 * dpr
+    var chartW = CW - padL - padR
+    var chartH = CH - padT - padB
+ 
+    var vals = dashChart.values
+    if (!vals || vals.length < 2) return
+ 
+    var maxV = dashChart.maxY || 1
+ 
+    var pts = vals.map(function (v, i) {
+      return {
+        x: padL + (i / (vals.length - 1)) * chartW,
+        y: padT + (1 - v / maxV) * chartH
+      }
+    })
+ 
+    // Grid lines
+    ctx.strokeStyle = 'rgba(255,255,255,0.05)'
+    ctx.lineWidth   = 1
+    for (var gi = 0; gi <= 5; gi++) {
+      var gy = padT + (gi / 5) * chartH
+      ctx.beginPath(); ctx.moveTo(padL, gy); ctx.lineTo(CW - padR, gy); ctx.stroke()
+    }
+ 
+    // Gradient fill
+    var grad = ctx.createLinearGradient(0, padT, 0, CH)
+    grad.addColorStop(0, 'rgba(59,130,246,0.38)')
+    grad.addColorStop(1, 'rgba(59,130,246,0.01)')
+ 
+    ctx.beginPath()
+    ctx.moveTo(pts[0].x, CH - padB)
+    pts.forEach(function (p, i) {
+      if (i === 0) { ctx.lineTo(p.x, p.y); return }
+      var prev = pts[i - 1]
+      var cpx  = (prev.x + p.x) / 2
+      ctx.bezierCurveTo(cpx, prev.y, cpx, p.y, p.x, p.y)
+    })
+    ctx.lineTo(pts[pts.length - 1].x, CH - padB)
+    ctx.closePath()
+    ctx.fillStyle = grad
+    ctx.fill()
+ 
+    // Linha principal
+    ctx.beginPath()
+    pts.forEach(function (p, i) {
+      if (i === 0) { ctx.moveTo(p.x, p.y); return }
+      var prev = pts[i - 1]
+      var cpx  = (prev.x + p.x) / 2
+      ctx.bezierCurveTo(cpx, prev.y, cpx, p.y, p.x, p.y)
+    })
+    ctx.strokeStyle = '#3b82f6'
+    ctx.lineWidth   = 2 * dpr
+    ctx.lineJoin    = 'round'
+    ctx.stroke()
+ 
+    // Ponto final
+    var last = pts[pts.length - 1]
+    ctx.beginPath(); ctx.arc(last.x, last.y, 5 * dpr, 0, Math.PI * 2)
+    ctx.fillStyle = '#3b82f6'; ctx.fill()
+    ctx.beginPath(); ctx.arc(last.x, last.y, 3 * dpr, 0, Math.PI * 2)
+    ctx.fillStyle = '#fff'; ctx.fill()
+ 
+    // Tooltip fixo no último ponto
+    showTooltipAt(pts.length - 1, last.x / dpr, last.y / dpr, true)
+  }
+ 
+  function showTooltipAt (idx, px, py, fixed) {
+    var tooltip = dashChart.tooltip
+    if (!tooltip) return
+    var vals = dashChart.values
+    var labs = dashChart.labels
+    var v    = vals[Math.max(0, Math.min(idx, vals.length - 1))]
+    var l    = labs[Math.max(0, Math.min(idx, labs.length - 1))] || ((idx + 1) + ' Abr')
+ 
+    document.getElementById('dashTtVal').textContent  = 'R$' + v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+    document.getElementById('dashTtDate').textContent = l || 'hoje'
+ 
+    tooltip.style.display = 'block'
+    tooltip.style.left    = Math.max(0, px - 55) + 'px'
+    tooltip.style.top     = Math.max(0, py - 72) + 'px'
+  }
+ 
+  function hideTooltipFixed () {
+    var vals = dashChart.values
+    var idx  = vals.length - 1
+    var canvas = dashChart.canvas
+    if (!canvas) return
+    var dpr  = window.devicePixelRatio || 1
+    var maxV = dashChart.maxY || 1
+    var CW   = canvas.width, CH = canvas.height
+    var padL = 0, padR = 8 * dpr, padT = 10 * dpr, padB = 4 * dpr
+    var chartW = CW - padL - padR
+    var chartH = CH - padT - padB
+    var v = vals[idx]
+    var px = (padL + chartW) / dpr
+    var py = (padT + (1 - v / maxV) * chartH) / dpr
+    showTooltipAt(idx, px, py, true)
+    drawChart()
+  }
+ 
+  function onMouseMove (e) {
+    var canvas = dashChart.canvas
+    if (!canvas) return
+    var dpr  = window.devicePixelRatio || 1
+    var rect = canvas.getBoundingClientRect()
+    var mx   = (e.clientX - rect.left) * dpr
+    var CW   = canvas.width
+    var padL = 0, padR = 8 * dpr
+    var chartW = CW - padL - padR
+    var vals = dashChart.values
+    if (!vals.length) return
+ 
+    var idx = Math.round((mx / chartW) * (vals.length - 1))
+    idx = Math.max(0, Math.min(idx, vals.length - 1))
+ 
+    var maxV = dashChart.maxY || 1
+    var CH   = canvas.height
+    var padT = 10 * dpr, padB = 4 * dpr
+    var chartH = CH - padT - padB
+    var px = (padL + (idx / (vals.length - 1)) * chartW) / dpr
+    var py = (padT + (1 - vals[idx] / maxV) * chartH) / dpr
+ 
+    // Redesenha com crosshair
+    drawChart()
+    var ctx = canvas.getContext('2d')
+    ctx.setLineDash([4, 3])
+    ctx.strokeStyle = 'rgba(59,130,246,0.35)'
+    ctx.lineWidth   = 1
+    ctx.beginPath()
+    ctx.moveTo(px * dpr, padT)
+    ctx.lineTo(px * dpr, CH - padB)
+    ctx.stroke()
+    ctx.setLineDash([])
+ 
+    showTooltipAt(idx, px, py)
+  }
+ 
+  /* Inicializa o gráfico quando o dashboard ficar visível */
+  function initDashChart () {
+    var canvas  = document.getElementById('dashChartCanvas')
+    var tooltip = document.getElementById('dashChartTooltip')
+    if (!canvas || !tooltip) return
+ 
+    dashChart.canvas  = canvas
+    dashChart.tooltip = tooltip
+ 
+    var total = buildChartData()
+    updateYLabels()
+    updateXLabels()
+    drawChart()
+ 
+    canvas.addEventListener('mousemove', onMouseMove)
+    canvas.addEventListener('mouseleave', hideTooltipFixed)
+    window.addEventListener('resize', function () {
+      buildChartData()
+      updateYLabels()
+      drawChart()
+    })
+  }
+ 
+  /* Exporta para uso global */
+  window.dashChartInit   = initDashChart
+  window.dashChartRefresh = function () {
+    buildChartData()
+    updateYLabels()
+    drawChart()
+  }
+ 
+})()
+ 
+ 
+/* ─────────────────────────────────────────────
+   RENDER — PRÓXIMOS AGENDAMENTOS (coluna esq)
+───────────────────────────────────────────── */
+function dashRenderProximos () {
+  var container = document.getElementById('dash-proximos-lista')
+  if (!container) return
+ 
+  var ags  = todosAgendamentos || []
+  var hoje = new Date().toISOString().split('T')[0]
+ 
+  // Agendamentos de hoje + futuros confirmados, ordenados por hora
+  var lista = ags
+    .filter(function (a) {
+      return a.data >= hoje && a.status === 'confirmado'
+    })
+    .sort(function (a, b) {
+      return ((a.data || '') + (a.hora || '')).localeCompare((b.data || '') + (b.hora || ''))
+    })
+    .slice(0, 5)
+ 
+  if (!lista.length) {
+    container.innerHTML = '<div style="text-align:center;color:var(--text3);padding:28px 16px;font-size:12.5px">Nenhum agendamento futuro</div>'
+    return
+  }
+ 
+  var barColors = ['#3b82f6','#10b981','#8b5cf6','#f59e0b','#ec4899']
+ 
+  container.innerHTML = lista.map(function (a, i) {
+    var colors  = avatarColor(a.pacienteNome)
+    var ini     = (a.pacienteNome || 'C')[0].toUpperCase()
+    var isHoje  = a.data === hoje
+    var diaLabel = isHoje ? 'Hoje' : formatarData(a.data)
+    var barColor = barColors[i % barColors.length]
+    var status   = a.status === 'confirmado' ? 'conf' : 'pend'
+    var statusTxt = a.status === 'confirmado' ? 'Confirmado' : 'Pendente'
+ 
+    return [
+      '<div class="dash-ag-item">',
+        '<div class="dash-ag-time">',
+          '<div class="dash-ag-hour">', (a.hora || '--'), '</div>',
+          '<div class="dash-ag-day">',  diaLabel,         '</div>',
+        '</div>',
+        '<div class="dash-ag-bar" style="background:', barColor, '"></div>',
+        '<div class="dash-ag-avatar" style="background:linear-gradient(135deg,', colors[0], ',', colors[1], ')">', ini, '</div>',
+        '<div class="dash-ag-info">',
+          '<div class="dash-ag-nome">', (a.pacienteNome || '—'), '</div>',
+          '<div class="dash-ag-serv">', (a.servico      || '—'), '</div>',
+        '</div>',
+        '<div class="dash-ag-badge ', status, '">', statusTxt, '</div>',
+      '</div>'
+    ].join('')
+  }).join('')
+}
+ 
+ 
+/* ─────────────────────────────────────────────
+   RENDER — TRANSAÇÕES RECENTES (coluna dir)
+───────────────────────────────────────────── */
+function dashRenderTransacoes () {
+  var container = document.getElementById('dash-trans-lista')
+  if (!container) return
+ 
+  var ags = todosAgendamentos || []
+  // Usa concluídos como "pagamentos recebidos"
+  var concluidos = ags
+    .filter(function (a) { return a.status === 'concluido' && Number(a.preco) > 0 })
+    .sort(function (a, b) {
+      return ((b.data || '') + (b.hora || '')).localeCompare((a.data || '') + (a.hora || ''))
+    })
+    .slice(0, 5)
+ 
+  if (!concluidos.length) {
+    container.innerHTML = '<div style="text-align:center;color:var(--text3);padding:24px 16px;font-size:12px">Sem transações recentes</div>'
+    return
+  }
+ 
+  container.innerHTML = concluidos.map(function (a) {
+    var preco = Number(a.preco) || 0
+    var dataFmt = a.data ? a.data.split('-').slice(1).reverse().join(' Abr, ').replace(',', ',') : ''
+    // Formata como "23 Abr, 14:30"
+    var mesNomes = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez']
+    var dataObj  = a.data ? a.data.split('-') : []
+    var mesLabel = dataObj.length === 3 ? mesNomes[parseInt(dataObj[1], 10) - 1] : ''
+    var diaLabel = dataObj.length === 3 ? parseInt(dataObj[2], 10) + ' ' + mesLabel : ''
+    var horaLabel = a.hora ? ', ' + a.hora : ''
+ 
+    return [
+      '<div class="dash-trans-item">',
+        '<div class="dash-trans-icon" style="background:rgba(16,185,129,0.15)">',
+          '<svg width="16" height="16" viewBox="0 0 16 16" fill="none">',
+            '<path d="M3 8l4 4 6-7" stroke="#34d399" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>',
+          '</svg>',
+        '</div>',
+        '<div class="dash-trans-info">',
+          '<div class="dash-trans-nome">Pagamento recebido</div>',
+          '<div class="dash-trans-meta">PIX • ', diaLabel, horaLabel, '</div>',
+        '</div>',
+        '<div class="dash-trans-val pos">+R$', preco.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }), '</div>',
+      '</div>'
+    ].join('')
+  }).join('')
+}
+ 
+ 
+/* ─────────────────────────────────────────────
+   RENDER — STATS DO HEADER
+───────────────────────────────────────────── */
+function dashRenderStats () {
+  var ags      = todosAgendamentos || []
+  var nid      = negocioAtual ? negocioAtual._id : null
+  var hoje     = new Date().toISOString().split('T')[0]
+  var mes      = hoje.slice(0, 7)
+ 
+  /* Faturamento hoje */
+  var fatHoje = ags
+    .filter(function (a) { return a.data === hoje && a.status === 'concluido' })
+    .reduce(function (s, a) { return s + (Number(a.preco) || 0) }, 0)
+ 
+  var elFat = document.getElementById('dash-fat-hoje')
+  if (elFat) elFat.textContent = 'R$' + fatHoje.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+ 
+  /* Agendamentos hoje */
+  var agHoje = ags.filter(function (a) { return a.data === hoje }).length
+  var elAg   = document.getElementById('dash-ag-hoje')
+  if (elAg) elAg.textContent = agHoje
+ 
+  /* Esta semana */
+  var semStart = new Date(); semStart.setDate(semStart.getDate() - semStart.getDay())
+  var semEnd   = new Date(semStart); semEnd.setDate(semEnd.getDate() + 6)
+  var semStartStr = semStart.toISOString().split('T')[0]
+  var semEndStr   = semEnd.toISOString().split('T')[0]
+  var agSemana = ags.filter(function (a) { return a.data >= semStartStr && a.data <= semEndStr }).length
+  var elSem = document.getElementById('dash-ag-semana-label')
+  if (elSem) elSem.textContent = agSemana + ' esta semana'
+ 
+  /* Clientes únicos */
+  var clientes = new Set(ags.map(function (a) { return a.pacienteNome }).filter(Boolean))
+  var elCli = document.getElementById('dash-clientes')
+  if (elCli) elCli.textContent = clientes.size
+ 
+  /* Ticket médio do mês */
+  var doMes  = ags.filter(function (a) { return a.data && a.data.startsWith(mes) && a.status === 'concluido' })
+  var fatMes = doMes.reduce(function (s, a) { return s + (Number(a.preco) || 0) }, 0)
+  var ticket = doMes.length > 0 ? fatMes / doMes.length : 0
+  var elTck  = document.getElementById('dash-ticket')
+  if (elTck) elTck.textContent = 'R$' + ticket.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+ 
+  /* Saldo (= faturamento do mês) */
+  var elSaldo = document.getElementById('dash-saldo-val')
+  if (elSaldo) elSaldo.textContent = 'R$ ' + fatMes.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+ 
+  /* Gráfico total */
+  var elChartTotal = document.getElementById('dash-chart-total')
+  if (elChartTotal) elChartTotal.textContent = 'R$ ' + fatMes.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+}
+ 
+ 
+/* ─────────────────────────────────────────────
+   RENDER — INSIGHTS (coluna dir)
+───────────────────────────────────────────── */
+function dashRenderInsights () {
+  var ags = todosAgendamentos || []
+ 
+  /* Melhor dia da semana */
+  var diasNomesAbrev = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb']
+  var diasNomesCompletos = ['Domingo','Segunda','Terça','Quarta','Quintas','Sexta','Sábado']
+  var porDiaSemana = {}
+  ags.forEach(function (a) {
+    if (!a.data || a.status !== 'concluido') return
+    var d = new Date(a.data + 'T12:00:00')
+    var dw = d.getDay()
+    if (!porDiaSemana[dw]) porDiaSemana[dw] = { total: 0, qtd: 0 }
+    porDiaSemana[dw].total += Number(a.preco) || 0
+    porDiaSemana[dw].qtd  += 1
+  })
+  var melhorDw = null, melhorTotal = 0
+  Object.keys(porDiaSemana).forEach(function (dw) {
+    if (porDiaSemana[dw].total > melhorTotal) {
+      melhorTotal = porDiaSemana[dw].total
+      melhorDw    = parseInt(dw, 10)
+    }
+  })
+  var elMDia = document.getElementById('dash-melhor-dia')
+  var elMDiaVal = document.getElementById('dash-melhor-dia-val')
+  if (elMDia) elMDia.textContent = melhorDw !== null ? diasNomesCompletos[melhorDw] : '—'
+  if (elMDiaVal) elMDiaVal.textContent = melhorTotal > 0 ? 'R$' + melhorTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '—'
+ 
+  /* Horário mais reservado */
+  var porHora = {}
+  ags.forEach(function (a) {
+    if (!a.hora) return
+    var h = a.hora.slice(0, 2) // "14"
+    porHora[h] = (porHora[h] || 0) + 1
+  })
+  var topHora = null, topQtd = 0, totalAgs = ags.length
+  Object.keys(porHora).forEach(function (h) {
+    if (porHora[h] > topQtd) { topQtd = porHora[h]; topHora = h }
+  })
+  var elHora    = document.getElementById('dash-melhor-hora')
+  var elHoraPct = document.getElementById('dash-melhor-hora-pct')
+  if (elHora) elHora.textContent = topHora ? topHora + ':00 - ' + (parseInt(topHora, 10) + 2) + ':00' : '—'
+  if (elHoraPct) {
+    var pct = totalAgs > 0 ? Math.round((topQtd / totalAgs) * 100) : 0
+    elHoraPct.textContent = pct + '% dos agendamentos'
+  }
+ 
+  /* Taxa de presença (concluídos / total) */
+  var concl = ags.filter(function (a) { return a.status === 'concluido' }).length
+  var taxa  = ags.length > 0 ? Math.round((concl / ags.length) * 100) : 0
+  var elTaxa    = document.getElementById('dash-taxa-presenca')
+  var elTaxaSub = document.getElementById('dash-taxa-sub')
+  if (elTaxa) elTaxa.textContent = taxa + '%'
+  if (elTaxaSub) elTaxaSub.textContent = taxa >= 80 ? '+' + taxa + '% de presença' : taxa + '% de presença'
+}
+ 
+ 
+/* ─────────────────────────────────────────────
+   DATA LABEL NO HEADER
+───────────────────────────────────────────── */
+function dashAtualizarData () {
+  var el = document.getElementById('dash-date-label')
+  if (!el) return
+  var hoje   = new Date()
+  var meses  = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho',
+                 'Julho','Agosto','Setembro','Outubro','Novembro','Dezembro']
+  el.textContent = 'Hoje, ' + hoje.getDate() + ' de ' + meses[hoje.getMonth()]
+}
+ 
+/* Nome do negócio no greeting */
+function dashAtualizarNome () {
+  var el = document.getElementById('dash-user-nome')
+  if (!el) return
+  var nome = (negocioAtual && negocioAtual.nome) ? negocioAtual.nome.split(' ')[0] : 'você'
+  el.textContent = nome
+}
+ 
+ 
+/* ─────────────────────────────────────────────
+   FUNÇÃO PRINCIPAL — chama todos os renders
+───────────────────────────────────────────── */
+function dashRenderTudo () {
+  dashAtualizarData()
+  dashAtualizarNome()
+  dashRenderStats()
+  dashRenderProximos()
+  dashRenderTransacoes()
+  dashRenderInsights()
+ 
+  // Gráfico: inicializa na primeira vez, atualiza nas seguintes
+  if (!document.getElementById('dashChartCanvas')._dashInited) {
+    document.getElementById('dashChartCanvas')._dashInited = true
+    if (typeof dashChartInit === 'function') dashChartInit()
+  } else {
+    if (typeof dashChartRefresh === 'function') dashChartRefresh()
+  }
+}
+ 
+ 
+/* ─────────────────────────────────────────────
+   HOOK — substitui renderDashboardHoje original
+   chamado automaticamente após carregarAgendamentos()
+───────────────────────────────────────────── */
+;(function () {
+  // Guarda referência da função original se existir
+  var _originalRenderDashboardHoje = window.renderDashboardHoje
+ 
+  window.renderDashboardHoje = function () {
+    // Chama o render novo do dashboard V2
+    dashRenderTudo()
+    // Mantém compatibilidade: chama o original se existir e se os elementos legados existirem
+    if (typeof _originalRenderDashboardHoje === 'function') {
+      var legacyEl = document.getElementById('tbody-rows-dash')
+      if (legacyEl) _originalRenderDashboardHoje()
+    }
+  }
+ 
+  // Também conecta ao irPara para re-renderizar ao navegar para o dashboard
+  var _originalIrPara = window.irPara
+  window.irPara = function (pagina, btn) {
+    _originalIrPara(pagina, btn)
+    if (pagina === 'dashboard') {
+      // Pequeno delay para garantir que a section já está visível antes de desenhar o canvas
+      setTimeout(dashRenderTudo, 80)
+    }
+  }
+})()
+ 
+ 
+/* ─────────────────────────────────────────────
+   INIT IMEDIATO (quando o script carrega)
+───────────────────────────────────────────── */
+document.addEventListener('DOMContentLoaded', function () {
+  dashAtualizarData()
+  dashAtualizarNome()
+ 
+  // Se o canvas já existe (dashboard é a página inicial), inicializa o gráfico
+  // com um pequeno delay para garantir que o layout já foi calculado
+  setTimeout(function () {
+    var canvas = document.getElementById('dashChartCanvas')
+    if (canvas && !canvas._dashInited) {
+      canvas._dashInited = true
+      if (typeof dashChartInit === 'function') dashChartInit()
+    }
+  }, 150)
+})
