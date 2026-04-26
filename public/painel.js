@@ -1919,52 +1919,69 @@ function dashRenderTransacoes () {
    RENDER — STATS DO HEADER
 ───────────────────────────────────────────── */
 function dashRenderStats () {
-  var ags      = todosAgendamentos || []
-  var nid      = negocioAtual ? negocioAtual._id : null
-  var hoje     = new Date().toISOString().split('T')[0]
-  var mes      = hoje.slice(0, 7)
- 
+  var ags  = todosAgendamentos || []
+  var nid  = negocioAtual ? negocioAtual._id : null
+  var hoje = new Date().toISOString().split('T')[0]
+  var mes  = hoje.slice(0, 7)
+
   /* Faturamento hoje */
   var fatHoje = ags
     .filter(function (a) { return a.data === hoje && a.status === 'concluido' })
     .reduce(function (s, a) { return s + (Number(a.preco) || 0) }, 0)
- 
+  if (nid && fatHoje > 0) localStorage.setItem('dash_fatHoje_' + nid + '_' + hoje, fatHoje)
+  var fatHojeFinal = fatHoje || parseFloat(localStorage.getItem('dash_fatHoje_' + nid + '_' + hoje) || '0')
+
   var elFat = document.getElementById('dash-fat-hoje')
-  if (elFat) elFat.textContent = 'R$' + fatHoje.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
- 
+  if (elFat) elFat.textContent = 'R$' + fatHojeFinal.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+
   /* Agendamentos hoje */
   var agHoje = ags.filter(function (a) { return a.data === hoje }).length
-  var elAg   = document.getElementById('dash-ag-hoje')
-  if (elAg) elAg.textContent = agHoje
- 
+  if (nid && agHoje > 0) localStorage.setItem('dash_agHoje_' + nid + '_' + hoje, agHoje)
+  var agHojeFinal = agHoje || parseInt(localStorage.getItem('dash_agHoje_' + nid + '_' + hoje) || '0')
+
+  var elAg = document.getElementById('dash-ag-hoje')
+  if (elAg) elAg.textContent = agHojeFinal
+
   /* Esta semana */
   var semStart = new Date(); semStart.setDate(semStart.getDate() - semStart.getDay())
   var semEnd   = new Date(semStart); semEnd.setDate(semEnd.getDate() + 6)
   var semStartStr = semStart.toISOString().split('T')[0]
   var semEndStr   = semEnd.toISOString().split('T')[0]
   var agSemana = ags.filter(function (a) { return a.data >= semStartStr && a.data <= semEndStr }).length
+  if (nid && agSemana > 0) localStorage.setItem('dash_agSemana_' + nid + '_' + semStartStr, agSemana)
+  var agSemanaFinal = agSemana || parseInt(localStorage.getItem('dash_agSemana_' + nid + '_' + semStartStr) || '0')
+
   var elSem = document.getElementById('dash-ag-semana-label')
-  if (elSem) elSem.textContent = agSemana + ' esta semana'
- 
+  if (elSem) elSem.textContent = agSemanaFinal + ' esta semana'
+
   /* Clientes únicos */
   var clientes = new Set(ags.map(function (a) { return a.pacienteNome }).filter(Boolean))
+  if (nid && clientes.size > 0) localStorage.setItem('dash_clientes_' + nid, clientes.size)
+  var clientesFinal = clientes.size || parseInt(localStorage.getItem('dash_clientes_' + nid) || '0')
+
   var elCli = document.getElementById('dash-clientes')
-  if (elCli) elCli.textContent = clientes.size
- 
+  if (elCli) elCli.textContent = clientesFinal
+
   /* Ticket médio do mês */
   var doMes  = ags.filter(function (a) { return a.data && a.data.startsWith(mes) && a.status === 'concluido' })
   var fatMes = doMes.reduce(function (s, a) { return s + (Number(a.preco) || 0) }, 0)
+  if (nid && fatMes > 0) localStorage.setItem('dash_fatMes_' + nid + '_' + mes, fatMes)
+  var fatMesFinal = fatMes || parseFloat(localStorage.getItem('dash_fatMes_' + nid + '_' + mes) || '0')
+
   var ticket = doMes.length > 0 ? fatMes / doMes.length : 0
-  var elTck  = document.getElementById('dash-ticket')
-  if (elTck) elTck.textContent = 'R$' + ticket.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
- 
-  /* Saldo (= faturamento do mês) */
+  if (nid && ticket > 0) localStorage.setItem('dash_ticket_' + nid + '_' + mes, ticket)
+  var ticketFinal = ticket || parseFloat(localStorage.getItem('dash_ticket_' + nid + '_' + mes) || '0')
+
+  var elTck = document.getElementById('dash-ticket')
+  if (elTck) elTck.textContent = 'R$' + ticketFinal.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+
+  /* Saldo */
   var elSaldo = document.getElementById('dash-saldo-val')
-  if (elSaldo) elSaldo.textContent = 'R$ ' + fatMes.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
- 
+  if (elSaldo) elSaldo.textContent = 'R$ ' + fatMesFinal.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+
   /* Gráfico total */
   var elChartTotal = document.getElementById('dash-chart-total')
-  if (elChartTotal) elChartTotal.textContent = 'R$ ' + fatMes.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+  if (elChartTotal) elChartTotal.textContent = 'R$ ' + fatMesFinal.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 }
  
  
