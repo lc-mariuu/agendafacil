@@ -5167,3 +5167,10 @@ body.light-mode #page-dashboard .dash-acao-btn { background: var(--bg); }
   #page-dashboard .dash-acoes-grid { gap: 7px; padding: 10px; }
   #page-dashboard .dash-acao-btn   { padding: 10px; }
 }
+
+/* ── SALDO NO TOPO EM MOBILE — mudança mínima ── */
+@media (max-width: 768px) {
+  #page-dashboard .dash-col-right {
+    order: -1;
+  }
+}
