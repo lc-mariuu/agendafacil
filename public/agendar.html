@@ -513,17 +513,14 @@ function copiarPix() {
 function iniciarPollingPagamento() {
   if (pixPollInterval) clearInterval(pixPollInterval)
   if (!agendamentoId) return
- 
+
   pixPollInterval = setInterval(async () => {
     try {
-      // Consulta só o banco — NÃO consulta o Mercado Pago
-      // Quem atualiza o banco é o webhook do MP (já configurado e funcionando)
       const res = await fetch(`${API}/agendamentos/${agendamentoId}`)
       if (!res.ok) return
       const ag = await res.json()
- 
-      // Só confirma se o banco disser 'pago' — não antes
-      if (ag.pagamento?.status === 'pago' || ag.status === 'confirmado' && ag.pagamento?.status === 'pago') {
+
+      if (ag.pagamento?.status === 'pago') {
         clearInterval(pixPollInterval)
         const el = document.getElementById('pix-status-msg')
         el.textContent = '✅ Pagamento confirmado!'
