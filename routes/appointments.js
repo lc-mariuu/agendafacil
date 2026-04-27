@@ -3,11 +3,9 @@ const Appointment = require('../models/Appointment')
 const Negocio    = require('../models/Negocio')
 const router     = express.Router()
 
-// ── Middlewares de autenticação e acesso ──────────────────
 const { autenticar, verificarAcesso } = require('../middleware/acesso')
 
 // ── LISTAR agendamentos de um negócio ─────────────────────
-// Protegido: precisa de login + acesso ativo
 router.get('/', autenticar, verificarAcesso, async (req, res) => {
   try {
     const { negocioId } = req.query
@@ -21,7 +19,6 @@ router.get('/', autenticar, verificarAcesso, async (req, res) => {
 })
 
 // ── HORÁRIOS OCUPADOS (rota pública) ──────────────────────
-// Pública: cliente acessa sem login
 router.get('/horarios-ocupados', async (req, res) => {
   try {
     const { clinicaId, data } = req.query
@@ -91,8 +88,15 @@ router.get('/horarios-ocupados', async (req, res) => {
       return true
     })
 
-    const agendados = await Appointment.find({ clinicaId, data, status: { $ne: 'cancelado' } }).select('hora')
-    const ocupados  = agendados.map(a => a.hora)
+    // ✅ CORREÇÃO: horário só é ocupado se confirmado ou aguardando_pagamento
+    // aguardando_pagamento reserva o horário enquanto o cliente está pagando
+    // mas é liberado automaticamente se o pagamento expirar (ver limpeza abaixo)
+    const agendados = await Appointment.find({
+      clinicaId,
+      data,
+      status: { $in: ['confirmado', 'aguardando_pagamento'] }
+    }).select('hora')
+    const ocupados = agendados.map(a => a.hora)
 
     res.json({ horarios: horariosComPausa, ocupados, diaInativo: false })
   } catch (err) {
@@ -110,14 +114,12 @@ router.get('/insights', autenticar, verificarAcesso, async (req, res) => {
 
     const todos = await Appointment.find({ clinicaId: negocioId }).lean()
 
-    // Melhor horário
     const freqHora = {}
     todos.filter(a => a.status !== 'cancelado' && a.hora).forEach(a => {
       freqHora[a.hora] = (freqHora[a.hora] || 0) + 1
     })
     const melhorHora = Object.entries(freqHora).sort((a, b) => b[1] - a[1])[0]?.[0] || null
 
-    // Melhor dia da semana
     const freqDia  = {}
     const diasNomes = ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado']
     todos.filter(a => a.status !== 'cancelado' && a.data).forEach(a => {
@@ -129,7 +131,6 @@ router.get('/insights', autenticar, verificarAcesso, async (req, res) => {
     const melhorDia    = melhorDiaIdx !== undefined ? diasNomes[melhorDiaIdx] : null
     const melhorAgendamento = melhorDia && melhorHora ? `${melhorDia}s ${melhorHora}` : melhorHora || '—'
 
-    // Serviço mais lucrativo (mês atual)
     const mesAtual = new Date().toISOString().slice(0, 7)
     const lucroServico = {}
     todos.filter(a => a.status === 'concluido' && a.data?.startsWith(mesAtual) && a.servico).forEach(a => {
@@ -138,21 +139,18 @@ router.get('/insights', autenticar, verificarAcesso, async (req, res) => {
     const topServicoEntry = Object.entries(lucroServico).sort((a, b) => b[1] - a[1])[0]
     const topServico = topServicoEntry ? { nome: topServicoEntry[0], receita: topServicoEntry[1] } : null
 
-    // Clientes inativos (30 dias)
     const hoje    = new Date()
     const cutoff  = new Date(hoje)
     cutoff.setDate(cutoff.getDate() - 30)
-    const cutoffStr       = cutoff.toISOString().split('T')[0]
-    const clientesAntigos = new Set(todos.filter(a => a.data < cutoffStr).map(a => a.pacienteNome?.toLowerCase().trim()).filter(Boolean))
+    const cutoffStr        = cutoff.toISOString().split('T')[0]
+    const clientesAntigos  = new Set(todos.filter(a => a.data < cutoffStr).map(a => a.pacienteNome?.toLowerCase().trim()).filter(Boolean))
     const clientesRecentes = new Set(todos.filter(a => a.data >= cutoffStr).map(a => a.pacienteNome?.toLowerCase().trim()).filter(Boolean))
     const inativos = [...clientesAntigos].filter(c => !clientesRecentes.has(c))
 
-    // Finance
-    const lucroMes = todos.filter(a => a.status === 'concluido' && a.data?.startsWith(mesAtual)).reduce((acc, a) => acc + (Number(a.preco) || 0), 0)
-    const atendMes = todos.filter(a => a.status === 'concluido' && a.data?.startsWith(mesAtual)).length
+    const lucroMes   = todos.filter(a => a.status === 'concluido' && a.data?.startsWith(mesAtual)).reduce((acc, a) => acc + (Number(a.preco) || 0), 0)
+    const atendMes   = todos.filter(a => a.status === 'concluido' && a.data?.startsWith(mesAtual)).length
     const ticketMedio = atendMes > 0 ? lucroMes / atendMes : 0
 
-    // Histórico 6 meses
     const historicoMeses = []
     for (let i = 5; i >= 0; i--) {
       const d = new Date()
@@ -164,11 +162,10 @@ router.get('/insights', autenticar, verificarAcesso, async (req, res) => {
       historicoMeses.push({ mes: chave, lucro, atendimentos: atend })
     }
 
-    // Lucro da semana
-    const semStart  = new Date()
+    const semStart    = new Date()
     semStart.setDate(semStart.getDate() - 7)
-    const semStr    = semStart.toISOString().split('T')[0]
-    const hojeStr   = hoje.toISOString().split('T')[0]
+    const semStr      = semStart.toISOString().split('T')[0]
+    const hojeStr     = hoje.toISOString().split('T')[0]
     const lucroSemana = todos.filter(a => a.status === 'concluido' && a.data >= semStr && a.data <= hojeStr).reduce((acc, a) => acc + (Number(a.preco) || 0), 0)
 
     res.json({
@@ -184,12 +181,17 @@ router.get('/insights', autenticar, verificarAcesso, async (req, res) => {
 })
 
 // ── CRIAR agendamento (público) ───────────────────────────
-// Pública: cliente agenda sem login
 router.post('/', async (req, res) => {
   try {
     const { clinicaId, pacienteNome, pacienteTelefone, servico, data, hora } = req.body
 
-    const jaExiste = await Appointment.findOne({ clinicaId, data, hora, status: { $ne: 'cancelado' } })
+    // ✅ CORREÇÃO: bloqueia se já existe confirmado OU aguardando_pagamento
+    const jaExiste = await Appointment.findOne({
+      clinicaId,
+      data,
+      hora,
+      status: { $in: ['confirmado', 'aguardando_pagamento'] }
+    })
     if (jaExiste) return res.status(400).json({ erro: 'Horário já ocupado' })
 
     let preco = 0
@@ -204,7 +206,26 @@ router.post('/', async (req, res) => {
       }
     }
 
-    const agendamento = await Appointment.create({ clinicaId, pacienteNome, pacienteTelefone, servico, preco, data, hora })
+    // ✅ CORREÇÃO: verifica se este serviço exige pagamento adiantado
+    const pagCfg = neg?.pagamentosConfig || {}
+    const servicoPagCfg = pagCfg[servico] || {}
+    const exigePagamento = !!servicoPagCfg.ativo && preco > 0
+
+    // Se exige pagamento → cria como aguardando_pagamento
+    // O webhook do Mercado Pago muda para 'confirmado' após o pagamento
+    const statusInicial = exigePagamento ? 'aguardando_pagamento' : 'confirmado'
+
+    const agendamento = await Appointment.create({
+      clinicaId,
+      pacienteNome,
+      pacienteTelefone,
+      servico,
+      preco,
+      data,
+      hora,
+      status: statusInicial,
+    })
+
     res.json(agendamento)
   } catch (err) {
     console.error('ERRO criar agendamento:', err.message)
@@ -217,7 +238,26 @@ router.get('/:id/publico', async (req, res) => {
   try {
     const ag = await Appointment.findById(req.params.id)
     if (!ag) return res.status(404).json({ erro: 'Agendamento não encontrado' })
-    res.json({ _id: ag._id, pacienteNome: ag.pacienteNome, servico: ag.servico, data: ag.data, hora: ag.hora, status: ag.status })
+    res.json({
+      _id: ag._id,
+      pacienteNome: ag.pacienteNome,
+      servico: ag.servico,
+      data: ag.data,
+      hora: ag.hora,
+      status: ag.status,
+      pagamento: ag.pagamento,
+    })
+  } catch {
+    res.status(500).json({ erro: 'Erro ao buscar agendamento' })
+  }
+})
+
+// ── BUSCAR agendamento por ID (para polling de pagamento) ─
+router.get('/:id', async (req, res) => {
+  try {
+    const ag = await Appointment.findById(req.params.id)
+    if (!ag) return res.status(404).json({ erro: 'Agendamento não encontrado' })
+    res.json(ag)
   } catch {
     res.status(500).json({ erro: 'Erro ao buscar agendamento' })
   }
@@ -228,7 +268,9 @@ router.patch('/:id/cancelar-publico', async (req, res) => {
   try {
     const ag = await Appointment.findById(req.params.id)
     if (!ag) return res.status(404).json({ erro: 'Agendamento não encontrado' })
-    if (ag.status !== 'confirmado') return res.status(400).json({ erro: 'Este agendamento não pode ser cancelado' })
+    if (!['confirmado', 'aguardando_pagamento'].includes(ag.status)) {
+      return res.status(400).json({ erro: 'Este agendamento não pode ser cancelado' })
+    }
     ag.status = 'cancelado'
     ag.atualizadoEm = new Date()
     await ag.save()
@@ -249,6 +291,27 @@ router.patch('/:id', autenticar, verificarAcesso, async (req, res) => {
     res.json(agendamento)
   } catch {
     res.status(500).json({ erro: 'Erro ao atualizar' })
+  }
+})
+
+// ── LIMPEZA: expira aguardando_pagamento após 35 minutos ──
+// Chamado pelo webhook do pagamento.js ou por um job periódico
+// Libera o horário se o cliente não pagou dentro do tempo do QR Code
+router.delete('/limpar-expirados', autenticar, async (req, res) => {
+  try {
+    const limite = new Date(Date.now() - 35 * 60 * 1000) // 35 minutos atrás
+    const result = await Appointment.updateMany(
+      {
+        status: 'aguardando_pagamento',
+        criadoEm: { $lt: limite }
+      },
+      {
+        $set: { status: 'cancelado', atualizadoEm: new Date() }
+      }
+    )
+    res.json({ ok: true, cancelados: result.modifiedCount })
+  } catch (err) {
+    res.status(500).json({ erro: err.message })
   }
 })
 

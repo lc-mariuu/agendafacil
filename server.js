@@ -75,6 +75,14 @@ async function limparAgendamentos() {
   }
 }
 
+ setInterval(async () => {
+   const limite = new Date(Date.now() - 35 * 60 * 1000)
+   await Appointment.updateMany(
+     { status: 'aguardando_pagamento', criadoEm: { $lt: limite } },
+     { $set: { status: 'cancelado', atualizadoEm: new Date() } }
+   )
+}, 5 * 60 * 1000)
+
 // ── Inicialização ─────────────────────────────────────────────
 const PORT = process.env.PORT || 3000
 

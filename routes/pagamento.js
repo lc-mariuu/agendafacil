@@ -68,7 +68,6 @@ router.post('/criar-preferencia', async (req, res) => {
 
     valorCobrado = Math.max(0.01, Math.round(valorCobrado * 100) / 100)
 
-    // ✅ SDK v2: payment.create({ body: { ... } })
     const pagamentoMP = await payment.create({
       body: {
         transaction_amount: valorCobrado,
@@ -118,7 +117,6 @@ router.post('/webhook', async (req, res) => {
     const body = req.body
 
     let paymentId = null
-
     if (type === 'payment' && data?.id) {
       paymentId = data.id
     } else if (body?.type === 'payment' && body?.data?.id) {
@@ -127,8 +125,7 @@ router.post('/webhook', async (req, res) => {
 
     if (!paymentId) return
 
-    // ✅ SDK v2: payment.get({ id })
-    const pagamento = await payment.get({ id: paymentId })
+    const pagamento     = await payment.get({ id: paymentId })
     const status        = pagamento.status
     const agendamentoId = pagamento.external_reference
 
@@ -138,21 +135,22 @@ router.post('/webhook', async (req, res) => {
     if (!agendamento) return
 
     if (status === 'approved') {
+      // ✅ Muda de aguardando_pagamento → confirmado
       await Appointment.findByIdAndUpdate(agendamentoId, {
         status:                      'confirmado',
         'pagamento.status':          'pago',
         'pagamento.paymentIntentId': String(paymentId),
         atualizadoEm:                new Date(),
       })
-      console.log(`[webhook] Pagamento aprovado — agendamento ${agendamentoId}`)
+      console.log(`[webhook] Aprovado — agendamento ${agendamentoId} confirmado`)
 
     } else if (['rejected', 'cancelled', 'refunded', 'charged_back'].includes(status)) {
       const negocio = await Negocio.findById(agendamento.clinicaId).select('pagamentosConfig').lean()
       const cfg     = negocio?.pagamentosConfig || {}
 
-      if (cfg.reembolso && agendamento.pagamento?.paymentIntentId) {
+      // Tenta reembolsar se já tinha sido pago antes
+      if (cfg.reembolso && agendamento.pagamento?.paymentIntentId && agendamento.pagamento?.status === 'pago') {
         try {
-          // ✅ SDK v2: refund.create({ payment_id, body: {} })
           await payment.refund({ id: paymentId, body: {} })
           console.log(`[webhook] Reembolso criado — pagamento ${paymentId}`)
         } catch (e) {
@@ -160,10 +158,13 @@ router.post('/webhook', async (req, res) => {
         }
       }
 
+      // ✅ Cancela o agendamento para liberar o horário
       await Appointment.findByIdAndUpdate(agendamentoId, {
-        'pagamento.status': 'reembolsado',
+        status:             'cancelado',
+        'pagamento.status': ['refunded', 'charged_back'].includes(status) ? 'reembolsado' : 'rejeitado',
         atualizadoEm:       new Date(),
       })
+      console.log(`[webhook] Pagamento ${status} — agendamento ${agendamentoId} cancelado`)
     }
 
   } catch (err) {
@@ -181,7 +182,6 @@ router.post('/reembolsar', async (req, res) => {
     const paymentId = agendamento.pagamento?.paymentIntentId
     if (!paymentId) return res.status(400).json({ erro: 'Sem pagamento registrado' })
 
-    // ✅ SDK v2: refund.create({ payment_id, body: {} })
     await payment.refund({ id: Number(paymentId), body: {} })
 
     await Appointment.findByIdAndUpdate(agendamentoId, {
@@ -196,57 +196,99 @@ router.post('/reembolsar', async (req, res) => {
   }
 })
 
+// ── GET /api/pagamento/status/:agendamentoId ─────────────────
 router.get('/status/:agendamentoId', async (req, res) => {
   try {
     const agendamento = await Appointment.findById(req.params.agendamentoId)
       .select('pagamento status')
       .lean()
- 
+
     if (!agendamento) {
       return res.status(404).json({ erro: 'Agendamento não encontrado' })
     }
- 
+
     const pag = agendamento.pagamento || {}
- 
-    // Se já está marcado como pago no banco, retorna direto
-    if (pag.status === 'pago' || agendamento.status === 'confirmado') {
+
+    // ✅ CORREÇÃO: só retorna pago se pagamento.status for realmente 'pago'
+    // Não usa agendamento.status === 'confirmado' pois agendamentos sem Pix
+    // também ficam como 'confirmado' e isso causava falso positivo
+    if (pag.status === 'pago') {
       return res.json({ status: 'pago', agStatus: agendamento.status })
     }
- 
-    // Se tem um paymentIntentId, consulta o Mercado Pago agora
+
+    // Se tem paymentIntentId, consulta o Mercado Pago em tempo real
     if (pag.paymentIntentId) {
       try {
         const pagamentoMP = await payment.get({ id: pag.paymentIntentId })
-        const mpStatus = pagamentoMP.status // 'approved', 'pending', 'rejected' etc.
- 
+        const mpStatus    = pagamentoMP.status
+
         if (mpStatus === 'approved') {
-          // Atualiza o banco
+          // Atualiza o banco e confirma o agendamento
           await Appointment.findByIdAndUpdate(req.params.agendamentoId, {
             status:                      'confirmado',
             'pagamento.status':          'pago',
+            'pagamento.paymentIntentId': String(pag.paymentIntentId),
             atualizadoEm:                new Date(),
           })
           return res.json({ status: 'pago', agStatus: 'confirmado' })
         }
- 
+
         if (['rejected', 'cancelled'].includes(mpStatus)) {
+          // Cancela o agendamento para liberar o horário
           await Appointment.findByIdAndUpdate(req.params.agendamentoId, {
+            status:             'cancelado',
             'pagamento.status': 'rejeitado',
             atualizadoEm:       new Date(),
           })
-          return res.json({ status: 'rejeitado', agStatus: agendamento.status })
+          return res.json({ status: 'rejeitado', agStatus: 'cancelado' })
         }
       } catch (mpErr) {
         console.warn('[status] Erro ao consultar MP:', mpErr.message)
-        // Se não conseguiu consultar o MP, retorna o que tem no banco
       }
     }
- 
+
     return res.json({ status: pag.status || 'pendente', agStatus: agendamento.status })
- 
+
   } catch (err) {
     console.error('[pagamento] GET /status:', err)
     return res.status(500).json({ erro: 'Erro ao verificar status' })
+  }
+})
+
+// ── PATCH /api/pagamento/config ──────────────────────────────
+router.patch('/config', async (req, res) => {
+  try {
+    const { negocioId, chavePix, tipoPix, servicos } = req.body
+    if (!negocioId) return res.status(400).json({ erro: 'negocioId obrigatório' })
+
+    const update = {}
+    if (chavePix  !== undefined) update.chavePix  = chavePix
+    if (tipoPix   !== undefined) update.tipoPix   = tipoPix
+    if (servicos  !== undefined) update.pagamentosConfig = servicos
+
+    await Negocio.findByIdAndUpdate(negocioId, { $set: update })
+    return res.json({ success: true })
+  } catch (err) {
+    console.error('[pagamento] PATCH /config:', err)
+    return res.status(500).json({ erro: 'Erro ao salvar configuração' })
+  }
+})
+
+// ── GET /api/pagamento/config/:negocioId ─────────────────────
+router.get('/config/:negocioId', async (req, res) => {
+  try {
+    const negocio = await Negocio.findById(req.params.negocioId)
+      .select('pagamentosConfig chavePix tipoPix')
+      .lean()
+    if (!negocio) return res.status(404).json({ erro: 'Negócio não encontrado' })
+    return res.json({
+      servicos:  negocio.pagamentosConfig || {},
+      chavePix:  negocio.chavePix  || '',
+      tipoPix:   negocio.tipoPix   || 'cpf',
+    })
+  } catch (err) {
+    console.error('[pagamento] GET /config:', err)
+    return res.status(500).json({ erro: 'Erro ao buscar configuração' })
   }
 })
 
