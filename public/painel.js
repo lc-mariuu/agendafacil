@@ -2340,3 +2340,64 @@ document.addEventListener('DOMContentLoaded', function() {
     bindBotoesSaldo()
   }, 900)
 })
+
+;(function () {
+  var _recalcularSaldoOrig = window.recalcularSaldo
+ 
+  window.recalcularSaldo = function () {
+    var nid = window.negocioAtual ? window.negocioAtual._id : null
+    if (!nid) return 0
+ 
+    var ags = window.todosAgendamentos || []
+ 
+    // Soma TODOS os agendamentos com pagamento.status === 'pago'
+    // independente de o agendamento estar 'confirmado' ou 'concluido'
+    var totalPago = ags.reduce(function (soma, a) {
+      if (a.pagamento && a.pagamento.status === 'pago') {
+        return soma + (Number(a.pagamento.valor) || 0)
+      }
+      return soma
+    }, 0)
+ 
+    // Desconta saques já realizados
+    var saques = []
+    try { saques = JSON.parse(localStorage.getItem('saques_ids_' + nid) || '[]') } catch (_) {}
+    var totalSacado = saques.reduce(function (s, item) {
+      return s + (Number(item.valor) || 0)
+    }, 0)
+ 
+    var saldo = Math.max(0, totalPago - totalSacado)
+ 
+    // Persiste e atualiza UI
+    localStorage.setItem('saldo_disponivel_' + nid, String(saldo))
+ 
+    var fmt = 'R$ ' + saldo.toLocaleString('pt-BR', {
+      minimumFractionDigits: 2, maximumFractionDigits: 2
+    })
+    var elSaldo = document.getElementById('dash-saldo-val')
+    if (elSaldo) elSaldo.textContent = fmt
+ 
+    // Habilita/desabilita botões de saque
+    var semSaldo = saldo <= 0
+    var btnT = document.querySelector('.dash-saldo-btn.primary')
+    var btnS = document.querySelector('.dash-saldo-btn.secondary')
+    if (btnT) { btnT.disabled = semSaldo; btnT.style.opacity = semSaldo ? '0.4' : '' }
+    if (btnS) { btnS.disabled = semSaldo; btnS.style.opacity = semSaldo ? '0.4' : '' }
+ 
+    return saldo
+  }
+ 
+  // Também corrige carregarAgendamentos para chamar recalcularSaldo após carregar
+  var _origCarregarAgs = window.carregarAgendamentos
+  if (typeof _origCarregarAgs === 'function') {
+    window.carregarAgendamentos = async function () {
+      await _origCarregarAgs.apply(this, arguments)
+      // Recalcula saldo após agendamentos carregados
+      setTimeout(function () {
+        window.recalcularSaldo()
+      }, 100)
+    }
+  }
+ 
+  console.log('[saldo-patch] ✓ recalcularSaldo sobrescrito com suporte a pagamento.status=pago')
+})()

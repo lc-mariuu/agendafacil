@@ -513,14 +513,30 @@ function copiarPix() {
 function iniciarPollingPagamento() {
   if (pixPollInterval) clearInterval(pixPollInterval)
   if (!agendamentoId) return
-
+ 
+  let tentativas = 0
+  const MAX_TENTATIVAS = 45  // 45 × 4s = 3 minutos
+ 
   pixPollInterval = setInterval(async () => {
+    tentativas++
+    if (tentativas > MAX_TENTATIVAS) {
+      clearInterval(pixPollInterval)
+      document.getElementById('pix-status-msg').textContent =
+        '⏰ QR Code expirado. Volte e tente novamente.'
+      return
+    }
+ 
     try {
-      const res = await fetch(`${API}/agendamentos/${agendamentoId}`)
+      // ✅ USA O ENDPOINT CORRETO que consulta o Mercado Pago em tempo real
+      const res = await fetch(`${API}/pagamento/status/${agendamentoId}`)
       if (!res.ok) return
-      const ag = await res.json()
-
-      if (ag.pagamento?.status === 'pago') {
+      const data = await res.json()
+ 
+      // Aceita tanto { status: 'pago' } quanto { agStatus: 'confirmado' }
+      const pago = data.status === 'pago' || data.agStatus === 'confirmado'
+      const rejeitado = data.status === 'rejeitado' || data.status === 'reembolsado'
+ 
+      if (pago) {
         clearInterval(pixPollInterval)
         const el = document.getElementById('pix-status-msg')
         el.textContent = '✅ Pagamento confirmado!'
@@ -530,12 +546,15 @@ function iniciarPollingPagamento() {
           document.getElementById('telefone').value.trim(),
           true
         ), 1500)
-      } else if (ag.pagamento?.status === 'rejeitado' || ag.pagamento?.status === 'reembolsado') {
+      } else if (rejeitado) {
         clearInterval(pixPollInterval)
-        document.getElementById('pix-status-msg').textContent = '❌ Pagamento não aprovado. Volte e tente novamente.'
+        document.getElementById('pix-status-msg').textContent =
+          '❌ Pagamento não aprovado. Volte e tente novamente.'
       }
-      // Se 'pendente', continua aguardando
-    } catch (e) {}
+      // status === 'pendente' → continua aguardando
+    } catch (e) {
+      console.warn('[polling] Erro ao verificar status:', e.message)
+    }
   }, 4000)
 }
 
