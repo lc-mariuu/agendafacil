@@ -685,93 +685,325 @@
 
   <!-- ══════════════════ PAGE: AGENDAMENTOS ══════════════════ -->
   <section class="page" id="page-agendamentos" aria-label="Agendamentos">
-    <div class="ag-stats-row" id="ag-stats-row" role="list" aria-label="Estatísticas de agendamentos">
-      <div class="ag-stat-top" role="listitem">
-        <div class="ag-stat-icon-box blue" aria-hidden="true">
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="2.5" y="3.5" width="15" height="13.5" rx="2.5" stroke="#60a5fa" stroke-width="1.6"/><path d="M2.5 7.5h15M7 2v3M13 2v3" stroke="#60a5fa" stroke-width="1.6" stroke-linecap="round"/></svg>
-        </div>
-        <div class="ag-stat-top-body">
-          <div class="ag-stat-number" id="ag-stat-total-num">0</div>
-          <div class="ag-stat-desc">Agendamentos <span class="ag-stat-badge blue-b" id="ag-stat-total-badge">este mês</span></div>
-        </div>
+ 
+  <!-- HEADER HERO -->
+  <div class="ag2-hero">
+    <div class="ag2-hero-left">
+      <h1 class="ag2-hero-title">Agendamentos</h1>
+      <p class="ag2-hero-sub">Gerencie todos os agendamentos do seu negócio</p>
+    </div>
+    <div class="ag2-hero-right">
+      <!-- Filtros / Date Range -->
+      <div class="ag2-date-range">
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
+          <rect x="1.5" y="2.5" width="13" height="12" rx="2" stroke="currentColor" stroke-width="1.4"/>
+          <path d="M5 1.5v2M11 1.5v2M1.5 6h13" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+        </svg>
+        <span id="ag2-date-range-label">26/04/2026 - 02/05/2026</span>
+        <svg width="14" height="14" viewBox="0 0 15 15" fill="none">
+          <path d="M3 6l4.5 4.5L12 6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+        </svg>
       </div>
-      <div class="ag-stat-top" role="listitem">
-        <div class="ag-stat-icon-box green" aria-hidden="true">
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 10l5 5 9-9" stroke="#34d399" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </div>
-        <div class="ag-stat-top-body">
-          <div class="ag-stat-number" id="ag-stat-conc-num">0</div>
-          <div class="ag-stat-desc">Concluídos <span class="ag-stat-pct" id="ag-stat-conc-pct">0%</span></div>
-        </div>
+      <button class="ag2-btn-novo" onclick="abrirModalNovoAgendamento()" type="button">
+        <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
+          <path d="M7 1v12M1 7h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+        Novo agendamento
+      </button>
+    </div>
+  </div>
+ 
+  <!-- STAT CARDS -->
+  <div class="ag2-stats-row">
+    <div class="ag2-stat-card ag2-stat-blue">
+      <div class="ag2-stat-icon-wrap ag2-icon-blue">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+          <rect x="3" y="4" width="18" height="17" rx="3" stroke="#60a5fa" stroke-width="1.8"/>
+          <path d="M3 9h18M8 2v4M16 2v4" stroke="#60a5fa" stroke-width="1.8" stroke-linecap="round"/>
+          <path d="M7 13h4M7 16h6" stroke="#60a5fa" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
       </div>
-      <div class="ag-stat-top" role="listitem">
-        <div class="ag-stat-icon-box purple" aria-hidden="true">
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7.5" stroke="#a78bfa" stroke-width="1.6"/><path d="M7 7l6 6M13 7l-6 6" stroke="#a78bfa" stroke-width="1.6" stroke-linecap="round"/></svg>
-        </div>
-        <div class="ag-stat-top-body">
-          <div class="ag-stat-number" id="ag-stat-canc-num">0</div>
-          <div class="ag-stat-desc">Cancelados <span class="ag-stat-pct red" id="ag-stat-canc-pct">0%</span></div>
+      <div class="ag2-stat-body">
+        <div class="ag2-stat-number" id="ag2-stat-total">0</div>
+        <div class="ag2-stat-label">Total</div>
+        <div class="ag2-stat-trend ag2-trend-up" id="ag2-trend-total">
+          <svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M6 2l4 4H2l4-4Z" fill="#34d399"/></svg>
+          12% vs semana anterior
         </div>
       </div>
     </div>
-
-    <!-- FILTROS -->
-    <div class="ag-filter-bar" role="toolbar" aria-label="Filtros de agendamento">
-      <div class="ag-tabs" id="ag-tabs" role="tablist" aria-label="Filtrar por período">
-        <button class="ag-tab ativo" data-filtro="todos"     onclick="agFiltrar('todos',this)"     role="tab" aria-selected="true"  type="button">Todos</button>
-        <button class="ag-tab"       data-filtro="hoje"      onclick="agFiltrar('hoje',this)"      role="tab" aria-selected="false" type="button">Hoje</button>
-        <button class="ag-tab"       data-filtro="semana"    onclick="agFiltrar('semana',this)"    role="tab" aria-selected="false" type="button">Esta semana</button>
-        <button class="ag-tab"       data-filtro="mes"       onclick="agFiltrar('mes',this)"       role="tab" aria-selected="false" type="button">Este mês</button>
-        <button class="ag-tab"       data-filtro="concluido" onclick="agFiltrar('concluido',this)" role="tab" aria-selected="false" type="button">Concluídos</button>
-        <button class="ag-tab"       data-filtro="cancelado" onclick="agFiltrar('cancelado',this)" role="tab" aria-selected="false" type="button">Cancelados</button>
+ 
+    <div class="ag2-stat-card ag2-stat-green">
+      <div class="ag2-stat-icon-wrap ag2-icon-green">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="12" r="9" stroke="#34d399" stroke-width="1.8"/>
+          <path d="M7.5 12l3 3 6-6" stroke="#34d399" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
       </div>
-      <div class="ag-filter-right">
-        <div class="ag-date-input">
-          <svg width="13" height="13" viewBox="0 0 15 15" fill="none" aria-hidden="true"><rect x="1.5" y="2.5" width="12" height="11" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M5 1.5v2M10 1.5v2M1.5 5.5h12" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
-          <input type="date" id="ag-filtro-data" onchange="agFiltrarData(this.value)" aria-label="Filtrar por data específica">
+      <div class="ag2-stat-body">
+        <div class="ag2-stat-number" id="ag2-stat-conf">0</div>
+        <div class="ag2-stat-label">Confirmados</div>
+        <div class="ag2-stat-trend ag2-trend-up" id="ag2-trend-conf">
+          <svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M6 2l4 4H2l4-4Z" fill="#34d399"/></svg>
+          8% vs semana anterior
         </div>
-        <button class="ag-btn-novo" onclick="abrirModalNovoAgendamento()" type="button" aria-label="Criar novo agendamento">
-          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-          Novo
-        </button>
       </div>
     </div>
-
-    <!-- INFO BANNER -->
-    <div class="ag-info-banner" id="ag-info-banner" role="note">
-      <div class="ag-info-banner-text">
-        <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="6.5" stroke="#3b82f6" stroke-width="1.4"/><path d="M8 7v4M8 5.5v.5" stroke="#3b82f6" stroke-width="1.5" stroke-linecap="round"/></svg>
-        Organize sua agenda e acompanhe todos os agendamentos em um só lugar.
+ 
+    <div class="ag2-stat-card ag2-stat-yellow">
+      <div class="ag2-stat-icon-wrap ag2-icon-yellow">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="12" r="9" stroke="#fbbf24" stroke-width="1.8"/>
+          <path d="M12 7v5.5" stroke="#fbbf24" stroke-width="2" stroke-linecap="round"/>
+          <circle cx="12" cy="16.5" r="0.9" fill="#fbbf24"/>
+        </svg>
       </div>
-      <button class="ag-info-banner-close" onclick="document.getElementById('ag-info-banner').style.display='none'" aria-label="Fechar aviso" type="button">×</button>
+      <div class="ag2-stat-body">
+        <div class="ag2-stat-number" id="ag2-stat-pend">0</div>
+        <div class="ag2-stat-label">Pendentes</div>
+        <div class="ag2-stat-trend ag2-trend-down" id="ag2-trend-pend">
+          <svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M6 10L2 6h8L6 10Z" fill="#f87171"/></svg>
+          −2% vs semana anterior
+        </div>
+      </div>
     </div>
-
-    <!-- TABELA -->
-    <div class="ag-nova-tabela" role="region" aria-label="Lista de agendamentos">
-      <div class="ag-nova-thead" role="row" aria-hidden="true">
-        <div class="ag-nova-th">Cliente</div>
-        <div class="ag-nova-th">Serviço</div>
-        <div class="ag-nova-th">Data e hora</div>
-        <div class="ag-nova-th">Status</div>
-        <div class="ag-nova-th" style="text-align:right">Ações</div>
+ 
+    <div class="ag2-stat-card ag2-stat-red">
+      <div class="ag2-stat-icon-wrap ag2-icon-red">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="12" r="9" stroke="#f87171" stroke-width="1.8"/>
+          <path d="M8 8l8 8M16 8l-8 8" stroke="#f87171" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
       </div>
-      <div id="ag-nova-tbody" role="rowgroup" aria-live="polite"></div>
-      <div class="ag-mobile-cards" id="ag-mobile-cards" aria-live="polite"></div>
-      <div class="ag-nova-pag" id="ag-nova-pag" style="display:none" role="navigation" aria-label="Paginação">
-        <span class="ag-pag-info" id="ag-pag-info" aria-live="polite"></span>
-        <div class="ag-pag-controls" id="ag-pag-btns" role="group" aria-label="Páginas"></div>
-        <div class="ag-pag-por-pagina">
-          <label for="ag-por-pagina">Por página</label>
-          <select class="ag-pag-select" id="ag-por-pagina" onchange="agMudarPorPagina(this.value)">
-            <option value="5">5</option>
-            <option value="10" selected>10</option>
-            <option value="20">20</option>
-            <option value="50">50</option>
+      <div class="ag2-stat-body">
+        <div class="ag2-stat-number" id="ag2-stat-canc">0</div>
+        <div class="ag2-stat-label">Cancelados</div>
+        <div class="ag2-stat-trend ag2-trend-down" id="ag2-trend-canc">
+          <svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M6 10L2 6h8L6 10Z" fill="#f87171"/></svg>
+          −1% vs semana anterior
+        </div>
+      </div>
+    </div>
+  </div>
+ 
+  <!-- MAIN LAYOUT: Calendário + Lista + Sidebar -->
+  <div class="ag2-main-layout">
+ 
+    <!-- COLUNA ESQUERDA: CALENDÁRIO -->
+    <div class="ag2-col-calendar">
+      <div class="ag2-calendar-card">
+        <div class="ag2-cal-header">
+          <span class="ag2-cal-title">Calendário</span>
+          <div class="ag2-cal-nav">
+            <button class="ag2-cal-nav-btn" onclick="ag2CalPrev()" type="button" aria-label="Mês anterior">
+              <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M9 11L5 7l4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            </button>
+            <button class="ag2-cal-nav-btn" onclick="ag2CalNext()" type="button" aria-label="Próximo mês">
+              <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M5 3l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            </button>
+            <button class="ag2-cal-today-btn" onclick="ag2CalToday()" type="button">Hoje</button>
+          </div>
+        </div>
+ 
+        <div class="ag2-cal-month-row">
+          <button class="ag2-cal-arrow" onclick="ag2CalPrev()" type="button">
+            <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M9 11L5 7l4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </button>
+          <div class="ag2-cal-month-label" id="ag2-cal-month">Abril 2026</div>
+          <button class="ag2-cal-arrow" onclick="ag2CalNext()" type="button">
+            <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M5 3l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+ 
+        <div class="ag2-cal-weekdays">
+          <span>Dom</span><span>Seg</span><span>Ter</span><span>Qua</span>
+          <span>Qui</span><span>Sex</span><span>Sáb</span>
+        </div>
+        <div class="ag2-cal-grid" id="ag2-cal-grid"></div>
+ 
+        <!-- Legenda -->
+        <div class="ag2-cal-legend">
+          <div class="ag2-legend-item"><span class="ag2-legend-dot ag2-dot-conf"></span>Confirmado</div>
+          <div class="ag2-legend-item"><span class="ag2-legend-dot ag2-dot-pend"></span>Pendente</div>
+          <div class="ag2-legend-item"><span class="ag2-legend-dot ag2-dot-canc"></span>Cancelado</div>
+        </div>
+      </div>
+ 
+      <!-- Filtro profissional -->
+      <div class="ag2-prof-filter">
+        <div class="ag2-prof-filter-label">Visualizar por profissional</div>
+        <div class="ag2-prof-select-wrap">
+          <svg width="13" height="13" viewBox="0 0 15 15" fill="none" style="color:var(--text3)">
+            <circle cx="7.5" cy="5" r="2.5" stroke="currentColor" stroke-width="1.3"/>
+            <path d="M2 13c0-2.8 2.5-5 5.5-5s5.5 2.2 5.5 5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+          </svg>
+          <select class="ag2-prof-select" id="ag2-prof-select" onchange="ag2FiltrarProf(this.value)">
+            <option value="todos">Todos os profissionais</option>
           </select>
+          <svg width="11" height="11" viewBox="0 0 12 12" fill="none" style="color:var(--text3);pointer-events:none;position:absolute;right:11px">
+            <path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+          </svg>
         </div>
       </div>
     </div>
-  </section>
+ 
+    <!-- COLUNA CENTRAL: LISTA DE AGENDAMENTOS DO DIA -->
+    <div class="ag2-col-list">
+      <div class="ag2-list-card">
+        <div class="ag2-list-header">
+          <div class="ag2-list-date-info">
+            <span class="ag2-list-date-label" id="ag2-list-date">Domingo, 26 de Abril</span>
+            <span class="ag2-list-count-badge" id="ag2-list-count">0 agendamentos</span>
+          </div>
+          <div class="ag2-list-order">
+            <button class="ag2-order-btn" type="button" onclick="ag2ToggleOrdem()">
+              <svg width="13" height="13" viewBox="0 0 15 15" fill="none">
+                <path d="M3 4h9M4 7.5h7M5.5 11h4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+              </svg>
+              Ordenar por horário
+              <svg width="10" height="10" viewBox="0 0 12 12" fill="none">
+                <path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+ 
+        <div class="ag2-list-body" id="ag2-list-body">
+          <div class="ag2-list-vazio">
+            <svg width="36" height="36" viewBox="0 0 40 40" fill="none">
+              <rect x="5" y="6" width="30" height="28" rx="5" stroke="var(--text3)" stroke-width="1.6"/>
+              <path d="M5 14h30M13 4v6M27 4v6" stroke="var(--text3)" stroke-width="1.6" stroke-linecap="round"/>
+            </svg>
+            <div>Nenhum agendamento para este dia</div>
+          </div>
+        </div>
+ 
+        <div class="ag2-list-footer">
+          <button class="ag2-ver-mais-btn" id="ag2-ver-mais-btn" onclick="ag2VerMais()" type="button" style="display:none">
+            <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
+              <path d="M3 5l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+            Ver mais agendamentos do dia
+          </button>
+        </div>
+      </div>
+    </div>
+ 
+    <!-- COLUNA DIREITA: SIDEBAR -->
+    <div class="ag2-col-sidebar">
+ 
+      <!-- Link de agendamento -->
+      <div class="ag2-sidebar-card">
+        <div class="ag2-sidebar-card-title">Link de agendamento</div>
+        <div class="ag2-sidebar-card-sub">Compartilhe seu link e receba agendamentos 24h por dia.</div>
+        <div class="ag2-link-box">
+          <span class="ag2-link-text" id="ag2-link-text">https://agendorapido.com.br/lu...</span>
+          <button class="ag2-link-copy-btn" onclick="ag2CopiarLink()" type="button" aria-label="Copiar link">
+            <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
+              <rect x="4" y="4" width="9" height="9" rx="1.5" stroke="currentColor" stroke-width="1.4"/>
+              <path d="M1 9.5V2a1 1 0 0 1 1-1h7.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+            </svg>
+          </button>
+        </div>
+        <div class="ag2-link-btns">
+          <button class="ag2-link-action-btn ag2-link-copy" onclick="ag2CopiarLink()" type="button">
+            <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
+              <rect x="4" y="4" width="9" height="9" rx="1.5" stroke="currentColor" stroke-width="1.4"/>
+              <path d="M1 9.5V2a1 1 0 0 1 1-1h7.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+            </svg>
+            Copiar link
+          </button>
+          <button class="ag2-link-action-btn ag2-link-share" onclick="ag2CompartilharLink()" type="button">
+            <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
+              <circle cx="11" cy="2.5" r="1.5" stroke="currentColor" stroke-width="1.3"/>
+              <circle cx="11" cy="11.5" r="1.5" stroke="currentColor" stroke-width="1.3"/>
+              <circle cx="3" cy="7" r="1.5" stroke="currentColor" stroke-width="1.3"/>
+              <path d="M4.5 7.8l5 2.8M4.5 6.2l5-2.8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+            </svg>
+            Compartilhar
+          </button>
+        </div>
+      </div>
+ 
+      <!-- Resumo da semana -->
+      <div class="ag2-sidebar-card">
+        <div class="ag2-sidebar-card-title">Resumo da semana</div>
+        <div class="ag2-resumo-list">
+          <div class="ag2-resumo-row">
+            <span class="ag2-resumo-key">Faturamento</span>
+            <span class="ag2-resumo-val ag2-resumo-green" id="ag2-fat-semana">R$ 0,00</span>
+          </div>
+          <div class="ag2-resumo-row">
+            <span class="ag2-resumo-key">Ticket médio</span>
+            <span class="ag2-resumo-val" id="ag2-ticket-medio">R$ 0,00</span>
+          </div>
+          <div class="ag2-resumo-row">
+            <span class="ag2-resumo-key">Taxa de comparecimento</span>
+            <span class="ag2-resumo-val ag2-resumo-green" id="ag2-taxa-comp">0%</span>
+          </div>
+          <div class="ag2-resumo-row">
+            <span class="ag2-resumo-key">Cancelamentos</span>
+            <span class="ag2-resumo-val ag2-resumo-red" id="ag2-cancelamentos">0 (0%)</span>
+          </div>
+        </div>
+      </div>
+ 
+      <!-- Serviços mais agendados -->
+      <div class="ag2-sidebar-card">
+        <div class="ag2-sidebar-card-title">Serviços mais agendados</div>
+        <div class="ag2-donut-wrap">
+          <canvas id="ag2-donut-canvas" width="100" height="100"></canvas>
+        </div>
+        <div class="ag2-servicos-legend" id="ag2-servicos-legend"></div>
+      </div>
+ 
+      <!-- Ações rápidas -->
+      <div class="ag2-sidebar-card">
+        <div class="ag2-sidebar-card-title">Ações rápidas</div>
+        <div class="ag2-acoes-grid">
+          <div class="ag2-acao-item" onclick="abrirModalNovoAgendamento()" role="button" tabindex="0" onkeydown="if(event.key==='Enter')abrirModalNovoAgendamento()">
+            <div class="ag2-acao-icon ag2-acao-blue">
+              <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+                <rect x="2" y="3" width="16" height="15" rx="3" stroke="#60a5fa" stroke-width="1.6"/>
+                <path d="M10 7v6M7 10h6" stroke="#60a5fa" stroke-width="1.6" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <span>Novo agendamento</span>
+          </div>
+          <div class="ag2-acao-item" onclick="irPara('horarios',document.getElementById('menu-horarios'))" role="button" tabindex="0" onkeydown="if(event.key==='Enter')irPara('horarios',document.getElementById('menu-horarios'))">
+            <div class="ag2-acao-icon ag2-acao-red">
+              <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+                <path d="M10 5v5.5H15" stroke="#f87171" stroke-width="1.8" stroke-linecap="round"/>
+                <circle cx="10" cy="10" r="7.5" stroke="#f87171" stroke-width="1.6"/>
+              </svg>
+            </div>
+            <span>Bloquear horário</span>
+          </div>
+          <div class="ag2-acao-item" onclick="irPara('lembretes',document.getElementById('menu-lembretes'))" role="button" tabindex="0" onkeydown="if(event.key==='Enter')irPara('lembretes',document.getElementById('menu-lembretes'))">
+            <div class="ag2-acao-icon ag2-acao-green">
+              <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+                <path d="M10 2.5a5.5 5.5 0 0 1 5.5 5.5c0 3 .5 4.5 1 5H3.5c.5-.5 1-2 1-5A5.5 5.5 0 0 1 10 2.5Z" stroke="#34d399" stroke-width="1.6" stroke-linejoin="round"/>
+                <path d="M8 16.5a2 2 0 0 0 4 0" stroke="#34d399" stroke-width="1.6" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <span>Enviar lembrete</span>
+          </div>
+          <div class="ag2-acao-item" onclick="irPara('agendamentos',document.getElementById('menu-agendamentos'))" role="button" tabindex="0">
+            <div class="ag2-acao-icon ag2-acao-purple">
+              <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+                <rect x="2" y="3" width="16" height="15" rx="3" stroke="#a78bfa" stroke-width="1.6"/>
+                <path d="M2 7.5h16M7 3v4M13 3v4" stroke="#a78bfa" stroke-width="1.6" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <span>Ver calendário</span>
+          </div>
+        </div>
+      </div>
+ 
+    </div>
+  </div>
+ 
+</section>
 
   <!-- ══════════════════ PAGE: CLIENTES ══════════════════ -->
   <section class="page" id="page-clientes" aria-label="Clientes">
