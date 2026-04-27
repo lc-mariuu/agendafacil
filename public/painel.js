@@ -2401,3 +2401,342 @@ document.addEventListener('DOMContentLoaded', function() {
  
   console.log('[saldo-patch] ✓ recalcularSaldo sobrescrito com suporte a pagamento.status=pago')
 })()
+
+;(function () {
+ 
+  // ── helpers de acumulador ────────────────────────────────────────────────
+ 
+  function mesChave() {
+    return new Date().toISOString().slice(0, 7) // "2025-05"
+  }
+ 
+  function accKey(nid, campo) {
+    return 'acc_' + campo + '_' + nid + '_' + mesChave()
+  }
+ 
+  function accGet(nid, campo) {
+    var v = localStorage.getItem(accKey(nid, campo))
+    return v !== null ? parseFloat(v) : 0
+  }
+ 
+  // Só atualiza se o novo valor for MAIOR que o salvo (nunca regride)
+  function accSet(nid, campo, valor) {
+    var atual = accGet(nid, campo)
+    if (valor > atual) {
+      localStorage.setItem(accKey(nid, campo), String(valor))
+      return valor
+    }
+    return atual
+  }
+ 
+  // Sempre soma ao acumulado (para quando concluir um agendamento)
+  function accAdd(nid, campo, delta) {
+    var atual = accGet(nid, campo)
+    var novo = atual + delta
+    localStorage.setItem(accKey(nid, campo), String(novo))
+    return novo
+  }
+ 
+  // ── seed inicial: percorre agendamentos ainda em memória ─────────────────
+  // Chamado uma vez ao carregar, para inicializar o acumulador com os dados
+  // que ainda estão disponíveis na API
+ 
+  function seedAcumulador(ags, nid) {
+    var mes = mesChave()
+    var hoje = new Date().toISOString().split('T')[0]
+ 
+    // IDs já contabilizados (para não somar duas vezes)
+    var contadosKey = 'acc_ids_' + nid + '_' + mes
+    var contados = []
+    try { contados = JSON.parse(localStorage.getItem(contadosKey) || '[]') } catch (_) {}
+    var contadosSet = new Set(contados)
+ 
+    var addedFatMes = 0
+    var addedFatHoje = 0
+    var newIds = []
+ 
+    ags.forEach(function (a) {
+      if (a.status !== 'concluido') return
+      if (!a.data) return
+      if (contadosSet.has(a._id)) return  // já contabilizado
+ 
+      var preco = Number(a.preco) || 0
+      if (preco <= 0) return
+ 
+      addedFatMes += preco
+      if (a.data === hoje) addedFatHoje += preco
+      newIds.push(a._id)
+    })
+ 
+    if (newIds.length) {
+      // Soma ao acumulado existente
+      var totalMes = accGet(nid, 'fatMes') + addedFatMes
+      localStorage.setItem(accKey(nid, 'fatMes'), String(totalMes))
+ 
+      var totalHoje = accGet(nid, 'fatHoje_' + hoje) + addedFatHoje
+      localStorage.setItem('acc_fatHoje_' + nid + '_' + hoje, String(totalHoje))
+ 
+      // Registra IDs contabilizados
+      var todosIds = contados.concat(newIds)
+      localStorage.setItem(contadosKey, JSON.stringify(todosIds))
+    }
+ 
+    // Ticket médio: número de atendimentos do mês
+    var atendMes = ags.filter(function (a) {
+      return a.status === 'concluido' && a.data && a.data.startsWith(mes)
+    }).length
+    accSet(nid, 'atendMes', atendMes)
+  }
+ 
+  // ── dashRenderStats corrigido ─────────────────────────────────────────────
+ 
+  window.dashRenderStats = function () {
+    var ags  = window.todosAgendamentos || []
+    var nid  = window.negocioAtual ? window.negocioAtual._id : null
+    var hoje = new Date().toISOString().split('T')[0]
+    var mes  = mesChave()
+ 
+    // Seed: garante que agendamentos ainda em memória estão no acumulador
+    if (nid) seedAcumulador(ags, nid)
+ 
+    // ── Faturamento hoje ──────────────────────────────────────
+    // Calcula da memória
+    var fatHojeCalc = ags
+      .filter(function (a) { return a.data === hoje && a.status === 'concluido' })
+      .reduce(function (s, a) { return s + (Number(a.preco) || 0) }, 0)
+ 
+    // Pega o maior entre calculado e acumulado persistido
+    var fatHojeSalvo = nid ? parseFloat(localStorage.getItem('acc_fatHoje_' + nid + '_' + hoje) || '0') : 0
+    var fatHojeFinal = Math.max(fatHojeCalc, fatHojeSalvo)
+    if (nid && fatHojeCalc > fatHojeSalvo) {
+      localStorage.setItem('acc_fatHoje_' + nid + '_' + hoje, String(fatHojeCalc))
+    }
+ 
+    var elFat = document.getElementById('dash-fat-hoje')
+    if (elFat) elFat.textContent = 'R$' + fatHojeFinal.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+ 
+    // ── Agendamentos hoje ─────────────────────────────────────
+    var agHojeCalc = ags.filter(function (a) { return a.data === hoje }).length
+    var agHojeSalvo = nid ? parseInt(localStorage.getItem('dash_agHoje_' + nid + '_' + hoje) || '0') : 0
+    var agHojeFinal = Math.max(agHojeCalc, agHojeSalvo)
+    if (nid && agHojeCalc > agHojeSalvo) localStorage.setItem('dash_agHoje_' + nid + '_' + hoje, String(agHojeCalc))
+ 
+    var elAg = document.getElementById('dash-ag-hoje')
+    if (elAg) elAg.textContent = agHojeFinal
+ 
+    // ── Esta semana ───────────────────────────────────────────
+    var semStart = new Date(); semStart.setDate(semStart.getDate() - semStart.getDay())
+    var semEnd   = new Date(semStart); semEnd.setDate(semEnd.getDate() + 6)
+    var semStartStr = semStart.toISOString().split('T')[0]
+    var semEndStr   = semEnd.toISOString().split('T')[0]
+    var agSemCalc = ags.filter(function (a) { return a.data >= semStartStr && a.data <= semEndStr }).length
+    var agSemSalvo = nid ? parseInt(localStorage.getItem('dash_agSemana_' + nid + '_' + semStartStr) || '0') : 0
+    var agSemFinal = Math.max(agSemCalc, agSemSalvo)
+    if (nid && agSemCalc > agSemSalvo) localStorage.setItem('dash_agSemana_' + nid + '_' + semStartStr, String(agSemCalc))
+ 
+    var elSem = document.getElementById('dash-ag-semana-label')
+    if (elSem) elSem.textContent = agSemFinal + ' esta semana'
+ 
+    // ── Clientes únicos ───────────────────────────────────────
+    var clientesCalc = new Set(ags.map(function (a) { return a.pacienteNome }).filter(Boolean)).size
+    var clientesSalvo = nid ? parseInt(localStorage.getItem('dash_clientes_' + nid) || '0') : 0
+    var clientesFinal = Math.max(clientesCalc, clientesSalvo)
+    if (nid && clientesCalc > clientesSalvo) localStorage.setItem('dash_clientes_' + nid, String(clientesCalc))
+ 
+    var elCli = document.getElementById('dash-clientes')
+    if (elCli) elCli.textContent = clientesFinal
+ 
+    // ── Faturamento do mês ────────────────────────────────────
+    var fatMesCalc = ags
+      .filter(function (a) { return a.data && a.data.startsWith(mes) && a.status === 'concluido' })
+      .reduce(function (s, a) { return s + (Number(a.preco) || 0) }, 0)
+    var fatMesAcc = nid ? accGet(nid, 'fatMes') : 0
+    var fatMesFinal = Math.max(fatMesCalc, fatMesAcc)
+ 
+    // ── Ticket médio ──────────────────────────────────────────
+    var atendMesCalc = ags.filter(function (a) {
+      return a.status === 'concluido' && a.data && a.data.startsWith(mes)
+    }).length
+    var atendMesAcc = nid ? accGet(nid, 'atendMes') : 0
+    var atendMesFinal = Math.max(atendMesCalc, atendMesAcc)
+ 
+    var ticket = atendMesFinal > 0 ? fatMesFinal / atendMesFinal : 0
+    var elTck = document.getElementById('dash-ticket')
+    if (elTck) elTck.textContent = 'R$' + ticket.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+ 
+    // ── Saldo disponível (só Pix real) ────────────────────────
+    window.recalcularSaldo()
+ 
+    // ── Gráfico total ─────────────────────────────────────────
+    var elChartTotal = document.getElementById('dash-chart-total')
+    if (elChartTotal) elChartTotal.textContent = 'R$ ' + fatMesFinal.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+  }
+ 
+  // ── Sobrescreve atualizar() para registrar no acumulador quando concluir ──
+  // Isso garante que o valor é somado ANTES do agendamento expirar da memória
+ 
+  var _origAtualizar = window.atualizar
+  window.atualizar = async function (id, status) {
+    // Se estiver concluindo, registra no acumulador ANTES de chamar o original
+    if (status === 'concluido') {
+      var nid = window.negocioAtual ? window.negocioAtual._id : null
+      var ag = (window.todosAgendamentos || []).find(function (a) { return a._id === id })
+      if (nid && ag) {
+        var preco = Number(ag.preco) || 0
+        var hoje = new Date().toISOString().split('T')[0]
+        var mes = mesChave()
+ 
+        // Chave de IDs já contabilizados
+        var contadosKey = 'acc_ids_' + nid + '_' + mes
+        var contados = []
+        try { contados = JSON.parse(localStorage.getItem(contadosKey) || '[]') } catch (_) {}
+ 
+        if (!contados.includes(ag._id) && preco > 0) {
+          // Soma ao acumulador de faturamento do mês
+          accAdd(nid, 'fatMes', preco)
+          // Soma ao acumulador de hoje
+          var hojKey = 'acc_fatHoje_' + nid + '_' + hoje
+          var fatHojeAtual = parseFloat(localStorage.getItem(hojKey) || '0')
+          localStorage.setItem(hojKey, String(fatHojeAtual + preco))
+          // Incrementa atendimentos do mês
+          accAdd(nid, 'atendMes', 1)
+          // Marca como contabilizado
+          contados.push(ag._id)
+          localStorage.setItem(contadosKey, JSON.stringify(contados))
+        }
+      }
+    }
+ 
+    // Chama a função original
+    if (typeof _origAtualizar === 'function') {
+      return await _origAtualizar.apply(this, arguments)
+    }
+  }
+ 
+  // ── Corrige agStats (página de Agendamentos) ──────────────────────────────
+  // Os cards "5 concluídos / 100%" também ficavam errados pelo mesmo motivo
+ 
+  var _origAgAtualizarStats = window.agAtualizarStats
+  window.agAtualizarStats = function (base, mes) {
+    var nid = window.negocioAtual ? window.negocioAtual._id : null
+ 
+    // Calcula da memória atual
+    var doMes  = base.filter(function (a) { return a.data && a.data.startsWith(mes) })
+    var total  = doMes.length
+    var concl  = doMes.filter(function (a) { return a.status === 'concluido' }).length
+    var canc   = doMes.filter(function (a) { return a.status === 'cancelado' }).length
+ 
+    // Pega o maior entre calculado e acumulado
+    var totalAcc = nid ? Math.max(total, parseInt(localStorage.getItem('agStat_total_' + nid + '_' + mes) || '0')) : total
+    var conclAcc = nid ? Math.max(concl, parseInt(localStorage.getItem('agStat_concl_' + nid + '_' + mes) || '0')) : concl
+    var cancAcc  = nid ? Math.max(canc,  parseInt(localStorage.getItem('agStat_canc_'  + nid + '_' + mes) || '0')) : canc
+ 
+    // Persiste se melhorou
+    if (nid) {
+      if (total > parseInt(localStorage.getItem('agStat_total_' + nid + '_' + mes) || '0'))
+        localStorage.setItem('agStat_total_' + nid + '_' + mes, String(total))
+      if (concl > parseInt(localStorage.getItem('agStat_concl_' + nid + '_' + mes) || '0'))
+        localStorage.setItem('agStat_concl_' + nid + '_' + mes, String(concl))
+      if (canc > parseInt(localStorage.getItem('agStat_canc_' + nid + '_' + mes) || '0'))
+        localStorage.setItem('agStat_canc_'  + nid + '_' + mes, String(canc))
+    }
+ 
+    var pctConc = totalAcc ? Math.round((conclAcc / totalAcc) * 100) : 0
+    var pctCanc = totalAcc ? Math.round((cancAcc  / totalAcc) * 100) : 0
+ 
+    var elTotal  = document.getElementById('ag-stat-total-num')
+    var elConc   = document.getElementById('ag-stat-conc-num')
+    var elCanc   = document.getElementById('ag-stat-canc-num')
+    var elPConc  = document.getElementById('ag-stat-conc-pct')
+    var elPCanc  = document.getElementById('ag-stat-canc-pct')
+ 
+    if (elTotal) elTotal.textContent = totalAcc
+    if (elConc)  elConc.textContent  = conclAcc
+    if (elCanc)  elCanc.textContent  = cancAcc
+    if (elPConc) elPConc.textContent = pctConc + '%'
+    if (elPCanc) elPCanc.textContent = pctCanc + '%'
+  }
+ 
+  // ── Transações recentes (só Pix real) ─────────────────────────────────────
+ 
+  window.dashRenderTransacoes = function () {
+    var container = document.getElementById('dash-trans-lista')
+    if (!container) return
+ 
+    var ags = window.todosAgendamentos || []
+    var mesNomes = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez']
+ 
+    var pagos = ags
+      .filter(function (a) {
+        return a.pagamento && a.pagamento.status === 'pago' && Number(a.pagamento.valor) > 0
+      })
+      .sort(function (a, b) {
+        return ((b.data || '') + (b.hora || '')).localeCompare((a.data || '') + (a.hora || ''))
+      })
+      .slice(0, 5)
+ 
+    if (!pagos.length) {
+      container.innerHTML = '<div style="text-align:center;color:var(--text3);padding:24px 16px;font-size:12px">Sem transações recentes</div>'
+      return
+    }
+ 
+    container.innerHTML = pagos.map(function (a) {
+      var valor = Number(a.pagamento.valor) || 0
+      var dataObj = a.data ? a.data.split('-') : []
+      var mesLabel = dataObj.length === 3 ? mesNomes[parseInt(dataObj[1], 10) - 1] : ''
+      var diaLabel = dataObj.length === 3 ? parseInt(dataObj[2], 10) + ' ' + mesLabel : ''
+      var horaLabel = a.hora ? ', ' + a.hora : ''
+      return [
+        '<div class="dash-trans-item">',
+          '<div class="dash-trans-icon" style="background:rgba(16,185,129,0.15)">',
+            '<svg width="16" height="16" viewBox="0 0 16 16" fill="none">',
+              '<path d="M3 8l4 4 6-7" stroke="#34d399" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>',
+            '</svg>',
+          '</div>',
+          '<div class="dash-trans-info">',
+            '<div class="dash-trans-nome">Pagamento recebido</div>',
+            '<div class="dash-trans-meta">PIX • ', diaLabel, horaLabel, '</div>',
+          '</div>',
+          '<div class="dash-trans-val pos">+R$', valor.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }), '</div>',
+        '</div>'
+      ].join('')
+    }).join('')
+  }
+ 
+  // ── Saldo (só Pix real) ────────────────────────────────────────────────────
+ 
+  window.recalcularSaldo = function () {
+    var nid = window.negocioAtual ? window.negocioAtual._id : null
+    if (!nid) return 0
+ 
+    var ags = window.todosAgendamentos || []
+    var totalPago = ags.reduce(function (soma, a) {
+      if (a.pagamento && a.pagamento.status === 'pago' && Number(a.pagamento.valor) > 0) {
+        return soma + Number(a.pagamento.valor)
+      }
+      return soma
+    }, 0)
+ 
+    var saques = []
+    try { saques = JSON.parse(localStorage.getItem('saques_ids_' + nid) || '[]') } catch (_) {}
+    var totalSacado = saques.reduce(function (s, i) { return s + (Number(i.valor) || 0) }, 0)
+ 
+    var saldo = Math.max(0, totalPago - totalSacado)
+    localStorage.setItem('saldo_disponivel_' + nid, String(saldo))
+ 
+    var fmt = 'R$ ' + saldo.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+    var el = document.getElementById('dash-saldo-val')
+    if (el) el.textContent = fmt
+ 
+    var semSaldo = saldo <= 0
+    var btnT = document.querySelector('.dash-saldo-btn.primary')
+    var btnS = document.querySelector('.dash-saldo-btn.secondary')
+    if (btnT) { btnT.disabled = semSaldo; btnT.style.opacity = semSaldo ? '0.4' : '' }
+    if (btnS) { btnS.disabled = semSaldo; btnS.style.opacity = semSaldo ? '0.4' : '' }
+ 
+    return saldo
+  }
+ 
+  console.log('[stats-patch] ✓ acumulador persistente ativo — stats não regridem mais')
+ 
+})()
