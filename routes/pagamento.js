@@ -196,4 +196,58 @@ router.post('/reembolsar', async (req, res) => {
   }
 })
 
+router.get('/status/:agendamentoId', async (req, res) => {
+  try {
+    const agendamento = await Appointment.findById(req.params.agendamentoId)
+      .select('pagamento status')
+      .lean()
+ 
+    if (!agendamento) {
+      return res.status(404).json({ erro: 'Agendamento não encontrado' })
+    }
+ 
+    const pag = agendamento.pagamento || {}
+ 
+    // Se já está marcado como pago no banco, retorna direto
+    if (pag.status === 'pago' || agendamento.status === 'confirmado') {
+      return res.json({ status: 'pago', agStatus: agendamento.status })
+    }
+ 
+    // Se tem um paymentIntentId, consulta o Mercado Pago agora
+    if (pag.paymentIntentId) {
+      try {
+        const pagamentoMP = await payment.get({ id: pag.paymentIntentId })
+        const mpStatus = pagamentoMP.status // 'approved', 'pending', 'rejected' etc.
+ 
+        if (mpStatus === 'approved') {
+          // Atualiza o banco
+          await Appointment.findByIdAndUpdate(req.params.agendamentoId, {
+            status:                      'confirmado',
+            'pagamento.status':          'pago',
+            atualizadoEm:                new Date(),
+          })
+          return res.json({ status: 'pago', agStatus: 'confirmado' })
+        }
+ 
+        if (['rejected', 'cancelled'].includes(mpStatus)) {
+          await Appointment.findByIdAndUpdate(req.params.agendamentoId, {
+            'pagamento.status': 'rejeitado',
+            atualizadoEm:       new Date(),
+          })
+          return res.json({ status: 'rejeitado', agStatus: agendamento.status })
+        }
+      } catch (mpErr) {
+        console.warn('[status] Erro ao consultar MP:', mpErr.message)
+        // Se não conseguiu consultar o MP, retorna o que tem no banco
+      }
+    }
+ 
+    return res.json({ status: pag.status || 'pendente', agStatus: agendamento.status })
+ 
+  } catch (err) {
+    console.error('[pagamento] GET /status:', err)
+    return res.status(500).json({ erro: 'Erro ao verificar status' })
+  }
+})
+
 module.exports = router

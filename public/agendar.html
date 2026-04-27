@@ -513,14 +513,15 @@ function copiarPix() {
 function iniciarPollingPagamento() {
   if (pixPollInterval) clearInterval(pixPollInterval)
   if (!agendamentoId) return
-
+ 
   pixPollInterval = setInterval(async () => {
     try {
-      const res = await fetch(`${API}/agendamentos/${agendamentoId}`)
+      // Usa a rota dedicada que consulta o Mercado Pago diretamente
+      const res = await fetch(`${API}/pagamento/status/${agendamentoId}`)
       if (!res.ok) return
-      const ag = await res.json()
-
-      if (ag.status === 'confirmado' || ag.pagamento?.status === 'pago') {
+      const data = await res.json()
+ 
+      if (data.status === 'pago' || data.agStatus === 'confirmado') {
         clearInterval(pixPollInterval)
         const el = document.getElementById('pix-status-msg')
         el.textContent = '✅ Pagamento confirmado!'
@@ -530,12 +531,16 @@ function iniciarPollingPagamento() {
           document.getElementById('telefone').value.trim(),
           true
         ), 1500)
-      } else if (ag.status === 'cancelado' || ag.pagamento?.status === 'rejeitado') {
+ 
+      } else if (data.status === 'rejeitado' || data.agStatus === 'cancelado') {
         clearInterval(pixPollInterval)
-        document.getElementById('pix-status-msg').textContent = '❌ Pagamento não aprovado. Volte e tente novamente.'
+        document.getElementById('pix-status-msg').textContent =
+          '❌ Pagamento não aprovado. Volte e tente novamente.'
       }
-    } catch(e) {}
-  }, 4000)
+    } catch (e) {
+      console.warn('[polling]', e.message)
+    }
+  }, 4000) // consulta a cada 4 segundos
 }
 
 function mostrarSucesso(nome, telefone, pago) {
