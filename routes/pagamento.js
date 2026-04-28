@@ -4,13 +4,13 @@ const { MercadoPagoConfig, Payment } = require('mercadopago')
 const Negocio     = require('../models/Negocio')
 const Appointment = require('../models/Appointment')
 
-// ── Mercado Pago config ──────────────────────────────────────
+// ── Mercado Pago config ──────────────────────────────────────────────────────
 const client = new MercadoPagoConfig({
   accessToken: process.env.MP_ACCESS_TOKEN,
 })
 const payment = new Payment(client)
 
-// ── GET /api/pagamento/config-publica/:negocioId (SEM auth) ──
+// ── GET /api/pagamento/config-publica/:negocioId (SEM auth) ─────────────────
 router.get('/config-publica/:negocioId', async (req, res) => {
   try {
     const negocio = await Negocio.findById(req.params.negocioId)
@@ -36,7 +36,7 @@ router.get('/config-publica/:negocioId', async (req, res) => {
   }
 })
 
-// ── POST /api/pagamento/criar-preferencia ────────────────────
+// ── POST /api/pagamento/criar-preferencia ────────────────────────────────────
 router.post('/criar-preferencia', async (req, res) => {
   try {
     const { agendamentoId, negocioId } = req.body
@@ -55,15 +55,16 @@ router.post('/criar-preferencia', async (req, res) => {
       return res.status(404).json({ erro: 'Negócio não encontrado' })
     }
 
-    const cfg = negocio.pagamentosConfig || {}
+    // ✅ Lê a config do serviço específico dentro de pagamentosConfig
+    const cfgPag     = negocio.pagamentosConfig || {}
+    const cfgServico = cfgPag[agendamento.servico] || {}
 
     const precoServico = Number(agendamento.preco) || 0
     let valorCobrado = precoServico
 
-    if (cfg.tipoValor === 'fixo') {
-      valorCobrado = Number(cfg.valorFixo) || 0
-    } else if (cfg.tipoValor === 'personalizado') {
-      valorCobrado = precoServico * ((Number(cfg.porcentagem) || 50) / 100)
+    // Se existe valor específico configurado para este serviço, usa ele
+    if (cfgServico.valor && Number(cfgServico.valor) > 0) {
+      valorCobrado = Number(cfgServico.valor)
     }
 
     valorCobrado = Math.max(0.01, Math.round(valorCobrado * 100) / 100)
@@ -86,6 +87,8 @@ router.post('/criar-preferencia', async (req, res) => {
 
     const transactionData = pagamentoMP.point_of_interaction?.transaction_data
 
+    // ✅ Salva o paymentIntentId e mantém status aguardando_pagamento
+    // O status só muda para 'confirmado' quando o webhook confirmar o pagamento
     await Appointment.findByIdAndUpdate(agendamentoId, {
       'pagamento.status':         'pendente',
       'pagamento.valor':           valorCobrado,
@@ -108,9 +111,10 @@ router.post('/criar-preferencia', async (req, res) => {
   }
 })
 
-// ── POST /api/pagamento/webhook ──────────────────────────────
+// ── POST /api/pagamento/webhook ──────────────────────────────────────────────
 router.post('/webhook', async (req, res) => {
   try {
+    // ✅ Responde 200 imediatamente para o Mercado Pago não retentar
     res.sendStatus(200)
 
     const { type, data } = req.query
@@ -125,9 +129,9 @@ router.post('/webhook', async (req, res) => {
 
     if (!paymentId) return
 
-    const pagamento     = await payment.get({ id: paymentId })
-    const status        = pagamento.status
-    const agendamentoId = pagamento.external_reference
+    const pagamentoMP   = await payment.get({ id: paymentId })
+    const status        = pagamentoMP.status
+    const agendamentoId = pagamentoMP.external_reference
 
     if (!agendamentoId) return
 
@@ -135,21 +139,23 @@ router.post('/webhook', async (req, res) => {
     if (!agendamento) return
 
     if (status === 'approved') {
-      // ✅ Muda de aguardando_pagamento → confirmado
+      // ✅ Pagamento confirmado: muda aguardando_pagamento → confirmado
+      // e marca pagamento.status como 'pago'
       await Appointment.findByIdAndUpdate(agendamentoId, {
         status:                      'confirmado',
         'pagamento.status':          'pago',
         'pagamento.paymentIntentId': String(paymentId),
         atualizadoEm:                new Date(),
       })
-      console.log(`[webhook] Aprovado — agendamento ${agendamentoId} confirmado`)
+      console.log(`[webhook] ✅ Aprovado — agendamento ${agendamentoId} confirmado, pagamento registrado como PAGO`)
 
     } else if (['rejected', 'cancelled', 'refunded', 'charged_back'].includes(status)) {
       const negocio = await Negocio.findById(agendamento.clinicaId).select('pagamentosConfig').lean()
-      const cfg     = negocio?.pagamentosConfig || {}
+      const cfgPag  = negocio?.pagamentosConfig || {}
+      const cfgServico = cfgPag[agendamento.servico] || {}
 
       // Tenta reembolsar se já tinha sido pago antes
-      if (cfg.reembolso && agendamento.pagamento?.paymentIntentId && agendamento.pagamento?.status === 'pago') {
+      if (agendamento.pagamento?.status === 'pago' && agendamento.pagamento?.paymentIntentId) {
         try {
           await payment.refund({ id: paymentId, body: {} })
           console.log(`[webhook] Reembolso criado — pagamento ${paymentId}`)
@@ -172,7 +178,7 @@ router.post('/webhook', async (req, res) => {
   }
 })
 
-// ── POST /api/pagamento/reembolsar ───────────────────────────
+// ── POST /api/pagamento/reembolsar ───────────────────────────────────────────
 router.post('/reembolsar', async (req, res) => {
   try {
     const { agendamentoId } = req.body
@@ -196,7 +202,10 @@ router.post('/reembolsar', async (req, res) => {
   }
 })
 
-// ── GET /api/pagamento/status/:agendamentoId ─────────────────
+// ── GET /api/pagamento/status/:agendamentoId ─────────────────────────────────
+// ✅ CORREÇÃO PRINCIPAL: nunca usa agendamento.status === 'confirmado' como
+// indicador de pagamento, pois agendamentos sem Pix também ficam 'confirmado'
+// O único indicador confiável é pagamento.status === 'pago'
 router.get('/status/:agendamentoId', async (req, res) => {
   try {
     const agendamento = await Appointment.findById(req.params.agendamentoId)
@@ -209,32 +218,32 @@ router.get('/status/:agendamentoId', async (req, res) => {
 
     const pag = agendamento.pagamento || {}
 
-    // ✅ CORREÇÃO: só retorna pago se pagamento.status for realmente 'pago'
-    // Não usa agendamento.status === 'confirmado' pois agendamentos sem Pix
-    // também ficam como 'confirmado' e isso causava falso positivo
+    // ✅ Se pagamento.status já é 'pago' no banco → retorna imediatamente
     if (pag.status === 'pago') {
       return res.json({ status: 'pago', agStatus: agendamento.status })
     }
 
-    // Se tem paymentIntentId, consulta o Mercado Pago em tempo real
+    // ✅ Se tem paymentIntentId, consulta o Mercado Pago em tempo real
+    // Isso garante que mesmo se o webhook chegar atrasado (Render dormindo),
+    // o polling do cliente vai detectar o pagamento corretamente
     if (pag.paymentIntentId) {
       try {
         const pagamentoMP = await payment.get({ id: pag.paymentIntentId })
         const mpStatus    = pagamentoMP.status
 
         if (mpStatus === 'approved') {
-          // Atualiza o banco e confirma o agendamento
+          // Atualiza o banco para consistência (mesmo que o webhook ainda não tenha chegado)
           await Appointment.findByIdAndUpdate(req.params.agendamentoId, {
             status:                      'confirmado',
             'pagamento.status':          'pago',
             'pagamento.paymentIntentId': String(pag.paymentIntentId),
             atualizadoEm:                new Date(),
           })
+          console.log(`[status] ✅ Pagamento aprovado via polling — agendamento ${req.params.agendamentoId}`)
           return res.json({ status: 'pago', agStatus: 'confirmado' })
         }
 
         if (['rejected', 'cancelled'].includes(mpStatus)) {
-          // Cancela o agendamento para liberar o horário
           await Appointment.findByIdAndUpdate(req.params.agendamentoId, {
             status:             'cancelado',
             'pagamento.status': 'rejeitado',
@@ -247,7 +256,10 @@ router.get('/status/:agendamentoId', async (req, res) => {
       }
     }
 
-    return res.json({ status: pag.status || 'pendente', agStatus: agendamento.status })
+    // ✅ Se agendamento está aguardando_pagamento → retorna 'pendente'
+    // NUNCA retorna 'confirmado' aqui, para evitar falso positivo no polling
+    const statusRetorno = pag.status || 'pendente'
+    return res.json({ status: statusRetorno, agStatus: agendamento.status })
 
   } catch (err) {
     console.error('[pagamento] GET /status:', err)
@@ -255,15 +267,15 @@ router.get('/status/:agendamentoId', async (req, res) => {
   }
 })
 
-// ── PATCH /api/pagamento/config ──────────────────────────────
+// ── PATCH /api/pagamento/config ──────────────────────────────────────────────
 router.patch('/config', async (req, res) => {
   try {
     const { negocioId, chavePix, tipoPix, servicos } = req.body
     if (!negocioId) return res.status(400).json({ erro: 'negocioId obrigatório' })
 
     const update = {}
-    if (chavePix  !== undefined) update.chavePix  = chavePix
-    if (tipoPix   !== undefined) update.tipoPix   = tipoPix
+    if (chavePix  !== undefined) update.chavePix         = chavePix
+    if (tipoPix   !== undefined) update.tipoPix          = tipoPix
     if (servicos  !== undefined) update.pagamentosConfig = servicos
 
     await Negocio.findByIdAndUpdate(negocioId, { $set: update })
@@ -274,7 +286,7 @@ router.patch('/config', async (req, res) => {
   }
 })
 
-// ── GET /api/pagamento/config/:negocioId ─────────────────────
+// ── GET /api/pagamento/config/:negocioId ─────────────────────────────────────
 router.get('/config/:negocioId', async (req, res) => {
   try {
     const negocio = await Negocio.findById(req.params.negocioId)

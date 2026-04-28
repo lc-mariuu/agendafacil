@@ -5,7 +5,24 @@ const router     = express.Router()
 
 const { autenticar, verificarAcesso } = require('../middleware/acesso')
 
-// ── LISTAR agendamentos de um negócio ─────────────────────
+// ── Job: limpa aguardando_pagamento com mais de 35 min ──────────────────────
+// Roda a cada 10 minutos para liberar horários de clientes que não pagaram
+setInterval(async () => {
+  try {
+    const limite = new Date(Date.now() - 35 * 60 * 1000)
+    const result = await Appointment.updateMany(
+      { status: 'aguardando_pagamento', criadoEm: { $lt: limite } },
+      { $set: { status: 'cancelado', atualizadoEm: new Date() } }
+    )
+    if (result.modifiedCount > 0) {
+      console.log(`[limpeza] ${result.modifiedCount} agendamentos expirados cancelados`)
+    }
+  } catch (e) {
+    console.error('[limpeza] erro:', e.message)
+  }
+}, 10 * 60 * 1000)
+
+// ── LISTAR agendamentos de um negócio ─────────────────────────────────────────
 router.get('/', autenticar, verificarAcesso, async (req, res) => {
   try {
     const { negocioId } = req.query
@@ -18,7 +35,7 @@ router.get('/', autenticar, verificarAcesso, async (req, res) => {
   }
 })
 
-// ── HORÁRIOS OCUPADOS (rota pública) ──────────────────────
+// ── HORÁRIOS OCUPADOS (rota pública) ──────────────────────────────────────────
 router.get('/horarios-ocupados', async (req, res) => {
   try {
     const { clinicaId, data } = req.query
@@ -90,7 +107,7 @@ router.get('/horarios-ocupados', async (req, res) => {
 
     // ✅ CORREÇÃO: horário só é ocupado se confirmado ou aguardando_pagamento
     // aguardando_pagamento reserva o horário enquanto o cliente está pagando
-    // mas é liberado automaticamente se o pagamento expirar (ver limpeza abaixo)
+    // mas é liberado automaticamente se o pagamento expirar (job acima)
     const agendados = await Appointment.find({
       clinicaId,
       data,
@@ -105,7 +122,7 @@ router.get('/horarios-ocupados', async (req, res) => {
   }
 })
 
-// ── INSIGHTS (protegido) ──────────────────────────────────
+// ── INSIGHTS (protegido) ───────────────────────────────────────────────────────
 router.get('/insights', autenticar, verificarAcesso, async (req, res) => {
   try {
     const { negocioId } = req.query
@@ -180,12 +197,12 @@ router.get('/insights', autenticar, verificarAcesso, async (req, res) => {
   }
 })
 
-// ── CRIAR agendamento (público) ───────────────────────────
+// ── CRIAR agendamento (público) ────────────────────────────────────────────────
 router.post('/', async (req, res) => {
   try {
     const { clinicaId, pacienteNome, pacienteTelefone, servico, data, hora } = req.body
 
-    // ✅ CORREÇÃO: bloqueia se já existe confirmado OU aguardando_pagamento
+    // ✅ Bloqueia se já existe confirmado OU aguardando_pagamento neste horário
     const jaExiste = await Appointment.findOne({
       clinicaId,
       data,
@@ -195,6 +212,8 @@ router.post('/', async (req, res) => {
     if (jaExiste) return res.status(400).json({ erro: 'Horário já ocupado' })
 
     let preco = 0
+    let statusInicial = 'confirmado' // padrão sem pagamento
+
     const neg = await Negocio.findById(clinicaId).lean()
     if (neg && neg.servicos) {
       const servicoObj = neg.servicos.find(s => {
@@ -206,14 +225,19 @@ router.post('/', async (req, res) => {
       }
     }
 
-    // ✅ CORREÇÃO: verifica se este serviço exige pagamento adiantado
-    const pagCfg = neg?.pagamentosConfig || {}
-    const servicoPagCfg = pagCfg[servico] || {}
-    const exigePagamento = !!servicoPagCfg.ativo && preco > 0
+    // ✅ CORREÇÃO PRINCIPAL: lê pagamentosConfig corretamente
+    // O campo é salvo como neg.pagamentosConfig = { "NomeServico": { ativo: true, valor: 50 } }
+    // pelo endpoint PATCH /api/pagamento/config com body.servicos
+    if (neg && preco > 0) {
+      const cfgPag = neg.pagamentosConfig || {}
+      const cfgServico = cfgPag[servico] || {}
 
-    // Se exige pagamento → cria como aguardando_pagamento
-    // O webhook do Mercado Pago muda para 'confirmado' após o pagamento
-    const statusInicial = exigePagamento ? 'aguardando_pagamento' : 'confirmado'
+      if (cfgServico.ativo === true) {
+        // Serviço exige pagamento antecipado
+        // Cria como aguardando_pagamento → só vira 'confirmado' após webhook do MP
+        statusInicial = 'aguardando_pagamento'
+      }
+    }
 
     const agendamento = await Appointment.create({
       clinicaId,
@@ -233,7 +257,7 @@ router.post('/', async (req, res) => {
   }
 })
 
-// ── BUSCAR agendamento público ────────────────────────────
+// ── BUSCAR agendamento público ─────────────────────────────────────────────────
 router.get('/:id/publico', async (req, res) => {
   try {
     const ag = await Appointment.findById(req.params.id)
@@ -252,7 +276,7 @@ router.get('/:id/publico', async (req, res) => {
   }
 })
 
-// ── BUSCAR agendamento por ID (para polling de pagamento) ─
+// ── BUSCAR agendamento por ID ──────────────────────────────────────────────────
 router.get('/:id', async (req, res) => {
   try {
     const ag = await Appointment.findById(req.params.id)
@@ -263,7 +287,7 @@ router.get('/:id', async (req, res) => {
   }
 })
 
-// ── CANCELAR agendamento pelo cliente (público) ───────────
+// ── CANCELAR agendamento pelo cliente (público) ────────────────────────────────
 router.patch('/:id/cancelar-publico', async (req, res) => {
   try {
     const ag = await Appointment.findById(req.params.id)
@@ -280,7 +304,7 @@ router.patch('/:id/cancelar-publico', async (req, res) => {
   }
 })
 
-// ── ATUALIZAR status (protegido) ──────────────────────────
+// ── ATUALIZAR status (protegido) ───────────────────────────────────────────────
 router.patch('/:id', autenticar, verificarAcesso, async (req, res) => {
   try {
     const agendamento = await Appointment.findByIdAndUpdate(
@@ -291,27 +315,6 @@ router.patch('/:id', autenticar, verificarAcesso, async (req, res) => {
     res.json(agendamento)
   } catch {
     res.status(500).json({ erro: 'Erro ao atualizar' })
-  }
-})
-
-// ── LIMPEZA: expira aguardando_pagamento após 35 minutos ──
-// Chamado pelo webhook do pagamento.js ou por um job periódico
-// Libera o horário se o cliente não pagou dentro do tempo do QR Code
-router.delete('/limpar-expirados', autenticar, async (req, res) => {
-  try {
-    const limite = new Date(Date.now() - 35 * 60 * 1000) // 35 minutos atrás
-    const result = await Appointment.updateMany(
-      {
-        status: 'aguardando_pagamento',
-        criadoEm: { $lt: limite }
-      },
-      {
-        $set: { status: 'cancelado', atualizadoEm: new Date() }
-      }
-    )
-    res.json({ ok: true, cancelados: result.modifiedCount })
-  } catch (err) {
-    res.status(500).json({ erro: err.message })
   }
 })
 

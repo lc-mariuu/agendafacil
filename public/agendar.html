@@ -262,7 +262,7 @@ nav{background:rgba(255,255,255,0.95);backdrop-filter:blur(16px);border-bottom:1
 <script>
 const API = 'https://agendafacil-wf3q.onrender.com/api'
 
-// ── Detecta se veio por slug (/lucio) ou por ?id=xxx ──────────
+// ── Detecta se veio por slug (/lucio) ou por ?id=xxx ──────────────────────────
 const params = new URLSearchParams(window.location.search)
 let clinicaId = params.get('id')
 
@@ -278,14 +278,25 @@ async function resolverClinicaId() {
   } catch(e) {}
 }
 
-// ── Estado global ──────────────────────────────────────────────
+// ── Estado global ─────────────────────────────────────────────────────────────
 let servicoSel = '', dataSel = '', horarioSel = ''
 let servicosDisponiveis = []
-let pagCfg = { adiantado: false, tipoValor: 'total', porcentagem: 50, valorFixo: 0 }
-let agendamentoId = null
+
+// ✅ pagCfg: configuração de pagamento do negócio
+// adiantado: se o negócio usa pagamento antecipado (config geral, não por serviço)
+// cfgPorServico: { "NomeServico": { ativo: true, valor: 50 } }
+let pagCfg = {
+  adiantado:      false,
+  tipoValor:      'total',
+  porcentagem:    50,
+  valorFixo:      0,
+  cfgPorServico:  {}  // config individual por serviço
+}
+
+let agendamentoId  = null
 let pixPollInterval = null
 
-// ── Helpers ────────────────────────────────────────────────────
+// ── Helpers ───────────────────────────────────────────────────────────────────
 function mascaraTel(inp) {
   let v = inp.value.replace(/\D/g,'').slice(0,11)
   if(v.length>=7) v=`(${v.slice(0,2)}) ${v.slice(2,7)}-${v.slice(7)}`
@@ -323,11 +334,29 @@ function irTela(n) {
   window.scrollTo({top:0,behavior:'smooth'})
 }
 
-// ── Calcula o valor que o cliente vai pagar ────────────────────
-function calcularValorPagamento(precoServico) {
-  if (!pagCfg.adiantado) return 0
-  const preco = Number(precoServico) || 0
-  if (pagCfg.tipoValor === 'fixo') return Number(pagCfg.valorFixo) || 0
+// ── Calcula o valor que o cliente vai pagar ───────────────────────────────────
+// ✅ CORREÇÃO: verifica primeiro se o serviço específico tem pagamento ativo
+// usando cfgPorServico (lido do pagamentosConfig do backend)
+function servicoExigePagamento() {
+  if (!servicoSel) return false
+  const cfgServico = pagCfg.cfgPorServico[servicoSel] || {}
+  return cfgServico.ativo === true
+}
+
+function calcularValorPagamento() {
+  if (!servicoExigePagamento()) return 0
+  const preco = getPrecoServico()
+  if (preco <= 0) return 0
+
+  const cfgServico = pagCfg.cfgPorServico[servicoSel] || {}
+
+  // Se o serviço tem valor próprio configurado, usa ele
+  if (cfgServico.valor && Number(cfgServico.valor) > 0) {
+    return Number(cfgServico.valor)
+  }
+
+  // Fallback para config geral
+  if (pagCfg.tipoValor === 'fixo')         return Number(pagCfg.valorFixo) || 0
   if (pagCfg.tipoValor === 'personalizado') return preco * ((Number(pagCfg.porcentagem) || 50) / 100)
   return preco // 'total'
 }
@@ -340,19 +369,24 @@ function getPrecoServico() {
   return s && typeof s === 'object' ? Number(s.preco) || 0 : 0
 }
 
-// ── Aplicar config de pagamento (centralizado) ─────────────────
-function aplicarConfigPagamento(cfg) {
-  if (!cfg) return
-  // Suporta tanto { adiantado, tipoValor, ... } quanto { pagamentosConfig: { adiantado, ... } }
-  const fonte = cfg.pagamentosConfig || cfg
-  pagCfg.adiantado   = !!fonte.adiantado
-  pagCfg.tipoValor   = fonte.tipoValor   || 'total'
-  pagCfg.porcentagem = Number(fonte.porcentagem) || 50
-  pagCfg.valorFixo   = Number(fonte.valorFixo)   || 0
-  console.log('[pagCfg]', pagCfg)
+// ── Aplicar config de pagamento (centralizado) ────────────────────────────────
+// ✅ CORREÇÃO PRINCIPAL: lê tanto a config geral quanto a config por serviço
+// A config por serviço vem do endpoint GET /api/pagamento/config/:id
+// no formato { servicos: { "NomeServico": { ativo: true, valor: 50 } } }
+function aplicarConfigPagamento(cfg, cfgPorServico) {
+  if (cfg) {
+    pagCfg.adiantado   = !!cfg.adiantado
+    pagCfg.tipoValor   = cfg.tipoValor   || 'total'
+    pagCfg.porcentagem = Number(cfg.porcentagem) || 50
+    pagCfg.valorFixo   = Number(cfg.valorFixo)   || 0
+  }
+  if (cfgPorServico && typeof cfgPorServico === 'object') {
+    pagCfg.cfgPorServico = cfgPorServico
+  }
+  console.log('[pagCfg atualizado]', pagCfg)
 }
 
-// ── Navegação entre telas ──────────────────────────────────────
+// ── Navegação entre telas ─────────────────────────────────────────────────────
 function irTela2() {
   hideErr('err1')
   const nome = document.getElementById('nome').value.trim()
@@ -376,19 +410,18 @@ function irTela4() {
   if(!dataSel) { showErr('err3','Selecione uma data'); return }
   if(!horarioSel) { showErr('err3','Selecione um horário disponível'); return }
 
-  document.getElementById('r-nome').textContent = document.getElementById('nome').value.trim()
-  document.getElementById('r-tel').textContent = document.getElementById('telefone').value.trim()
+  document.getElementById('r-nome').textContent    = document.getElementById('nome').value.trim()
+  document.getElementById('r-tel').textContent     = document.getElementById('telefone').value.trim()
   document.getElementById('r-servico').textContent = servicoSel
-  document.getElementById('r-data').textContent = formatarData(dataSel)
-  document.getElementById('r-hora').textContent = horarioSel
+  document.getElementById('r-data').textContent    = formatarData(dataSel)
+  document.getElementById('r-hora').textContent    = horarioSel
 
-  const preco = getPrecoServico()
-  const valorPagar = calcularValorPagamento(preco)
-  const badge = document.getElementById('pagamento-badge')
+  const valorPagar = calcularValorPagamento()
+  const badge      = document.getElementById('pagamento-badge')
   const badgeValor = document.getElementById('pagamento-badge-valor')
-  const btnTxt = document.getElementById('btn-confirmar-txt')
+  const btnTxt     = document.getElementById('btn-confirmar-txt')
 
-  if (pagCfg.adiantado && valorPagar > 0) {
+  if (servicoExigePagamento() && valorPagar > 0) {
     badgeValor.textContent = `Valor: R$ ${valorPagar.toFixed(2).replace('.', ',')}`
     badge.style.display = 'flex'
     btnTxt.textContent = 'Continuar para o pagamento'
@@ -400,16 +433,16 @@ function irTela4() {
   irTela(4)
 }
 
-// ── Confirmar agendamento ──────────────────────────────────────
+// ── Confirmar agendamento ─────────────────────────────────────────────────────
 async function confirmarAgendamento() {
   hideErr('err4')
   const btn = document.getElementById('btn-confirmar')
   btn.disabled = true
   document.getElementById('btn-confirmar-txt').textContent = 'Aguarde...'
 
-  const nome = document.getElementById('nome').value.trim()
+  const nome     = document.getElementById('nome').value.trim()
   const telefone = document.getElementById('telefone').value.trim()
-  const preco = getPrecoServico()
+  const preco    = getPrecoServico()
 
   let resposta = {}
   try {
@@ -418,12 +451,12 @@ async function confirmarAgendamento() {
       headers: {'Content-Type':'application/json'},
       body: JSON.stringify({
         clinicaId,
-        pacienteNome: nome,
+        pacienteNome:     nome,
         pacienteTelefone: telefone,
-        servico: servicoSel,
-        data: dataSel,
-        hora: horarioSel,
-        preco: preco
+        servico:          servicoSel,
+        data:             dataSel,
+        hora:             horarioSel,
+        preco:            preco
       })
     })
     const texto = await res.text()
@@ -432,21 +465,21 @@ async function confirmarAgendamento() {
     if (!res.ok) {
       showErr('err4', resposta.erro || `Erro ${res.status}. Tente novamente.`)
       btn.disabled = false
-      document.getElementById('btn-confirmar-txt').textContent = pagCfg.adiantado ? 'Continuar para o pagamento' : 'Confirmar agendamento'
+      document.getElementById('btn-confirmar-txt').textContent = servicoExigePagamento() ? 'Continuar para o pagamento' : 'Confirmar agendamento'
       return
     }
   } catch(e) {
     showErr('err4', 'Erro de conexão. Verifique sua internet e tente novamente.')
     btn.disabled = false
-    document.getElementById('btn-confirmar-txt').textContent = pagCfg.adiantado ? 'Continuar para o pagamento' : 'Confirmar agendamento'
+    document.getElementById('btn-confirmar-txt').textContent = servicoExigePagamento() ? 'Continuar para o pagamento' : 'Confirmar agendamento'
     return
   }
 
   agendamentoId = resposta._id
+  const valorPagar = calcularValorPagamento()
 
-  const valorPagar = calcularValorPagamento(preco)
-
-  if (pagCfg.adiantado && valorPagar > 0 && agendamentoId) {
+  // ✅ Só vai para a tela PIX se o serviço exige pagamento E tem valor
+  if (servicoExigePagamento() && valorPagar > 0 && agendamentoId) {
     document.getElementById('btn-confirmar-txt').textContent = 'Criando Pix...'
     await irTelaPix(valorPagar)
     btn.disabled = false
@@ -454,12 +487,13 @@ async function confirmarAgendamento() {
     return
   }
 
+  // Sem pagamento → vai direto para o sucesso
   btn.disabled = false
   document.getElementById('btn-confirmar-txt').textContent = 'Confirmar agendamento'
   mostrarSucesso(nome, telefone, false)
 }
 
-// ── Tela Pix ──────────────────────────────────────────────────
+// ── Tela Pix ──────────────────────────────────────────────────────────────────
 async function irTelaPix(valorPagar) {
   try {
     const res = await fetch(`${API}/pagamento/criar-preferencia`, {
@@ -484,16 +518,19 @@ async function irTelaPix(valorPagar) {
     document.getElementById('pix-valor').textContent = `R$ ${Number(data.valorCobrado || valorPagar).toFixed(2).replace('.', ',')}`
 
     const qrWrap = document.getElementById('pix-qr-wrap')
-    if (data.linkPix) {
-      qrWrap.innerHTML = data.pixBase64
-        ? `<img src="data:image/png;base64,${data.pixBase64}" style="width:200px;height:200px;border-radius:12px;border:2px solid var(--border)" />`
-        : '<div style="font-size:13px;color:var(--text2)">Use o Pix Copia e Cola abaixo</div>'
-      document.getElementById('pix-code').value = data.linkPix
-      document.getElementById('pix-copia-cola').style.display = 'block'
+    if (data.pixBase64) {
+      qrWrap.innerHTML = `<img src="data:image/png;base64,${data.pixBase64}" style="width:200px;height:200px;border-radius:12px;border:2px solid var(--border)" />`
+    } else if (data.linkPix) {
+      qrWrap.innerHTML = '<div style="font-size:13px;color:var(--text2)">Use o Pix Copia e Cola abaixo</div>'
     } else if (data.linkPagamento) {
       qrWrap.innerHTML = `<a href="${data.linkPagamento}" target="_blank" style="display:inline-flex;align-items:center;gap:8px;background:var(--accent);color:#fff;padding:12px 24px;border-radius:10px;text-decoration:none;font-weight:600;font-size:14px">Pagar via Mercado Pago →</a>`
     } else {
-      qrWrap.innerHTML = '<div style="font-size:13px;color:var(--text2)">QR Code indisponível. Tente o link de pagamento.</div>'
+      qrWrap.innerHTML = '<div style="font-size:13px;color:var(--text2)">QR Code indisponível.</div>'
+    }
+
+    if (data.linkPix) {
+      document.getElementById('pix-code').value = data.linkPix
+      document.getElementById('pix-copia-cola').style.display = 'block'
     }
 
     irTela('pix')
@@ -510,13 +547,17 @@ function copiarPix() {
   btn.textContent = 'Copiado!'; setTimeout(() => btn.textContent = 'Copiar', 2000)
 }
 
+// ── Polling de pagamento ──────────────────────────────────────────────────────
+// ✅ CORREÇÃO PRINCIPAL: só aceita como pago se data.status === 'pago'
+// NUNCA usa data.agStatus === 'confirmado' pois agendamentos sem Pix
+// também ficam como 'confirmado' — isso causava o falso positivo
 function iniciarPollingPagamento() {
   if (pixPollInterval) clearInterval(pixPollInterval)
   if (!agendamentoId) return
- 
+
   let tentativas = 0
   const MAX_TENTATIVAS = 45  // 45 × 4s = 3 minutos
- 
+
   pixPollInterval = setInterval(async () => {
     tentativas++
     if (tentativas > MAX_TENTATIVAS) {
@@ -525,19 +566,20 @@ function iniciarPollingPagamento() {
         '⏰ QR Code expirado. Volte e tente novamente.'
       return
     }
- 
+
     try {
-      // ✅ USA O ENDPOINT CORRETO que consulta o Mercado Pago em tempo real
       const res = await fetch(`${API}/pagamento/status/${agendamentoId}`)
       if (!res.ok) return
       const data = await res.json()
- 
-      // Aceita tanto { status: 'pago' } quanto { agStatus: 'confirmado' }
-      const pago = data.status === 'pago' || data.agStatus === 'confirmado'
+
+      // ✅ ÚNICO critério de confirmação: pagamento.status === 'pago'
+      // Nunca checa agStatus pois confirmado != pago via Pix
+      const pago      = data.status === 'pago'
       const rejeitado = data.status === 'rejeitado' || data.status === 'reembolsado'
- 
+
       if (pago) {
         clearInterval(pixPollInterval)
+        pixPollInterval = null
         const el = document.getElementById('pix-status-msg')
         el.textContent = '✅ Pagamento confirmado!'
         el.classList.add('pago')
@@ -548,16 +590,18 @@ function iniciarPollingPagamento() {
         ), 1500)
       } else if (rejeitado) {
         clearInterval(pixPollInterval)
+        pixPollInterval = null
         document.getElementById('pix-status-msg').textContent =
           '❌ Pagamento não aprovado. Volte e tente novamente.'
       }
-      // status === 'pendente' → continua aguardando
+      // status === 'pendente' → continua aguardando normalmente
     } catch (e) {
       console.warn('[polling] Erro ao verificar status:', e.message)
     }
   }, 4000)
 }
 
+// ── Tela de sucesso ───────────────────────────────────────────────────────────
 function mostrarSucesso(nome, telefone, pago) {
   if (pixPollInterval) { clearInterval(pixPollInterval); pixPollInterval = null }
 
@@ -573,7 +617,9 @@ function mostrarSucesso(nome, telefone, pago) {
   `
 
   const tel = telefone.replace(/\D/g,'')
-  const msg = encodeURIComponent(`Olá! Meu agendamento foi confirmado\n\nServiço: ${servicoSel}\nData: ${d}/${m}/${a}\nHorário: ${horarioSel}\nNome: ${nome}${pago ? '\nPagamento: Pix confirmado' : ''}`)
+  const msg = encodeURIComponent(
+    `Olá! Meu agendamento foi confirmado\n\nServiço: ${servicoSel}\nData: ${d}/${m}/${a}\nHorário: ${horarioSel}\nNome: ${nome}${pago ? '\nPagamento: Pix confirmado' : ''}`
+  )
   document.getElementById('btn-whatsapp').href = `https://wa.me/55${tel}?text=${msg}`
 
   if (agendamentoId) {
@@ -585,9 +631,7 @@ function mostrarSucesso(nome, telefone, pago) {
   irTela(5)
 }
 
-// ── Carregar dados do negócio ──────────────────────────────────
-// CORREÇÃO PRINCIPAL: lê pagamentosConfig diretamente da resposta do negócio
-// e também tenta o endpoint dedicado como primeiro passo
+// ── Carregar dados do negócio ─────────────────────────────────────────────────
 async function carregarClinica() {
   if(!clinicaId) { document.getElementById('hero-nome').textContent = 'Link inválido'; return }
   try {
@@ -597,47 +641,53 @@ async function carregarClinica() {
 
     document.getElementById('hero-nome').textContent = data.negocio || data.nome
     document.title = `Agendar — ${data.negocio || data.nome}`
-    if(data.segmento) { const chip = document.getElementById('hero-chip'); chip.textContent = data.segmento; chip.style.display = 'inline-flex' }
-    if(data.bio?.foto) document.getElementById('hero-avatar').innerHTML = `<img src="${data.bio.foto}" alt="${data.negocio || data.nome}">`
+    if(data.segmento) {
+      const chip = document.getElementById('hero-chip')
+      chip.textContent = data.segmento
+      chip.style.display = 'inline-flex'
+    }
+    if(data.bio?.foto) {
+      document.getElementById('hero-avatar').innerHTML = `<img src="${data.bio.foto}" alt="${data.negocio || data.nome}">`
+    }
 
     servicosDisponiveis = (data.servicos || []).map(s => typeof s === 'object' ? s : { nome: s, preco: 0 })
     renderServicos()
 
-    // ── CORREÇÃO: tenta carregar config de pagamento de 3 formas ──
-    await carregarConfigPagamento(data)
+    // ✅ Carrega config de pagamento em paralelo
+    await carregarConfigPagamento()
 
   } catch(e) { console.error('[carregarClinica]', e) }
 }
 
-async function carregarConfigPagamento(dadosNegocio) {
-  // Fonte 1: endpoint dedicado (mais atualizado)
+// ── Carregar config de pagamento ──────────────────────────────────────────────
+// ✅ CORREÇÃO: usa o endpoint GET /api/pagamento/config/:id que retorna
+// { servicos: { "NomeServico": { ativo: true, valor: 50 } }, chavePix, tipoPix }
+// Isso é a fonte correta de verdade sobre quais serviços têm Pix ativo
+async function carregarConfigPagamento() {
+  // Tenta endpoint de config por serviço (fonte principal)
+  try {
+    const res = await fetch(`${API}/pagamento/config/${clinicaId}`)
+    if (res.ok) {
+      const data = await res.json()
+      // data.servicos = { "Corte": { ativo: true, valor: 50 }, ... }
+      aplicarConfigPagamento(null, data.servicos || {})
+      console.log('[pagamento] config por serviço carregada:', data.servicos)
+      return
+    }
+  } catch(e) { console.warn('[pagamento] falha no endpoint config:', e.message) }
+
+  // Fallback: endpoint config-publica (config geral, menos preciso)
   try {
     const res = await fetch(`${API}/pagamento/config-publica/${clinicaId}`)
     if (res.ok) {
-      const cfg = await res.json()
-      aplicarConfigPagamento(cfg)
+      const data = await res.json()
+      aplicarConfigPagamento(data, {})
       return
     }
-  } catch(e) { console.warn('[pagamento] endpoint dedicado falhou:', e) }
-
-  // Fonte 2: campo pagamentosConfig dentro dos dados do negócio já carregados
-  if (dadosNegocio && dadosNegocio.pagamentosConfig) {
-    aplicarConfigPagamento(dadosNegocio.pagamentosConfig)
-    return
-  }
-
-  // Fonte 3: re-busca o negócio e lê pagamentosConfig
-  try {
-    const res = await fetch(`${API}/auth/negocio/${clinicaId}`)
-    if (res.ok) {
-      const data = await res.json()
-      // Tenta tanto data.pagamentosConfig quanto data direto (caso a chave seja no root)
-      aplicarConfigPagamento(data.pagamentosConfig || data)
-    }
-  } catch(e) { console.warn('[pagamento] fallback final falhou:', e) }
+  } catch(e) { console.warn('[pagamento] falha no endpoint config-publica:', e.message) }
 }
 
-// ── Renderizar serviços ────────────────────────────────────────
+// ── Renderizar serviços ───────────────────────────────────────────────────────
 function renderServicos() {
   const grid = document.getElementById('servicos-grid')
   if(!servicosDisponiveis.length) {
@@ -645,7 +695,7 @@ function renderServicos() {
     return
   }
   grid.innerHTML = servicosDisponiveis.map(s => {
-    const nome = typeof s === 'object' ? s.nome : s
+    const nome  = typeof s === 'object' ? s.nome : s
     const preco = typeof s === 'object' && s.preco > 0 ? `R$ ${Number(s.preco).toFixed(2).replace('.', ',')}` : ''
     const nomeEscapado = nome.replace(/'/g, "\\'")
     return `<button class="servico-btn" onclick="selecionarServico(this,'${nomeEscapado}')">
@@ -656,11 +706,17 @@ function renderServicos() {
 
 function selecionarServico(btn, s) {
   document.querySelectorAll('.servico-btn').forEach(b => b.classList.remove('sel'))
-  btn.classList.add('sel'); servicoSel = s; hideErr('err2')
+  btn.classList.add('sel')
+  servicoSel = s
+  hideErr('err2')
 }
 
 function selecionarDataInput(iso) {
-  if(!iso) return; dataSel = iso; horarioSel = ''; hideErr('err3'); carregarHorarios(iso)
+  if(!iso) return
+  dataSel = iso
+  horarioSel = ''
+  hideErr('err3')
+  carregarHorarios(iso)
 }
 
 async function carregarHorarios(dataEscolhida) {
@@ -669,17 +725,24 @@ async function carregarHorarios(dataEscolhida) {
   try {
     const res = await fetch(`${API}/agendamentos/horarios-ocupados?clinicaId=${clinicaId}&data=${dataEscolhida}`)
     const result = await res.json()
-    if(result.diaInativo || !result.horarios?.length) { container.innerHTML = '<div class="empty-msg">Sem atendimento neste dia</div>'; return }
+    if(result.diaInativo || !result.horarios?.length) {
+      container.innerHTML = '<div class="empty-msg">Sem atendimento neste dia</div>'
+      return
+    }
     container.innerHTML = '<div class="horarios-grid">' + result.horarios.map(h => {
       const ocu = result.ocupados?.includes(h)
       return `<button class="horario-btn" ${ocu?'disabled':''} onclick="selecionarHorario(this,'${h}')">${h}</button>`
     }).join('') + '</div>'
-  } catch(e) { container.innerHTML = '<div class="empty-msg">Erro ao carregar horários</div>' }
+  } catch(e) {
+    container.innerHTML = '<div class="empty-msg">Erro ao carregar horários</div>'
+  }
 }
 
 function selecionarHorario(btn, h) {
   document.querySelectorAll('.horario-btn').forEach(b => b.classList.remove('sel'))
-  btn.classList.add('sel'); horarioSel = h; hideErr('err3')
+  btn.classList.add('sel')
+  horarioSel = h
+  hideErr('err3')
 }
 
 function novoAgendamento() {
@@ -691,7 +754,7 @@ function novoAgendamento() {
   irTela(1)
 }
 
-// ── Init ──────────────────────────────────────────────────────
+// ── Init ──────────────────────────────────────────────────────────────────────
 resolverClinicaId().then(() => carregarClinica())
 </script>
 </body>
