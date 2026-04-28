@@ -3,6 +3,9 @@ const mongoose = require('mongoose')
 const cors     = require('cors')
 require('dotenv').config()
 
+const Appointment = require('./models/Appointment')
+const Negocio     = require('./models/Negocio')
+
 const app = express()
 app.use(cors())
 
@@ -29,7 +32,7 @@ app.use('/api/agendamentos', require('./routes/appointments'))
 app.use('/api/upload',       require('./routes/upload'))
 app.use('/api/assinatura',   require('./routes/assinatura'))
 app.use('/api/pagamento',    require('./routes/pagamento'))
-app.use('/api/pagamentos',   require('./routes/pagamentosConfig')) // ← config da página de pagamentos
+app.use('/api/pagamentos',   require('./routes/pagamentosConfig'))
 
 // ── Páginas estáticas ─────────────────────────────────────────
 app.get('/', (req, res) => {
@@ -50,7 +53,6 @@ app.get('/:slug', async (req, res) => {
   if (slug.includes('.'))               return res.status(404).sendFile('404.html', { root: 'public' })
   if (PAGINAS_ESTATICAS.includes(slug)) return res.sendFile(`${slug}.html`, { root: 'public' })
   try {
-    const Negocio = require('./models/Negocio')
     const negocio = await Negocio.findById(slug)
     if (!negocio) return res.status(404).sendFile('404.html', { root: 'public' })
     res.sendFile('agendar.html', { root: 'public' })
@@ -62,7 +64,6 @@ app.get('/:slug', async (req, res) => {
 // ── Limpeza automática de agendamentos antigos ────────────────
 async function limparAgendamentos() {
   try {
-    const Appointment = require('./models/Appointment')
     const umaHoraAtras = new Date(Date.now() - 60 * 60 * 1000)
     const result = await Appointment.deleteMany({
       status:       { $in: ['concluido', 'cancelado'] },
@@ -75,12 +76,17 @@ async function limparAgendamentos() {
   }
 }
 
- setInterval(async () => {
-   const limite = new Date(Date.now() - 35 * 60 * 1000)
-   await Appointment.updateMany(
-     { status: 'aguardando_pagamento', criadoEm: { $lt: limite } },
-     { $set: { status: 'cancelado', atualizadoEm: new Date() } }
-   )
+// ── Cancelamento automático de pagamentos pendentes ───────────
+setInterval(async () => {
+  try {
+    const limite = new Date(Date.now() - 35 * 60 * 1000)
+    await Appointment.updateMany(
+      { status: 'aguardando_pagamento', criadoEm: { $lt: limite } },
+      { $set: { status: 'cancelado', atualizadoEm: new Date() } }
+    )
+  } catch (e) {
+    console.error('[cancelamento] erro:', e.message)
+  }
 }, 5 * 60 * 1000)
 
 // ── Inicialização ─────────────────────────────────────────────
