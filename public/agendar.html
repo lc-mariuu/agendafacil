@@ -51,6 +51,8 @@ nav{background:rgba(255,255,255,0.95);backdrop-filter:blur(16px);border-bottom:1
 .servico-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-light)}
 .servico-btn.sel{border-color:var(--accent);background:var(--accent);color:#fff}
 .servico-preco{display:block;font-size:11px;font-weight:700;margin-top:3px;opacity:.85}
+.servico-pix-tag{display:block;font-size:10px;margin-top:2px;opacity:.75;background:rgba(255,255,255,0.25);border-radius:4px;padding:1px 4px}
+.servico-btn:not(.sel) .servico-pix-tag{background:rgba(37,99,235,0.1);color:var(--accent)}
 .data-input{width:100%;padding:12px 14px;border:1.5px solid var(--border2);border-radius:10px;font-size:15px;font-family:inherit;background:var(--bg);color:var(--text);outline:none;transition:border-color .15s;cursor:pointer}
 .data-input:focus{border-color:var(--accent)}
 .horarios-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
@@ -65,10 +67,12 @@ nav{background:rgba(255,255,255,0.95);backdrop-filter:blur(16px);border-bottom:1
 .resumo-row:last-child{border-bottom:none}
 .resumo-label{color:var(--text3);font-weight:500}
 .resumo-val{color:var(--text);font-weight:600;text-align:right;max-width:60%}
-.pagamento-badge{display:flex;align-items:center;gap:10px;background:var(--accent-light);border:1.5px solid rgba(37,99,235,0.2);border-radius:10px;padding:12px 16px;margin-bottom:16px}
-.pagamento-badge-icon{font-size:20px;flex-shrink:0}
-.pagamento-badge-text{font-size:13px;color:var(--accent);font-weight:500;line-height:1.4}
-.pagamento-badge-valor{font-weight:700;font-size:15px;color:var(--accent)}
+.pagamento-badge{display:flex;align-items:flex-start;gap:12px;background:linear-gradient(135deg,#eff4ff,#e0eaff);border:1.5px solid rgba(37,99,235,0.25);border-radius:12px;padding:14px 16px;margin-bottom:18px}
+.pagamento-badge-icon{font-size:22px;flex-shrink:0;margin-top:1px}
+.pagamento-badge-content{flex:1}
+.pagamento-badge-title{font-size:13px;font-weight:600;color:var(--accent);margin-bottom:2px}
+.pagamento-badge-sub{font-size:12px;color:#4a6fa5;line-height:1.5}
+.pagamento-badge-valor{font-weight:700;font-size:18px;color:var(--accent);display:block;margin-top:6px}
 .btn-submit{width:100%;padding:13px;background:var(--accent);color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;transition:background .15s,transform .1s;display:flex;align-items:center;justify-content:center;gap:8px}
 .btn-submit:hover:not(:disabled){background:var(--accent-hover);transform:translateY(-1px)}
 .btn-submit:disabled{opacity:.6;cursor:not-allowed;transform:none}
@@ -76,17 +80,26 @@ nav{background:rgba(255,255,255,0.95);backdrop-filter:blur(16px);border-bottom:1
 .btn-back:hover{background:var(--bg2)}
 .err{background:#fef2f2;border:1px solid rgba(220,38,38,0.2);border-radius:8px;padding:10px 14px;font-size:13px;color:var(--red);margin-bottom:14px;display:none}
 .err.show{display:block}
+
+/* PIX */
 .pix-qr-box{text-align:center;padding:20px 0 12px}
 .pix-qr-box img{width:200px;height:200px;border-radius:12px;border:2px solid var(--border)}
 .pix-valor-big{font-size:36px;font-weight:700;color:var(--text);letter-spacing:-0.02em}
-.pix-status{text-align:center;padding:12px;background:var(--bg2);border-radius:10px;font-size:13px;color:var(--text2);margin-bottom:16px}
+.pix-status{text-align:center;padding:12px 16px;background:var(--bg2);border-radius:10px;font-size:13px;color:var(--text2);margin-bottom:16px;display:flex;align-items:center;justify-content:center;gap:8px}
 .pix-status.pago{background:var(--green-light);color:var(--green);font-weight:600}
+.pix-status.erro{background:#fef2f2;color:var(--red)}
 .pix-copia{margin-bottom:16px}
 .pix-copia-label{font-size:12px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
 .pix-copia-row{display:flex;gap:8px}
 .pix-copia-row input{flex:1;padding:9px 12px;border:1.5px solid var(--border2);border-radius:8px;font-size:11px;font-family:monospace;background:var(--bg2);outline:none;overflow:hidden;text-overflow:ellipsis}
 .pix-copia-row button{background:var(--accent);color:#fff;border:none;padding:9px 14px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;font-family:inherit}
-.pix-hint{font-size:11px;color:var(--text3);text-align:center;margin-bottom:16px}
+.pix-hint{font-size:11px;color:var(--text3);text-align:center;margin-bottom:16px;line-height:1.5}
+.pix-timer{font-size:12px;color:var(--text3);text-align:center;margin-bottom:12px}
+.pix-timer strong{color:var(--text);font-weight:600}
+.pix-link-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px;background:linear-gradient(135deg,#009ee3,#0077b6);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;text-decoration:none;margin-bottom:8px;transition:opacity .15s}
+.pix-link-btn:hover{opacity:.9}
+
+/* Sucesso */
 .sucesso-wrap{text-align:center;padding:8px 0 16px}
 .sucesso-icon{width:72px;height:72px;border-radius:50%;background:var(--green-light);display:flex;align-items:center;justify-content:center;margin:0 auto 20px}
 .sucesso-wrap h2{font-size:22px;font-weight:700;letter-spacing:-0.02em;margin-bottom:8px}
@@ -98,6 +111,11 @@ nav{background:rgba(255,255,255,0.95);backdrop-filter:blur(16px);border-bottom:1
 .btn-novo{display:block;text-align:center;margin-top:12px;font-size:13px;color:var(--accent);font-weight:500;cursor:pointer;background:none;border:none;font-family:inherit;width:100%}
 .tela{display:none}
 .tela.ativa{display:block}
+
+/* Debug badge (remove em prod) */
+.debug-info{background:#fff8e1;border:1px solid #f0c040;border-radius:8px;padding:10px 14px;font-size:11px;color:#7a5f00;margin-bottom:12px;display:none}
+.debug-info.show{display:block}
+
 @media(max-width:420px){
   .horarios-grid{grid-template-columns:repeat(3,1fr)}
   .steps-nav .sn-item span{display:none}
@@ -185,20 +203,29 @@ nav{background:rgba(255,255,255,0.95);backdrop-filter:blur(16px);border-bottom:1
         <div><div class="card-title">Confirmar agendamento</div><div class="card-sub">Revise os detalhes abaixo</div></div>
       </div>
       <div class="err" id="err4"></div>
+
+      <!-- Badge de pagamento antecipado -->
       <div class="pagamento-badge" id="pagamento-badge" style="display:none">
         <div class="pagamento-badge-icon">💳</div>
-        <div class="pagamento-badge-text">
-          Este serviço requer pagamento antecipado via Pix<br>
-          <span class="pagamento-badge-valor" id="pagamento-badge-valor"></span>
+        <div class="pagamento-badge-content">
+          <div class="pagamento-badge-title">Pagamento antecipado via Pix</div>
+          <div class="pagamento-badge-sub">Este serviço requer pagamento para confirmar o agendamento.</div>
+          <span class="pagamento-badge-valor" id="pagamento-badge-valor">R$ 0,00</span>
         </div>
       </div>
+
       <div class="resumo">
         <div class="resumo-row"><span class="resumo-label">Nome</span><span class="resumo-val" id="r-nome">—</span></div>
         <div class="resumo-row"><span class="resumo-label">WhatsApp</span><span class="resumo-val" id="r-tel">—</span></div>
         <div class="resumo-row"><span class="resumo-label">Serviço</span><span class="resumo-val" id="r-servico">—</span></div>
         <div class="resumo-row"><span class="resumo-label">Data</span><span class="resumo-val" id="r-data">—</span></div>
         <div class="resumo-row"><span class="resumo-label">Horário</span><span class="resumo-val" id="r-hora">—</span></div>
+        <div class="resumo-row" id="r-pag-row" style="display:none">
+          <span class="resumo-label">Valor Pix</span>
+          <span class="resumo-val" id="r-pag-val" style="color:var(--accent);font-weight:700">—</span>
+        </div>
       </div>
+
       <button class="btn-submit" id="btn-confirmar" onclick="confirmarAgendamento()">
         <span id="btn-confirmar-txt">Confirmar agendamento</span>
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7h8M7.5 3.5L11 7l-3.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -218,14 +245,22 @@ nav{background:rgba(255,255,255,0.95);backdrop-filter:blur(16px);border-bottom:1
         </div>
         <div><div class="card-title">Pagamento via Pix</div><div class="card-sub">Escaneie o QR Code para confirmar</div></div>
       </div>
+
       <div id="pix-resumo" class="resumo" style="margin-bottom:16px"></div>
+
       <div style="text-align:center;padding:12px 0 8px">
         <div style="font-size:13px;color:var(--text3);margin-bottom:6px">Valor a pagar</div>
         <div class="pix-valor-big" id="pix-valor">R$ 0,00</div>
       </div>
+
       <div class="pix-qr-box" id="pix-qr-wrap">
         <div style="font-size:13px;color:var(--text2)">Carregando QR Code...</div>
       </div>
+
+      <div class="pix-timer" id="pix-timer" style="display:none">
+        ⏱ Expira em <strong id="pix-countdown">30:00</strong>
+      </div>
+
       <div class="pix-copia" id="pix-copia-cola" style="display:none">
         <div class="pix-copia-label">Pix Copia e Cola</div>
         <div class="pix-copia-row">
@@ -233,9 +268,21 @@ nav{background:rgba(255,255,255,0.95);backdrop-filter:blur(16px);border-bottom:1
           <button onclick="copiarPix()" id="btn-copiar-pix">Copiar</button>
         </div>
       </div>
-      <div class="pix-status" id="pix-status-msg">⏳ Aguardando pagamento...</div>
-      <div class="pix-hint">O QR Code expira em 30 minutos. Após o pagamento, o agendamento é confirmado automaticamente.</div>
-      <button class="btn-back" onclick="irTela(4)">← Voltar</button>
+
+      <div id="pix-link-wrap" style="display:none;margin-bottom:12px">
+        <a class="pix-link-btn" id="pix-link-btn" href="#" target="_blank">
+          <svg width="16" height="16" viewBox="0 0 18 18" fill="none"><path d="M11.5 2.5L15.5 6.5L9 13L2.5 6.5L6.5 2.5L9 5L11.5 2.5Z" stroke="white" stroke-width="1.5" stroke-linejoin="round"/></svg>
+          Pagar via Mercado Pago
+        </a>
+      </div>
+
+      <div class="pix-status" id="pix-status-msg">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.4"/><path d="M8 5v4M8 11v.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+        Aguardando pagamento...
+      </div>
+
+      <div class="pix-hint">Após o pagamento via Pix, o agendamento é confirmado automaticamente.</div>
+      <button class="btn-back" onclick="cancelarPix()">← Voltar e cancelar</button>
     </div>
   </div>
 
@@ -262,7 +309,7 @@ nav{background:rgba(255,255,255,0.95);backdrop-filter:blur(16px);border-bottom:1
 <script>
 const API = 'https://agendafacil-wf3q.onrender.com/api'
 
-// ── Detecta se veio por slug (/lucio) ou por ?id=xxx ──────────────────────────
+// ── Detecta clinicaId ──────────────────────────────────────────────────────────
 const params = new URLSearchParams(window.location.search)
 let clinicaId = params.get('id')
 
@@ -278,23 +325,21 @@ async function resolverClinicaId() {
   } catch(e) {}
 }
 
-// ── Estado global ─────────────────────────────────────────────────────────────
-let servicoSel = '', dataSel = '', horarioSel = ''
+// ── Estado global ──────────────────────────────────────────────────────────────
+let servicoSel       = ''
+let dataSel          = ''
+let horarioSel       = ''
 let servicosDisponiveis = []
+let agendamentoId    = null
+let pixPollInterval  = null
+let pixTimerInterval = null
 
-// ✅ pagCfg: configuração de pagamento do negócio
-// adiantado: se o negócio usa pagamento antecipado (config geral, não por serviço)
-// cfgPorServico: { "NomeServico": { ativo: true, valor: 50 } }
+// ── pagCfg: configuração de pagamento ─────────────────────────────────────────
+// cfgPorServico = { "NomeServico": { ativo: true, valor: 50 } }
+// Essa é a fonte de verdade carregada do backend
 let pagCfg = {
-  adiantado:      false,
-  tipoValor:      'total',
-  porcentagem:    50,
-  valorFixo:      0,
-  cfgPorServico:  {}  // config individual por serviço
+  cfgPorServico: {}
 }
-
-let agendamentoId  = null
-let pixPollInterval = null
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 function mascaraTel(inp) {
@@ -305,18 +350,22 @@ function mascaraTel(inp) {
   inp.value = v
 }
 
-function showErr(id, msg) { const e=document.getElementById(id); e.textContent=msg; e.classList.add('show') }
+function showErr(id, msg) {
+  const e = document.getElementById(id)
+  e.textContent = msg
+  e.classList.add('show')
+}
 function hideErr(id) { document.getElementById(id).classList.remove('show') }
 
 function formatarData(iso) {
   const [a,m,d] = iso.split('-')
   const dias = ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado']
-  const dt = new Date(iso+'T12:00:00')
+  const dt = new Date(iso + 'T12:00:00')
   return `${dias[dt.getDay()]}, ${d}/${m}/${a}`
 }
 
 function atualizarSteps(atual) {
-  for(let i=1;i<=4;i++) {
+  for(let i = 1; i <= 4; i++) {
     const sn = document.getElementById(`sn${i}`)
     const sl = document.getElementById(`sl${i}`)
     sn.className = 'sn-item'
@@ -330,35 +379,34 @@ function irTela(n) {
   document.querySelectorAll('.tela').forEach(t => t.classList.remove('ativa'))
   const id = n === 'pix' ? 'tela-pix' : `tela${n}`
   document.getElementById(id).classList.add('ativa')
-  if (n !== 'pix') atualizarSteps(n > 4 ? 4 : n)
-  window.scrollTo({top:0,behavior:'smooth'})
+  if(n !== 'pix') atualizarSteps(n > 4 ? 4 : n)
+  window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 
-// ── Calcula o valor que o cliente vai pagar ───────────────────────────────────
-// ✅ CORREÇÃO: verifica primeiro se o serviço específico tem pagamento ativo
-// usando cfgPorServico (lido do pagamentosConfig do backend)
+// ── Lógica de pagamento ────────────────────────────────────────────────────────
+
+/**
+ * Verifica se o serviço selecionado tem pagamento antecipado ativo.
+ * Fonte: pagCfg.cfgPorServico carregado do backend.
+ */
 function servicoExigePagamento() {
   if (!servicoSel) return false
-  const cfgServico = pagCfg.cfgPorServico[servicoSel] || {}
-  return cfgServico.ativo === true
+  const cfg = pagCfg.cfgPorServico[servicoSel]
+  return !!(cfg && cfg.ativo === true)
 }
 
+/**
+ * Calcula o valor que o cliente vai pagar.
+ * Usa o campo `valor` da configuração do serviço específico.
+ * Se não tiver valor próprio, usa 100% do preço do serviço.
+ */
 function calcularValorPagamento() {
   if (!servicoExigePagamento()) return 0
-  const preco = getPrecoServico()
-  if (preco <= 0) return 0
-
-  const cfgServico = pagCfg.cfgPorServico[servicoSel] || {}
-
-  // Se o serviço tem valor próprio configurado, usa ele
-  if (cfgServico.valor && Number(cfgServico.valor) > 0) {
-    return Number(cfgServico.valor)
-  }
-
-  // Fallback para config geral
-  if (pagCfg.tipoValor === 'fixo')         return Number(pagCfg.valorFixo) || 0
-  if (pagCfg.tipoValor === 'personalizado') return preco * ((Number(pagCfg.porcentagem) || 50) / 100)
-  return preco // 'total'
+  const cfg = pagCfg.cfgPorServico[servicoSel] || {}
+  const valorConfigurado = Number(cfg.valor)
+  if (valorConfigurado > 0) return valorConfigurado
+  // Fallback: cobra o preço total do serviço
+  return getPrecoServico()
 }
 
 function getPrecoServico() {
@@ -369,71 +417,242 @@ function getPrecoServico() {
   return s && typeof s === 'object' ? Number(s.preco) || 0 : 0
 }
 
-// ── Aplicar config de pagamento (centralizado) ────────────────────────────────
-// ✅ CORREÇÃO PRINCIPAL: lê tanto a config geral quanto a config por serviço
-// A config por serviço vem do endpoint GET /api/pagamento/config/:id
-// no formato { servicos: { "NomeServico": { ativo: true, valor: 50 } } }
-function aplicarConfigPagamento(cfg, cfgPorServico) {
-  if (cfg) {
-    pagCfg.adiantado   = !!cfg.adiantado
-    pagCfg.tipoValor   = cfg.tipoValor   || 'total'
-    pagCfg.porcentagem = Number(cfg.porcentagem) || 50
-    pagCfg.valorFixo   = Number(cfg.valorFixo)   || 0
+function fmtBRL(v) {
+  return 'R$ ' + Number(v).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+}
+
+// ── Carregamento ──────────────────────────────────────────────────────────────
+
+async function carregarClinica() {
+  if (!clinicaId) {
+    document.getElementById('hero-nome').textContent = 'Link inválido'
+    return
   }
-  if (cfgPorServico && typeof cfgPorServico === 'object') {
-    pagCfg.cfgPorServico = cfgPorServico
+
+  try {
+    const res = await fetch(`${API}/auth/negocio/${clinicaId}`)
+    const data = await res.json()
+    if (!res.ok) return
+
+    document.getElementById('hero-nome').textContent = data.negocio || data.nome
+    document.title = `Agendar — ${data.negocio || data.nome}`
+
+    if (data.segmento) {
+      const chip = document.getElementById('hero-chip')
+      chip.textContent = data.segmento
+      chip.style.display = 'inline-flex'
+    }
+    if (data.bio?.foto) {
+      document.getElementById('hero-avatar').innerHTML =
+        `<img src="${data.bio.foto}" alt="${data.negocio || data.nome}">`
+    }
+
+    servicosDisponiveis = (data.servicos || []).map(s =>
+      typeof s === 'object' ? s : { nome: s, preco: 0 }
+    )
+
+    // Carrega config de pagamento ANTES de renderizar os serviços
+    // para que as tags "Pix" apareçam corretamente
+    await carregarConfigPagamento()
+    renderServicos()
+
+  } catch(e) {
+    console.error('[carregarClinica]', e)
   }
-  console.log('[pagCfg atualizado]', pagCfg)
+}
+
+/**
+ * Carrega configuração de pagamento por serviço.
+ *
+ * O endpoint GET /api/pagamento/config/:id retorna:
+ * {
+ *   servicos: { "NomeServico": { ativo: true, valor: 50 } },
+ *   chavePix: "...",
+ *   tipoPix: "cpf"
+ * }
+ *
+ * Tenta múltiplos endpoints como fallback.
+ */
+async function carregarConfigPagamento() {
+  // 1. Endpoint principal — config por serviço
+  try {
+    const res = await fetch(`${API}/pagamento/config/${clinicaId}`)
+    if (res.ok) {
+      const data = await res.json()
+      if (data.servicos && typeof data.servicos === 'object') {
+        pagCfg.cfgPorServico = data.servicos
+        console.log('[pagamento] ✓ Config por serviço carregada:', data.servicos)
+        return
+      }
+    }
+  } catch(e) {
+    console.warn('[pagamento] Falha no endpoint /pagamento/config:', e.message)
+  }
+
+  // 2. Fallback — endpoint público geral
+  try {
+    const res = await fetch(`${API}/pagamento/config-publica/${clinicaId}`)
+    if (res.ok) {
+      const data = await res.json()
+      // Config geral: se adiantado estiver ativo, marca todos os serviços
+      if (data.adiantado) {
+        const cfgGlobal = {}
+        servicosDisponiveis.forEach(s => {
+          const nome = typeof s === 'object' ? s.nome : s
+          const preco = typeof s === 'object' ? Number(s.preco || 0) : 0
+          let valor = preco
+          if (data.tipoValor === 'personalizado') valor = preco * ((Number(data.porcentagem) || 50) / 100)
+          if (data.tipoValor === 'fixo') valor = Number(data.valorFixo) || 0
+          cfgGlobal[nome] = { ativo: true, valor }
+        })
+        pagCfg.cfgPorServico = cfgGlobal
+        console.log('[pagamento] ✓ Config geral convertida para por-serviço:', cfgGlobal)
+      }
+    }
+  } catch(e) {
+    console.warn('[pagamento] Falha no endpoint config-publica:', e.message)
+  }
+
+  // Se chegou aqui sem config, pagamento desativado para todos
+  if (Object.keys(pagCfg.cfgPorServico).length === 0) {
+    console.log('[pagamento] Nenhuma config de pagamento encontrada — pagamento desativado')
+  }
+}
+
+// ── Renderizar serviços ───────────────────────────────────────────────────────
+
+function renderServicos() {
+  const grid = document.getElementById('servicos-grid')
+  if (!servicosDisponiveis.length) {
+    grid.innerHTML = '<div style="color:var(--text3);font-size:13px;grid-column:1/-1;text-align:center;padding:20px">Nenhum serviço disponível</div>'
+    return
+  }
+
+  grid.innerHTML = servicosDisponiveis.map(s => {
+    const nome  = typeof s === 'object' ? s.nome : s
+    const preco = typeof s === 'object' && s.preco > 0
+      ? `R$ ${Number(s.preco).toFixed(2).replace('.', ',')}`
+      : ''
+    const nomeEsc = nome.replace(/'/g, "\\'")
+
+    // Verifica se esse serviço tem Pix ativo
+    const cfgS     = pagCfg.cfgPorServico[nome]
+    const temPix   = !!(cfgS && cfgS.ativo === true)
+    const valorPix = temPix && Number(cfgS.valor) > 0
+      ? ` · Pix ${fmtBRL(cfgS.valor)}`
+      : ''
+    const pixTag   = temPix
+      ? `<span class="servico-pix-tag">💳 Pix${valorPix}</span>`
+      : ''
+
+    return `<button class="servico-btn" onclick="selecionarServico(this,'${nomeEsc}')">
+      ${nome}
+      ${preco ? `<span class="servico-preco">${preco}</span>` : ''}
+      ${pixTag}
+    </button>`
+  }).join('')
+}
+
+function selecionarServico(btn, s) {
+  document.querySelectorAll('.servico-btn').forEach(b => b.classList.remove('sel'))
+  btn.classList.add('sel')
+  servicoSel = s
+  hideErr('err2')
+}
+
+function selecionarDataInput(iso) {
+  if (!iso) return
+  dataSel   = iso
+  horarioSel = ''
+  hideErr('err3')
+  carregarHorarios(iso)
+}
+
+async function carregarHorarios(dataEscolhida) {
+  const container = document.getElementById('horarios-container')
+  container.innerHTML = '<div class="empty-msg">Carregando...</div>'
+  try {
+    const res = await fetch(
+      `${API}/agendamentos/horarios-ocupados?clinicaId=${clinicaId}&data=${dataEscolhida}`
+    )
+    const result = await res.json()
+    if (result.diaInativo || !result.horarios?.length) {
+      container.innerHTML = '<div class="empty-msg">Sem atendimento neste dia</div>'
+      return
+    }
+    container.innerHTML = '<div class="horarios-grid">' + result.horarios.map(h => {
+      const ocu = result.ocupados?.includes(h)
+      return `<button class="horario-btn" ${ocu ? 'disabled' : ''} onclick="selecionarHorario(this,'${h}')">${h}</button>`
+    }).join('') + '</div>'
+  } catch(e) {
+    container.innerHTML = '<div class="empty-msg">Erro ao carregar horários</div>'
+  }
+}
+
+function selecionarHorario(btn, h) {
+  document.querySelectorAll('.horario-btn').forEach(b => b.classList.remove('sel'))
+  btn.classList.add('sel')
+  horarioSel = h
+  hideErr('err3')
 }
 
 // ── Navegação entre telas ─────────────────────────────────────────────────────
+
 function irTela2() {
   hideErr('err1')
   const nome = document.getElementById('nome').value.trim()
-  const tel = document.getElementById('telefone').value.replace(/\D/g,'')
-  if(!nome) { showErr('err1','Digite seu nome completo'); return }
-  if(tel.length < 10) { showErr('err1','Digite um WhatsApp válido com DDD'); return }
+  const tel  = document.getElementById('telefone').value.replace(/\D/g,'')
+  if (!nome) { showErr('err1','Digite seu nome completo'); return }
+  if (tel.length < 10) { showErr('err1','Digite um WhatsApp válido com DDD'); return }
   irTela(2)
 }
 
 function irTela3() {
   hideErr('err2')
-  if(!servicoSel) { showErr('err2','Selecione um serviço para continuar'); return }
+  if (!servicoSel) { showErr('err2','Selecione um serviço para continuar'); return }
   const hoje = new Date().toISOString().split('T')[0]
   document.getElementById('data-input').min = hoje
-  if(dataSel) document.getElementById('data-input').value = dataSel
+  if (dataSel) document.getElementById('data-input').value = dataSel
   irTela(3)
 }
 
 function irTela4() {
   hideErr('err3')
-  if(!dataSel) { showErr('err3','Selecione uma data'); return }
-  if(!horarioSel) { showErr('err3','Selecione um horário disponível'); return }
+  if (!dataSel)    { showErr('err3','Selecione uma data'); return }
+  if (!horarioSel) { showErr('err3','Selecione um horário disponível'); return }
 
+  // Preenche resumo
   document.getElementById('r-nome').textContent    = document.getElementById('nome').value.trim()
   document.getElementById('r-tel').textContent     = document.getElementById('telefone').value.trim()
   document.getElementById('r-servico').textContent = servicoSel
   document.getElementById('r-data').textContent    = formatarData(dataSel)
   document.getElementById('r-hora').textContent    = horarioSel
 
-  const valorPagar = calcularValorPagamento()
-  const badge      = document.getElementById('pagamento-badge')
-  const badgeValor = document.getElementById('pagamento-badge-valor')
-  const btnTxt     = document.getElementById('btn-confirmar-txt')
+  // Badge de pagamento
+  const valorPagar  = calcularValorPagamento()
+  const badge       = document.getElementById('pagamento-badge')
+  const badgeValor  = document.getElementById('pagamento-badge-valor')
+  const rPagRow     = document.getElementById('r-pag-row')
+  const rPagVal     = document.getElementById('r-pag-val')
+  const btnTxt      = document.getElementById('btn-confirmar-txt')
 
   if (servicoExigePagamento() && valorPagar > 0) {
-    badgeValor.textContent = `Valor: R$ ${valorPagar.toFixed(2).replace('.', ',')}`
-    badge.style.display = 'flex'
-    btnTxt.textContent = 'Continuar para o pagamento'
+    badgeValor.textContent = fmtBRL(valorPagar)
+    badge.style.display    = 'flex'
+    rPagRow.style.display  = 'flex'
+    rPagVal.textContent    = fmtBRL(valorPagar)
+    btnTxt.textContent     = 'Continuar para o pagamento'
   } else {
-    badge.style.display = 'none'
-    btnTxt.textContent = 'Confirmar agendamento'
+    badge.style.display   = 'none'
+    rPagRow.style.display = 'none'
+    btnTxt.textContent    = 'Confirmar agendamento'
   }
 
   irTela(4)
 }
 
 // ── Confirmar agendamento ─────────────────────────────────────────────────────
+
 async function confirmarAgendamento() {
   hideErr('err4')
   const btn = document.getElementById('btn-confirmar')
@@ -444,11 +663,12 @@ async function confirmarAgendamento() {
   const telefone = document.getElementById('telefone').value.trim()
   const preco    = getPrecoServico()
 
+  // 1. Cria o agendamento
   let resposta = {}
   try {
     const res = await fetch(`${API}/agendamentos`, {
       method: 'POST',
-      headers: {'Content-Type':'application/json'},
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         clinicaId,
         pacienteNome:     nome,
@@ -465,105 +685,176 @@ async function confirmarAgendamento() {
     if (!res.ok) {
       showErr('err4', resposta.erro || `Erro ${res.status}. Tente novamente.`)
       btn.disabled = false
-      document.getElementById('btn-confirmar-txt').textContent = servicoExigePagamento() ? 'Continuar para o pagamento' : 'Confirmar agendamento'
+      document.getElementById('btn-confirmar-txt').textContent =
+        servicoExigePagamento() ? 'Continuar para o pagamento' : 'Confirmar agendamento'
       return
     }
   } catch(e) {
     showErr('err4', 'Erro de conexão. Verifique sua internet e tente novamente.')
     btn.disabled = false
-    document.getElementById('btn-confirmar-txt').textContent = servicoExigePagamento() ? 'Continuar para o pagamento' : 'Confirmar agendamento'
+    document.getElementById('btn-confirmar-txt').textContent =
+      servicoExigePagamento() ? 'Continuar para o pagamento' : 'Confirmar agendamento'
     return
   }
 
   agendamentoId = resposta._id
   const valorPagar = calcularValorPagamento()
 
-  // ✅ Só vai para a tela PIX se o serviço exige pagamento E tem valor
+  // 2. Decide: pagamento ou sucesso direto
   if (servicoExigePagamento() && valorPagar > 0 && agendamentoId) {
-    document.getElementById('btn-confirmar-txt').textContent = 'Criando Pix...'
-    await irTelaPix(valorPagar)
+    document.getElementById('btn-confirmar-txt').textContent = 'Criando cobrança Pix...'
+    const pixOk = await irTelaPix(valorPagar)
+    if (!pixOk) {
+      // Falhou ao criar pix — mostra erro mas o agendamento já foi criado
+      showErr('err4', 'Agendamento criado, mas houve um erro ao gerar o Pix. Entre em contato.')
+    }
     btn.disabled = false
     document.getElementById('btn-confirmar-txt').textContent = 'Continuar para o pagamento'
     return
   }
 
-  // Sem pagamento → vai direto para o sucesso
+  // Sem pagamento → sucesso direto
   btn.disabled = false
   document.getElementById('btn-confirmar-txt').textContent = 'Confirmar agendamento'
   mostrarSucesso(nome, telefone, false)
 }
 
 // ── Tela Pix ──────────────────────────────────────────────────────────────────
+
 async function irTelaPix(valorPagar) {
   try {
     const res = await fetch(`${API}/pagamento/criar-preferencia`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ agendamentoId, negocioId: clinicaId })
+      body: JSON.stringify({
+        agendamentoId,
+        negocioId: clinicaId,
+        valor:     valorPagar
+      })
     })
     const data = await res.json()
 
     if (!res.ok) {
-      showErr('err4', data.erro || 'Erro ao criar pagamento Pix')
-      return
+      console.error('[pix] Erro ao criar preferência:', data)
+      return false
     }
 
-    const partes = dataSel.split('-')
-    const d = partes[2], m = partes[1], a = partes[0]
+    // Preenche resumo na tela Pix
+    const [a, m, d] = dataSel.split('-')
     document.getElementById('pix-resumo').innerHTML = `
       <div class="resumo-row"><span class="resumo-label">Serviço</span><span class="resumo-val">${servicoSel}</span></div>
       <div class="resumo-row"><span class="resumo-label">Data</span><span class="resumo-val">${d}/${m}/${a}</span></div>
       <div class="resumo-row"><span class="resumo-label">Horário</span><span class="resumo-val">${horarioSel}</span></div>
     `
-    document.getElementById('pix-valor').textContent = `R$ ${Number(data.valorCobrado || valorPagar).toFixed(2).replace('.', ',')}`
 
+    // Valor
+    const valorReal = Number(data.valorCobrado || data.valor || valorPagar)
+    document.getElementById('pix-valor').textContent = fmtBRL(valorReal)
+
+    // QR Code
     const qrWrap = document.getElementById('pix-qr-wrap')
     if (data.pixBase64) {
-      qrWrap.innerHTML = `<img src="data:image/png;base64,${data.pixBase64}" style="width:200px;height:200px;border-radius:12px;border:2px solid var(--border)" />`
-    } else if (data.linkPix) {
-      qrWrap.innerHTML = '<div style="font-size:13px;color:var(--text2)">Use o Pix Copia e Cola abaixo</div>'
-    } else if (data.linkPagamento) {
-      qrWrap.innerHTML = `<a href="${data.linkPagamento}" target="_blank" style="display:inline-flex;align-items:center;gap:8px;background:var(--accent);color:#fff;padding:12px 24px;border-radius:10px;text-decoration:none;font-weight:600;font-size:14px">Pagar via Mercado Pago →</a>`
+      qrWrap.innerHTML = `<img src="data:image/png;base64,${data.pixBase64}" alt="QR Code Pix" />`
+    } else if (data.qrCode) {
+      qrWrap.innerHTML = `<img src="data:image/png;base64,${data.qrCode}" alt="QR Code Pix" />`
     } else {
-      qrWrap.innerHTML = '<div style="font-size:13px;color:var(--text2)">QR Code indisponível.</div>'
+      qrWrap.innerHTML = '<div style="font-size:13px;color:var(--text2);padding:20px 0">Use o Pix Copia e Cola abaixo</div>'
     }
 
-    if (data.linkPix) {
-      document.getElementById('pix-code').value = data.linkPix
+    // Pix Copia e Cola
+    const pixCodigo = data.linkPix || data.pixCopiaCola || data.pixCopiaECola || ''
+    if (pixCodigo) {
+      document.getElementById('pix-code').value = pixCodigo
       document.getElementById('pix-copia-cola').style.display = 'block'
     }
 
+    // Link Mercado Pago (fallback)
+    const linkMP = data.linkPagamento || data.initPoint || ''
+    if (linkMP && !data.pixBase64 && !pixCodigo) {
+      const linkWrap = document.getElementById('pix-link-wrap')
+      document.getElementById('pix-link-btn').href = linkMP
+      linkWrap.style.display = 'block'
+    }
+
+    // Timer
+    iniciarTimerPix(30 * 60)
+
     irTela('pix')
     iniciarPollingPagamento()
+    return true
 
   } catch(e) {
-    showErr('err4', 'Erro de conexão ao criar pagamento. Tente novamente.')
+    console.error('[pix] Erro:', e)
+    return false
   }
 }
 
-function copiarPix() {
-  navigator.clipboard.writeText(document.getElementById('pix-code').value)
-  const btn = document.getElementById('btn-copiar-pix')
-  btn.textContent = 'Copiado!'; setTimeout(() => btn.textContent = 'Copiar', 2000)
+function iniciarTimerPix(segundosTotal) {
+  const timerEl     = document.getElementById('pix-timer')
+  const countdownEl = document.getElementById('pix-countdown')
+  if (!timerEl || !countdownEl) return
+
+  timerEl.style.display = 'block'
+  let restante = segundosTotal
+
+  if (pixTimerInterval) clearInterval(pixTimerInterval)
+  pixTimerInterval = setInterval(() => {
+    restante--
+    if (restante <= 0) {
+      clearInterval(pixTimerInterval)
+      countdownEl.textContent = '00:00'
+      return
+    }
+    const m = Math.floor(restante / 60).toString().padStart(2, '0')
+    const s = (restante % 60).toString().padStart(2, '0')
+    countdownEl.textContent = `${m}:${s}`
+  }, 1000)
 }
 
-// ── Polling de pagamento ──────────────────────────────────────────────────────
-// ✅ CORREÇÃO PRINCIPAL: só aceita como pago se data.status === 'pago'
-// NUNCA usa data.agStatus === 'confirmado' pois agendamentos sem Pix
-// também ficam como 'confirmado' — isso causava o falso positivo
+function copiarPix() {
+  const code = document.getElementById('pix-code').value
+  navigator.clipboard.writeText(code).then(() => {
+    const btn = document.getElementById('btn-copiar-pix')
+    btn.textContent = 'Copiado!'
+    setTimeout(() => btn.textContent = 'Copiar', 2000)
+  })
+}
+
+function cancelarPix() {
+  pararPolling()
+  irTela(4)
+}
+
+// ── Polling de status do pagamento ────────────────────────────────────────────
+
+function pararPolling() {
+  if (pixPollInterval)  { clearInterval(pixPollInterval);  pixPollInterval  = null }
+  if (pixTimerInterval) { clearInterval(pixTimerInterval); pixTimerInterval = null }
+}
+
+/**
+ * Verifica o status do pagamento a cada 4 segundos.
+ *
+ * O endpoint GET /api/pagamento/status/:agendamentoId retorna:
+ * { status: 'pendente' | 'pago' | 'rejeitado' | 'reembolsado', ... }
+ *
+ * IMPORTANTE: apenas `status === 'pago'` confirma o pagamento.
+ * NÃO usa agStatus/status do agendamento pois 'confirmado' != 'pago via Pix'.
+ */
 function iniciarPollingPagamento() {
-  if (pixPollInterval) clearInterval(pixPollInterval)
+  pararPolling()
   if (!agendamentoId) return
 
   let tentativas = 0
-  const MAX_TENTATIVAS = 45  // 45 × 4s = 3 minutos
+  const MAX = 60  // 60 × 4s = 4 minutos
 
   pixPollInterval = setInterval(async () => {
     tentativas++
-    if (tentativas > MAX_TENTATIVAS) {
-      clearInterval(pixPollInterval)
-      document.getElementById('pix-status-msg').textContent =
-        '⏰ QR Code expirado. Volte e tente novamente.'
+    if (tentativas > MAX) {
+      pararPolling()
+      const el = document.getElementById('pix-status-msg')
+      el.textContent = '⏰ Tempo expirado. Tente novamente.'
+      el.className   = 'pix-status erro'
       return
     }
 
@@ -572,41 +863,41 @@ function iniciarPollingPagamento() {
       if (!res.ok) return
       const data = await res.json()
 
-      // ✅ ÚNICO critério de confirmação: pagamento.status === 'pago'
-      // Nunca checa agStatus pois confirmado != pago via Pix
-      const pago      = data.status === 'pago'
-      const rejeitado = data.status === 'rejeitado' || data.status === 'reembolsado'
+      console.log('[polling] status:', data.status, '| tentativa:', tentativas)
 
-      if (pago) {
-        clearInterval(pixPollInterval)
-        pixPollInterval = null
+      // Único critério de aprovação
+      if (data.status === 'pago') {
+        pararPolling()
         const el = document.getElementById('pix-status-msg')
         el.textContent = '✅ Pagamento confirmado!'
-        el.classList.add('pago')
+        el.className   = 'pix-status pago'
         setTimeout(() => mostrarSucesso(
           document.getElementById('nome').value.trim(),
           document.getElementById('telefone').value.trim(),
           true
         ), 1500)
-      } else if (rejeitado) {
-        clearInterval(pixPollInterval)
-        pixPollInterval = null
-        document.getElementById('pix-status-msg').textContent =
-          '❌ Pagamento não aprovado. Volte e tente novamente.'
+        return
       }
-      // status === 'pendente' → continua aguardando normalmente
-    } catch (e) {
+
+      if (data.status === 'rejeitado' || data.status === 'reembolsado') {
+        pararPolling()
+        const el = document.getElementById('pix-status-msg')
+        el.textContent = '❌ Pagamento não aprovado. Tente novamente.'
+        el.className   = 'pix-status erro'
+      }
+
+    } catch(e) {
       console.warn('[polling] Erro ao verificar status:', e.message)
     }
   }, 4000)
 }
 
 // ── Tela de sucesso ───────────────────────────────────────────────────────────
-function mostrarSucesso(nome, telefone, pago) {
-  if (pixPollInterval) { clearInterval(pixPollInterval); pixPollInterval = null }
 
-  const partes = dataSel.split('-')
-  const d = partes[2], m = partes[1], a = partes[0]
+function mostrarSucesso(nome, telefone, pago) {
+  pararPolling()
+
+  const [a, m, d] = dataSel.split('-')
 
   document.getElementById('sucesso-detalhe').innerHTML = `
     <div class="resumo-row"><span class="resumo-label">Serviço</span><span class="resumo-val">${servicoSel}</span></div>
@@ -618,138 +909,32 @@ function mostrarSucesso(nome, telefone, pago) {
 
   const tel = telefone.replace(/\D/g,'')
   const msg = encodeURIComponent(
-    `Olá! Meu agendamento foi confirmado\n\nServiço: ${servicoSel}\nData: ${d}/${m}/${a}\nHorário: ${horarioSel}\nNome: ${nome}${pago ? '\nPagamento: Pix confirmado' : ''}`
+    `Olá! Meu agendamento foi confirmado\n\n` +
+    `Serviço: ${servicoSel}\nData: ${d}/${m}/${a}\nHorário: ${horarioSel}\nNome: ${nome}` +
+    (pago ? '\nPagamento: Pix confirmado ✓' : '')
   )
-  document.getElementById('btn-whatsapp').href = `https://wa.me/55${tel}?text=${msg}`
+  document.getElementById('btn-whatsapp').href   = `https://wa.me/55${tel}?text=${msg}`
+  document.getElementById('btn-cancelar-link').href =
+    agendamentoId ? `/cancelar.html?id=${agendamentoId}` : '#'
 
-  if (agendamentoId) {
-    document.getElementById('btn-cancelar-link').href = '/cancelar.html?id=' + agendamentoId
-  } else {
+  if (!agendamentoId) {
     document.getElementById('btn-cancelar-link').style.display = 'none'
   }
 
   irTela(5)
 }
 
-// ── Carregar dados do negócio ─────────────────────────────────────────────────
-async function carregarClinica() {
-  if(!clinicaId) { document.getElementById('hero-nome').textContent = 'Link inválido'; return }
-  try {
-    const res = await fetch(`${API}/auth/negocio/${clinicaId}`)
-    const data = await res.json()
-    if(!res.ok) return
-
-    document.getElementById('hero-nome').textContent = data.negocio || data.nome
-    document.title = `Agendar — ${data.negocio || data.nome}`
-    if(data.segmento) {
-      const chip = document.getElementById('hero-chip')
-      chip.textContent = data.segmento
-      chip.style.display = 'inline-flex'
-    }
-    if(data.bio?.foto) {
-      document.getElementById('hero-avatar').innerHTML = `<img src="${data.bio.foto}" alt="${data.negocio || data.nome}">`
-    }
-
-    servicosDisponiveis = (data.servicos || []).map(s => typeof s === 'object' ? s : { nome: s, preco: 0 })
-    renderServicos()
-
-    // ✅ Carrega config de pagamento em paralelo
-    await carregarConfigPagamento()
-
-  } catch(e) { console.error('[carregarClinica]', e) }
-}
-
-// ── Carregar config de pagamento ──────────────────────────────────────────────
-// ✅ CORREÇÃO: usa o endpoint GET /api/pagamento/config/:id que retorna
-// { servicos: { "NomeServico": { ativo: true, valor: 50 } }, chavePix, tipoPix }
-// Isso é a fonte correta de verdade sobre quais serviços têm Pix ativo
-async function carregarConfigPagamento() {
-  // Tenta endpoint de config por serviço (fonte principal)
-  try {
-    const res = await fetch(`${API}/pagamento/config/${clinicaId}`)
-    if (res.ok) {
-      const data = await res.json()
-      // data.servicos = { "Corte": { ativo: true, valor: 50 }, ... }
-      aplicarConfigPagamento(null, data.servicos || {})
-      console.log('[pagamento] config por serviço carregada:', data.servicos)
-      return
-    }
-  } catch(e) { console.warn('[pagamento] falha no endpoint config:', e.message) }
-
-  // Fallback: endpoint config-publica (config geral, menos preciso)
-  try {
-    const res = await fetch(`${API}/pagamento/config-publica/${clinicaId}`)
-    if (res.ok) {
-      const data = await res.json()
-      aplicarConfigPagamento(data, {})
-      return
-    }
-  } catch(e) { console.warn('[pagamento] falha no endpoint config-publica:', e.message) }
-}
-
-// ── Renderizar serviços ───────────────────────────────────────────────────────
-function renderServicos() {
-  const grid = document.getElementById('servicos-grid')
-  if(!servicosDisponiveis.length) {
-    grid.innerHTML = '<div style="color:var(--text3);font-size:13px;grid-column:1/-1;text-align:center;padding:20px">Nenhum serviço disponível</div>'
-    return
-  }
-  grid.innerHTML = servicosDisponiveis.map(s => {
-    const nome  = typeof s === 'object' ? s.nome : s
-    const preco = typeof s === 'object' && s.preco > 0 ? `R$ ${Number(s.preco).toFixed(2).replace('.', ',')}` : ''
-    const nomeEscapado = nome.replace(/'/g, "\\'")
-    return `<button class="servico-btn" onclick="selecionarServico(this,'${nomeEscapado}')">
-      ${nome}${preco ? `<span class="servico-preco">${preco}</span>` : ''}
-    </button>`
-  }).join('')
-}
-
-function selecionarServico(btn, s) {
-  document.querySelectorAll('.servico-btn').forEach(b => b.classList.remove('sel'))
-  btn.classList.add('sel')
-  servicoSel = s
-  hideErr('err2')
-}
-
-function selecionarDataInput(iso) {
-  if(!iso) return
-  dataSel = iso
-  horarioSel = ''
-  hideErr('err3')
-  carregarHorarios(iso)
-}
-
-async function carregarHorarios(dataEscolhida) {
-  const container = document.getElementById('horarios-container')
-  container.innerHTML = '<div class="empty-msg">Carregando...</div>'
-  try {
-    const res = await fetch(`${API}/agendamentos/horarios-ocupados?clinicaId=${clinicaId}&data=${dataEscolhida}`)
-    const result = await res.json()
-    if(result.diaInativo || !result.horarios?.length) {
-      container.innerHTML = '<div class="empty-msg">Sem atendimento neste dia</div>'
-      return
-    }
-    container.innerHTML = '<div class="horarios-grid">' + result.horarios.map(h => {
-      const ocu = result.ocupados?.includes(h)
-      return `<button class="horario-btn" ${ocu?'disabled':''} onclick="selecionarHorario(this,'${h}')">${h}</button>`
-    }).join('') + '</div>'
-  } catch(e) {
-    container.innerHTML = '<div class="empty-msg">Erro ao carregar horários</div>'
-  }
-}
-
-function selecionarHorario(btn, h) {
-  document.querySelectorAll('.horario-btn').forEach(b => b.classList.remove('sel'))
-  btn.classList.add('sel')
-  horarioSel = h
-  hideErr('err3')
-}
+// ── Reset / Novo agendamento ──────────────────────────────────────────────────
 
 function novoAgendamento() {
-  servicoSel = ''; dataSel = ''; horarioSel = ''; agendamentoId = null
-  if (pixPollInterval) { clearInterval(pixPollInterval); pixPollInterval = null }
-  document.getElementById('nome').value = ''
-  document.getElementById('telefone').value = ''
+  pararPolling()
+  servicoSel    = ''
+  dataSel       = ''
+  horarioSel    = ''
+  agendamentoId = null
+  document.getElementById('nome').value      = ''
+  document.getElementById('telefone').value  = ''
+  document.getElementById('data-input').value = ''
   document.querySelectorAll('.servico-btn').forEach(b => b.classList.remove('sel'))
   irTela(1)
 }
