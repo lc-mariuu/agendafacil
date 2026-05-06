@@ -62,12 +62,13 @@ app.get('/:slug', async (req, res) => {
 })
 
 // ── Limpeza automática de agendamentos antigos ────────────────
+// Remove agendamentos concluídos/cancelados após 7 dias para manter dados no dashboard
 async function limparAgendamentos() {
   try {
-    const umaHoraAtras = new Date(Date.now() - 60 * 60 * 1000)
+    const seteDiasAtras = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
     const result = await Appointment.deleteMany({
       status:       { $in: ['concluido', 'cancelado'] },
-      atualizadoEm: { $lt: umaHoraAtras },
+      atualizadoEm: { $lt: seteDiasAtras },
     })
     if (result.deletedCount > 0)
       console.log(`[limpeza] ${result.deletedCount} agendamentos removidos`)
@@ -76,18 +77,7 @@ async function limparAgendamentos() {
   }
 }
 
-// ── Cancelamento automático de pagamentos pendentes ───────────
-setInterval(async () => {
-  try {
-    const limite = new Date(Date.now() - 35 * 60 * 1000)
-    await Appointment.updateMany(
-      { status: 'aguardando_pagamento', criadoEm: { $lt: limite } },
-      { $set: { status: 'cancelado', atualizadoEm: new Date() } }
-    )
-  } catch (e) {
-    console.error('[cancelamento] erro:', e.message)
-  }
-}, 5 * 60 * 1000)
+// O job de cancelamento está em routes/appointments.js (executa a cada 10 min)
 
 // ── Inicialização ─────────────────────────────────────────────
 const PORT = process.env.PORT || 3000

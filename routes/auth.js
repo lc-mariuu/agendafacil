@@ -99,8 +99,9 @@ router.post('/enviar-codigo', async (req, res) => {
     if (!email || !emailValido(email)) return res.status(400).json({ erro: 'Email inválido' })
 
     const userVerificado = await User.findOne({ email: email.toLowerCase(), verificado: true })
-    if (userVerificado) return res.status(400).json({ erro: 'Email já cadastrado' })
+    if (userVerificado) return res.status(400).json({ erro: 'Email já cadastrado e verificado' })
 
+    // Remove tentativas anteriores de cadastro não finalizado
     await User.deleteOne({ email: email.toLowerCase(), verificado: false })
 
     const codigo = gerarCodigo()
@@ -181,7 +182,20 @@ router.post('/login', async (req, res) => {
     const senhaCorreta = await user.compararSenha(senha)
     if (!senhaCorreta) return res.status(400).json({ erro: 'Email ou senha incorretos' })
 
-    if (!user.verificado) { user.verificado = true; await user.save() }
+    // Segurança: apenas marca como verificado se o usuário completou o cadastro recentemente
+    // (usuário com mais de 7 dias deve verificar novamente)
+    if (!user.verificado && user.createdAt) {
+      const diasCriado = (Date.now() - new Date(user.createdAt).getTime()) / (1000 * 60 * 60 * 24)
+      if (diasCriado < 7) {
+        user.verificado = true
+        await user.save()
+      }
+    }
+
+    // Se ainda não verificado após 7 dias, bloqueia login
+    if (!user.verificado) {
+      return res.status(403).json({ erro: 'Email não verificado. Verifique sua caixa de entrada.' })
+    }
 
     const negocios     = await Negocio.find({ userId: user._id }).sort({ criadoEm: 1 })
     const negPrincipal = negocios[0]

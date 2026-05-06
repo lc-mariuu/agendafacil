@@ -7,9 +7,11 @@ const { autenticar, verificarAcesso } = require('../middleware/acesso')
 
 // ── Job: limpa aguardando_pagamento com mais de 35 min ──────────────────────
 // Roda a cada 10 minutos para liberar horários de clientes que não pagaram
+const LIMITE_EXPIRACAO_MIN = 35
+
 setInterval(async () => {
   try {
-    const limite = new Date(Date.now() - 35 * 60 * 1000)
+    const limite = new Date(Date.now() - LIMITE_EXPIRACAO_MIN * 60 * 1000)
     const result = await Appointment.updateMany(
       { status: 'aguardando_pagamento', criadoEm: { $lt: limite } },
       { $set: { status: 'cancelado', atualizadoEm: new Date() } }

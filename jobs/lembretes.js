@@ -11,6 +11,8 @@ const BASE_URL           = process.env.BASE_URL           || 'https://agendafaci
 // UTILITÁRIOS
 // ─────────────────────────────────────────────
 
+const MAX_TENTATIVAS = 50 // Limite máximo de envios por ciclo
+
 async function enviarLembrete(telefone, mensagem) {
   const numero = telefone.replace(/\D/g, '')
   const url = `${EVOLUTION_API_URL}/message/sendText/${EVOLUTION_INSTANCE}`
@@ -99,7 +101,13 @@ async function dispararLembretes24h() {
 
       console.log(`[24H] ${negocio.nome}: ${agendamentos.length} agendamento(s) amanha`)
 
+      let enviados = 0
       for (const ag of agendamentos) {
+        if (enviados >= MAX_TENTATIVAS) {
+          console.log(`[LEM] Limite de ${MAX_TENTATIVAS} envios atingido`)
+          break
+        }
+        enviados++
         if (!ag.pacienteTelefone) {
           console.log(`[24H] Pulando ${ag.pacienteNome} — sem telefone`)
           continue
@@ -145,7 +153,13 @@ async function dispararLembretes1h() {
 
       console.log(`[1H] ${negocio.nome}: ${agendamentos.length} agendamento(s) na proxima hora`)
 
+      let enviados = 0
       for (const ag of agendamentos) {
+        if (enviados >= MAX_TENTATIVAS) {
+          console.log(`[LEM] Limite de ${MAX_TENTATIVAS} envios atingido`)
+          break
+        }
+        enviados++
         if (!ag.pacienteTelefone) {
           console.log(`[1H] Pulando ${ag.pacienteNome} — sem telefone`)
           continue
@@ -194,7 +208,13 @@ async function dispararPosAtendimento() {
 
       console.log(`[POS] ${negocio.nome}: ${agendamentos.length} agendamento(s) para pos-atendimento`)
 
+      let enviados = 0
       for (const ag of agendamentos) {
+        if (enviados >= MAX_TENTATIVAS) {
+          console.log(`[LEM] Limite de ${MAX_TENTATIVAS} envios atingido`)
+          break
+        }
+        enviados++
         if (!ag.pacienteTelefone) {
           console.log(`[POS] Pulando ${ag.pacienteNome} — sem telefone`)
           continue
