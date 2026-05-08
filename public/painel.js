@@ -3166,67 +3166,77 @@ document.addEventListener('DOMContentLoaded', function() {
   ────────────────────────────────────────────── */
   var DONUT_CORES = ['#3b82f6','#f59e0b','#34d399','#f87171','#a78bfa','#06b6d4','#ec4899'];
  
-  function renderDonut() {
-    var ags  = window.todosAgendamentos || [];
-    var freq = {};
-    ags.forEach(function (a) {
-      if (!a.servico) return;
-      freq[a.servico] = (freq[a.servico] || 0) + 1;
-    });
- 
-    var entries = Object.keys(freq)
-      .map(function (k) { return [k, freq[k]]; })
-      .sort(function (a, b) { return b[1] - a[1]; });
- 
-    var total   = entries.reduce(function (s, e) { return s + e[1]; }, 0) || 1;
-    var top     = entries.slice(0, 4);
-    var outrosN = entries.slice(4).reduce(function (s, e) { return s + e[1]; }, 0);
-    if (outrosN > 0) top.push(['Outros', outrosN]);
- 
-    /* Canvas */
-    var canvas = el('ag2-donut');
-    if (!canvas || !canvas.getContext) return;
-    var ctx = canvas.getContext('2d');
-    var W = canvas.width, H = canvas.height;
-    var cx = W / 2, cy = H / 2;
-    var r  = Math.min(W, H) / 2 - 5;
-    var ri = r * 0.52;
- 
-    ctx.clearRect(0, 0, W, H);
- 
-    var ang = -Math.PI / 2;
-    top.forEach(function (e, i) {
-      var slice = (e[1] / total) * Math.PI * 2;
-      ctx.beginPath();
-      ctx.moveTo(cx, cy);
-      ctx.arc(cx, cy, r, ang, ang + slice);
-      ctx.closePath();
-      ctx.fillStyle = DONUT_CORES[i % DONUT_CORES.length];
-      ctx.fill();
-      ang += slice;
-    });
- 
-    /* Buraco */
-    var bgColor = getComputedStyle(document.documentElement).getPropertyValue('--bg-card').trim() || '#111827';
-    ctx.beginPath();
-    ctx.arc(cx, cy, ri, 0, Math.PI * 2);
-    ctx.fillStyle = bgColor;
-    ctx.fill();
- 
-    /* Legenda */
-    var leg = el('ag2-serv-legend');
-    if (!leg) return;
-    leg.innerHTML = top.map(function (e, i) {
-      var pct = Math.round((e[1] / total) * 100);
-      return '<div class="ag2-sl-item">' +
-        '<div class="ag2-sl-left">' +
-          '<span class="ag2-sl-dot" style="background:' + DONUT_CORES[i % DONUT_CORES.length] + '"></span>' +
-          e[0] +
-        '</div>' +
-        '<span class="ag2-sl-pct">' + pct + '%</span>' +
-      '</div>';
-    }).join('');
-  }
+function renderDonut() {
+var ags = window.todosAgendamentos || [];
+var freq = {};
+ags.forEach(function (a) {
+if (!a.servico) return;
+freq[a.servico] = (freq[a.servico] || 0) + 1;
+});
+
+var entries = Object.keys(freq)
+.map(function (k) { return [k, freq[k]]; })
+.sort(function (a, b) { return b[1] - a[1]; });
+
+var leg = el('ag2-serv-legend');
+var canvas = el('ag2-donut');
+if (!canvas || !canvas.getContext || !leg) return;
+var ctx = canvas.getContext('2d');
+var W = canvas.width, H = canvas.height;
+var cx = W / 2, cy = H / 2;
+var r = Math.min(W, H) / 2 - 5;
+var ri = r * 0.52;
+
+ctx.clearRect(0, 0, W, H);
+
+if (entries.length === 0) {
+ctx.beginPath();
+ctx.arc(cx, cy, r, 0, Math.PI * 2);
+ctx.fillStyle = 'rgba(255,255,255,0.04)';
+ctx.fill();
+ctx.beginPath();
+ctx.arc(cx, cy, ri, 0, Math.PI * 2);
+var bgColor = getComputedStyle(document.documentElement).getPropertyValue('--bg-card').trim() || '#111827';
+ctx.fillStyle = bgColor;
+ctx.fill();
+leg.innerHTML = '<div style="text-align:center;color:var(--text3);font-size:12px;padding:8px 0">Nenhum dado ainda</div>';
+return;
+}
+
+var total = entries.reduce(function (s, e) { return s + e[1]; }, 0) || 1;
+var top = entries.slice(0, 4);
+var outrosN = entries.slice(4).reduce(function (s, e) { return s + e[1]; }, 0);
+if (outrosN > 0) top.push(['Outros', outrosN]);
+
+var ang = -Math.PI / 2;
+top.forEach(function (e, i) {
+var slice = (e[1] / total) * Math.PI * 2;
+ctx.beginPath();
+ctx.moveTo(cx, cy);
+ctx.arc(cx, cy, r, ang, ang + slice);
+ctx.closePath();
+ctx.fillStyle = DONUT_CORES[i % DONUT_CORES.length];
+ctx.fill();
+ang += slice;
+});
+
+var bgColor = getComputedStyle(document.documentElement).getPropertyValue('--bg-card').trim() || '#111827';
+ctx.beginPath();
+ctx.arc(cx, cy, ri, 0, Math.PI * 2);
+ctx.fillStyle = bgColor;
+ctx.fill();
+
+leg.innerHTML = top.map(function (e, i) {
+var pct = Math.round((e[1] / total) * 100);
+return '<div class="ag2-sl-item">' +
+'<div class="ag2-sl-left">' +
+'<span class="ag2-sl-dot" style="background:' + DONUT_CORES[i % DONUT_CORES.length] + '"></span>' +
+e[0] +
+'</div>' +
+'<span class="ag2-sl-pct">' + pct + '%</span>' +
+'</div>';
+}).join('');
+}
  
   /* ──────────────────────────────────────────────
      LINK DE AGENDAMENTO
