@@ -355,8 +355,8 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
 
       // Atualiza agendamento como confirmado
       if (transacao.agendamentoId) {
-        const Agendamento = mongoose.model('Agendamento')
-        await Agendamento.findByIdAndUpdate(transacao.agendamentoId, {
+        const Appointment = require('../models/Appointment')
+        await Appointment.findByIdAndUpdate(transacao.agendamentoId, {
           'pagamento.status': 'pago',
           'pagamento.valor':  transacao.valorBruto,
           'pagamento.pagoEm': new Date(),
@@ -606,7 +606,7 @@ router.get('/saques/:negocioId', authMiddleware, async (req, res) => {
 router.patch('/config', authMiddleware, async (req, res) => {
   try {
     const { negocioId, chavePix, tipoPix, servicos, ativo, porcentagem } = req.body
-    const Negocio = mongoose.model('Negocio')
+    const Negocio = require('../models/Negocio')
 
     await Negocio.findByIdAndUpdate(negocioId, {
       'pagamentos.ativo':       ativo      !== undefined ? ativo : undefined,
@@ -628,7 +628,7 @@ router.patch('/config', authMiddleware, async (req, res) => {
 // ──────────────────────────────────────────────────────────────
 router.get('/config/:negocioId', async (req, res) => {
   try {
-    const Negocio = mongoose.model('Negocio')
+    const Negocio = require('../models/Negocio')
     const negocio = await Negocio.findById(req.params.negocioId).select('pagamentos').lean()
     return res.json(negocio?.pagamentos || {})
   } catch (err) {

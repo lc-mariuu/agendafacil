@@ -2740,3 +2740,620 @@ document.addEventListener('DOMContentLoaded', function() {
   console.log('[stats-patch] ✓ acumulador persistente ativo — stats não regridem mais')
  
 })()
+
+;(function () {
+  'use strict';
+ 
+  /* ──────────────────────────────────────────────
+     ESTADO INTERNO
+  ────────────────────────────────────────────── */
+  var S = {
+    ano:         new Date().getFullYear(),
+    mes:         new Date().getMonth(),      // 0-based
+    dataSel:     new Date().toISOString().split('T')[0], // 'YYYY-MM-DD'
+    ordemAsc:    true,
+    profFiltro:  'todos',
+    verMaisOpen: false,
+    dropId:      null,
+  };
+ 
+  var LIMITE_LISTA = 5; // itens antes de "ver mais"
+ 
+  /* ──────────────────────────────────────────────
+     UTILIDADES
+  ────────────────────────────────────────────── */
+  function brl(v) {
+    return 'R$ ' + Number(v).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+ 
+  function avatarCor(nome) {
+    var paleta = [
+      ['#1d4ed8','#3b82f6'],['#7c3aed','#8b5cf6'],['#0e7490','#06b6d4'],
+      ['#15803d','#22c55e'],['#b45309','#f59e0b'],['#be185d','#ec4899'],
+      ['#0369a1','#38bdf8'],['#6d28d9','#a78bfa'],['#9f1239','#f43f5e'],
+    ];
+    var h = 0;
+    for (var i = 0; i < (nome || 'A').length; i++) h = ((h << 5) - h) + (nome || 'A').charCodeAt(i);
+    return paleta[Math.abs(h) % paleta.length];
+  }
+ 
+  function stCls(status) {
+    if (status === 'confirmado') return 'conf';
+    if (status === 'cancelado')  return 'canc';
+    if (status === 'concluido')  return 'concluido';
+    return 'pend';
+  }
+ 
+  function stLabel(status) {
+    return { confirmado: 'Confirmado', pendente: 'Pendente', cancelado: 'Cancelado', concluido: 'Concluído' }[status] || status;
+  }
+ 
+  function dataExtenso(ds) {
+    if (!ds) return '';
+    var dias  = ['Domingo','Segunda-feira','Terça-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sábado'];
+    var meses = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+    var p = ds.split('-');
+    var d = new Date(+p[0], +p[1] - 1, +p[2]);
+    return dias[d.getDay()] + ', ' + d.getDate() + ' de ' + meses[d.getMonth()];
+  }
+ 
+  function mesAnoLabel(ano, mes) {
+    var m = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+    return m[mes] + ' ' + ano;
+  }
+ 
+  function el(id) { return document.getElementById(id); }
+  function setText(id, v) { var e = el(id); if (e) e.textContent = v; }
+ 
+  /* ──────────────────────────────────────────────
+     TOAST
+  ────────────────────────────────────────────── */
+  function toast(msg, cor) {
+    var t = el('ag2-toast');
+    if (!t) return;
+    t.style.background = cor || '#10b981';
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(t._t);
+    t._t = setTimeout(function () { t.classList.remove('show'); }, 2800);
+  }
+ 
+  /* ──────────────────────────────────────────────
+     DATA RANGE LABEL
+  ────────────────────────────────────────────── */
+  function atualizarDateRange() {
+    var hoje = new Date();
+    var semStart = new Date(hoje);
+    semStart.setDate(semStart.getDate() - semStart.getDay());
+    var semEnd = new Date(semStart);
+    semEnd.setDate(semEnd.getDate() + 6);
+ 
+    function fmtDMY(d) {
+      return String(d.getDate()).padStart(2,'0') + '/' +
+             String(d.getMonth()+1).padStart(2,'0') + '/' +
+             d.getFullYear();
+    }
+    var lbl = el('ag2-date-range-label');
+    if (lbl) lbl.textContent = fmtDMY(semStart) + ' - ' + fmtDMY(semEnd);
+  }
+ 
+  window.ag2ToggleDatePicker = function () {
+    /* No futuro pode abrir um date-range picker; por ora copia a data selecionada */
+    toast('Período copiado!', '#3b82f6');
+  };
+ 
+  window.ag2AbrirFiltros = function () {
+    toast('Filtros em breve!', '#8b5cf6');
+  };
+ 
+  /* ──────────────────────────────────────────────
+     CALENDÁRIO
+  ────────────────────────────────────────────── */
+  function agsDoDia(ds) {
+    return (window.todosAgendamentos || []).filter(function (a) { return a.data === ds; });
+  }
+ 
+  function renderCal() {
+    var ano = S.ano, mes = S.mes;
+    setText('ag2-cal-month', mesAnoLabel(ano, mes));
+ 
+    var grid = el('ag2-cal-grid');
+    if (!grid) return;
+ 
+    var primeiroDia = new Date(ano, mes, 1).getDay();
+    var diasMes     = new Date(ano, mes + 1, 0).getDate();
+    var diasMesAnt  = new Date(ano, mes, 0).getDate();
+    var hoje        = new Date().toISOString().split('T')[0];
+ 
+    var html = '';
+ 
+    // dias mês anterior
+    for (var i = primeiroDia - 1; i >= 0; i--) {
+      var d  = diasMesAnt - i;
+      var mm = mes === 0 ? 11 : mes - 1;
+      var yy = mes === 0 ? ano - 1 : ano;
+      var ds = yy + '-' + pad(mm + 1) + '-' + pad(d);
+      html += diaHTML(d, ds, true);
+    }
+ 
+    // dias mês atual
+    for (var dia = 1; dia <= diasMes; dia++) {
+      var ds2 = ano + '-' + pad(mes + 1) + '-' + pad(dia);
+      html += diaHTML(dia, ds2, false);
+    }
+ 
+    // completar grid (7 cols)
+    var total = primeiroDia + diasMes;
+    var resto = total % 7 === 0 ? 0 : 7 - (total % 7);
+    for (var k = 1; k <= resto; k++) {
+      var mm2 = mes === 11 ? 0  : mes + 1;
+      var yy2 = mes === 11 ? ano + 1 : ano;
+      var ds3 = yy2 + '-' + pad(mm2 + 1) + '-' + pad(k);
+      html += diaHTML(k, ds3, true);
+    }
+ 
+    grid.innerHTML = html;
+  }
+ 
+  function pad(n) { return String(n).padStart(2, '0'); }
+ 
+  function diaHTML(num, ds, outro) {
+    var hoje = new Date().toISOString().split('T')[0];
+    var ags  = agsDoDia(ds);
+    var cls  = 'ag2-cal-day';
+    if (outro)         cls += ' outro-mes';
+    if (ds === hoje)   cls += ' hoje';
+    else if (ds === S.dataSel) cls += ' sel';
+ 
+    var dots = '';
+    if (ags.some(function (a) { return a.status === 'confirmado'; })) dots += '<i class="ag2-dd c"></i>';
+    if (ags.some(function (a) { return a.status === 'pendente';   })) dots += '<i class="ag2-dd p"></i>';
+    if (ags.some(function (a) { return a.status === 'cancelado';  })) dots += '<i class="ag2-dd x"></i>';
+ 
+    return '<div class="' + cls + '" onclick="ag2SelDia(\'' + ds + '\')" role="button" tabindex="0" aria-label="' + ds + '">' +
+      '<span class="ag2-day-num">' + num + '</span>' +
+      (dots ? '<div class="ag2-day-dots">' + dots + '</div>' : '') +
+    '</div>';
+  }
+ 
+  window.ag2CalPrev = function () {
+    S.mes--;
+    if (S.mes < 0) { S.mes = 11; S.ano--; }
+    renderCal();
+  };
+  window.ag2CalNext = function () {
+    S.mes++;
+    if (S.mes > 11) { S.mes = 0; S.ano++; }
+    renderCal();
+  };
+  window.ag2CalToday = function () {
+    var h = new Date();
+    S.ano = h.getFullYear(); S.mes = h.getMonth();
+    S.dataSel = h.toISOString().split('T')[0];
+    S.verMaisOpen = false;
+    renderCal();
+    renderLista();
+  };
+  window.ag2SelDia = function (ds) {
+    S.dataSel = ds;
+    S.verMaisOpen = false;
+    renderCal();
+    renderLista();
+  };
+ 
+  /* ──────────────────────────────────────────────
+     LISTA DO DIA
+  ────────────────────────────────────────────── */
+  function getListaFiltrada() {
+    var ags = (window.todosAgendamentos || []).filter(function (a) { return a.data === S.dataSel; });
+    if (S.profFiltro !== 'todos') {
+      ags = ags.filter(function (a) { return (a.profissional || a.pacienteNome) === S.profFiltro; });
+    }
+    ags.sort(function (a, b) {
+      var cmp = (a.hora || '').localeCompare(b.hora || '');
+      return S.ordemAsc ? cmp : -cmp;
+    });
+    return ags;
+  }
+ 
+  function renderLista() {
+    var lista = getListaFiltrada();
+ 
+    setText('ag2-list-date',  dataExtenso(S.dataSel));
+    var n = lista.length;
+    setText('ag2-list-badge', n + ' agendamento' + (n !== 1 ? 's' : ''));
+ 
+    var body   = el('ag2-list-body');
+    var footer = el('ag2-list-footer');
+    if (!body) return;
+ 
+    if (!lista.length) {
+      body.innerHTML = '<div class="ag2-vazio">' +
+        '<svg width="38" height="38" viewBox="0 0 42 42" fill="none">' +
+          '<rect x="5" y="6" width="32" height="30" rx="5" stroke="var(--text3)" stroke-width="1.6"/>' +
+          '<path d="M5 15h32M14 4v7M28 4v7" stroke="var(--text3)" stroke-width="1.6" stroke-linecap="round"/>' +
+        '</svg><span>Nenhum agendamento para este dia</span></div>';
+      if (footer) footer.style.display = 'none';
+      return;
+    }
+ 
+    var exibir = S.verMaisOpen ? lista : lista.slice(0, LIMITE_LISTA);
+    body.innerHTML = exibir.map(itemHTML).join('');
+ 
+    if (footer) {
+      if (!S.verMaisOpen && lista.length > LIMITE_LISTA) {
+        footer.style.display = 'block';
+        var btn = footer.querySelector('.ag2-ver-mais');
+        if (btn) btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M3 5l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg> Ver mais ' + (lista.length - LIMITE_LISTA) + ' agendamento' + (lista.length - LIMITE_LISTA !== 1 ? 's' : '') + ' do dia';
+      } else {
+        footer.style.display = 'none';
+      }
+    }
+  }
+ 
+  function itemHTML(a) {
+    var sc    = stCls(a.status);
+    var label = stLabel(a.status);
+    var cor   = avatarCor(a.pacienteNome);
+    var ini   = (a.pacienteNome || 'C')[0].toUpperCase();
+    var preco = a.preco ? brl(a.preco) : '—';
+    var tel   = (a.pacienteTelefone || '').replace(/\D/g, '');
+    var nSafe = (a.pacienteNome || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+    var tSafe = (a.pacienteTelefone || '').replace(/'/g, "\\'");
+    var wppUrl = tel
+      ? 'https://wa.me/55' + tel + '?text=' + encodeURIComponent('Olá ' + (a.pacienteNome || '') + '! Confirmando seu agendamento de ' + (a.servico || '') + ' às ' + (a.hora || '') + '.')
+      : null;
+ 
+    /* Botões de ação */
+    var wppHTML = wppUrl
+      ? '<a href="' + wppUrl + '" target="_blank" rel="noopener noreferrer" class="ag2-wpp-btn" title="WhatsApp" aria-label="Enviar WhatsApp">' +
+          '<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.118 1.528 5.852L.057 23.885l6.204-1.628A11.945 11.945 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.808 9.808 0 0 1-5.001-1.366l-.359-.213-3.682.966.983-3.594-.234-.371A9.818 9.818 0 0 1 2.182 12C2.182 6.57 6.57 2.182 12 2.182S21.818 6.57 21.818 12 17.43 21.818 12 21.818z"/></svg>' +
+        '</a>'
+      : '';
+ 
+    var moreHTML = '<button class="ag2-more-btn" onclick="ag2Drop(event,\'' + a._id + '\',\'' + nSafe + '\',\'' + tSafe + '\',\'' + (a.data||'') + '\',\'' + (a.hora||'') + '\')" type="button" aria-label="Mais opções">' +
+      '<svg width="14" height="14" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="3" r="1.1" fill="currentColor"/><circle cx="7.5" cy="7.5" r="1.1" fill="currentColor"/><circle cx="7.5" cy="12" r="1.1" fill="currentColor"/></svg>' +
+    '</button>';
+ 
+    return '<div class="ag2-item" id="ag2-i-' + a._id + '">' +
+      '<div class="ag2-item-hora">'                                              + (a.hora || '—') + '</div>' +
+      '<div class="ag2-item-bar ' + sc + '"></div>' +
+      '<div class="ag2-item-av" style="background:linear-gradient(135deg,' + cor[0] + ',' + cor[1] + ')">' + ini + '</div>' +
+      '<div class="ag2-item-info">' +
+        '<div class="ag2-item-nome">' + (a.pacienteNome || '—') + '</div>' +
+        '<div class="ag2-item-serv">' + (a.servico || '—') + '</div>' +
+      '</div>' +
+      '<div class="ag2-item-preco">' + preco + '</div>' +
+      '<span class="ag2-item-badge ' + sc + '">' + label + '</span>' +
+      '<div class="ag2-item-acts">' + wppHTML + moreHTML + '</div>' +
+    '</div>';
+  }
+ 
+  /* ──────────────────────────────────────────────
+     DROPDOWN "..."
+  ────────────────────────────────────────────── */
+  window.ag2Drop = function (evt, id, nome, tel, data, hora) {
+    evt.stopPropagation();
+    if (S.dropId === id) { fecharDrop(); return; }
+    fecharDrop();
+    S.dropId = id;
+ 
+    var item = el('ag2-i-' + id);
+    if (!item) return;
+    item.style.position = 'relative';
+ 
+    var ag = (window.todosAgendamentos || []).find(function (a) { return a._id === id; }) || {};
+    var st = ag.status || '';
+    var wTel = (tel || '').replace(/\D/g, '');
+    var wLink = wTel ? 'https://wa.me/55' + wTel : null;
+ 
+    var btns = '';
+    if (st === 'confirmado') {
+      btns += '<button class="ag2-drop-btn ok"  onclick="ag2Concluir(\'' + id + '\')" type="button"><svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 7l4 4L12 4" stroke="#34d399" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg> Concluir</button>';
+      btns += '<button class="ag2-drop-btn bad" onclick="ag2Cancelar(\'' + id + '\',\'' + nome + '\',\'' + tel + '\',\'' + data + '\',\'' + hora + '\')" type="button"><svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M3 3l8 8M11 3l-8 8" stroke="#f87171" stroke-width="1.5" stroke-linecap="round"/></svg> Cancelar</button>';
+    } else if (st === 'pendente') {
+      btns += '<button class="ag2-drop-btn ok"  onclick="ag2Confirmar(\'' + id + '\')" type="button"><svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 7l4 4L12 4" stroke="#34d399" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg> Confirmar</button>';
+      btns += '<button class="ag2-drop-btn bad" onclick="ag2Cancelar(\'' + id + '\',\'' + nome + '\',\'' + tel + '\',\'' + data + '\',\'' + hora + '\')" type="button"><svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M3 3l8 8M11 3l-8 8" stroke="#f87171" stroke-width="1.5" stroke-linecap="round"/></svg> Cancelar</button>';
+    }
+    if (wLink) {
+      btns += '<button class="ag2-drop-btn" onclick="window.open(\'' + wLink + '\',\'_blank\')" type="button"><svg width="13" height="13" viewBox="0 0 24 24" fill="#25d366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.118 1.528 5.852L.057 23.885l6.204-1.628A11.945 11.945 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.808 9.808 0 0 1-5.001-1.366l-.359-.213-3.682.966.983-3.594-.234-.371A9.818 9.818 0 0 1 2.182 12C2.182 6.57 6.57 2.182 12 2.182S21.818 6.57 21.818 12 17.43 21.818 12 21.818z"/></svg> WhatsApp</button>';
+    }
+    btns += '<button class="ag2-drop-btn" onclick="fecharDrop()" type="button"><svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M3 3l8 8M11 3l-8 8" stroke="var(--text3)" stroke-width="1.4" stroke-linecap="round"/></svg> Fechar</button>';
+ 
+    var div = document.createElement('div');
+    div.className = 'ag2-dropdown';
+    div.id = 'ag2-drop-' + id;
+    div.innerHTML = btns;
+    item.appendChild(div);
+  };
+ 
+  function fecharDrop() {
+    if (S.dropId) {
+      var d = el('ag2-drop-' + S.dropId);
+      if (d) d.remove();
+      S.dropId = null;
+    }
+  }
+ 
+  document.addEventListener('click', function (e) {
+    if (S.dropId && !e.target.closest('.ag2-dropdown') && !e.target.closest('.ag2-more-btn')) {
+      fecharDrop();
+    }
+  });
+ 
+  /* ──────────────────────────────────────────────
+     AÇÕES DO ITEM
+  ────────────────────────────────────────────── */
+  window.ag2Concluir = function (id) {
+    fecharDrop();
+    if (typeof atualizar === 'function') {
+      var res = atualizar(id, 'concluido');
+      if (res && res.then) res.then(refreshTudo); else setTimeout(refreshTudo, 400);
+    }
+  };
+  window.ag2Confirmar = function (id) {
+    fecharDrop();
+    if (typeof atualizar === 'function') {
+      var res = atualizar(id, 'confirmado');
+      if (res && res.then) res.then(refreshTudo); else setTimeout(refreshTudo, 400);
+    }
+  };
+  window.ag2Cancelar = function (id, nome, tel, data, hora) {
+    fecharDrop();
+    if (typeof cancelarComAviso === 'function') {
+      cancelarComAviso(id, nome, tel, data, hora);
+      setTimeout(refreshTudo, 900);
+    }
+  };
+  window.ag2VerMais = function () {
+    S.verMaisOpen = true;
+    renderLista();
+  };
+  window.ag2ToggleOrdem = function () {
+    S.ordemAsc = !S.ordemAsc;
+    var ic = el('ag2-ordem-icon');
+    if (ic) ic.style.transform = S.ordemAsc ? '' : 'rotate(180deg)';
+    renderLista();
+  };
+  window.ag2FiltrarProf = function (v) {
+    S.profFiltro = v;
+    renderLista();
+  };
+ 
+  /* ──────────────────────────────────────────────
+     STAT CARDS
+  ────────────────────────────────────────────── */
+  function renderStats() {
+    var ags  = window.todosAgendamentos || [];
+    var total = ags.length;
+    var conf  = ags.filter(function (a) { return a.status === 'confirmado'; }).length;
+    var pend  = ags.filter(function (a) { return a.status === 'pendente';   }).length;
+    var canc  = ags.filter(function (a) { return a.status === 'cancelado';  }).length;
+    setText('ag2-stat-total', total);
+    setText('ag2-stat-conf',  conf);
+    setText('ag2-stat-pend',  pend);
+    setText('ag2-stat-canc',  canc);
+  }
+ 
+  /* ──────────────────────────────────────────────
+     RESUMO DA SEMANA
+  ────────────────────────────────────────────── */
+  function renderResumo() {
+    var ags = window.todosAgendamentos || [];
+    var hoje = new Date();
+    var ss   = new Date(hoje); ss.setDate(ss.getDate() - ss.getDay());
+    var se   = new Date(ss);   se.setDate(se.getDate() + 6);
+    var sS = ss.toISOString().split('T')[0];
+    var sE = se.toISOString().split('T')[0];
+ 
+    var doSem  = ags.filter(function (a) { return a.data >= sS && a.data <= sE; });
+    var concl  = doSem.filter(function (a) { return a.status === 'concluido' || a.status === 'confirmado'; });
+    var cancs  = doSem.filter(function (a) { return a.status === 'cancelado'; });
+    var fat    = doSem.filter(function (a) { return a.status === 'concluido'; })
+                      .reduce(function (s, a) { return s + (Number(a.preco) || 0); }, 0);
+    var ticket = concl.length > 0 ? fat / concl.length : 0;
+    var taxa   = doSem.length > 0 ? Math.round((concl.length / doSem.length) * 100) : 0;
+    var pctC   = doSem.length > 0 ? Math.round((cancs.length  / doSem.length) * 100) : 0;
+ 
+    setText('ag2-fat',     brl(fat));
+    setText('ag2-ticket',  brl(ticket));
+    setText('ag2-taxa',    taxa + '%');
+    setText('ag2-cancels', cancs.length + ' (' + pctC + '%)');
+  }
+ 
+  /* ──────────────────────────────────────────────
+     DONUT — SERVIÇOS MAIS AGENDADOS
+  ────────────────────────────────────────────── */
+  var DONUT_CORES = ['#3b82f6','#f59e0b','#34d399','#f87171','#a78bfa','#06b6d4','#ec4899'];
+ 
+  function renderDonut() {
+    var ags  = window.todosAgendamentos || [];
+    var freq = {};
+    ags.forEach(function (a) {
+      if (!a.servico) return;
+      freq[a.servico] = (freq[a.servico] || 0) + 1;
+    });
+ 
+    var entries = Object.keys(freq)
+      .map(function (k) { return [k, freq[k]]; })
+      .sort(function (a, b) { return b[1] - a[1]; });
+ 
+    var total   = entries.reduce(function (s, e) { return s + e[1]; }, 0) || 1;
+    var top     = entries.slice(0, 4);
+    var outrosN = entries.slice(4).reduce(function (s, e) { return s + e[1]; }, 0);
+    if (outrosN > 0) top.push(['Outros', outrosN]);
+ 
+    /* Canvas */
+    var canvas = el('ag2-donut');
+    if (!canvas || !canvas.getContext) return;
+    var ctx = canvas.getContext('2d');
+    var W = canvas.width, H = canvas.height;
+    var cx = W / 2, cy = H / 2;
+    var r  = Math.min(W, H) / 2 - 5;
+    var ri = r * 0.52;
+ 
+    ctx.clearRect(0, 0, W, H);
+ 
+    var ang = -Math.PI / 2;
+    top.forEach(function (e, i) {
+      var slice = (e[1] / total) * Math.PI * 2;
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.arc(cx, cy, r, ang, ang + slice);
+      ctx.closePath();
+      ctx.fillStyle = DONUT_CORES[i % DONUT_CORES.length];
+      ctx.fill();
+      ang += slice;
+    });
+ 
+    /* Buraco */
+    var bgColor = getComputedStyle(document.documentElement).getPropertyValue('--bg-card').trim() || '#111827';
+    ctx.beginPath();
+    ctx.arc(cx, cy, ri, 0, Math.PI * 2);
+    ctx.fillStyle = bgColor;
+    ctx.fill();
+ 
+    /* Legenda */
+    var leg = el('ag2-serv-legend');
+    if (!leg) return;
+    leg.innerHTML = top.map(function (e, i) {
+      var pct = Math.round((e[1] / total) * 100);
+      return '<div class="ag2-sl-item">' +
+        '<div class="ag2-sl-left">' +
+          '<span class="ag2-sl-dot" style="background:' + DONUT_CORES[i % DONUT_CORES.length] + '"></span>' +
+          e[0] +
+        '</div>' +
+        '<span class="ag2-sl-pct">' + pct + '%</span>' +
+      '</div>';
+    }).join('');
+  }
+ 
+  /* ──────────────────────────────────────────────
+     LINK DE AGENDAMENTO
+  ────────────────────────────────────────────── */
+  function atualizarLink() {
+    var neg = window.negocioAtual;
+    if (!neg) return;
+    var url  = 'https://agendorapido.com.br/agendar.html?id=' + neg._id;
+    var full = 'https://agendorapido.com.br/agendar.html?id=' + neg._id;
+    var lbl  = el('ag2-link-txt');
+    if (lbl) lbl.textContent = url.length > 40 ? url.slice(0, 38) + '...' : url;
+    /* guarda URL completa para copiar */
+    if (lbl) lbl.dataset.url = full;
+  }
+ 
+  window.ag2CopiarLink = function () {
+    var neg = window.negocioAtual;
+    if (!neg) { toast('Negócio não carregado', '#ef4444'); return; }
+    var url = 'https://agendorapido.com.br/agendar.html?id=' + neg._id;
+    navigator.clipboard.writeText(url).then(function () {
+      toast('Link copiado!', '#3b82f6');
+    }).catch(function () {
+      toast('Erro ao copiar', '#ef4444');
+    });
+  };
+ 
+  window.ag2Compartilhar = function () {
+    var neg = window.negocioAtual;
+    if (!neg) return;
+    var url = 'https://agendorapido.com.br/agendar.html?id=' + neg._id;
+    if (navigator.share) {
+      navigator.share({ title: neg.nome, url: url });
+    } else {
+      navigator.clipboard.writeText(url).then(function () {
+        toast('Link copiado para compartilhar!', '#10b981');
+      });
+    }
+  };
+ 
+  /* ──────────────────────────────────────────────
+     FILTRO PROFISSIONAL
+  ────────────────────────────────────────────── */
+  function popularProfSel() {
+    var sel = el('ag2-prof-sel');
+    if (!sel) return;
+    var profs = new Set();
+    (window.todosAgendamentos || []).forEach(function (a) {
+      if (a.profissional) profs.add(a.profissional);
+    });
+    var opts = '<option value="todos">Todos os profissionais</option>';
+    profs.forEach(function (p) { opts += '<option value="' + p + '">' + p + '</option>'; });
+    sel.innerHTML = opts;
+    sel.value = S.profFiltro;
+  }
+ 
+  /* ──────────────────────────────────────────────
+     REFRESH GERAL
+  ────────────────────────────────────────────── */
+  function refreshTudo() {
+    renderStats();
+    renderCal();
+    renderLista();
+    renderResumo();
+    renderDonut();
+    atualizarLink();
+    popularProfSel();
+    atualizarDateRange();
+  }
+ 
+  /* ──────────────────────────────────────────────
+     HOOKS: conecta ao sistema existente do painel
+  ────────────────────────────────────────────── */
+ 
+  /* Hook irPara */
+  ;(function () {
+    var _orig = window.irPara;
+    if (typeof _orig !== 'function') return;
+    window.irPara = function (pagina, btn) {
+      _orig.apply(this, arguments);
+      if (pagina === 'agendamentos') {
+        setTimeout(refreshTudo, 80);
+      }
+    };
+  })();
+ 
+  /* Hook carregarAgendamentos — atualiza a view após carregar dados */
+  ;(function () {
+    var _orig = window.carregarAgendamentos;
+    if (typeof _orig !== 'function') return;
+    window.carregarAgendamentos = function () {
+      var res = _orig.apply(this, arguments);
+      if (res && typeof res.then === 'function') {
+        res.then(function () { refreshTudo(); });
+      } else {
+        setTimeout(refreshTudo, 350);
+      }
+      return res;
+    };
+  })();
+ 
+  /* Hook trocarNegocio */
+  ;(function () {
+    var _orig = window.trocarNegocio;
+    if (typeof _orig !== 'function') return;
+    window.trocarNegocio = function (id) {
+      _orig.apply(this, arguments);
+      setTimeout(refreshTudo, 500);
+    };
+  })();
+ 
+  /* ──────────────────────────────────────────────
+     INIT
+  ────────────────────────────────────────────── */
+  document.addEventListener('DOMContentLoaded', function () {
+    atualizarDateRange();
+ 
+    /* Aguarda dados estarem disponíveis (máx 6s) */
+    var tentativas = 0;
+    var check = setInterval(function () {
+      tentativas++;
+      var temDados = Array.isArray(window.todosAgendamentos);
+      var temNeg   = !!window.negocioAtual;
+      if ((temDados && temNeg) || tentativas > 20) {
+        clearInterval(check);
+        refreshTudo();
+      }
+    }, 300);
+  });
+ 
+})();
