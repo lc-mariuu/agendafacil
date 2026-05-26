@@ -11,7 +11,7 @@ const appointmentSchema = new mongoose.Schema({
   status: {
     type: String,
     default: 'confirmado',
-    // ✅ aguardando_pagamento adicionado
+    // aguardando_pagamento adicionado
     enum: ['confirmado', 'cancelado', 'concluido', 'aguardando_pagamento']
   },
   pagamento: {
