@@ -3,642 +3,854 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AgendoRapido — Entrar</title>
+<title>Entrar — AgendoRapido</title>
+<meta name="theme-color" content="#0d2364">
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="agendorapido.css">
+
 <style>
-:root {
-  --bg: #ffffff;
-  --bg2: #f7f7f8;
-  --border: rgba(0,0,0,0.08);
-  --border2: rgba(0,0,0,0.14);
-  --text: #0d0d0e;
-  --text2: #5a5a6a;
-  --text3: #9a9aaa;
-  --accent: #2563eb;
-  --accent-hover: #1d4ed8;
-  --accent-light: #eff4ff;
-  --green: #16a34a;
-  --red: #dc2626;
-  --red-light: #fef2f2;
-}
-*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-html { height: 100%; }
-body {
-  font-family: 'Inter', -apple-system, sans-serif;
-  background: var(--bg2);
-  color: var(--text);
-  min-height: 100vh;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  -webkit-font-smoothing: antialiased;
-}
-.left {
-  background: var(--text);
-  padding: 48px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  position: relative;
-  overflow: hidden;
-}
-.left::before {
-  content: '';
-  position: absolute;
-  width: 500px; height: 500px;
-  border-radius: 50%;
-  background: radial-gradient(var(--accent), transparent 70%);
-  top: -150px; right: -150px;
-  opacity: 0.15;
-}
-.left::after {
-  content: '';
-  position: absolute;
-  width: 300px; height: 300px;
-  border-radius: 50%;
-  background: radial-gradient(#60a5fa, transparent 70%);
-  bottom: -80px; left: -80px;
-  opacity: 0.1;
-}
-.left-logo { font-size: 18px; font-weight: 700; color: #fff; text-decoration: none; position: relative; z-index: 1; }
-.left-logo span { color: #60a5fa; }
-.left-content { position: relative; z-index: 1; }
-.left-content h2 { font-size: 32px; font-weight: 700; color: #fff; line-height: 1.2; letter-spacing: -0.02em; margin-bottom: 16px; }
-.left-content p { font-size: 15px; color: rgba(255,255,255,0.5); line-height: 1.6; max-width: 340px; }
-.left-stats { display: flex; gap: 32px; position: relative; z-index: 1; }
-.left-stat-num { font-size: 28px; font-weight: 700; color: #fff; letter-spacing: -0.02em; }
-.left-stat-lbl { font-size: 12px; color: rgba(255,255,255,0.4); margin-top: 2px; font-weight: 500; }
-.mini-dash { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 20px; margin: 36px 0; position: relative; z-index: 1; }
-.mini-dash-header { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
-.mini-dash-dot { width: 8px; height: 8px; border-radius: 50%; }
-.mini-dash-title { font-size: 12px; color: rgba(255,255,255,0.4); font-weight: 500; }
-.mini-row { display: flex; align-items: center; justify-content: space-between; padding: 9px 0; border-bottom: 1px solid rgba(255,255,255,0.06); font-size: 13px; }
-.mini-row:last-child { border-bottom: none; }
-.mini-name { color: rgba(255,255,255,0.8); font-weight: 500; }
-.mini-time { color: rgba(255,255,255,0.35); }
-.mini-badge { padding: 3px 10px; border-radius: 100px; font-size: 11px; font-weight: 600; }
-.mb-green { background: rgba(22,163,74,0.2); color: #4ade80; }
-.mb-blue { background: rgba(96,165,250,0.2); color: #93c5fd; }
-.right { display: flex; align-items: center; justify-content: center; padding: 48px 40px; background: var(--bg); }
-.form-wrap { width: 100%; max-width: 400px; }
-.form-logo-mobile { display: none; font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 32px; text-decoration: none; }
-.form-logo-mobile span { color: var(--accent); }
-.form-tabs { display: flex; background: var(--bg2); border-radius: 10px; padding: 4px; margin-bottom: 32px; border: 1px solid var(--border); }
-.form-tab { flex: 1; padding: 9px; text-align: center; border-radius: 7px; cursor: pointer; font-size: 14px; font-weight: 500; color: var(--text2); border: none; background: none; transition: all .15s; font-family: inherit; }
-.form-tab.active { background: var(--bg); color: var(--text); box-shadow: 0 1px 4px rgba(0,0,0,0.08); font-weight: 600; }
-.form-title { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 6px; }
-.form-sub { font-size: 14px; color: var(--text2); margin-bottom: 28px; line-height: 1.5; }
-.steps-indicator { display: flex; align-items: center; gap: 8px; margin-bottom: 28px; }
-.step-dot { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; border: 1.5px solid var(--border2); color: var(--text3); background: var(--bg); transition: all .2s; flex-shrink: 0; }
-.step-dot.active { background: var(--accent); border-color: var(--accent); color: #fff; }
-.step-dot.done { background: var(--green); border-color: var(--green); color: #fff; }
-.step-line { flex: 1; height: 1.5px; background: var(--border); max-width: 40px; }
-.step-line.done { background: var(--green); }
-.field { margin-bottom: 16px; }
-.field label { font-size: 13px; font-weight: 500; color: var(--text2); display: block; margin-bottom: 6px; }
-.field input, .field select { width: 100%; padding: 11px 14px; border: 1.5px solid var(--border2); border-radius: 9px; font-size: 14px; font-family: inherit; background: var(--bg); color: var(--text); outline: none; transition: border-color .15s; appearance: none; }
-.field input:focus, .field select:focus { border-color: var(--accent); }
-.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.btn-submit { width: 100%; padding: 13px; background: var(--accent); color: #fff; border: none; border-radius: 9px; font-size: 15px; font-weight: 600; cursor: pointer; font-family: inherit; transition: background .15s, transform .15s; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 4px; }
-.btn-submit:hover:not(:disabled) { background: var(--accent-hover); transform: translateY(-1px); }
-.btn-submit:disabled { opacity: 0.65; cursor: not-allowed; transform: none; }
-.btn-back { width: 100%; padding: 12px; background: var(--bg2); color: var(--text2); border: 1.5px solid var(--border2); border-radius: 9px; font-size: 14px; font-weight: 500; cursor: pointer; font-family: inherit; transition: background .15s; margin-bottom: 10px; }
-.btn-back:hover { background: var(--bg); }
-.err-box { background: var(--red-light); border: 1px solid rgba(220,38,38,0.2); border-radius: 8px; padding: 10px 14px; font-size: 13px; color: var(--red); margin-bottom: 16px; display: none; }
-.err-box.show { display: block; }
-.forgot-link { font-size: 13px; color: var(--accent); text-decoration: none; font-weight: 500; float: right; margin-top: -4px; transition: color .15s; }
-.forgot-link:hover { color: var(--accent-hover); }
-.success-screen { text-align: center; padding: 20px 0; }
-.success-icon { width: 64px; height: 64px; border-radius: 50%; background: #dcfce7; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; }
-.otp-wrap { display: flex; gap: 8px; margin: 8px 0 20px; justify-content: center; }
-.otp-wrap input { width: 44px; height: 52px; flex-shrink: 0; text-align: center; font-size: 22px; font-weight: 700; border: 1.5px solid var(--border2); border-radius: 9px; outline: none; padding: 0; transition: border-color .15s; }
-.otp-wrap input:focus { border-color: var(--accent); }
-.otp-wrap input.filled { border-color: var(--accent); background: var(--accent-light); }
-.resend-wrap { text-align: center; font-size: 13px; color: var(--text3); margin-bottom: 16px; }
-.resend-btn { background: none; border: none; color: var(--accent); font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; padding: 0; }
-.resend-btn:disabled { color: var(--text3); cursor: not-allowed; }
-.terms { font-size: 12px; color: var(--text3); margin-top: 16px; text-align: center; line-height: 1.5; }
-.terms a { color: var(--accent); text-decoration: none; }
+  body {
+    background: var(--bg-1);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
 
-/* Loading overlay para validação do token */
-.checking-overlay {
-  position: fixed; inset: 0;
-  background: #fff;
-  z-index: 9999;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  gap: 14px;
-}
-.checking-spinner {
-  width: 32px; height: 32px;
-  border: 3px solid rgba(37,99,235,0.15);
-  border-top-color: #2563eb;
-  border-radius: 50%;
-  animation: spin .7s linear infinite;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
-.checking-text { font-size: 14px; color: #9a9aaa; font-family: 'Inter', sans-serif; }
+  /* LEFT - branded panel */
+  .left {
+    background: linear-gradient(135deg, #0a1230 0%, #0d2364 40%, #1e40af 100%);
+    padding: 40px 48px;
+    display: flex;
+    flex-direction: column;
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+  }
 
-/* ADMIN REDIRECT OVERLAY */
-.admin-redirect {
-  position: fixed; inset: 0;
-  background: rgba(0,0,0,0.9);
-  z-index: 9999;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  gap: 16px;
-}
-.admin-redirect.show { display: flex; }
-.admin-redirect-card {
-  background: #0d1117;
-  border: 1px solid rgba(245,158,11,0.3);
-  border-radius: 18px;
-  padding: 32px 40px;
-  text-align: center;
-  max-width: 360px;
-}
-.admin-redirect-icon {
-  width: 56px; height: 56px;
-  border-radius: 50%;
-  background: rgba(245,158,11,0.15);
-  border: 2px solid rgba(245,158,11,0.4);
-  display: flex; align-items: center; justify-content: center;
-  margin: 0 auto 16px;
-  animation: adminPulse 1.5s ease-in-out infinite;
-}
-@keyframes adminPulse { 0%,100%{box-shadow:0 0 0 0 rgba(245,158,11,0.4)} 50%{box-shadow:0 0 0 12px rgba(245,158,11,0)} }
-.admin-redirect h3 { font-size: 18px; font-weight: 700; color: #fff; margin-bottom: 8px; }
-.admin-redirect p { font-size: 13px; color: rgba(255,255,255,0.5); margin-bottom: 20px; line-height: 1.5; }
-.admin-redirect-btns { display: flex; gap: 10px; }
-.btn-admin-go { flex: 1; padding: 10px; background: #f59e0b; color: #fff; border: none; border-radius: 9px; font-size: 13.5px; font-weight: 700; cursor: pointer; font-family: inherit; }
-.btn-admin-go:hover { background: #d97706; }
-.btn-user-go { flex: 1; padding: 10px; background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.7); border: 1px solid rgba(255,255,255,0.12); border-radius: 9px; font-size: 13.5px; font-weight: 600; cursor: pointer; font-family: inherit; }
-.btn-user-go:hover { background: rgba(255,255,255,0.12); }
+  .left::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Cpath d='M40 0H0v40' stroke='white' stroke-width='0.5' fill='none' stroke-opacity='0.06'/%3E%3C/svg%3E");
+    pointer-events: none;
+  }
+  .left::after {
+    content: '';
+    position: absolute;
+    top: -100px;
+    right: -100px;
+    width: 400px;
+    height: 400px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(96, 165, 250, 0.3), transparent 70%);
+    pointer-events: none;
+  }
 
-@media (max-width: 860px) {
-  body { grid-template-columns: 1fr; }
-  .left { display: none; }
-  .right { padding: 40px 24px; background: var(--bg2); }
-  .form-wrap { background: var(--bg); border-radius: 16px; padding: 32px 24px; border: 1px solid var(--border); }
-  .form-logo-mobile { display: block; }
-}
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    position: relative;
+    z-index: 1;
+    text-decoration: none;
+    color: #fff;
+  }
+  .brand-logo {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: #fff;
+    color: #0d2364;
+    display: grid;
+    place-items: center;
+    font-weight: 800;
+  }
+  .brand-text { font-size: 18px; font-weight: 700; }
+  .brand-text span { color: #93c5fd; }
+
+  .left-body {
+    margin-top: auto;
+    position: relative;
+    z-index: 1;
+  }
+
+  .ribbon {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 100px;
+    font-size: 12px;
+    font-weight: 500;
+    margin-bottom: 24px;
+  }
+  .ribbon-dot { width: 6px; height: 6px; border-radius: 3px; background: #4ade80; }
+
+  .left h1 {
+    font-size: 38px;
+    font-weight: 700;
+    line-height: 1.15;
+    letter-spacing: -0.025em;
+    margin-bottom: 16px;
+  }
+
+  .left-sub {
+    font-size: 15px;
+    opacity: 0.7;
+    line-height: 1.6;
+    max-width: 420px;
+    margin-bottom: 36px;
+  }
+
+  .mini-dash {
+    background: rgba(0, 0, 0, 0.35);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 14px;
+    padding: 18px;
+    margin-bottom: 24px;
+  }
+  .mini-dash-bar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 14px;
+    align-items: center;
+  }
+  .mini-dot { width: 8px; height: 8px; border-radius: 4px; }
+  .mini-dash-url { margin-left: auto; font-size: 10px; opacity: 0.5; font-family: monospace; }
+  .mini-dash-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 14px; }
+  .mini-stat { background: rgba(255, 255, 255, 0.05); padding: 10px; border-radius: 8px; }
+  .mini-stat-lbl { font-size: 10px; opacity: 0.5; }
+  .mini-stat-val { font-size: 20px; font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+  .mini-stat-sub { font-size: 9px; color: #4ade80; }
+
+  .testi {
+    border-left: 2px solid rgba(255, 255, 255, 0.2);
+    padding-left: 16px;
+  }
+  .testi p {
+    font-size: 13px;
+    font-style: italic;
+    opacity: 0.85;
+    line-height: 1.5;
+    margin-bottom: 8px;
+  }
+  .testi-author {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .testi-av {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: #f97316;
+    color: #fff;
+    display: grid;
+    place-items: center;
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .testi-name { font-size: 12px; font-weight: 600; }
+  .testi-role { font-size: 11px; opacity: 0.5; }
+
+  /* RIGHT - form */
+  .right {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    background: var(--bg-0);
+  }
+  .form-wrap { width: 100%; max-width: 380px; }
+
+  .tabs-wrap {
+    background: var(--bg-2);
+    padding: 4px;
+    border-radius: 10px;
+    display: flex;
+    margin-bottom: 32px;
+  }
+  .tab-btn {
+    flex: 1;
+    padding: 8px 16px;
+    border-radius: 7px;
+    color: var(--fg-2);
+    font-weight: 500;
+    font-size: 13px;
+    cursor: pointer;
+    background: transparent;
+    transition: all 0.15s;
+  }
+  .tab-btn.active {
+    background: var(--bg-0);
+    color: var(--fg-0);
+    font-weight: 600;
+    box-shadow: var(--shadow-sm);
+  }
+
+  h2 {
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 6px;
+  }
+  .sub-text {
+    font-size: 14px;
+    color: var(--fg-2);
+    margin-bottom: 28px;
+  }
+
+  /* Steps indicator */
+  .step-ind {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 24px;
+  }
+  .step-circle {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    font-size: 12px;
+    font-weight: 700;
+    background: var(--bg-2);
+    color: var(--fg-3);
+    transition: all 0.2s;
+  }
+  .step-circle.active {
+    background: var(--accent);
+    color: #fff;
+    box-shadow: 0 0 0 3px var(--accent-soft);
+  }
+  .step-circle.done {
+    background: var(--green);
+    color: #fff;
+  }
+  .step-line {
+    flex: 1;
+    height: 2px;
+    background: var(--bg-2);
+    border-radius: 1px;
+    transition: background 0.2s;
+  }
+  .step-line.done { background: var(--green); }
+
+  .step-label-tag {
+    font-size: 11px;
+    color: var(--fg-3);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 600;
+    margin-bottom: 14px;
+  }
+
+  /* OR divider */
+  .or-divider {
+    position: relative;
+    text-align: center;
+    margin: 24px 0;
+  }
+  .or-divider::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: var(--border-0);
+  }
+  .or-divider span {
+    position: relative;
+    padding: 0 12px;
+    background: var(--bg-0);
+    color: var(--fg-3);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 600;
+  }
+
+  /* Forgot link */
+  .form-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 14px 0 22px;
+  }
+  .check-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--fg-2);
+    cursor: pointer;
+  }
+  .check-label input { accent-color: var(--accent); }
+
+  .link {
+    font-size: 12px;
+    color: var(--accent);
+    font-weight: 500;
+    background: none;
+    cursor: pointer;
+  }
+
+  /* Code input */
+  .code-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 8px;
+    margin-bottom: 18px;
+  }
+  .code-input {
+    width: 100%;
+    height: 50px;
+    text-align: center;
+    font-size: 22px;
+    font-weight: 700;
+    font-family: 'JetBrains Mono', monospace;
+    background: var(--bg-1);
+    border: 1.5px solid var(--border-1);
+    border-radius: 10px;
+    outline: none;
+    color: var(--fg-0);
+  }
+  .code-input:focus { border-color: var(--accent); }
+
+  /* Terms */
+  .terms {
+    text-align: center;
+    margin-top: 24px;
+    font-size: 11px;
+    color: var(--fg-3);
+  }
+  .terms a { color: var(--accent); }
+
+  /* Mobile */
+  @media (max-width: 900px) {
+    body { grid-template-columns: 1fr; }
+    .left { display: none; }
+    .right { padding: 24px 18px; }
+  }
 </style>
 </head>
 <body>
 
-<!-- ✅ Loading overlay — exibido enquanto valida token no servidor -->
-<div class="checking-overlay" id="checking-overlay" style="display:none">
-  <div class="checking-spinner"></div>
-  <div class="checking-text">Verificando sessão...</div>
-</div>
+<!-- LEFT branded -->
+<aside class="left">
+  <a class="brand" href="/">
+    <div class="brand-logo">AR</div>
+    <div class="brand-text">Agendo<span>Rapido</span></div>
+  </a>
 
-<!-- ADMIN REDIRECT MODAL -->
-<div class="admin-redirect" id="admin-redirect">
-  <div class="admin-redirect-card">
-    <div class="admin-redirect-icon">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-        <path d="M12 2l2.4 7.2H22l-6 4.2 2.4 7.2L12 16.2l-6.4 4.4 2.4-7.2-6-4.2h7.6L12 2Z" fill="#f59e0b"/>
+  <div class="left-body">
+    <div class="ribbon">
+      <span class="ribbon-dot"></span>
+      500+ negócios crescendo com a gente
+    </div>
+
+    <h1>O painel de agendamentos que seu negócio merece</h1>
+    <p class="left-sub">Receba agendamentos 24h sem responder mensagem nenhuma. Acompanhe receita e clientes em um só lugar.</p>
+
+    <div class="mini-dash">
+      <div class="mini-dash-bar">
+        <span class="mini-dot" style="background:#ff5f57"></span>
+        <span class="mini-dot" style="background:#febc2e"></span>
+        <span class="mini-dot" style="background:#28c840"></span>
+        <span class="mini-dash-url">agendorapido.com/painel</span>
+      </div>
+      <div class="mini-dash-stats">
+        <div class="mini-stat">
+          <div class="mini-stat-lbl">Hoje</div>
+          <div class="mini-stat-val">12</div>
+          <div class="mini-stat-sub">+3 vs ontem</div>
+        </div>
+        <div class="mini-stat">
+          <div class="mini-stat-lbl">Semana</div>
+          <div class="mini-stat-val">47</div>
+          <div class="mini-stat-sub">meta 50</div>
+        </div>
+        <div class="mini-stat">
+          <div class="mini-stat-lbl">Faturado</div>
+          <div class="mini-stat-val">R$ 2.4k</div>
+          <div class="mini-stat-sub">+18%</div>
+        </div>
+      </div>
+      <svg width="100%" height="50" viewBox="0 0 280 50" preserveAspectRatio="none">
+        <defs>
+          <linearGradient id="g1" x1="0" x2="0" y1="0" y2="1">
+            <stop offset="0%" stop-color="#60a5fa" stop-opacity="0.4"/>
+            <stop offset="100%" stop-color="#60a5fa" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
+        <path d="M0,40 L40,30 L80,32 L120,20 L160,22 L200,12 L240,16 L280,8 L280,50 L0,50 Z" fill="url(#g1)"/>
+        <path d="M0,40 L40,30 L80,32 L120,20 L160,22 L200,12 L240,16 L280,8" stroke="#60a5fa" stroke-width="1.5" fill="none"/>
       </svg>
     </div>
-    <h3>Conta Administrador</h3>
-    <p>Sua conta tem permissões de administrador. Para onde deseja ir?</p>
-    <div class="admin-redirect-btns">
-      <button class="btn-admin-go" onclick="irParaAdmin()">Painel Admin</button>
-      <button class="btn-user-go" onclick="irParaPainel()">Meu Painel</button>
+
+    <div class="testi">
+      <p>"Antes eu perdia hora confirmando WhatsApp. Hoje o sistema confirma sozinho e eu só atendo. Aumentei 40% a receita."</p>
+      <div class="testi-author">
+        <div class="testi-av">RM</div>
+        <div>
+          <div class="testi-name">Rafael Mendes</div>
+          <div class="testi-role">Barbearia BarberPro · São Paulo</div>
+        </div>
+      </div>
     </div>
   </div>
-</div>
+</aside>
 
-<div class="left">
-  <a href="/" class="left-logo">Agendo<span>Rapido</span></a>
-  <div class="left-content">
-    <h2>Seus agendamentos, organizados do jeito certo</h2>
-    <p>Mais de 500 negócios já deixaram de perder horário com o AgendoRapido.</p>
-    <div class="mini-dash">
-      <div class="mini-dash-header">
-        <div class="mini-dash-dot" style="background:#ff5f57"></div>
-        <div class="mini-dash-dot" style="background:#febc2e"></div>
-        <div class="mini-dash-dot" style="background:#28c840"></div>
-        <div class="mini-dash-title" style="margin-left:6px">Painel · Hoje</div>
-      </div>
-      <div class="mini-row"><span class="mini-name">João Silva</span><span class="mini-time">14:30</span><span class="mini-badge mb-green">confirmado</span></div>
-      <div class="mini-row"><span class="mini-name">Maria Souza</span><span class="mini-time">15:00</span><span class="mini-badge mb-green">confirmado</span></div>
-      <div class="mini-row"><span class="mini-name">Pedro Costa</span><span class="mini-time">16:30</span><span class="mini-badge mb-blue">pendente</span></div>
+<!-- RIGHT form -->
+<main class="right">
+  <div class="form-wrap" id="form-wrap">
+
+    <div class="tabs-wrap">
+      <button class="tab-btn active" id="tab-login" onclick="setMode('login')">Entrar</button>
+      <button class="tab-btn" id="tab-signup" onclick="setMode('signup')">Criar conta</button>
+    </div>
+
+    <!-- Conteúdo -->
+    <div id="form-content"></div>
+
+    <div class="terms">
+      Ao continuar, você concorda com nossos <a href="/termos.html">Termos</a> e <a href="/politica.html">Política de Privacidade</a>.
     </div>
   </div>
-  <div class="left-stats">
-    <div><div class="left-stat-num">+500</div><div class="left-stat-lbl">Negócios ativos</div></div>
-    <div><div class="left-stat-num">14 dias</div><div class="left-stat-lbl">Grátis pra testar</div></div>
-    <div><div class="left-stat-num">4.9</div><div class="left-stat-lbl">Avaliação média</div></div>
-  </div>
-</div>
+</main>
 
-<div class="right">
-  <div class="form-wrap">
-    <a href="/" class="form-logo-mobile">Agendo<span>Rapido</span></a>
-    <div class="form-tabs">
-      <button class="form-tab active" id="tab-login" onclick="switchTab('login')">Entrar</button>
-      <button class="form-tab" id="tab-cadastro" onclick="switchTab('cadastro')">Criar conta</button>
-    </div>
-
-    <div id="tela-login">
-      <div class="form-title">Bem-vindo de volta</div>
-      <div class="form-sub">Entre na sua conta para acessar o painel</div>
-      <div class="err-box" id="err-login"></div>
-      <div class="field"><label>Email</label><input type="email" id="login-email" placeholder="seu@email.com" /></div>
-      <div class="field">
-        <label>Senha <a href="#" class="forgot-link" onclick="switchTela('recuperar-email');return false">Esqueci minha senha</a></label>
-        <input type="password" id="login-senha" placeholder="Sua senha" onkeydown="if(event.key==='Enter')fazerLogin()" />
-      </div>
-      <button class="btn-submit" id="btn-login" onclick="fazerLogin()">
-        Entrar no painel
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7h8M7.5 3.5L11 7l-3.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </button>
-    </div>
-
-    <div id="tela-cad-1" style="display:none">
-      <div class="steps-indicator">
-        <div class="step-dot active">1</div><div class="step-line"></div>
-        <div class="step-dot">2</div><div class="step-line"></div>
-        <div class="step-dot">3</div>
-      </div>
-      <div class="form-title">Crie sua conta</div>
-      <div class="form-sub">Rápido e grátis. 14 dias pra testar sem cartão.</div>
-      <div class="err-box" id="err-cad1"></div>
-      <div class="field-row">
-        <div class="field"><label>Seu nome</label><input type="text" id="cad-nome" placeholder="João Silva" /></div>
-        <div class="field"><label>WhatsApp</label><input type="tel" id="cad-tel" placeholder="(11) 99999-9999" oninput="mascaraTel(this)" /></div>
-      </div>
-      <div class="field"><label>Nome do negócio</label><input type="text" id="cad-negocio" placeholder="Barbearia do João" /></div>
-      <div class="field">
-        <label>Segmento</label>
-        <select id="cad-segmento">
-          <option value="Clínica">Clínica / Consultório</option>
-          <option value="Barbearia">Barbearia</option>
-          <option value="Salão">Salão de Beleza</option>
-          <option value="Pet Shop">Pet Shop</option>
-          <option value="Academia">Academia / Personal</option>
-          <option value="Estúdio">Estúdio de Tatuagem</option>
-          <option value="Outro">Outro</option>
-        </select>
-      </div>
-      <button class="btn-submit" onclick="avancarCad1()">Continuar <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7h8M7.5 3.5L11 7l-3.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-    </div>
-
-    <div id="tela-cad-2" style="display:none">
-      <div class="steps-indicator">
-        <div class="step-dot done">✓</div><div class="step-line done"></div>
-        <div class="step-dot active">2</div><div class="step-line"></div>
-        <div class="step-dot">3</div>
-      </div>
-      <div class="form-title">Acesso seguro</div>
-      <div class="form-sub">Defina seu email e senha de acesso ao painel</div>
-      <div class="err-box" id="err-cad2"></div>
-      <div class="field"><label>Email</label><input type="email" id="cad-email" placeholder="seu@email.com" /></div>
-      <div class="field-row">
-        <div class="field"><label>Senha</label><input type="password" id="cad-senha" placeholder="Mín. 6 caracteres" /></div>
-        <div class="field"><label>Confirmar</label><input type="password" id="cad-senha2" placeholder="Repita a senha" /></div>
-      </div>
-      <button class="btn-submit" id="btn-cad2" onclick="avancarCad2()">Enviar código de verificação <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7h8M7.5 3.5L11 7l-3.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-      <button class="btn-back" onclick="switchTela('cad-1')">← Voltar</button>
-    </div>
-
-    <div id="tela-cad-3" style="display:none">
-      <div class="steps-indicator">
-        <div class="step-dot done">✓</div><div class="step-line done"></div>
-        <div class="step-dot done">✓</div><div class="step-line done"></div>
-        <div class="step-dot active">3</div>
-      </div>
-      <div class="form-title">Verifique seu email</div>
-      <div class="form-sub">Enviamos um código de 6 dígitos para <strong id="email-exibido" style="color:var(--text)"></strong></div>
-      <div class="err-box" id="err-otp"></div>
-      <div class="otp-wrap" id="otp-cad"></div>
-      <div class="resend-wrap">Não recebeu? <button class="resend-btn" id="btn-resend" disabled onclick="reenviarCodigo()">Reenviar (<span id="timer-cad">60</span>s)</button></div>
-      <button class="btn-submit" id="btn-verificar" onclick="verificarCodigo()">Verificar e criar conta <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7h8M7.5 3.5L11 7l-3.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-      <button class="btn-back" onclick="switchTela('cad-2')">← Voltar</button>
-    </div>
-
-    <div id="tela-sucesso" style="display:none">
-      <div class="success-screen">
-        <div class="success-icon"><svg width="28" height="28" viewBox="0 0 28 28" fill="none"><path d="M6 14l5.5 5.5L22 8" stroke="#16a34a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-        <div class="form-title">Conta criada!</div>
-        <p style="color:var(--text2);font-size:14px;margin-top:8px;line-height:1.6">Email verificado com sucesso.<br>Entrando no painel...</p>
-      </div>
-    </div>
-
-    <div id="tela-recuperar-email" style="display:none">
-      <div class="form-title">Recuperar senha</div>
-      <div class="form-sub">Informe seu email e enviaremos um código de verificação</div>
-      <div class="err-box" id="err-recup"></div>
-      <div class="field"><label>Email cadastrado</label><input type="email" id="recup-email" placeholder="seu@email.com" /></div>
-      <button class="btn-submit" id="btn-recup" onclick="enviarRecuperacao()">Enviar código por email <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7h8M7.5 3.5L11 7l-3.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-      <button class="btn-back" onclick="switchTela('login');switchTab('login')">← Voltar ao login</button>
-    </div>
-
-    <div id="tela-recuperar-otp" style="display:none">
-      <div class="form-title">Código de verificação</div>
-      <div class="form-sub">Código enviado para <strong id="recup-email-exibido" style="color:var(--text)"></strong></div>
-      <div class="err-box" id="err-recup-otp"></div>
-      <div class="otp-wrap" id="otp-recup"></div>
-      <div class="resend-wrap">Não recebeu? <button class="resend-btn" id="btn-resend-recup" disabled onclick="reenviarRecuperacao()">Reenviar (<span id="timer-recup">60</span>s)</button></div>
-      <button class="btn-submit" onclick="verificarRecuperacao()">Confirmar código <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7h8M7.5 3.5L11 7l-3.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-      <button class="btn-back" onclick="switchTela('recuperar-email')">← Voltar</button>
-    </div>
-
-    <div id="tela-nova-senha" style="display:none">
-      <div class="form-title">Nova senha</div>
-      <div class="form-sub">Escolha uma senha segura para sua conta</div>
-      <div class="err-box" id="err-nova"></div>
-      <div class="field"><label>Nova senha</label><input type="password" id="nova-senha" placeholder="Mínimo 6 caracteres" /></div>
-      <div class="field"><label>Confirmar senha</label><input type="password" id="nova-senha2" placeholder="Repita a senha" /></div>
-      <button class="btn-submit" id="btn-nova" onclick="salvarNovaSenha()">Salvar nova senha <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7h8M7.5 3.5L11 7l-3.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-    </div>
-
-    <p class="terms" style="margin-top:20px">Ao continuar, você concorda com nossos <a href="./termos.html">Termos de uso</a> e <a href="./politica.html">Política de privacidade</a></p>
-  </div>
-</div>
-
+<script src="ar.js"></script>
 <script>
-const API = 'https://agendafacil-wf3q.onrender.com/api'
+const { api, el, $, toast, icon } = AR;
 
-// ═══ EMAILS DE ADMIN ═══
-const ADMIN_EMAILS = [
-  'junqueirafreitasl@gmail.com',
-  'ljunqueirafreitas@gmail.com',
-]
+let mode = 'login'; // login | signup | forgot
+let step = 1; // for signup multi-step
 
-const servicosPorSegmento = {
-  'Clínica': ['Consulta', 'Retorno', 'Exame', 'Avaliação', 'Procedimento'],
-  'Barbearia': ['Corte', 'Barba', 'Corte + Barba', 'Pigmentação', 'Hidratação'],
-  'Salão': ['Corte', 'Coloração', 'Escova', 'Manicure', 'Pedicure'],
-  'Pet Shop': ['Banho', 'Tosa', 'Banho + Tosa', 'Consulta Vet', 'Vacina'],
-  'Academia': ['Avaliação Física', 'Treino Personal', 'Pilates', 'Musculação'],
-  'Estúdio': ['Tatuagem', 'Orçamento', 'Retoque', 'Piercing'],
-  'Outro': ['Serviço 1', 'Serviço 2', 'Serviço 3']
+const signupData = {
+  negocio: '',
+  segmento: 'Barbearia',
+  nome: '',
+  email: '',
+  senha: '',
+  codigo: '',
+};
+
+const loginData = {
+  email: '',
+  senha: '',
+  loading: false,
+};
+
+const forgotData = {
+  email: '',
+  codigo: '',
+  novaSenha: '',
+  step: 1,
+};
+
+function setMode(m) {
+  mode = m;
+  step = 1;
+  render();
 }
 
-const telas = ['login','cad-1','cad-2','cad-3','sucesso','recuperar-email','recuperar-otp','nova-senha']
-function switchTela(tela) {
-  telas.forEach(t => { const el = document.getElementById(`tela-${t}`); if(el) el.style.display='none' })
-  document.getElementById(`tela-${tela}`).style.display = 'block'
-}
-function switchTab(tab) {
-  document.getElementById('tab-login').classList.toggle('active', tab==='login')
-  document.getElementById('tab-cadastro').classList.toggle('active', tab==='cadastro')
-  switchTela(tab==='login' ? 'login' : 'cad-1')
-}
-function showErr(id, msg) { const el=document.getElementById(id); el.textContent=msg; el.classList.add('show') }
-function hideErr(id) { document.getElementById(id).classList.remove('show') }
-function mascaraTel(inp) {
-  let v = inp.value.replace(/\D/g,'').slice(0,11)
-  if(v.length>=7) v=`(${v.slice(0,2)}) ${v.slice(2,7)}-${v.slice(7)}`
-  else if(v.length>=3) v=`(${v.slice(0,2)}) ${v.slice(2)}`
-  else if(v.length) v=`(${v}`
-  inp.value=v
+function render() {
+  // Tab visibility
+  $('#tab-login').classList.toggle('active', mode === 'login');
+  $('#tab-signup').classList.toggle('active', mode === 'signup');
+
+  const root = $('#form-content');
+  root.innerHTML = '';
+
+  if (mode === 'login') renderLogin(root);
+  else if (mode === 'signup') renderSignup(root);
+  else if (mode === 'forgot') renderForgot(root);
 }
 
-// ═══ VERIFICAR SE É ADMIN (via JWT ou email) ═══
-function verificarSeAdmin(token, email) {
+// ─── LOGIN ─────────────────────────────────────
+function renderLogin(root) {
+  root.appendChild(el('h2', {}, 'Bem-vindo de volta'));
+  root.appendChild(el('div', { class: 'sub-text' }, 'Entre para acessar seu painel de agendamentos.'));
+
+  const form = el('form', { onsubmit: doLogin });
+
+  const fEmail = el('div', { class: 'field' });
+  fEmail.appendChild(el('label', { class: 'field-label' }, 'E-mail'));
+  const inpEmail = el('input', { class: 'input', type: 'email', placeholder: 'seu@email.com', autocomplete: 'email', required: true, value: loginData.email });
+  inpEmail.oninput = e => loginData.email = e.target.value;
+  fEmail.appendChild(inpEmail);
+  form.appendChild(fEmail);
+
+  const fSenha = el('div', { class: 'field', style: { marginTop: '14px' } });
+  fSenha.appendChild(el('label', { class: 'field-label' }, 'Senha'));
+  const inpSenha = el('input', { class: 'input', type: 'password', placeholder: '••••••••', autocomplete: 'current-password', required: true, value: loginData.senha });
+  inpSenha.oninput = e => loginData.senha = e.target.value;
+  fSenha.appendChild(inpSenha);
+  form.appendChild(fSenha);
+
+  const row = el('div', { class: 'form-row' });
+  const lbl = el('label', { class: 'check-label' });
+  lbl.appendChild(el('input', { type: 'checkbox', checked: true }));
+  lbl.appendChild(document.createTextNode('Lembrar de mim'));
+  row.appendChild(lbl);
+  row.appendChild(el('button', { class: 'link', type: 'button', onclick: () => setMode('forgot') }, 'Esqueci a senha'));
+  form.appendChild(row);
+
+  const err = el('div', { class: 'field-error', id: 'login-err' });
+  form.appendChild(err);
+
+  const btn = el('button', { class: 'btn primary lg full', type: 'submit', id: 'login-btn' });
+  btn.innerHTML = (loginData.loading ? '<span class="spinner"></span> Entrando...' : 'Entrar ' + icon('arrow_right'));
+  if (loginData.loading) btn.disabled = true;
+  form.appendChild(btn);
+
+  root.appendChild(form);
+}
+
+async function doLogin(e) {
+  e.preventDefault();
+  loginData.loading = true;
+  render();
   try {
-    const payload = JSON.parse(atob(token.split('.')[1]))
-    if (payload.admin === true || payload.role === 'admin') return true
-    if (ADMIN_EMAILS.includes(email || payload.email || '')) return true
-  } catch(e) {}
-  return false
-}
-
-function irParaAdmin() {
-  document.getElementById('admin-redirect').classList.remove('show')
-  window.location.href = '/admin.html'
-}
-function irParaPainel() {
-  document.getElementById('admin-redirect').classList.remove('show')
-  window.location.href = '/painel.html'
-}
-
-async function fazerLogin() {
-  hideErr('err-login')
-  const email = document.getElementById('login-email').value.trim()
-  const senha  = document.getElementById('login-senha').value
-  if(!email||!senha) { showErr('err-login','Preencha email e senha'); return }
-  const btn = document.getElementById('btn-login')
-  btn.disabled=true; btn.textContent='Entrando...'
-  try {
-    const res  = await fetch(`${API}/auth/login`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,senha})})
-    const data = await res.json()
-    if(!res.ok) throw new Error(data.erro||'Email ou senha incorretos')
-
-    // Salva sessão
-    localStorage.setItem('token', data.token)
-    localStorage.setItem('negocio', data.negocio || '')
-    localStorage.setItem('userEmail', email)
-    if (data.negocioId) localStorage.setItem('negocioId', data.negocioId)
-    try {
-      const payload = JSON.parse(atob(data.token.split('.')[1]))
-      localStorage.setItem('userId', payload.id)
-    } catch(e) {}
-
-    // Verifica se é admin
-    if (verificarSeAdmin(data.token, email)) {
-      document.getElementById('admin-redirect').classList.add('show')
-    } else {
-      window.location.href = '/painel.html'
+    const data = await api.post('/auth/login', {
+      email: loginData.email,
+      senha: loginData.senha,
+    }, { auth: false });
+    localStorage.setItem('token', data.token);
+    localStorage.setItem('userId', data.userId);
+    if (data.negocioId) {
+      localStorage.setItem('negocioId', data.negocioId);
+      localStorage.setItem('negocioNome', data.negocio || '');
     }
-  } catch(e) {
-    showErr('err-login', e.message)
-    btn.disabled=false
-    btn.innerHTML='Entrar no painel <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7h8M7.5 3.5L11 7l-3.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+    toast('Bem-vindo de volta, ' + (data.nome || '') + '!', 'success');
+    setTimeout(() => window.location.href = '/painel.html', 600);
+  } catch (err) {
+    const e2 = $('#login-err');
+    if (e2) { e2.textContent = err.message || 'Erro ao entrar'; e2.classList.add('show'); }
+    loginData.loading = false;
+    render();
   }
 }
 
-function avancarCad1() {
-  hideErr('err-cad1')
-  const nome    = document.getElementById('cad-nome').value.trim()
-  const negocio = document.getElementById('cad-negocio').value.trim()
-  if(!nome)    { showErr('err-cad1','Digite seu nome'); return }
-  if(!negocio) { showErr('err-cad1','Digite o nome do negócio'); return }
-  switchTela('cad-2')
+// ─── SIGNUP ─────────────────────────────────────
+function renderSignup(root) {
+  root.appendChild(el('h2', {}, 'Crie sua conta grátis'));
+  root.appendChild(el('div', { class: 'sub-text' }, '14 dias grátis. Sem cartão. Sem compromisso.'));
+
+  // Step indicator
+  const ind = el('div', { class: 'step-ind' });
+  for (let s = 1; s <= 4; s++) {
+    const c = el('div', { class: 'step-circle ' + (s === step ? 'active' : s < step ? 'done' : '') });
+    if (s < step) c.innerHTML = icon('check');
+    else c.textContent = s;
+    ind.appendChild(c);
+    if (s < 4) ind.appendChild(el('div', { class: 'step-line ' + (s < step ? 'done' : '') }));
+  }
+  root.appendChild(ind);
+
+  const stepLabels = ['Sobre o negócio', 'Seus dados', 'Confirme seu email', 'Crie uma senha'];
+  root.appendChild(el('div', { class: 'step-label-tag' }, `Passo ${step} de 4 · ${stepLabels[step - 1]}`));
+
+  if (step === 1) renderSignupStep1(root);
+  if (step === 2) renderSignupStep2(root);
+  if (step === 3) renderSignupStep3(root);
+  if (step === 4) renderSignupStep4(root);
+
+  // Nav buttons
+  const err = el('div', { class: 'field-error', id: 'signup-err' });
+  root.appendChild(err);
+
+  const nav = el('div', { style: { display: 'flex', gap: '8px', marginTop: '20px' } });
+  if (step > 1) {
+    const back = el('button', { class: 'btn', type: 'button', onclick: () => { step--; render(); } }, 'Voltar');
+    nav.appendChild(back);
+  }
+  const next = el('button', { class: 'btn primary lg', type: 'button', style: { flex: '1', justifyContent: 'center' }, id: 'next-btn' });
+  if (step === 4) {
+    next.innerHTML = icon('check') + 'Criar conta';
+    next.onclick = doCadastro;
+  } else if (step === 2) {
+    next.innerHTML = 'Enviar código ' + icon('arrow_right');
+    next.onclick = enviarCodigo;
+  } else if (step === 3) {
+    next.innerHTML = 'Verificar código ' + icon('arrow_right');
+    next.onclick = verificarCodigo;
+  } else {
+    next.innerHTML = 'Continuar ' + icon('arrow_right');
+    next.onclick = () => { step++; render(); };
+  }
+  nav.appendChild(next);
+  root.appendChild(nav);
 }
 
-async function avancarCad2() {
-  hideErr('err-cad2')
-  const email  = document.getElementById('cad-email').value.trim()
-  const senha  = document.getElementById('cad-senha').value
-  const senha2 = document.getElementById('cad-senha2').value
-  if(!email.includes('@')) { showErr('err-cad2','Digite um email válido'); return }
-  if(senha.length<6) { showErr('err-cad2','Senha deve ter ao menos 6 caracteres'); return }
-  if(senha!==senha2) { showErr('err-cad2','As senhas não coincidem'); return }
-  const btn = document.getElementById('btn-cad2')
-  btn.disabled=true; btn.textContent='Enviando...'
+function renderSignupStep1(root) {
+  const fNeg = el('div', { class: 'field', style: { marginBottom: '14px' } });
+  fNeg.appendChild(el('label', { class: 'field-label' }, 'Nome do seu negócio'));
+  const inpNeg = el('input', { class: 'input', type: 'text', placeholder: 'Ex: Barbearia Centro', value: signupData.negocio });
+  inpNeg.oninput = e => signupData.negocio = e.target.value;
+  fNeg.appendChild(inpNeg);
+  root.appendChild(fNeg);
+
+  const fSeg = el('div', { class: 'field' });
+  fSeg.appendChild(el('label', { class: 'field-label' }, 'Segmento'));
+  const sel = el('select', { class: 'select' });
+  ['Barbearia', 'Salão de Beleza', 'Clínica', 'Pet Shop', 'Academia', 'Estúdio de Tatuagem', 'Outro']
+    .forEach(s => {
+      const opt = el('option', { value: s }, s);
+      if (s === signupData.segmento) opt.selected = true;
+      sel.appendChild(opt);
+    });
+  sel.onchange = e => signupData.segmento = e.target.value;
+  fSeg.appendChild(sel);
+  root.appendChild(fSeg);
+}
+
+function renderSignupStep2(root) {
+  const fNome = el('div', { class: 'field', style: { marginBottom: '14px' } });
+  fNome.appendChild(el('label', { class: 'field-label' }, 'Seu nome'));
+  const inpNome = el('input', { class: 'input', type: 'text', placeholder: 'Carlos Lima', value: signupData.nome });
+  inpNome.oninput = e => signupData.nome = e.target.value;
+  fNome.appendChild(inpNome);
+  root.appendChild(fNome);
+
+  const fEmail = el('div', { class: 'field' });
+  fEmail.appendChild(el('label', { class: 'field-label' }, 'E-mail'));
+  const inpEmail = el('input', { class: 'input', type: 'email', placeholder: 'seu@email.com', autocomplete: 'email', value: signupData.email });
+  inpEmail.oninput = e => signupData.email = e.target.value;
+  fEmail.appendChild(inpEmail);
+  fEmail.appendChild(el('div', { class: 'field-hint' }, 'Enviaremos um código de 6 dígitos para confirmação.'));
+  root.appendChild(fEmail);
+}
+
+function renderSignupStep3(root) {
+  const card = el('div', { style: { padding: '14px', background: 'var(--accent-soft)', borderRadius: '10px', fontSize: '12px', marginBottom: '18px', display: 'flex', gap: '10px' } });
+  const ic = el('div'); ic.innerHTML = icon('mail'); ic.style.color = 'var(--accent)'; ic.style.flexShrink = '0';
+  ic.querySelector('svg').setAttribute('width', '16'); ic.querySelector('svg').setAttribute('height', '16');
+  card.appendChild(ic);
+  card.appendChild(el('div', { html: 'Enviamos um código para <b>' + signupData.email + '</b>' }));
+  root.appendChild(card);
+
+  root.appendChild(el('div', { class: 'field-label', style: { marginBottom: '8px' } }, 'Código de 6 dígitos'));
+  const grid = el('div', { class: 'code-grid' });
+  const inputs = [];
+  for (let i = 0; i < 6; i++) {
+    const inp = el('input', { class: 'code-input', type: 'text', inputmode: 'numeric', maxlength: 1 });
+    inp.oninput = (e) => {
+      const v = e.target.value.replace(/\D/g, '').slice(0, 1);
+      e.target.value = v;
+      if (v && i < 5) inputs[i + 1].focus();
+      signupData.codigo = inputs.map(x => x.value).join('');
+    };
+    inp.onkeydown = (e) => {
+      if (e.key === 'Backspace' && !inp.value && i > 0) inputs[i - 1].focus();
+    };
+    inp.onpaste = (e) => {
+      e.preventDefault();
+      const txt = (e.clipboardData.getData('text') || '').replace(/\D/g, '').slice(0, 6);
+      txt.split('').forEach((c, idx) => { if (inputs[idx]) inputs[idx].value = c; });
+      signupData.codigo = txt;
+      if (inputs[Math.min(txt.length, 5)]) inputs[Math.min(txt.length, 5)].focus();
+    };
+    inputs.push(inp);
+    grid.appendChild(inp);
+  }
+  root.appendChild(grid);
+
+  setTimeout(() => inputs[0].focus(), 50);
+
+  const resend = el('button', { class: 'link', type: 'button', style: { fontSize: '12px' }, onclick: enviarCodigo }, 'Reenviar código');
+  root.appendChild(resend);
+}
+
+function renderSignupStep4(root) {
+  const fSenha = el('div', { class: 'field' });
+  fSenha.appendChild(el('label', { class: 'field-label' }, 'Crie uma senha'));
+  const wrap = el('div', { style: { position: 'relative' } });
+  const inp = el('input', { class: 'input', type: 'password', placeholder: 'Mínimo 8 caracteres', autocomplete: 'new-password' });
+  inp.style.paddingRight = '40px';
+  inp.oninput = e => signupData.senha = e.target.value;
+  wrap.appendChild(inp);
+  const toggleBtn = el('button', { type: 'button', style: { position: 'absolute', right: '10px', top: '8px', width: '24px', height: '24px', background: 'transparent', color: 'var(--fg-3)' } });
+  toggleBtn.innerHTML = icon('eye');
+  toggleBtn.onclick = () => {
+    inp.type = inp.type === 'password' ? 'text' : 'password';
+    toggleBtn.innerHTML = icon(inp.type === 'password' ? 'eye' : 'eye_off');
+  };
+  wrap.appendChild(toggleBtn);
+  fSenha.appendChild(wrap);
+  fSenha.appendChild(el('div', { class: 'field-hint' }, 'Mínimo 8 caracteres, com letras e números.'));
+  root.appendChild(fSenha);
+
+  const benefit = el('div', { style: { padding: '14px', background: 'var(--green-soft)', borderRadius: '10px', fontSize: '12px', marginTop: '18px', display: 'flex', gap: '10px' } });
+  const bi = el('div'); bi.innerHTML = icon('sparkle'); bi.style.color = 'var(--green)';
+  bi.querySelector('svg').setAttribute('width', '16'); bi.querySelector('svg').setAttribute('height', '16');
+  benefit.appendChild(bi);
+  benefit.appendChild(el('div', { html: '<b style="color:var(--green)">14 dias grátis · sem cartão</b><br><span style="color:var(--fg-2)">Cancele a qualquer momento, sem compromisso.</span>' }));
+  root.appendChild(benefit);
+}
+
+async function enviarCodigo() {
+  if (!signupData.email) { showSignupErr('Informe seu e-mail'); return; }
+  setBtnLoading('next-btn', true);
   try {
-    const res = await fetch(`${API}/auth/enviar-codigo`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email})})
-    if(!res.ok) { const d=await res.json(); throw new Error(d.erro||'Erro ao enviar código') }
-    document.getElementById('email-exibido').textContent = email
-    switchTela('cad-3'); criarOtp('otp-cad','err-otp'); iniciarTimer('timer-cad','btn-resend')
-  } catch(e) { showErr('err-cad2',e.message) }
-  finally { btn.disabled=false; btn.textContent='Enviar código de verificação' }
+    await api.post('/auth/enviar-codigo', { email: signupData.email }, { auth: false });
+    toast('Código enviado para ' + signupData.email);
+    step = 3;
+    render();
+  } catch (err) {
+    showSignupErr(err.message || 'Erro ao enviar código');
+  }
+  setBtnLoading('next-btn', false);
 }
 
 async function verificarCodigo() {
-  hideErr('err-otp')
-  const codigo = getOtp('otp-cad')
-  if(codigo.length<6) { showErr('err-otp','Digite o código completo de 6 dígitos'); return }
-  const btn = document.getElementById('btn-verificar')
-  btn.disabled=true; btn.textContent='Verificando...'
+  if (signupData.codigo.length !== 6) { showSignupErr('Digite o código de 6 dígitos'); return; }
+  setBtnLoading('next-btn', true);
   try {
-    const email = document.getElementById('cad-email').value.trim()
-    const resVer = await fetch(`${API}/auth/verificar-codigo`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,codigo,tipo:'cadastro'})})
-    if(!resVer.ok) { const d=await resVer.json(); throw new Error(d.erro||'Código inválido') }
-    const nome    = document.getElementById('cad-nome').value.trim()
-    const negocio = document.getElementById('cad-negocio').value.trim()
-    const segmento= document.getElementById('cad-segmento').value
-    const senha   = document.getElementById('cad-senha').value
-    const servicos= servicosPorSegmento[segmento]||servicosPorSegmento['Outro']
-    const resCad  = await fetch(`${API}/auth/cadastro`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({nome,email,senha,negocio,segmento,servicos})})
-    const data    = await resCad.json()
-    if(!resCad.ok) throw new Error(data.erro||'Erro ao criar conta')
-    switchTela('sucesso')
-    setTimeout(()=>salvarSessao(data, email), 2000)
-  } catch(e) { showErr('err-otp',e.message); btn.disabled=false; btn.textContent='Verificar e criar conta' }
-}
-
-async function reenviarCodigo() {
-  const email = document.getElementById('cad-email').value.trim()
-  await fetch(`${API}/auth/enviar-codigo`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email})})
-  iniciarTimer('timer-cad','btn-resend')
-}
-
-async function enviarRecuperacao() {
-  hideErr('err-recup')
-  const email = document.getElementById('recup-email').value.trim()
-  if(!email.includes('@')) { showErr('err-recup','Digite um email válido'); return }
-  const btn = document.getElementById('btn-recup')
-  btn.disabled=true; btn.textContent='Enviando...'
-  try {
-    const res = await fetch(`${API}/auth/recuperar-senha`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email})})
-    if(!res.ok) { const d=await res.json(); throw new Error(d.erro||'Email não encontrado') }
-    document.getElementById('recup-email-exibido').textContent = email
-    switchTela('recuperar-otp'); criarOtp('otp-recup','err-recup-otp'); iniciarTimer('timer-recup','btn-resend-recup')
-  } catch(e) { showErr('err-recup',e.message) }
-  finally { btn.disabled=false; btn.textContent='Enviar código por email' }
-}
-
-async function verificarRecuperacao() {
-  hideErr('err-recup-otp')
-  const codigo = getOtp('otp-recup')
-  if(codigo.length<6) { showErr('err-recup-otp','Digite o código completo'); return }
-  const email = document.getElementById('recup-email').value.trim()
-  const res = await fetch(`${API}/auth/verificar-codigo`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,codigo,tipo:'recuperacao'})})
-  if(!res.ok) { const d=await res.json(); showErr('err-recup-otp',d.erro||'Código inválido'); return }
-  switchTela('nova-senha')
-}
-
-async function reenviarRecuperacao() {
-  const email = document.getElementById('recup-email').value.trim()
-  await fetch(`${API}/auth/recuperar-senha`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email})})
-  iniciarTimer('timer-recup','btn-resend-recup')
-}
-
-async function salvarNovaSenha() {
-  hideErr('err-nova')
-  const senha  = document.getElementById('nova-senha').value
-  const senha2 = document.getElementById('nova-senha2').value
-  if(senha.length<6) { showErr('err-nova','Senha deve ter ao menos 6 caracteres'); return }
-  if(senha!==senha2) { showErr('err-nova','As senhas não coincidem'); return }
-  const btn = document.getElementById('btn-nova')
-  btn.disabled=true; btn.textContent='Salvando...'
-  try {
-    const email = document.getElementById('recup-email').value.trim()
-    const res = await fetch(`${API}/auth/nova-senha`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,senha})})
-    if(!res.ok) { const d=await res.json(); throw new Error(d.erro||'Erro ao salvar senha') }
-    switchTela('login'); switchTab('login')
-    const err = document.getElementById('err-login')
-    err.style.background='#dcfce7'; err.style.borderColor='rgba(22,163,74,0.2)'; err.style.color='#16a34a'
-    err.textContent='Senha atualizada! Faça login com a nova senha.'; err.classList.add('show')
-    setTimeout(()=>{err.classList.remove('show'); err.style=''}, 5000)
-  } catch(e) { showErr('err-nova',e.message); btn.disabled=false; btn.textContent='Salvar nova senha' }
-}
-
-function salvarSessao(data, email) {
-  localStorage.setItem('token', data.token)
-  localStorage.setItem('negocio', data.negocio || '')
-  localStorage.setItem('userEmail', email || '')
-  if (data.negocioId) localStorage.setItem('negocioId', data.negocioId)
-  try {
-    const payload = JSON.parse(atob(data.token.split('.')[1]))
-    localStorage.setItem('userId', payload.id)
-  } catch(e) {}
-  window.location.href = '/painel.html'
-}
-
-function criarOtp(containerId, erroId) {
-  const wrap = document.getElementById(containerId); wrap.innerHTML=''
-  for(let i=0;i<6;i++){
-    const inp = document.createElement('input')
-    inp.type='text'; inp.inputMode='numeric'; inp.maxLength=1
-    inp.addEventListener('input',()=>{inp.value=inp.value.replace(/\D/g,'');inp.classList.toggle('filled',!!inp.value);hideErr(erroId);if(inp.value&&i<5)wrap.children[i+1].focus()})
-    inp.addEventListener('keydown',e=>{if(e.key==='Backspace'&&!inp.value&&i>0)wrap.children[i-1].focus()})
-    inp.addEventListener('paste',e=>{e.preventDefault();const paste=(e.clipboardData||window.clipboardData).getData('text').replace(/\D/g,'').slice(0,6);paste.split('').forEach((c,idx)=>{if(wrap.children[idx]){wrap.children[idx].value=c;wrap.children[idx].classList.add('filled')}});if(wrap.children[paste.length-1])wrap.children[paste.length-1].focus()})
-    wrap.appendChild(inp)
-  }
-  setTimeout(()=>wrap.children[0]?.focus(),100)
-}
-function getOtp(id) { return Array.from(document.getElementById(id).children).map(i=>i.value).join('') }
-let timerInt = null
-function iniciarTimer(timerId, btnId) {
-  clearInterval(timerInt); let s=60
-  const btn = document.getElementById(btnId); btn.disabled=true
-  btn.innerHTML=`Reenviar (<span id="${timerId}">${s}</span>s)`
-  timerInt = setInterval(()=>{ s--; const el=document.getElementById(timerId); if(el)el.textContent=s; if(s<=0){clearInterval(timerInt);btn.disabled=false;btn.textContent='Reenviar código'} }, 1000)
-}
-
-/* ═══════════════════════════════════════════════════
-   ✅ CORRIGIDO: Validação do token no servidor antes
-   de redirecionar. Não usa mais só localStorage.
-═══════════════════════════════════════════════════ */
-;(async () => {
-  const tk = localStorage.getItem('token')
-
-  // Sem token → fica na tela de login normalmente
-  if (!tk) return
-
-  // Mostra loading enquanto valida
-  const overlay = document.getElementById('checking-overlay')
-  if (overlay) overlay.style.display = 'flex'
-
-  try {
-    // ✅ Valida o token no servidor
-    const res = await fetch(`${API}/auth/negocios`, {
-      headers: { 'Authorization': `Bearer ${tk}` }
-    })
-
-    if (!res.ok) {
-      // Token inválido ou expirado — limpa e mostra tela de login
-      localStorage.clear()
-      if (overlay) overlay.style.display = 'none'
-      return
-    }
-
-    // Token válido — redireciona
-    const em = localStorage.getItem('userEmail') || ''
-    if (verificarSeAdmin(tk, em)) {
-      window.location.href = '/admin.html'
-    } else {
-      window.location.href = '/painel.html'
-    }
-
+    await api.post('/auth/verificar-codigo', { email: signupData.email, codigo: signupData.codigo, tipo: 'cadastro' }, { auth: false });
+    step = 4;
+    render();
   } catch (err) {
-    // ✅ Servidor offline (Render hibernando) — NÃO redireciona
-    // Usuário precisa fazer login normalmente
-    console.warn('[auth] Servidor indisponível, aguardando login manual.')
-    localStorage.clear()
-    if (overlay) overlay.style.display = 'none'
+    showSignupErr(err.message || 'Código incorreto');
   }
-})()
+  setBtnLoading('next-btn', false);
+}
+
+async function doCadastro() {
+  if (!signupData.senha || signupData.senha.length < 6) { showSignupErr('Senha deve ter pelo menos 6 caracteres'); return; }
+  setBtnLoading('next-btn', true);
+  try {
+    const data = await api.post('/auth/cadastro', {
+      nome: signupData.nome,
+      email: signupData.email,
+      senha: signupData.senha,
+      negocio: signupData.negocio,
+      segmento: signupData.segmento,
+    }, { auth: false });
+    localStorage.setItem('token', data.token);
+    localStorage.setItem('userId', data.userId);
+    localStorage.setItem('negocioId', data.negocioId);
+    localStorage.setItem('negocioNome', data.negocio);
+    toast('Conta criada! Bem-vindo 🎉', 'success');
+    setTimeout(() => window.location.href = '/painel.html', 700);
+  } catch (err) {
+    showSignupErr(err.message || 'Erro ao criar conta');
+    setBtnLoading('next-btn', false);
+  }
+}
+
+function showSignupErr(msg) {
+  const e = $('#signup-err');
+  if (e) { e.textContent = msg; e.classList.add('show'); setTimeout(() => e.classList.remove('show'), 5000); }
+}
+
+function setBtnLoading(id, loading) {
+  const b = $('#' + id);
+  if (!b) return;
+  b.disabled = loading;
+  if (loading) b.innerHTML = '<span class="spinner"></span> Aguarde...';
+}
+
+// ─── FORGOT ─────────────────────────────────────
+function renderForgot(root) {
+  root.appendChild(el('h2', {}, 'Recuperar senha'));
+  root.appendChild(el('div', { class: 'sub-text' }, 'Vamos te enviar um código para criar uma nova senha.'));
+
+  const err = el('div', { class: 'field-error', id: 'forgot-err' });
+
+  if (forgotData.step === 1) {
+    const fEmail = el('div', { class: 'field', style: { marginBottom: '14px' } });
+    fEmail.appendChild(el('label', { class: 'field-label' }, 'E-mail cadastrado'));
+    const inp = el('input', { class: 'input', type: 'email', placeholder: 'seu@email.com', value: forgotData.email });
+    inp.oninput = e => forgotData.email = e.target.value;
+    fEmail.appendChild(inp);
+    root.appendChild(fEmail);
+    root.appendChild(err);
+    const btn = el('button', { class: 'btn primary lg full', type: 'button', id: 'forgot-btn', onclick: doForgotSend }, 'Enviar código ');
+    btn.innerHTML += icon('arrow_right');
+    root.appendChild(btn);
+  } else if (forgotData.step === 2) {
+    const card = el('div', { style: { padding: '14px', background: 'var(--accent-soft)', borderRadius: '10px', fontSize: '12px', marginBottom: '18px' } });
+    card.innerHTML = 'Enviamos um código para <b>' + forgotData.email + '</b>';
+    root.appendChild(card);
+
+    const fCode = el('div', { class: 'field', style: { marginBottom: '14px' } });
+    fCode.appendChild(el('label', { class: 'field-label' }, 'Código de 6 dígitos'));
+    const inpCode = el('input', { class: 'input mono', type: 'text', inputmode: 'numeric', maxlength: 6, placeholder: '000000', style: { textAlign: 'center', fontSize: '20px', letterSpacing: '8px' } });
+    inpCode.oninput = e => forgotData.codigo = e.target.value.replace(/\D/g, '');
+    fCode.appendChild(inpCode);
+    root.appendChild(fCode);
+
+    const fSenha = el('div', { class: 'field', style: { marginBottom: '14px' } });
+    fSenha.appendChild(el('label', { class: 'field-label' }, 'Nova senha'));
+    const inpSenha = el('input', { class: 'input', type: 'password', placeholder: 'Nova senha' });
+    inpSenha.oninput = e => forgotData.novaSenha = e.target.value;
+    fSenha.appendChild(inpSenha);
+    root.appendChild(fSenha);
+    root.appendChild(err);
+
+    const btn = el('button', { class: 'btn primary lg full', type: 'button', id: 'forgot-btn', onclick: doForgotComplete });
+    btn.innerHTML = icon('check') + 'Salvar nova senha';
+    root.appendChild(btn);
+  }
+
+  const back = el('button', { class: 'link', type: 'button', style: { display: 'block', textAlign: 'center', width: '100%', marginTop: '14px' }, onclick: () => { forgotData.step = 1; setMode('login'); } }, '← Voltar para entrar');
+  root.appendChild(back);
+}
+
+async function doForgotSend() {
+  if (!forgotData.email) { showForgotErr('Informe o e-mail'); return; }
+  setBtnLoading('forgot-btn', true);
+  try {
+    await api.post('/auth/recuperar-senha', { email: forgotData.email }, { auth: false });
+    await api.post('/auth/verificar-codigo', { email: forgotData.email, codigo: '000000', tipo: 'recuperacao' }, { auth: false }).catch(() => {});
+    toast('Se o e-mail existir, você receberá um código');
+    forgotData.step = 2;
+    render();
+  } catch (err) {
+    showForgotErr(err.message);
+  }
+  setBtnLoading('forgot-btn', false);
+}
+
+async function doForgotComplete() {
+  if (!forgotData.codigo || forgotData.codigo.length !== 6) { showForgotErr('Digite o código de 6 dígitos'); return; }
+  if (!forgotData.novaSenha || forgotData.novaSenha.length < 6) { showForgotErr('Senha deve ter ao menos 6 caracteres'); return; }
+  setBtnLoading('forgot-btn', true);
+  try {
+    await api.post('/auth/verificar-codigo', { email: forgotData.email, codigo: forgotData.codigo, tipo: 'recuperacao' }, { auth: false });
+    await api.post('/auth/nova-senha', { email: forgotData.email, senha: forgotData.novaSenha }, { auth: false });
+    toast('Senha alterada! Faça login.', 'success');
+    forgotData.step = 1;
+    setMode('login');
+  } catch (err) {
+    showForgotErr(err.message || 'Código incorreto ou expirado');
+  }
+  setBtnLoading('forgot-btn', false);
+}
+
+function showForgotErr(msg) {
+  const e = $('#forgot-err');
+  if (e) { e.textContent = msg; e.classList.add('show'); setTimeout(() => e.classList.remove('show'), 5000); }
+}
+
+// Já está logado? Redireciona
+if (AR.isLoggedIn()) {
+  window.location.href = '/painel.html';
+} else {
+  render();
+}
 </script>
+
 </body>
 </html>

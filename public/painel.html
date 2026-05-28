@@ -683,8 +683,376 @@
  
 </section>
 
- <!-- ══════════════════ PAGE: AGENDAMENTOS ══════════════════ -->
-
+  <!-- ══════════════════ PAGE: AGENDAMENTOS ══════════════════ -->
+  <section class="page" id="page-agendamentos" aria-label="Agendamentos">
+ 
+  <!-- ─── HERO ─────────────────────────────────────── -->
+  <div class="ag3-hero">
+    <div class="ag3-hero-left">
+      <div class="ag3-hero-icon">
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+          <rect x="2.5" y="3.5" width="17" height="15" rx="3" stroke="white" stroke-width="1.6"/>
+          <path d="M2.5 8h17M7.5 2v3M14.5 2v3" stroke="white" stroke-width="1.6" stroke-linecap="round"/>
+          <path d="M6.5 12h3M6.5 15h5" stroke="white" stroke-width="1.4" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div>
+        <h1 class="ag3-hero-title">Agendamentos</h1>
+        <p class="ag3-hero-sub">Gerencie todos os atendimentos do seu negócio</p>
+      </div>
+    </div>
+    <div class="ag3-hero-right">
+      <button class="ag3-btn-export" onclick="ag3ExportarCSV()" type="button">
+        <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
+          <path d="M7 2v8M4.5 7.5L7 10l2.5-2.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M2 11h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        Exportar CSV
+      </button>
+      <button class="ag3-btn-novo" onclick="abrirModalNovoAgendamento()" type="button">
+        <svg width="13" height="13" viewBox="0 0 12 12" fill="none">
+          <path d="M6 1v10M1 6h10" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+        Novo agendamento
+      </button>
+    </div>
+  </div>
+ 
+  <!-- ─── STATS CARDS ──────────────────────────────── -->
+  <div class="ag3-stats">
+    <div class="ag3-stat" id="ag3-stat-hoje">
+      <div class="ag3-stat-icon ag3-ic-blue">
+        <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+          <circle cx="10" cy="10" r="7.5" stroke="#60a5fa" stroke-width="1.6"/>
+          <path d="M10 6.5V11l2.5 2" stroke="#60a5fa" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="ag3-stat-body">
+        <div class="ag3-stat-lbl">Hoje</div>
+        <div class="ag3-stat-num" id="ag3-num-hoje">0</div>
+        <div class="ag3-stat-sub" id="ag3-sub-hoje">agendamentos</div>
+      </div>
+    </div>
+    <div class="ag3-stat" id="ag3-stat-semana">
+      <div class="ag3-stat-icon ag3-ic-purple">
+        <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+          <rect x="2.5" y="3.5" width="15" height="13" rx="2.5" stroke="#a78bfa" stroke-width="1.6"/>
+          <path d="M2.5 7.5h15M7 2v3M13 2v3" stroke="#a78bfa" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="ag3-stat-body">
+        <div class="ag3-stat-lbl">Esta semana</div>
+        <div class="ag3-stat-num" id="ag3-num-semana">0</div>
+        <div class="ag3-stat-sub" id="ag3-sub-semana">agendamentos</div>
+      </div>
+    </div>
+    <div class="ag3-stat" id="ag3-stat-confirmados">
+      <div class="ag3-stat-icon ag3-ic-green">
+        <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+          <path d="M3 10l5 5 9-9" stroke="#34d399" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="ag3-stat-body">
+        <div class="ag3-stat-lbl">Confirmados</div>
+        <div class="ag3-stat-num" id="ag3-num-conf">0</div>
+        <div class="ag3-stat-sub ag3-green" id="ag3-sub-conf">este mês</div>
+      </div>
+    </div>
+    <div class="ag3-stat" id="ag3-stat-cancelados">
+      <div class="ag3-stat-icon ag3-ic-red">
+        <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+          <circle cx="10" cy="10" r="7.5" stroke="#f87171" stroke-width="1.6"/>
+          <path d="M7 7l6 6M13 7l-6 6" stroke="#f87171" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="ag3-stat-body">
+        <div class="ag3-stat-lbl">Cancelados</div>
+        <div class="ag3-stat-num" id="ag3-num-canc">0</div>
+        <div class="ag3-stat-sub ag3-red" id="ag3-sub-canc">este mês</div>
+      </div>
+    </div>
+    <div class="ag3-stat" id="ag3-stat-faturamento">
+      <div class="ag3-stat-icon ag3-ic-yellow">
+        <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+          <path d="M10 3v14M7 6h4.5a2.5 2.5 0 0 1 0 5H7m0 0h5.5a2.5 2.5 0 0 1 0 5H7" stroke="#fbbf24" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="ag3-stat-body">
+        <div class="ag3-stat-lbl">Faturamento</div>
+        <div class="ag3-stat-num ag3-stat-num-sm" id="ag3-num-fat">R$0</div>
+        <div class="ag3-stat-sub ag3-yellow" id="ag3-sub-fat">este mês</div>
+      </div>
+    </div>
+  </div>
+ 
+  <!-- ─── CONTEÚDO PRINCIPAL ────────────────────────── -->
+  <div class="ag3-layout">
+ 
+    <!-- ─── COLUNA ESQUERDA: Filtros + Mini-cal + Insights ─── -->
+    <aside class="ag3-sidebar">
+ 
+      <!-- Mini Calendário -->
+      <div class="ag3-card ag3-cal-card">
+        <div class="ag3-card-hdr">
+          <span class="ag3-card-title">Calendário</span>
+          <div class="ag3-cal-nav">
+            <button class="ag3-cal-nav-btn" id="ag3-cal-prev" type="button">&#8249;</button>
+            <span class="ag3-cal-mes-label" id="ag3-cal-mes-label">Mai 2026</span>
+            <button class="ag3-cal-nav-btn" id="ag3-cal-next" type="button">&#8250;</button>
+          </div>
+        </div>
+        <div class="ag3-cal-dias-semana">
+          <span>D</span><span>S</span><span>T</span><span>Q</span><span>Q</span><span>S</span><span>S</span>
+        </div>
+        <div class="ag3-cal-grid" id="ag3-cal-grid"></div>
+        <div class="ag3-cal-legenda">
+          <span class="ag3-leg-item"><span class="ag3-leg-dot" style="background:#3b82f6"></span>Agendado</span>
+          <span class="ag3-leg-item"><span class="ag3-leg-dot" style="background:#10b981"></span>Concluído</span>
+          <span class="ag3-leg-item"><span class="ag3-leg-dot" style="background:#ef4444"></span>Cancelado</span>
+        </div>
+      </div>
+ 
+      <!-- Filtro Rápido por Status -->
+      <div class="ag3-card ag3-filtro-card">
+        <div class="ag3-card-hdr">
+          <span class="ag3-card-title">Filtrar por status</span>
+        </div>
+        <div class="ag3-filtros-status">
+          <button class="ag3-fstatus ativo" data-status="todos" onclick="ag3FiltrarStatus('todos',this)" type="button">
+            <span class="ag3-fstatus-dot" style="background:var(--accent)"></span>Todos
+            <span class="ag3-fstatus-count" id="ag3-count-todos">0</span>
+          </button>
+          <button class="ag3-fstatus" data-status="confirmado" onclick="ag3FiltrarStatus('confirmado',this)" type="button">
+            <span class="ag3-fstatus-dot" style="background:#10b981"></span>Confirmados
+            <span class="ag3-fstatus-count" id="ag3-count-conf">0</span>
+          </button>
+          <button class="ag3-fstatus" data-status="concluido" onclick="ag3FiltrarStatus('concluido',this)" type="button">
+            <span class="ag3-fstatus-dot" style="background:#8b5cf6"></span>Concluídos
+            <span class="ag3-fstatus-count" id="ag3-count-conc">0</span>
+          </button>
+          <button class="ag3-fstatus" data-status="cancelado" onclick="ag3FiltrarStatus('cancelado',this)" type="button">
+            <span class="ag3-fstatus-dot" style="background:#ef4444"></span>Cancelados
+            <span class="ag3-fstatus-count" id="ag3-count-canc2">0</span>
+          </button>
+          <button class="ag3-fstatus" data-status="pendente" onclick="ag3FiltrarStatus('pendente',this)" type="button">
+            <span class="ag3-fstatus-dot" style="background:#f59e0b"></span>Pendentes
+            <span class="ag3-fstatus-count" id="ag3-count-pend">0</span>
+          </button>
+        </div>
+      </div>
+ 
+      <!-- Top Serviços -->
+      <div class="ag3-card ag3-insights-card">
+        <div class="ag3-card-hdr">
+          <span class="ag3-card-title">Top serviços</span>
+          <span class="ag3-card-badge" id="ag3-top-mes-label">este mês</span>
+        </div>
+        <div id="ag3-top-servicos" class="ag3-top-list">
+          <div class="ag3-top-vazio">Carregando...</div>
+        </div>
+      </div>
+ 
+      <!-- Link de agendamento -->
+      <div class="ag3-card ag3-link-card">
+        <div class="ag3-card-hdr">
+          <span class="ag3-card-title">Seu link</span>
+        </div>
+        <div class="ag3-link-box">
+          <span class="ag3-link-url" id="ag3-link-url">—</span>
+          <button class="ag3-link-copy" id="ag3-btn-copiar-link" onclick="ag3CopiarLink()" type="button" title="Copiar link">
+            <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
+              <rect x="4.5" y="4.5" width="8" height="8" rx="1.5" stroke="currentColor" stroke-width="1.3"/>
+              <path d="M1.5 9V3a1.5 1.5 0 0 1 1.5-1.5H9" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+            </svg>
+          </button>
+        </div>
+        <div class="ag3-link-btns">
+          <a id="ag3-link-wpp" href="#" target="_blank" class="ag3-lnkbtn ag3-lnkbtn-wpp">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.118 1.528 5.852L.057 23.885l6.204-1.628A11.945 11.945 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.808 9.808 0 0 1-5.001-1.366l-.359-.213-3.682.966.983-3.594-.234-.371A9.818 9.818 0 0 1 2.182 12C2.182 6.57 6.57 2.182 12 2.182S21.818 6.57 21.818 12 17.43 21.818 12 21.818z"/></svg>
+            WhatsApp
+          </a>
+          <button class="ag3-lnkbtn" onclick="ag3CopiarLink()" type="button">Copiar link</button>
+        </div>
+      </div>
+ 
+    </aside>
+ 
+    <!-- ─── COLUNA PRINCIPAL ────────────────────────── -->
+    <div class="ag3-main">
+ 
+      <!-- Barra de busca + Filtro de data + Views -->
+      <div class="ag3-toolbar">
+        <div class="ag3-busca-wrap">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <circle cx="6" cy="6" r="4.5" stroke="var(--text3)" stroke-width="1.4"/>
+            <path d="M9.5 9.5L12 12" stroke="var(--text3)" stroke-width="1.4" stroke-linecap="round"/>
+          </svg>
+          <input type="search" class="ag3-busca-input" id="ag3-busca" placeholder="Buscar por nome, serviço ou telefone..." oninput="ag3Buscar(this.value)" autocomplete="off">
+          <button class="ag3-busca-clear" id="ag3-busca-clear" onclick="ag3LimparBusca()" type="button" style="display:none">×</button>
+        </div>
+        <div class="ag3-toolbar-right">
+          <input type="date" class="ag3-date-input" id="ag3-data-filtro" onchange="ag3FiltrarPorData(this.value)" title="Filtrar por data">
+          <div class="ag3-views">
+            <button class="ag3-view-btn ativo" id="ag3-view-lista" onclick="ag3MudarView('lista',this)" type="button" title="Visualização lista">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                <path d="M2 3.5h10M2 7h10M2 10.5h10" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+              </svg>
+            </button>
+            <button class="ag3-view-btn" id="ag3-view-kanban" onclick="ag3MudarView('kanban',this)" type="button" title="Visualização kanban">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                <rect x="1" y="1.5" width="3.5" height="11" rx="1" stroke="currentColor" stroke-width="1.3"/>
+                <rect x="5.5" y="1.5" width="3.5" height="7" rx="1" stroke="currentColor" stroke-width="1.3"/>
+                <rect x="10" y="1.5" width="3.5" height="9" rx="1" stroke="currentColor" stroke-width="1.3"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+ 
+      <!-- Tabs de Período -->
+      <div class="ag3-tabs-wrap" role="tablist">
+        <button class="ag3-tab" role="tab" aria-selected="true" data-periodo="hoje" onclick="ag3MudarPeriodo('hoje',this)" type="button">Hoje</button>
+        <button class="ag3-tab" role="tab" aria-selected="false" data-periodo="amanha" onclick="ag3MudarPeriodo('amanha',this)" type="button">Amanhã</button>
+        <button class="ag3-tab" role="tab" aria-selected="false" data-periodo="semana" onclick="ag3MudarPeriodo('semana',this)" type="button">Esta semana</button>
+        <button class="ag3-tab" role="tab" aria-selected="false" data-periodo="mes" onclick="ag3MudarPeriodo('mes',this)" type="button">Este mês</button>
+        <button class="ag3-tab" role="tab" aria-selected="false" data-periodo="todos" onclick="ag3MudarPeriodo('todos',this)" type="button">Todos</button>
+      </div>
+ 
+      <!-- Info resultados -->
+      <div class="ag3-result-info" id="ag3-result-info">
+        <span id="ag3-result-count">0 agendamentos</span>
+        <button class="ag3-clear-filtros" id="ag3-clear-filtros" onclick="ag3LimparFiltros()" type="button" style="display:none">
+          Limpar filtros
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+            <path d="M2 2l6 6M8 2l-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+ 
+      <!-- ─── VIEW LISTA ─── -->
+      <div id="ag3-view-lista-wrap">
+ 
+        <!-- Agendamentos de HOJE com linha do tempo -->
+        <div id="ag3-hoje-timeline" class="ag3-hoje-section" style="display:none">
+          <div class="ag3-hoje-header">
+            <span class="ag3-hoje-title">
+              <span class="ag3-hoje-dot"></span>
+              Agenda de hoje
+            </span>
+            <span class="ag3-hoje-data" id="ag3-hoje-data-label"></span>
+          </div>
+          <div class="ag3-timeline-wrap" id="ag3-timeline-hoje"></div>
+        </div>
+ 
+        <!-- Lista completa com cards -->
+        <div id="ag3-cards-lista" class="ag3-cards-grid"></div>
+ 
+        <!-- Estado vazio -->
+        <div id="ag3-vazio" class="ag3-vazio" style="display:none">
+          <div class="ag3-vazio-icon">
+            <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+              <rect x="5" y="7" width="30" height="27" rx="4" stroke="var(--text3)" stroke-width="1.5"/>
+              <path d="M5 13h30M13 5v5M27 5v5" stroke="var(--text3)" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M13 21h8M13 27h5" stroke="var(--text3)" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="ag3-vazio-title">Nenhum agendamento encontrado</div>
+          <div class="ag3-vazio-sub" id="ag3-vazio-sub">Tente outro filtro ou crie um novo agendamento.</div>
+          <button class="ag3-btn-novo ag3-vazio-btn" onclick="abrirModalNovoAgendamento()" type="button">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="white" stroke-width="1.8" stroke-linecap="round"/></svg>
+            Novo agendamento
+          </button>
+        </div>
+ 
+        <!-- Paginação -->
+        <div class="ag3-paginacao" id="ag3-paginacao" style="display:none">
+          <span class="ag3-pag-info" id="ag3-pag-info"></span>
+          <div class="ag3-pag-btns" id="ag3-pag-btns"></div>
+        </div>
+ 
+      </div>
+ 
+      <!-- ─── VIEW KANBAN ─── -->
+      <div id="ag3-view-kanban-wrap" style="display:none">
+        <div class="ag3-kanban">
+          <div class="ag3-kanban-col">
+            <div class="ag3-kanban-col-hdr ag3-kcol-conf">
+              <span class="ag3-kanban-col-title">Confirmados</span>
+              <span class="ag3-kanban-badge-conf ag3-kanban-count" id="ag3-k-count-conf">0</span>
+            </div>
+            <div class="ag3-kanban-cards" id="ag3-k-confirmado"></div>
+          </div>
+          <div class="ag3-kanban-col">
+            <div class="ag3-kanban-col-hdr ag3-kcol-pend">
+              <span class="ag3-kanban-col-title">Pendentes</span>
+              <span class="ag3-kanban-badge-pend ag3-kanban-count" id="ag3-k-count-pend">0</span>
+            </div>
+            <div class="ag3-kanban-cards" id="ag3-k-pendente"></div>
+          </div>
+          <div class="ag3-kanban-col">
+            <div class="ag3-kanban-col-hdr ag3-kcol-conc">
+              <span class="ag3-kanban-col-title">Concluídos</span>
+              <span class="ag3-kanban-badge-conc ag3-kanban-count" id="ag3-k-count-conc">0</span>
+            </div>
+            <div class="ag3-kanban-cards" id="ag3-k-concluido"></div>
+          </div>
+          <div class="ag3-kanban-col">
+            <div class="ag3-kanban-col-hdr ag3-kcol-canc">
+              <span class="ag3-kanban-col-title">Cancelados</span>
+              <span class="ag3-kanban-badge-canc ag3-kanban-count" id="ag3-k-count-canc">0</span>
+            </div>
+            <div class="ag3-kanban-cards" id="ag3-k-cancelado"></div>
+          </div>
+        </div>
+      </div>
+ 
+    </div>
+  </div>
+ 
+  <!-- ─── MODAL DETALHE AGENDAMENTO ─────────────────── -->
+  <div class="modal-overlay" id="ag3-modal-detalhe" style="display:none" role="dialog" aria-modal="true" aria-label="Detalhes do agendamento">
+    <div class="ag3-modal-detalhe-box">
+      <div class="ag3-modal-dh">
+        <div class="ag3-modal-dh-left">
+          <div class="ag3-modal-avatar" id="ag3-det-avatar">C</div>
+          <div>
+            <div class="ag3-modal-dnome" id="ag3-det-nome">—</div>
+            <div class="ag3-modal-dtel" id="ag3-det-tel">—</div>
+          </div>
+        </div>
+        <button class="modal-close" onclick="ag3FecharDetalhe()" type="button">×</button>
+      </div>
+      <div class="ag3-modal-dbody">
+        <div class="ag3-modal-drow">
+          <span class="ag3-modal-dlbl">Serviço</span>
+          <span class="ag3-modal-dval" id="ag3-det-servico">—</span>
+        </div>
+        <div class="ag3-modal-drow">
+          <span class="ag3-modal-dlbl">Data</span>
+          <span class="ag3-modal-dval" id="ag3-det-data">—</span>
+        </div>
+        <div class="ag3-modal-drow">
+          <span class="ag3-modal-dlbl">Horário</span>
+          <span class="ag3-modal-dval" id="ag3-det-hora">—</span>
+        </div>
+        <div class="ag3-modal-drow">
+          <span class="ag3-modal-dlbl">Valor</span>
+          <span class="ag3-modal-dval ag3-green" id="ag3-det-preco">—</span>
+        </div>
+        <div class="ag3-modal-drow">
+          <span class="ag3-modal-dlbl">Status</span>
+          <span id="ag3-det-badge">—</span>
+        </div>
+        <div class="ag3-modal-drow" id="ag3-det-pag-row" style="display:none">
+          <span class="ag3-modal-dlbl">Pagamento</span>
+          <span class="ag3-modal-dval" id="ag3-det-pag">—</span>
+        </div>
+      </div>
+      <div class="ag3-modal-dfooter" id="ag3-det-acoes"></div>
+    </div>
+  </div>
+ 
+</section>
 
   <!-- ══════════════════ PAGE: CLIENTES ══════════════════ -->
   <section class="page" id="page-clientes" aria-label="Clientes">
@@ -1608,9 +1976,6 @@ Estamos te esperando! 🙏</textarea>
      Isso corrige o erro: Cannot read properties of null (reading 'classList') -->
 <script src="./painel.js"></script>
 <script src="./pagamentos-fix.js"></script>
-<script src="./transacoes-patch.js"></script>
-<script src="./agendamentos-v2.js"></script>
-<script src="./agendamentos-layout-patch.js"></script>
 
 <!-- Script de assinatura (usa a variável API definida no painel.js acima) -->
 <script>

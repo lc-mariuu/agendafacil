@@ -2402,968 +2402,1212 @@ document.addEventListener('DOMContentLoaded', function() {
   console.log('[saldo-patch] ✓ recalcularSaldo sobrescrito com suporte a pagamento.status=pago')
 })()
 
-;(function () {
- 
-  // ── helpers de acumulador ────────────────────────────────────────────────
- 
-  function mesChave() {
-    return new Date().toISOString().slice(0, 7) // "2025-05"
-  }
- 
-  function accKey(nid, campo) {
-    return 'acc_' + campo + '_' + nid + '_' + mesChave()
-  }
- 
-  function accGet(nid, campo) {
-    var v = localStorage.getItem(accKey(nid, campo))
-    return v !== null ? parseFloat(v) : 0
-  }
- 
-  // Só atualiza se o novo valor for MAIOR que o salvo (nunca regride)
-  function accSet(nid, campo, valor) {
-    var atual = accGet(nid, campo)
-    if (valor > atual) {
-      localStorage.setItem(accKey(nid, campo), String(valor))
-      return valor
-    }
-    return atual
-  }
- 
-  // Sempre soma ao acumulado (para quando concluir um agendamento)
-  function accAdd(nid, campo, delta) {
-    var atual = accGet(nid, campo)
-    var novo = atual + delta
-    localStorage.setItem(accKey(nid, campo), String(novo))
-    return novo
-  }
- 
-  // ── seed inicial: percorre agendamentos ainda em memória ─────────────────
-  // Chamado uma vez ao carregar, para inicializar o acumulador com os dados
-  // que ainda estão disponíveis na API
- 
-  function seedAcumulador(ags, nid) {
-    var mes = mesChave()
-    var hoje = new Date().toISOString().split('T')[0]
- 
-    // IDs já contabilizados (para não somar duas vezes)
-    var contadosKey = 'acc_ids_' + nid + '_' + mes
-    var contados = []
-    try { contados = JSON.parse(localStorage.getItem(contadosKey) || '[]') } catch (_) {}
-    var contadosSet = new Set(contados)
- 
-    var addedFatMes = 0
-    var addedFatHoje = 0
-    var newIds = []
- 
-    ags.forEach(function (a) {
-      if (a.status !== 'concluido') return
-      if (!a.data) return
-      if (contadosSet.has(a._id)) return  // já contabilizado
- 
-      var preco = Number(a.preco) || 0
-      if (preco <= 0) return
- 
-      addedFatMes += preco
-      if (a.data === hoje) addedFatHoje += preco
-      newIds.push(a._id)
-    })
- 
-    if (newIds.length) {
-      // Soma ao acumulado existente
-      var totalMes = accGet(nid, 'fatMes') + addedFatMes
-      localStorage.setItem(accKey(nid, 'fatMes'), String(totalMes))
- 
-      var totalHoje = accGet(nid, 'fatHoje_' + hoje) + addedFatHoje
-      localStorage.setItem('acc_fatHoje_' + nid + '_' + hoje, String(totalHoje))
- 
-      // Registra IDs contabilizados
-      var todosIds = contados.concat(newIds)
-      localStorage.setItem(contadosKey, JSON.stringify(todosIds))
-    }
- 
-    // Ticket médio: número de atendimentos do mês
-    var atendMes = ags.filter(function (a) {
-      return a.status === 'concluido' && a.data && a.data.startsWith(mes)
-    }).length
-    accSet(nid, 'atendMes', atendMes)
-  }
- 
-  // ── dashRenderStats corrigido ─────────────────────────────────────────────
- 
-  window.dashRenderStats = function () {
-    var ags  = window.todosAgendamentos || []
-    var nid  = window.negocioAtual ? window.negocioAtual._id : null
-    var hoje = new Date().toISOString().split('T')[0]
-    var mes  = mesChave()
- 
-    // Seed: garante que agendamentos ainda em memória estão no acumulador
-    if (nid) seedAcumulador(ags, nid)
- 
-    // ── Faturamento hoje ──────────────────────────────────────
-    // Calcula da memória
-    var fatHojeCalc = ags
-      .filter(function (a) { return a.data === hoje && a.status === 'concluido' })
-      .reduce(function (s, a) { return s + (Number(a.preco) || 0) }, 0)
- 
-    // Pega o maior entre calculado e acumulado persistido
-    var fatHojeSalvo = nid ? parseFloat(localStorage.getItem('acc_fatHoje_' + nid + '_' + hoje) || '0') : 0
-    var fatHojeFinal = Math.max(fatHojeCalc, fatHojeSalvo)
-    if (nid && fatHojeCalc > fatHojeSalvo) {
-      localStorage.setItem('acc_fatHoje_' + nid + '_' + hoje, String(fatHojeCalc))
-    }
- 
-    var elFat = document.getElementById('dash-fat-hoje')
-    if (elFat) elFat.textContent = 'R$' + fatHojeFinal.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
- 
-    // ── Agendamentos hoje ─────────────────────────────────────
-    var agHojeCalc = ags.filter(function (a) { return a.data === hoje }).length
-    var agHojeSalvo = nid ? parseInt(localStorage.getItem('dash_agHoje_' + nid + '_' + hoje) || '0') : 0
-    var agHojeFinal = Math.max(agHojeCalc, agHojeSalvo)
-    if (nid && agHojeCalc > agHojeSalvo) localStorage.setItem('dash_agHoje_' + nid + '_' + hoje, String(agHojeCalc))
- 
-    var elAg = document.getElementById('dash-ag-hoje')
-    if (elAg) elAg.textContent = agHojeFinal
- 
-    // ── Esta semana ───────────────────────────────────────────
-    var semStart = new Date(); semStart.setDate(semStart.getDate() - semStart.getDay())
-    var semEnd   = new Date(semStart); semEnd.setDate(semEnd.getDate() + 6)
-    var semStartStr = semStart.toISOString().split('T')[0]
-    var semEndStr   = semEnd.toISOString().split('T')[0]
-    var agSemCalc = ags.filter(function (a) { return a.data >= semStartStr && a.data <= semEndStr }).length
-    var agSemSalvo = nid ? parseInt(localStorage.getItem('dash_agSemana_' + nid + '_' + semStartStr) || '0') : 0
-    var agSemFinal = Math.max(agSemCalc, agSemSalvo)
-    if (nid && agSemCalc > agSemSalvo) localStorage.setItem('dash_agSemana_' + nid + '_' + semStartStr, String(agSemCalc))
- 
-    var elSem = document.getElementById('dash-ag-semana-label')
-    if (elSem) elSem.textContent = agSemFinal + ' esta semana'
- 
-    // ── Clientes únicos ───────────────────────────────────────
-    var clientesCalc = new Set(ags.map(function (a) { return a.pacienteNome }).filter(Boolean)).size
-    var clientesSalvo = nid ? parseInt(localStorage.getItem('dash_clientes_' + nid) || '0') : 0
-    var clientesFinal = Math.max(clientesCalc, clientesSalvo)
-    if (nid && clientesCalc > clientesSalvo) localStorage.setItem('dash_clientes_' + nid, String(clientesCalc))
- 
-    var elCli = document.getElementById('dash-clientes')
-    if (elCli) elCli.textContent = clientesFinal
- 
-    // ── Faturamento do mês ────────────────────────────────────
-    var fatMesCalc = ags
-      .filter(function (a) { return a.data && a.data.startsWith(mes) && a.status === 'concluido' })
-      .reduce(function (s, a) { return s + (Number(a.preco) || 0) }, 0)
-    var fatMesAcc = nid ? accGet(nid, 'fatMes') : 0
-    var fatMesFinal = Math.max(fatMesCalc, fatMesAcc)
- 
-    // ── Ticket médio ──────────────────────────────────────────
-    var atendMesCalc = ags.filter(function (a) {
-      return a.status === 'concluido' && a.data && a.data.startsWith(mes)
-    }).length
-    var atendMesAcc = nid ? accGet(nid, 'atendMes') : 0
-    var atendMesFinal = Math.max(atendMesCalc, atendMesAcc)
- 
-    var ticket = atendMesFinal > 0 ? fatMesFinal / atendMesFinal : 0
-    var elTck = document.getElementById('dash-ticket')
-    if (elTck) elTck.textContent = 'R$' + ticket.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
- 
-    // ── Saldo disponível (só Pix real) ────────────────────────
-    window.recalcularSaldo()
- 
-    // ── Gráfico total ─────────────────────────────────────────
-    var elChartTotal = document.getElementById('dash-chart-total')
-    if (elChartTotal) elChartTotal.textContent = 'R$ ' + fatMesFinal.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-  }
- 
-  // ── Sobrescreve atualizar() para registrar no acumulador quando concluir ──
-  // Isso garante que o valor é somado ANTES do agendamento expirar da memória
- 
-  var _origAtualizar = window.atualizar
-  window.atualizar = async function (id, status) {
-    // Se estiver concluindo, registra no acumulador ANTES de chamar o original
-    if (status === 'concluido') {
-      var nid = window.negocioAtual ? window.negocioAtual._id : null
-      var ag = (window.todosAgendamentos || []).find(function (a) { return a._id === id })
-      if (nid && ag) {
-        var preco = Number(ag.preco) || 0
-        var hoje = new Date().toISOString().split('T')[0]
-        var mes = mesChave()
- 
-        // Chave de IDs já contabilizados
-        var contadosKey = 'acc_ids_' + nid + '_' + mes
-        var contados = []
-        try { contados = JSON.parse(localStorage.getItem(contadosKey) || '[]') } catch (_) {}
- 
-        if (!contados.includes(ag._id) && preco > 0) {
-          // Soma ao acumulador de faturamento do mês
-          accAdd(nid, 'fatMes', preco)
-          // Soma ao acumulador de hoje
-          var hojKey = 'acc_fatHoje_' + nid + '_' + hoje
-          var fatHojeAtual = parseFloat(localStorage.getItem(hojKey) || '0')
-          localStorage.setItem(hojKey, String(fatHojeAtual + preco))
-          // Incrementa atendimentos do mês
-          accAdd(nid, 'atendMes', 1)
-          // Marca como contabilizado
-          contados.push(ag._id)
-          localStorage.setItem(contadosKey, JSON.stringify(contados))
-        }
-      }
-    }
- 
-    // Chama a função original
-    if (typeof _origAtualizar === 'function') {
-      return await _origAtualizar.apply(this, arguments)
-    }
-  }
- 
-  // ── Corrige agStats (página de Agendamentos) ──────────────────────────────
-  // Os cards "5 concluídos / 100%" também ficavam errados pelo mesmo motivo
- 
-  var _origAgAtualizarStats = window.agAtualizarStats
-  window.agAtualizarStats = function (base, mes) {
-    var nid = window.negocioAtual ? window.negocioAtual._id : null
- 
-    // Calcula da memória atual
-    var doMes  = base.filter(function (a) { return a.data && a.data.startsWith(mes) })
-    var total  = doMes.length
-    var concl  = doMes.filter(function (a) { return a.status === 'concluido' }).length
-    var canc   = doMes.filter(function (a) { return a.status === 'cancelado' }).length
- 
-    // Pega o maior entre calculado e acumulado
-    var totalAcc = nid ? Math.max(total, parseInt(localStorage.getItem('agStat_total_' + nid + '_' + mes) || '0')) : total
-    var conclAcc = nid ? Math.max(concl, parseInt(localStorage.getItem('agStat_concl_' + nid + '_' + mes) || '0')) : concl
-    var cancAcc  = nid ? Math.max(canc,  parseInt(localStorage.getItem('agStat_canc_'  + nid + '_' + mes) || '0')) : canc
- 
-    // Persiste se melhorou
-    if (nid) {
-      if (total > parseInt(localStorage.getItem('agStat_total_' + nid + '_' + mes) || '0'))
-        localStorage.setItem('agStat_total_' + nid + '_' + mes, String(total))
-      if (concl > parseInt(localStorage.getItem('agStat_concl_' + nid + '_' + mes) || '0'))
-        localStorage.setItem('agStat_concl_' + nid + '_' + mes, String(concl))
-      if (canc > parseInt(localStorage.getItem('agStat_canc_' + nid + '_' + mes) || '0'))
-        localStorage.setItem('agStat_canc_'  + nid + '_' + mes, String(canc))
-    }
- 
-    var pctConc = totalAcc ? Math.round((conclAcc / totalAcc) * 100) : 0
-    var pctCanc = totalAcc ? Math.round((cancAcc  / totalAcc) * 100) : 0
- 
-    var elTotal  = document.getElementById('ag-stat-total-num')
-    var elConc   = document.getElementById('ag-stat-conc-num')
-    var elCanc   = document.getElementById('ag-stat-canc-num')
-    var elPConc  = document.getElementById('ag-stat-conc-pct')
-    var elPCanc  = document.getElementById('ag-stat-canc-pct')
- 
-    if (elTotal) elTotal.textContent = totalAcc
-    if (elConc)  elConc.textContent  = conclAcc
-    if (elCanc)  elCanc.textContent  = cancAcc
-    if (elPConc) elPConc.textContent = pctConc + '%'
-    if (elPCanc) elPCanc.textContent = pctCanc + '%'
-  }
- 
-  // ── Transações recentes (só Pix real) ─────────────────────────────────────
- 
-  window.dashRenderTransacoes = function () {
-    var container = document.getElementById('dash-trans-lista')
-    if (!container) return
- 
-    var ags = window.todosAgendamentos || []
-    var mesNomes = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez']
- 
-    var pagos = ags
-      .filter(function (a) {
-        return a.pagamento && a.pagamento.status === 'pago' && Number(a.pagamento.valor) > 0
-      })
-      .sort(function (a, b) {
-        return ((b.data || '') + (b.hora || '')).localeCompare((a.data || '') + (a.hora || ''))
-      })
-      .slice(0, 5)
- 
-    if (!pagos.length) {
-      container.innerHTML = '<div style="text-align:center;color:var(--text3);padding:24px 16px;font-size:12px">Sem transações recentes</div>'
-      return
-    }
- 
-    container.innerHTML = pagos.map(function (a) {
-      var valor = Number(a.pagamento.valor) || 0
-      var dataObj = a.data ? a.data.split('-') : []
-      var mesLabel = dataObj.length === 3 ? mesNomes[parseInt(dataObj[1], 10) - 1] : ''
-      var diaLabel = dataObj.length === 3 ? parseInt(dataObj[2], 10) + ' ' + mesLabel : ''
-      var horaLabel = a.hora ? ', ' + a.hora : ''
-      return [
-        '<div class="dash-trans-item">',
-          '<div class="dash-trans-icon" style="background:rgba(16,185,129,0.15)">',
-            '<svg width="16" height="16" viewBox="0 0 16 16" fill="none">',
-              '<path d="M3 8l4 4 6-7" stroke="#34d399" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>',
-            '</svg>',
-          '</div>',
-          '<div class="dash-trans-info">',
-            '<div class="dash-trans-nome">Pagamento recebido</div>',
-            '<div class="dash-trans-meta">PIX • ', diaLabel, horaLabel, '</div>',
-          '</div>',
-          '<div class="dash-trans-val pos">+R$', valor.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }), '</div>',
-        '</div>'
-      ].join('')
-    }).join('')
-  }
- 
-  // ── Saldo (só Pix real) ────────────────────────────────────────────────────
- 
-  window.recalcularSaldo = function () {
-    var nid = window.negocioAtual ? window.negocioAtual._id : null
-    if (!nid) return 0
- 
-    var ags = window.todosAgendamentos || []
-    var totalPago = ags.reduce(function (soma, a) {
-      if (a.pagamento && a.pagamento.status === 'pago' && Number(a.pagamento.valor) > 0) {
-        return soma + Number(a.pagamento.valor)
-      }
-      return soma
-    }, 0)
- 
-    var saques = []
-    try { saques = JSON.parse(localStorage.getItem('saques_ids_' + nid) || '[]') } catch (_) {}
-    var totalSacado = saques.reduce(function (s, i) { return s + (Number(i.valor) || 0) }, 0)
- 
-    var saldo = Math.max(0, totalPago - totalSacado)
-    localStorage.setItem('saldo_disponivel_' + nid, String(saldo))
- 
-    var fmt = 'R$ ' + saldo.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-    var el = document.getElementById('dash-saldo-val')
-    if (el) el.textContent = fmt
- 
-    var semSaldo = saldo <= 0
-    var btnT = document.querySelector('.dash-saldo-btn.primary')
-    var btnS = document.querySelector('.dash-saldo-btn.secondary')
-    if (btnT) { btnT.disabled = semSaldo; btnT.style.opacity = semSaldo ? '0.4' : '' }
-    if (btnS) { btnS.disabled = semSaldo; btnS.style.opacity = semSaldo ? '0.4' : '' }
- 
-    return saldo
-  }
- 
-  console.log('[stats-patch] ✓ acumulador persistente ativo — stats não regridem mais')
- 
-})()
+/* ═══════════════════════════════════════════════════
+   MÓDULO DE AGENDAMENTOS — GRADE SEMANAL COMPLETA
+   Idêntico à imagem de referência
+═══════════════════════════════════════════════════ */
 
-;(function () {
-  'use strict';
- 
-  /* ──────────────────────────────────────────────
-     ESTADO INTERNO
-  ────────────────────────────────────────────── */
-  var S = {
-    ano:         new Date().getFullYear(),
-    mes:         new Date().getMonth(),      // 0-based
-    dataSel:     new Date().toISOString().split('T')[0], // 'YYYY-MM-DD'
-    ordemAsc:    true,
-    profFiltro:  'todos',
-    verMaisOpen: false,
-    dropId:      null,
-  };
- 
-  var LIMITE_LISTA = 5; // itens antes de "ver mais"
- 
-  /* ──────────────────────────────────────────────
-     UTILIDADES
-  ────────────────────────────────────────────── */
-  function brl(v) {
-    return 'R$ ' + Number(v).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-  }
- 
-  function avatarCor(nome) {
-    var paleta = [
-      ['#1d4ed8','#3b82f6'],['#7c3aed','#8b5cf6'],['#0e7490','#06b6d4'],
-      ['#15803d','#22c55e'],['#b45309','#f59e0b'],['#be185d','#ec4899'],
-      ['#0369a1','#38bdf8'],['#6d28d9','#a78bfa'],['#9f1239','#f43f5e'],
-    ];
-    var h = 0;
-    for (var i = 0; i < (nome || 'A').length; i++) h = ((h << 5) - h) + (nome || 'A').charCodeAt(i);
-    return paleta[Math.abs(h) % paleta.length];
-  }
- 
-  function stCls(status) {
-    if (status === 'confirmado') return 'conf';
-    if (status === 'cancelado')  return 'canc';
-    if (status === 'concluido')  return 'concluido';
-    return 'pend';
-  }
- 
-  function stLabel(status) {
-    return { confirmado: 'Confirmado', pendente: 'Pendente', cancelado: 'Cancelado', concluido: 'Concluído' }[status] || status;
-  }
- 
-  function dataExtenso(ds) {
-    if (!ds) return '';
-    var dias  = ['Domingo','Segunda-feira','Terça-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sábado'];
-    var meses = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
-    var p = ds.split('-');
-    var d = new Date(+p[0], +p[1] - 1, +p[2]);
-    return dias[d.getDay()] + ', ' + d.getDate() + ' de ' + meses[d.getMonth()];
-  }
- 
-  function mesAnoLabel(ano, mes) {
-    var m = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
-    return m[mes] + ' ' + ano;
-  }
- 
-  function el(id) { return document.getElementById(id); }
-  function setText(id, v) { var e = el(id); if (e) e.textContent = v; }
- 
-  /* ──────────────────────────────────────────────
-     TOAST
-  ────────────────────────────────────────────── */
-  function toast(msg, cor) {
-    var t = el('ag2-toast');
-    if (!t) return;
-    t.style.background = cor || '#10b981';
-    t.textContent = msg;
-    t.classList.add('show');
-    clearTimeout(t._t);
-    t._t = setTimeout(function () { t.classList.remove('show'); }, 2800);
-  }
- 
-  /* ──────────────────────────────────────────────
-     DATA RANGE LABEL
-  ────────────────────────────────────────────── */
-  function atualizarDateRange() {
-    var hoje = new Date();
-    var semStart = new Date(hoje);
-    semStart.setDate(semStart.getDate() - semStart.getDay());
-    var semEnd = new Date(semStart);
-    semEnd.setDate(semEnd.getDate() + 6);
- 
-    function fmtDMY(d) {
-      return String(d.getDate()).padStart(2,'0') + '/' +
-             String(d.getMonth()+1).padStart(2,'0') + '/' +
-             d.getFullYear();
+;(function() {
+'use strict';
+
+/* ── CONSTANTES ── */
+const CELL_H = 56; // altura em px de cada hora
+const START_H = 8; // 08:00
+const END_H   = 19; // 19:00 (última linha)
+const HOURS   = Array.from({length: END_H - START_H}, (_, i) => START_H + i);
+
+/* ── DADOS ESTÁTICOS DA SEMANA DE REFERÊNCIA ── */
+const PROFISSIONAIS = [
+  { id: 'todos', nome: 'Todos',          role: '',              cor: 'rgba(255,255,255,0.08)', initials: '👥', todos: true },
+  { id: 'cs',    nome: 'Camila Santos',  role: 'Cabeleireira',  cor: 'linear-gradient(135deg,#ec4899,#f43f5e)', initials: 'CS' },
+  { id: 'ra',    nome: 'Roberto Almeida',role: 'Barbeiro',      cor: 'linear-gradient(135deg,#3b82f6,#06b6d4)', initials: 'RA' },
+  { id: 'ml',    nome: 'Mariana Lima',   role: 'Esteticista',   cor: 'linear-gradient(135deg,#8b5cf6,#a78bfa)', initials: 'ML' },
+  { id: 'ja',    nome: 'Juliana Alves',  role: 'Colorista',     cor: 'linear-gradient(135deg,#f59e0b,#ef4444)', initials: 'JA' },
+  { id: 'ce',    nome: 'Carlos Eduardo', role: 'Barbeiro',      cor: 'linear-gradient(135deg,#10b981,#06b6d4)', initials: 'CE' },
+];
+
+// colIdx: 0=DOM/17, 1=SEG/18, 2=TER/19(hoje), 3=QUA/20, 4=QUI/21, 5=SEX/22, 6=SAB/23
+const EVENTS_DATA = [
+  // DOM 17
+  { colIdx:0, startH:9, startM:0,  durMin:65, cls:'ev-azul',    time:'09:00', servico:'Corte de cabelo', nome:'João Silva',      status:'check' },
+  // SEG 18
+  { colIdx:1, startH:10, startM:30, durMin:55, cls:'ev-rosa',   time:'10:30', servico:'Manicure',        nome:'Ana Paula',       status:'cancel' },
+  // TER 19 (hoje)
+  { colIdx:2, startH:9,  startM:0,  durMin:55, cls:'ev-azul',   time:'09:00', servico:'Corte de cabelo', nome:'João Silva',      status:'check' },
+  { colIdx:2, startH:10, startM:0,  durMin:65, cls:'ev-roxo',   time:'10:00', servico:'Hidratação',      nome:'Mariana Lima',    status:'check' },
+  { colIdx:2, startH:12, startM:0,  durMin:75, cls:'ev-laranja', time:'12:00', servico:'Coloração',       nome:'Juliana Alves',   status:'wait' },
+  { colIdx:2, startH:15, startM:30, durMin:55, cls:'ev-azul',   time:'15:30', servico:'Escova',          nome:'Ana Beatriz',     status:'check' },
+  { colIdx:2, startH:17, startM:0,  durMin:55, cls:'ev-verde',  time:'17:00', servico:'Luzes',           nome:'Gabriela Costa',  status:'check' },
+  // QUA 20
+  { colIdx:3, startH:11, startM:0,  durMin:50, cls:'ev-verde',  time:'11:00', servico:'Barba',           nome:'Carlos Eduardo',  status:'check' },
+  { colIdx:3, startH:14, startM:0,  durMin:65, cls:'ev-vermelho',time:'14:00', servico:'Corte feminino', nome:'Patrícia Souza',  status:'cancel' },
+  { colIdx:3, startH:16, startM:0,  durMin:55, cls:'ev-laranja', time:'16:00', servico:'Corte + Barba',  nome:'Lucas Martins',   status:'check' },
+  { colIdx:3, startH:18, startM:30, durMin:55, cls:'ev-roxo',   time:'18:30', servico:'Penteado',        nome:'Isabela Pereira', status:'cancel' },
+  // QUI 21
+  { colIdx:4, startH:10, startM:0,  durMin:55, cls:'ev-ciano',  time:'10:00', servico:'Hidratação',      nome:'Mariana Lima',    status:'check' },
+  // SEX 22
+  { colIdx:5, startH:11, startM:0,  durMin:50, cls:'ev-verde',  time:'11:00', servico:'Barba',           nome:'Carlos Eduardo',  status:'check' },
+  // SAB 23
+  { colIdx:6, startH:10, startM:0,  durMin:65, cls:'ev-teal',   time:'10:00', servico:'Corte + Barba',   nome:'Roberto Almeida', status:'check' },
+];
+
+const DIAS_SEMANA = [
+  { abrev:'DOM', num:17 },
+  { abrev:'SEG', num:18 },
+  { abrev:'TER', num:19, hoje: true },
+  { abrev:'QUA', num:20 },
+  { abrev:'QUI', num:21 },
+  { abrev:'SEX', num:22 },
+  { abrev:'SÁB', num:23 },
+];
+
+// Posição da linha "agora" — Terça (colIdx=2), 10:30
+const NOW_COL = 2;
+const NOW_H   = 10;
+const NOW_M   = 30;
+
+/* ══════════════════════════════════════════════════
+   MINI CALENDÁRIO
+══════════════════════════════════════════════════ */
+function buildMiniCalendar(container) {
+  if (!container) return;
+  container.innerHTML = '';
+
+  // Maio 2026: 1 = sexta (5), offset = 5
+  const OFFSET = 5;
+  const DAYS_IN_MAY = 31;
+  const SELECTED_WEEK = [17,18,19,20,21,22,23];
+  const TODAY = 19;
+  const HAS_EVENTS = { 14:'p', 15:'c', 17:'c', 18:'c', 19:'c', 20:'p', 21:'c', 22:'c', 23:'x', 25:'p', 28:'c' };
+
+  const cells = [];
+  // dias do mês anterior (Abril tem 30 dias)
+  for (let i = 0; i < OFFSET; i++) cells.push({ d: 30 - OFFSET + 1 + i, outro: true });
+  // dias de Maio
+  for (let d = 1; d <= DAYS_IN_MAY; d++) cells.push({ d, outro: false });
+  // completar linha
+  const rem = cells.length % 7;
+  if (rem) for (let i = 1; i <= 7 - rem; i++) cells.push({ d: i, outro: true });
+
+  cells.forEach(({ d, outro }) => {
+    const div = document.createElement('div');
+    let cls = 'ag-cal-day';
+    if (outro) cls += ' outro-mes';
+    else if (d === TODAY) cls += ' cal-hoje';
+    else if (SELECTED_WEEK.includes(d)) cls += ' cal-semana';
+    div.className = cls;
+
+    const numSpan = document.createElement('span');
+    numSpan.textContent = d;
+    div.appendChild(numSpan);
+
+    if (!outro && HAS_EVENTS[d]) {
+      const dot = document.createElement('div');
+      dot.className = 'ag-cal-day-dot ag-dot-' + HAS_EVENTS[d];
+      div.appendChild(dot);
     }
-    var lbl = el('ag2-date-range-label');
-    if (lbl) lbl.textContent = fmtDMY(semStart) + ' - ' + fmtDMY(semEnd);
-  }
- 
-  window.ag2ToggleDatePicker = function () {
-    /* No futuro pode abrir um date-range picker; por ora copia a data selecionada */
-    toast('Período copiado!', '#3b82f6');
-  };
- 
-  window.ag2AbrirFiltros = function () {
-    toast('Filtros em breve!', '#8b5cf6');
-  };
- 
-  /* ──────────────────────────────────────────────
-     CALENDÁRIO
-  ────────────────────────────────────────────── */
-  function agsDoDia(ds) {
-    return (window.todosAgendamentos || []).filter(function (a) { return a.data === ds; });
-  }
- 
-  function renderCal() {
-    var ano = S.ano, mes = S.mes;
-    setText('ag2-cal-month', mesAnoLabel(ano, mes));
- 
-    var grid = el('ag2-cal-grid');
-    if (!grid) return;
- 
-    var primeiroDia = new Date(ano, mes, 1).getDay();
-    var diasMes     = new Date(ano, mes + 1, 0).getDate();
-    var diasMesAnt  = new Date(ano, mes, 0).getDate();
-    var hoje        = new Date().toISOString().split('T')[0];
- 
-    var html = '';
- 
-    // dias mês anterior
-    for (var i = primeiroDia - 1; i >= 0; i--) {
-      var d  = diasMesAnt - i;
-      var mm = mes === 0 ? 11 : mes - 1;
-      var yy = mes === 0 ? ano - 1 : ano;
-      var ds = yy + '-' + pad(mm + 1) + '-' + pad(d);
-      html += diaHTML(d, ds, true);
-    }
- 
-    // dias mês atual
-    for (var dia = 1; dia <= diasMes; dia++) {
-      var ds2 = ano + '-' + pad(mes + 1) + '-' + pad(dia);
-      html += diaHTML(dia, ds2, false);
-    }
- 
-    // completar grid (7 cols)
-    var total = primeiroDia + diasMes;
-    var resto = total % 7 === 0 ? 0 : 7 - (total % 7);
-    for (var k = 1; k <= resto; k++) {
-      var mm2 = mes === 11 ? 0  : mes + 1;
-      var yy2 = mes === 11 ? ano + 1 : ano;
-      var ds3 = yy2 + '-' + pad(mm2 + 1) + '-' + pad(k);
-      html += diaHTML(k, ds3, true);
-    }
- 
-    grid.innerHTML = html;
-  }
- 
-  function pad(n) { return String(n).padStart(2, '0'); }
- 
-  function diaHTML(num, ds, outro) {
-    var hoje = new Date().toISOString().split('T')[0];
-    var ags  = agsDoDia(ds);
-    var cls  = 'ag2-cal-day';
-    if (outro)         cls += ' outro-mes';
-    if (ds === hoje)   cls += ' hoje';
-    else if (ds === S.dataSel) cls += ' sel';
- 
-    var dots = '';
-    if (ags.some(function (a) { return a.status === 'confirmado'; })) dots += '<i class="ag2-dd c"></i>';
-    if (ags.some(function (a) { return a.status === 'pendente';   })) dots += '<i class="ag2-dd p"></i>';
-    if (ags.some(function (a) { return a.status === 'cancelado';  })) dots += '<i class="ag2-dd x"></i>';
- 
-    return '<div class="' + cls + '" onclick="ag2SelDia(\'' + ds + '\')" role="button" tabindex="0" aria-label="' + ds + '">' +
-      '<span class="ag2-day-num">' + num + '</span>' +
-      (dots ? '<div class="ag2-day-dots">' + dots + '</div>' : '') +
-    '</div>';
-  }
- 
-  window.ag2CalPrev = function () {
-    S.mes--;
-    if (S.mes < 0) { S.mes = 11; S.ano--; }
-    renderCal();
-  };
-  window.ag2CalNext = function () {
-    S.mes++;
-    if (S.mes > 11) { S.mes = 0; S.ano++; }
-    renderCal();
-  };
-  window.ag2CalToday = function () {
-    var h = new Date();
-    S.ano = h.getFullYear(); S.mes = h.getMonth();
-    S.dataSel = h.toISOString().split('T')[0];
-    S.verMaisOpen = false;
-    renderCal();
-    renderLista();
-  };
-  window.ag2SelDia = function (ds) {
-    S.dataSel = ds;
-    S.verMaisOpen = false;
-    renderCal();
-    renderLista();
-  };
- 
-  /* ──────────────────────────────────────────────
-     LISTA DO DIA
-  ────────────────────────────────────────────── */
-  function getListaFiltrada() {
-    var ags = (window.todosAgendamentos || []).filter(function (a) { return a.data === S.dataSel; });
-    if (S.profFiltro !== 'todos') {
-      ags = ags.filter(function (a) { return (a.profissional || a.pacienteNome) === S.profFiltro; });
-    }
-    ags.sort(function (a, b) {
-      var cmp = (a.hora || '').localeCompare(b.hora || '');
-      return S.ordemAsc ? cmp : -cmp;
-    });
-    return ags;
-  }
- 
-  function renderLista() {
-    var lista = getListaFiltrada();
- 
-    setText('ag2-list-date',  dataExtenso(S.dataSel));
-    var n = lista.length;
-    setText('ag2-list-badge', n + ' agendamento' + (n !== 1 ? 's' : ''));
- 
-    var body   = el('ag2-list-body');
-    var footer = el('ag2-list-footer');
-    if (!body) return;
- 
-    if (!lista.length) {
-      body.innerHTML = '<div class="ag2-vazio">' +
-        '<svg width="38" height="38" viewBox="0 0 42 42" fill="none">' +
-          '<rect x="5" y="6" width="32" height="30" rx="5" stroke="var(--text3)" stroke-width="1.6"/>' +
-          '<path d="M5 15h32M14 4v7M28 4v7" stroke="var(--text3)" stroke-width="1.6" stroke-linecap="round"/>' +
-        '</svg><span>Nenhum agendamento para este dia</span></div>';
-      if (footer) footer.style.display = 'none';
-      return;
-    }
- 
-    var exibir = S.verMaisOpen ? lista : lista.slice(0, LIMITE_LISTA);
-    body.innerHTML = exibir.map(itemHTML).join('');
- 
-    if (footer) {
-      if (!S.verMaisOpen && lista.length > LIMITE_LISTA) {
-        footer.style.display = 'block';
-        var btn = footer.querySelector('.ag2-ver-mais');
-        if (btn) btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M3 5l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg> Ver mais ' + (lista.length - LIMITE_LISTA) + ' agendamento' + (lista.length - LIMITE_LISTA !== 1 ? 's' : '') + ' do dia';
-      } else {
-        footer.style.display = 'none';
-      }
-    }
-  }
- 
-  function itemHTML(a) {
-    var sc    = stCls(a.status);
-    var label = stLabel(a.status);
-    var cor   = avatarCor(a.pacienteNome);
-    var ini   = (a.pacienteNome || 'C')[0].toUpperCase();
-    var preco = a.preco ? brl(a.preco) : '—';
-    var tel   = (a.pacienteTelefone || '').replace(/\D/g, '');
-    var nSafe = (a.pacienteNome || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
-    var tSafe = (a.pacienteTelefone || '').replace(/'/g, "\\'");
-    var wppUrl = tel
-      ? 'https://wa.me/55' + tel + '?text=' + encodeURIComponent('Olá ' + (a.pacienteNome || '') + '! Confirmando seu agendamento de ' + (a.servico || '') + ' às ' + (a.hora || '') + '.')
-      : null;
- 
-    /* Botões de ação */
-    var wppHTML = wppUrl
-      ? '<a href="' + wppUrl + '" target="_blank" rel="noopener noreferrer" class="ag2-wpp-btn" title="WhatsApp" aria-label="Enviar WhatsApp">' +
-          '<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.118 1.528 5.852L.057 23.885l6.204-1.628A11.945 11.945 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.808 9.808 0 0 1-5.001-1.366l-.359-.213-3.682.966.983-3.594-.234-.371A9.818 9.818 0 0 1 2.182 12C2.182 6.57 6.57 2.182 12 2.182S21.818 6.57 21.818 12 17.43 21.818 12 21.818z"/></svg>' +
-        '</a>'
-      : '';
- 
-    var moreHTML = '<button class="ag2-more-btn" onclick="ag2Drop(event,\'' + a._id + '\',\'' + nSafe + '\',\'' + tSafe + '\',\'' + (a.data||'') + '\',\'' + (a.hora||'') + '\')" type="button" aria-label="Mais opções">' +
-      '<svg width="14" height="14" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="3" r="1.1" fill="currentColor"/><circle cx="7.5" cy="7.5" r="1.1" fill="currentColor"/><circle cx="7.5" cy="12" r="1.1" fill="currentColor"/></svg>' +
-    '</button>';
- 
-    return '<div class="ag2-item" id="ag2-i-' + a._id + '">' +
-      '<div class="ag2-item-hora">'                                              + (a.hora || '—') + '</div>' +
-      '<div class="ag2-item-bar ' + sc + '"></div>' +
-      '<div class="ag2-item-av" style="background:linear-gradient(135deg,' + cor[0] + ',' + cor[1] + ')">' + ini + '</div>' +
-      '<div class="ag2-item-info">' +
-        '<div class="ag2-item-nome">' + (a.pacienteNome || '—') + '</div>' +
-        '<div class="ag2-item-serv">' + (a.servico || '—') + '</div>' +
-      '</div>' +
-      '<div class="ag2-item-preco">' + preco + '</div>' +
-      '<span class="ag2-item-badge ' + sc + '">' + label + '</span>' +
-      '<div class="ag2-item-acts">' + wppHTML + moreHTML + '</div>' +
-    '</div>';
-  }
- 
-  /* ──────────────────────────────────────────────
-     DROPDOWN "..."
-  ────────────────────────────────────────────── */
-  window.ag2Drop = function (evt, id, nome, tel, data, hora) {
-    evt.stopPropagation();
-    if (S.dropId === id) { fecharDrop(); return; }
-    fecharDrop();
-    S.dropId = id;
- 
-    var item = el('ag2-i-' + id);
-    if (!item) return;
-    item.style.position = 'relative';
- 
-    var ag = (window.todosAgendamentos || []).find(function (a) { return a._id === id; }) || {};
-    var st = ag.status || '';
-    var wTel = (tel || '').replace(/\D/g, '');
-    var wLink = wTel ? 'https://wa.me/55' + wTel : null;
- 
-    var btns = '';
-    if (st === 'confirmado') {
-      btns += '<button class="ag2-drop-btn ok"  onclick="ag2Concluir(\'' + id + '\')" type="button"><svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 7l4 4L12 4" stroke="#34d399" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg> Concluir</button>';
-      btns += '<button class="ag2-drop-btn bad" onclick="ag2Cancelar(\'' + id + '\',\'' + nome + '\',\'' + tel + '\',\'' + data + '\',\'' + hora + '\')" type="button"><svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M3 3l8 8M11 3l-8 8" stroke="#f87171" stroke-width="1.5" stroke-linecap="round"/></svg> Cancelar</button>';
-    } else if (st === 'pendente') {
-      btns += '<button class="ag2-drop-btn ok"  onclick="ag2Confirmar(\'' + id + '\')" type="button"><svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 7l4 4L12 4" stroke="#34d399" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg> Confirmar</button>';
-      btns += '<button class="ag2-drop-btn bad" onclick="ag2Cancelar(\'' + id + '\',\'' + nome + '\',\'' + tel + '\',\'' + data + '\',\'' + hora + '\')" type="button"><svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M3 3l8 8M11 3l-8 8" stroke="#f87171" stroke-width="1.5" stroke-linecap="round"/></svg> Cancelar</button>';
-    }
-    if (wLink) {
-      btns += '<button class="ag2-drop-btn" onclick="window.open(\'' + wLink + '\',\'_blank\')" type="button"><svg width="13" height="13" viewBox="0 0 24 24" fill="#25d366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.118 1.528 5.852L.057 23.885l6.204-1.628A11.945 11.945 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.808 9.808 0 0 1-5.001-1.366l-.359-.213-3.682.966.983-3.594-.234-.371A9.818 9.818 0 0 1 2.182 12C2.182 6.57 6.57 2.182 12 2.182S21.818 6.57 21.818 12 17.43 21.818 12 21.818z"/></svg> WhatsApp</button>';
-    }
-    btns += '<button class="ag2-drop-btn" onclick="fecharDrop()" type="button"><svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M3 3l8 8M11 3l-8 8" stroke="var(--text3)" stroke-width="1.4" stroke-linecap="round"/></svg> Fechar</button>';
- 
-    var div = document.createElement('div');
-    div.className = 'ag2-dropdown';
-    div.id = 'ag2-drop-' + id;
-    div.innerHTML = btns;
-    item.appendChild(div);
-  };
- 
-  function fecharDrop() {
-    if (S.dropId) {
-      var d = el('ag2-drop-' + S.dropId);
-      if (d) d.remove();
-      S.dropId = null;
-    }
-  }
- 
-  document.addEventListener('click', function (e) {
-    if (S.dropId && !e.target.closest('.ag2-dropdown') && !e.target.closest('.ag2-more-btn')) {
-      fecharDrop();
-    }
+
+    container.appendChild(div);
   });
- 
-  /* ──────────────────────────────────────────────
-     AÇÕES DO ITEM
-  ────────────────────────────────────────────── */
-  window.ag2Concluir = function (id) {
-    fecharDrop();
-    if (typeof atualizar === 'function') {
-      var res = atualizar(id, 'concluido');
-      if (res && res.then) res.then(refreshTudo); else setTimeout(refreshTudo, 400);
-    }
-  };
-  window.ag2Confirmar = function (id) {
-    fecharDrop();
-    if (typeof atualizar === 'function') {
-      var res = atualizar(id, 'confirmado');
-      if (res && res.then) res.then(refreshTudo); else setTimeout(refreshTudo, 400);
-    }
-  };
-  window.ag2Cancelar = function (id, nome, tel, data, hora) {
-    fecharDrop();
-    if (typeof cancelarComAviso === 'function') {
-      cancelarComAviso(id, nome, tel, data, hora);
-      setTimeout(refreshTudo, 900);
-    }
-  };
-  window.ag2VerMais = function () {
-    S.verMaisOpen = true;
-    renderLista();
-  };
-  window.ag2ToggleOrdem = function () {
-    S.ordemAsc = !S.ordemAsc;
-    var ic = el('ag2-ordem-icon');
-    if (ic) ic.style.transform = S.ordemAsc ? '' : 'rotate(180deg)';
-    renderLista();
-  };
-  window.ag2FiltrarProf = function (v) {
-    S.profFiltro = v;
-    renderLista();
-  };
- 
-  /* ──────────────────────────────────────────────
-     STAT CARDS
-  ────────────────────────────────────────────── */
-  function renderStats() {
-    var ags  = window.todosAgendamentos || [];
-    var total = ags.length;
-    var conf  = ags.filter(function (a) { return a.status === 'confirmado'; }).length;
-    var pend  = ags.filter(function (a) { return a.status === 'pendente';   }).length;
-    var canc  = ags.filter(function (a) { return a.status === 'cancelado';  }).length;
-    setText('ag2-stat-total', total);
-    setText('ag2-stat-conf',  conf);
-    setText('ag2-stat-pend',  pend);
-    setText('ag2-stat-canc',  canc);
-  }
- 
-  /* ──────────────────────────────────────────────
-     RESUMO DA SEMANA
-  ────────────────────────────────────────────── */
-  function renderResumo() {
-    var ags = window.todosAgendamentos || [];
-    var hoje = new Date();
-    var ss   = new Date(hoje); ss.setDate(ss.getDate() - ss.getDay());
-    var se   = new Date(ss);   se.setDate(se.getDate() + 6);
-    var sS = ss.toISOString().split('T')[0];
-    var sE = se.toISOString().split('T')[0];
- 
-    var doSem  = ags.filter(function (a) { return a.data >= sS && a.data <= sE; });
-    var concl  = doSem.filter(function (a) { return a.status === 'concluido' || a.status === 'confirmado'; });
-    var cancs  = doSem.filter(function (a) { return a.status === 'cancelado'; });
-    var fat    = doSem.filter(function (a) { return a.status === 'concluido'; })
-                      .reduce(function (s, a) { return s + (Number(a.preco) || 0); }, 0);
-    var ticket = concl.length > 0 ? fat / concl.length : 0;
-    var taxa   = doSem.length > 0 ? Math.round((concl.length / doSem.length) * 100) : 0;
-    var pctC   = doSem.length > 0 ? Math.round((cancs.length  / doSem.length) * 100) : 0;
- 
-    setText('ag2-fat',     brl(fat));
-    setText('ag2-ticket',  brl(ticket));
-    setText('ag2-taxa',    taxa + '%');
-    setText('ag2-cancels', cancs.length + ' (' + pctC + '%)');
-  }
- 
-  /* ──────────────────────────────────────────────
-     DONUT — SERVIÇOS MAIS AGENDADOS
-  ────────────────────────────────────────────── */
-  var DONUT_CORES = ['#3b82f6','#f59e0b','#34d399','#f87171','#a78bfa','#06b6d4','#ec4899'];
- 
-function renderDonut() {
-var ags = window.todosAgendamentos || [];
-var freq = {};
-ags.forEach(function (a) {
-if (!a.servico) return;
-freq[a.servico] = (freq[a.servico] || 0) + 1;
-});
-
-var entries = Object.keys(freq)
-.map(function (k) { return [k, freq[k]]; })
-.sort(function (a, b) { return b[1] - a[1]; });
-
-var leg = el('ag2-serv-legend');
-var canvas = el('ag2-donut');
-if (!canvas || !canvas.getContext || !leg) return;
-var ctx = canvas.getContext('2d');
-var W = canvas.width, H = canvas.height;
-var cx = W / 2, cy = H / 2;
-var r = Math.min(W, H) / 2 - 5;
-var ri = r * 0.52;
-
-ctx.clearRect(0, 0, W, H);
-
-if (entries.length === 0) {
-ctx.beginPath();
-ctx.arc(cx, cy, r, 0, Math.PI * 2);
-ctx.fillStyle = 'rgba(255,255,255,0.04)';
-ctx.fill();
-ctx.beginPath();
-ctx.arc(cx, cy, ri, 0, Math.PI * 2);
-var bgColor = getComputedStyle(document.documentElement).getPropertyValue('--bg-card').trim() || '#111827';
-ctx.fillStyle = bgColor;
-ctx.fill();
-leg.innerHTML = '<div style="text-align:center;color:var(--text3);font-size:12px;padding:8px 0">Nenhum dado ainda</div>';
-return;
 }
 
-var total = entries.reduce(function (s, e) { return s + e[1]; }, 0) || 1;
-var top = entries.slice(0, 4);
-var outrosN = entries.slice(4).reduce(function (s, e) { return s + e[1]; }, 0);
-if (outrosN > 0) top.push(['Outros', outrosN]);
+/* ══════════════════════════════════════════════════
+   PROFISSIONAIS AVATARES
+══════════════════════════════════════════════════ */
+function buildProfissionaisRow(container) {
+  if (!container) return;
+  container.innerHTML = '';
 
-var ang = -Math.PI / 2;
-top.forEach(function (e, i) {
-var slice = (e[1] / total) * Math.PI * 2;
-ctx.beginPath();
-ctx.moveTo(cx, cy);
-ctx.arc(cx, cy, r, ang, ang + slice);
-ctx.closePath();
-ctx.fillStyle = DONUT_CORES[i % DONUT_CORES.length];
-ctx.fill();
-ang += slice;
-});
+  PROFISSIONAIS.forEach(prof => {
+    const item = document.createElement('div');
+    item.className = 'ag-prof-item' + (prof.todos ? ' ativo' : '');
+    item.setAttribute('data-prof', prof.id);
 
-var bgColor = getComputedStyle(document.documentElement).getPropertyValue('--bg-card').trim() || '#111827';
-ctx.beginPath();
-ctx.arc(cx, cy, ri, 0, Math.PI * 2);
-ctx.fillStyle = bgColor;
-ctx.fill();
-
-leg.innerHTML = top.map(function (e, i) {
-var pct = Math.round((e[1] / total) * 100);
-return '<div class="ag2-sl-item">' +
-'<div class="ag2-sl-left">' +
-'<span class="ag2-sl-dot" style="background:' + DONUT_CORES[i % DONUT_CORES.length] + '"></span>' +
-e[0] +
-'</div>' +
-'<span class="ag2-sl-pct">' + pct + '%</span>' +
-'</div>';
-}).join('');
-}
- 
-  /* ──────────────────────────────────────────────
-     LINK DE AGENDAMENTO
-  ────────────────────────────────────────────── */
-  function atualizarLink() {
-    var neg = window.negocioAtual;
-    if (!neg) return;
-    var url  = 'https://agendorapido.com.br/agendar.html?id=' + neg._id;
-    var full = 'https://agendorapido.com.br/agendar.html?id=' + neg._id;
-    var lbl  = el('ag2-link-txt');
-    if (lbl) lbl.textContent = url.length > 40 ? url.slice(0, 38) + '...' : url;
-    /* guarda URL completa para copiar */
-    if (lbl) lbl.dataset.url = full;
-  }
- 
-  window.ag2CopiarLink = function () {
-    var neg = window.negocioAtual;
-    if (!neg) { toast('Negócio não carregado', '#ef4444'); return; }
-    var url = 'https://agendorapido.com.br/agendar.html?id=' + neg._id;
-    navigator.clipboard.writeText(url).then(function () {
-      toast('Link copiado!', '#3b82f6');
-    }).catch(function () {
-      toast('Erro ao copiar', '#ef4444');
-    });
-  };
- 
-  window.ag2Compartilhar = function () {
-    var neg = window.negocioAtual;
-    if (!neg) return;
-    var url = 'https://agendorapido.com.br/agendar.html?id=' + neg._id;
-    if (navigator.share) {
-      navigator.share({ title: neg.nome, url: url });
+    const av = document.createElement('div');
+    av.className = 'ag-prof-av' + (prof.todos ? ' todos-av' : '');
+    if (prof.todos) {
+      av.innerHTML = `<svg width="16" height="16" viewBox="0 0 20 20" fill="none">
+        <circle cx="7" cy="6" r="2.5" stroke="currentColor" stroke-width="1.4"/>
+        <path d="M2 16c0-2.8 2.2-5 5-5s5 2.2 5 5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+        <path d="M13.5 8.5a2 2 0 1 1 0-4M18 16c0-2.2-1.8-4-4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+      </svg>`;
+      av.style.color = 'var(--text2)';
     } else {
-      navigator.clipboard.writeText(url).then(function () {
-        toast('Link copiado para compartilhar!', '#10b981');
-      });
+      av.textContent = prof.initials;
+      av.style.background = prof.cor;
+    }
+
+    const nameDiv = document.createElement('div');
+    nameDiv.className = 'ag-prof-name';
+    nameDiv.textContent = prof.todos ? 'Todos' : prof.nome.split(' ')[0] + ' ' + (prof.nome.split(' ')[1] || '');
+
+    const roleDiv = document.createElement('div');
+    roleDiv.className = 'ag-prof-role';
+    roleDiv.textContent = prof.role;
+
+    item.appendChild(av);
+    item.appendChild(nameDiv);
+    if (prof.role) item.appendChild(roleDiv);
+
+    item.addEventListener('click', function () {
+      document.querySelectorAll('.ag-prof-item').forEach(el => el.classList.remove('ativo'));
+      this.classList.add('ativo');
+    });
+
+    container.appendChild(item);
+  });
+
+  // Botão +
+  const addItem = document.createElement('div');
+  addItem.className = 'ag-prof-item';
+  const addAv = document.createElement('div');
+  addAv.className = 'ag-prof-av add-av';
+  addAv.textContent = '+';
+  const addName = document.createElement('div');
+  addName.className = 'ag-prof-name';
+  addName.textContent = 'Mais';
+  addItem.appendChild(addAv);
+  addItem.appendChild(addName);
+  container.appendChild(addItem);
+}
+
+/* ══════════════════════════════════════════════════
+   GRADE SEMANAL
+══════════════════════════════════════════════════ */
+function buildWeeklyGrid(container) {
+  if (!container) return;
+  container.innerHTML = '';
+
+  const grid = document.createElement('div');
+  grid.className = 'ag-grid-wrap';
+
+  /* — Header row — */
+  // Célula vazia (canto)
+  const cornerCell = document.createElement('div');
+  cornerCell.className = 'ag-grid-day-hdr';
+  cornerCell.style.cssText = 'position:sticky;left:0;z-index:15;background:var(--bg-card)';
+  grid.appendChild(cornerCell);
+
+  DIAS_SEMANA.forEach(dia => {
+    const hdr = document.createElement('div');
+    hdr.className = 'ag-grid-day-hdr';
+    hdr.innerHTML = `<div class="ag-day-hdr-name">${dia.abrev}</div>`;
+    if (dia.hoje) {
+      hdr.innerHTML += `<div class="ag-day-hdr-hoje">${dia.num}</div>`;
+    } else {
+      hdr.innerHTML += `<div class="ag-day-hdr-num">${dia.num}</div>`;
+    }
+    grid.appendChild(hdr);
+  });
+
+  /* — Body: linha de tempo + colunas dos dias — */
+  const timeCol = document.createElement('div');
+  timeCol.className = 'ag-time-col';
+  timeCol.style.cssText = 'display:flex;flex-direction:column;position:sticky;left:0;z-index:8;background:var(--bg-card)';
+
+  HOURS.forEach(h => {
+    const slot = document.createElement('div');
+    slot.className = 'ag-time-slot';
+    const lbl = document.createElement('span');
+    lbl.className = 'ag-time-lbl';
+    lbl.textContent = `${String(h).padStart(2,'0')}:00`;
+    slot.appendChild(lbl);
+    timeCol.appendChild(slot);
+  });
+  grid.appendChild(timeCol);
+
+  // Colunas dos 7 dias
+  DIAS_SEMANA.forEach((dia, colIdx) => {
+    const col = document.createElement('div');
+    col.className = 'ag-day-col';
+    col.style.cssText = `position:relative;height:${HOURS.length * CELL_H}px`;
+    col.setAttribute('data-col', colIdx);
+
+    // Células de fundo (grid lines)
+    HOURS.forEach(() => {
+      const cell = document.createElement('div');
+      cell.className = 'ag-day-cell';
+      col.appendChild(cell);
+    });
+
+    // Linha "agora" (col TER/19)
+    if (colIdx === NOW_COL) {
+      const nowLine = document.createElement('div');
+      nowLine.className = 'ag-now-line';
+      const topPx = ((NOW_H - START_H) * 60 + NOW_M) / 60 * CELL_H;
+      nowLine.style.top = topPx + 'px';
+      col.appendChild(nowLine);
+    }
+
+    // Eventos desta coluna
+    const colEvents = EVENTS_DATA.filter(ev => ev.colIdx === colIdx);
+    colEvents.forEach(ev => {
+      const el = createEventEl(ev);
+      col.appendChild(el);
+    });
+
+    grid.appendChild(col);
+  });
+
+  container.appendChild(grid);
+}
+
+function createEventEl(ev) {
+  const topPx = ((ev.startH - START_H) * 60 + ev.startM) / 60 * CELL_H;
+  const height = Math.max(ev.durMin / 60 * CELL_H - 3, 32);
+
+  const el = document.createElement('div');
+  el.className = `ag-event ${ev.cls}`;
+  el.style.cssText = `top:${topPx}px;height:${height}px`;
+
+  const statusIconMap = {
+    check:  `<svg width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M1.5 5l2.5 2.5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+    wait:   `<svg width="9" height="9" viewBox="0 0 10 10" fill="none"><circle cx="5" cy="5" r="3.5" stroke="currentColor" stroke-width="1.2"/><path d="M5 3v2.5l1.5 1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>`,
+    cancel: `<svg width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M2.5 2.5l5 5M7.5 2.5l-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>`,
+  };
+
+  el.innerHTML = `
+    <div class="ag-ev-time">${ev.time}</div>
+    <div class="ag-ev-servico">${ev.servico}</div>
+    <div class="ag-ev-nome">${ev.nome}</div>
+    <div class="ag-ev-status ag-ev-${ev.status}">${statusIconMap[ev.status] || ''}</div>
+  `;
+
+  // Tooltip hover
+  el.addEventListener('mouseenter', function(e) {
+    showEvTooltip(e, ev);
+  });
+  el.addEventListener('mousemove', function(e) {
+    positionTooltip(e);
+  });
+  el.addEventListener('mouseleave', function() {
+    hideEvTooltip();
+  });
+
+  return el;
+}
+
+/* ── TOOLTIP ── */
+let _tooltip = null;
+function ensureTooltip() {
+  if (!_tooltip) {
+    _tooltip = document.createElement('div');
+    _tooltip.className = 'ag-ev-tooltip';
+    _tooltip.id = 'ag-ev-tooltip-singleton';
+    document.body.appendChild(_tooltip);
+  }
+  return _tooltip;
+}
+function showEvTooltip(e, ev) {
+  const t = ensureTooltip();
+  const statusLbl = { check: '✓ Confirmado', wait: '⏳ Pendente', cancel: '✕ Cancelado' };
+  t.innerHTML = `<strong>${ev.servico}</strong><span>${ev.nome}</span><br><span>${ev.time} · ${ev.durMin} min</span><br><span>${statusLbl[ev.status] || ''}</span>`;
+  t.style.display = 'block';
+  positionTooltip(e);
+}
+function positionTooltip(e) {
+  const t = ensureTooltip();
+  if (!t) return;
+  const x = e.clientX + 14;
+  const y = e.clientY - 10;
+  const maxX = window.innerWidth - 180;
+  const maxY = window.innerHeight - 100;
+  t.style.left  = Math.min(x, maxX) + 'px';
+  t.style.top   = Math.min(y, maxY) + 'px';
+}
+function hideEvTooltip() {
+  const t = ensureTooltip();
+  if (t) t.style.display = 'none';
+}
+
+/* ══════════════════════════════════════════════════
+   TAXA DE COMPARECIMENTO (donut SVG)
+══════════════════════════════════════════════════ */
+function buildTaxaDonut(container) {
+  if (!container) return;
+  const pct = 92;
+  const r = 30;
+  const circ = 2 * Math.PI * r;
+  const dash = (pct / 100) * circ;
+  const gap  = circ - dash;
+
+  container.innerHTML = `
+    <div class="ag-taxa-donut-wrap">
+      <div class="ag-taxa-donut">
+        <svg viewBox="0 0 72 72">
+          <circle cx="36" cy="36" r="${r}" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="7"/>
+          <circle cx="36" cy="36" r="${r}" fill="none" stroke="#34d399" stroke-width="7"
+            stroke-linecap="round"
+            stroke-dasharray="${dash.toFixed(1)} ${gap.toFixed(1)}"
+            style="transform-origin:center;transform:rotate(-90deg)"/>
+        </svg>
+        <div class="ag-taxa-val-abs">
+          <span class="ag-taxa-pct">${pct}%</span>
+        </div>
+      </div>
+      <div class="ag-taxa-info">
+        <div class="ag-taxa-trend">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+            <path d="M6 2l4 4H2l4-4Z" fill="#34d399"/>
+          </svg>
+          5%
+        </div>
+        <div class="ag-taxa-sub">vs semana anterior</div>
+      </div>
+    </div>
+  `;
+}
+
+/* ══════════════════════════════════════════════════
+   RESUMO DA SEMANA
+══════════════════════════════════════════════════ */
+function buildResumoSemana(container) {
+  if (!container) return;
+  const rows = [
+    { k: 'Faturamento',           v: 'R$ 1.245,00', cls: 'green' },
+    { k: 'Ticket médio',          v: 'R$ 69,17',    cls: '' },
+    { k: 'Taxa de comparecimento',v: '92%',         cls: 'blue' },
+    { k: 'Cancelamentos',         v: '1 (8%)',      cls: 'red' },
+  ];
+
+  let html = rows.map(r =>
+    `<div class="ag-resumo-row">
+      <span class="ag-resumo-k">${r.k}</span>
+      <span class="ag-resumo-v ${r.cls}">${r.v}</span>
+    </div>`
+  ).join('');
+
+  container.innerHTML = html;
+}
+
+/* ══════════════════════════════════════════════════
+   VIEW TABS
+══════════════════════════════════════════════════ */
+function initViewTabs(container) {
+  if (!container) return;
+  container.querySelectorAll('.ag-view-tab').forEach(tab => {
+    tab.addEventListener('click', function () {
+      container.querySelectorAll('.ag-view-tab').forEach(t => t.classList.remove('ativo'));
+      this.classList.add('ativo');
+    });
+  });
+}
+
+/* ══════════════════════════════════════════════════
+   AI BANNER
+══════════════════════════════════════════════════ */
+function initAiBanner(banner) {
+  if (!banner) return;
+  const closeBtn = banner.querySelector('.ag-ai-banner-close');
+  if (closeBtn) {
+    closeBtn.addEventListener('click', function() {
+      banner.style.display = 'none';
+    });
+  }
+}
+
+function initAiCard(card) {
+  if (!card) return;
+  const closeBtn = card.querySelector('.ag-ai-close');
+  if (closeBtn) {
+    closeBtn.addEventListener('click', function() {
+      card.style.opacity = '0.4';
+      card.style.pointerEvents = 'none';
+    });
+  }
+  // Opções clicáveis
+  card.querySelectorAll('.ag-ai-opt').forEach(opt => {
+    opt.addEventListener('click', function() {
+      const input = card.querySelector('.ag-ai-input');
+      if (input) {
+        input.focus();
+        const t = opt.querySelector('.ag-ai-opt-title');
+        if (t) input.placeholder = t.textContent + '...';
+      }
+    });
+  });
+}
+
+/* ══════════════════════════════════════════════════
+   LINK DE AGENDAMENTO
+══════════════════════════════════════════════════ */
+function initLinkCard(card) {
+  if (!card) return;
+  const copyIconBtn = card.querySelector('.ag-link-copy-icon');
+  const copyLinkBtn = card.querySelector('[data-copy-link]');
+  const url = card.querySelector('.ag-link-url');
+  const link = url ? url.textContent : '';
+
+  function doCopy() {
+    if (!link) return;
+    navigator.clipboard.writeText(link).then(() => {
+      if (copyLinkBtn) {
+        const orig = copyLinkBtn.innerHTML;
+        copyLinkBtn.innerHTML = '✓ Copiado!';
+        setTimeout(() => { copyLinkBtn.innerHTML = orig; }, 2000);
+      }
+    }).catch(() => {});
+  }
+
+  if (copyIconBtn) copyIconBtn.addEventListener('click', doCopy);
+  if (copyLinkBtn) copyLinkBtn.addEventListener('click', doCopy);
+}
+
+/* ══════════════════════════════════════════════════
+   ENTRADA PRINCIPAL
+══════════════════════════════════════════════════ */
+function initAgendamentosV2() {
+  // Mini calendário
+  buildMiniCalendar(document.getElementById('ag-mini-cal-grid'));
+
+  // Profissionais
+  buildProfissionaisRow(document.getElementById('ag-profs-row'));
+
+  // Grade semanal
+  buildWeeklyGrid(document.getElementById('ag-weekly-grid-body'));
+
+  // Donut taxa
+  buildTaxaDonut(document.getElementById('ag-taxa-donut-container'));
+
+  // Resumo semana
+  buildResumoSemana(document.getElementById('ag-resumo-rows'));
+
+  // View tabs
+  initViewTabs(document.querySelector('.ag-view-tabs-wrap'));
+
+  // AI banner
+  initAiBanner(document.querySelector('.ag-ai-banner'));
+
+  // AI card
+  initAiCard(document.querySelector('.ag-ai-card'));
+
+  // Link card
+  initLinkCard(document.querySelector('.ag-link-card'));
+}
+
+// Executa quando o painel de agendamentos fica ativo
+window.initAgendamentosV2 = initAgendamentosV2;
+
+// Auto-init se o elemento já existir
+document.addEventListener('DOMContentLoaded', function() {
+  if (document.getElementById('ag-mini-cal-grid')) {
+    initAgendamentosV2();
+  }
+});
+
+})();
+
+/* ════════════════════════════════════════════════════════
+   AGENDAMENTOS V3 — JS COMPLETO
+   Cole no final do painel.js (antes do DOMContentLoaded
+   ou em qualquer ponto global)
+════════════════════════════════════════════════════════ */
+
+;(function () {
+'use strict';
+ 
+/* ── ESTADO ──────────────────────────────────────────── */
+var ag3 = {
+  periodoAtivo:   'hoje',
+  statusAtivo:    'todos',
+  buscaTermo:     '',
+  dataFiltro:     '',
+  viewAtiva:      'lista',
+  paginaAtual:    1,
+  porPagina:      8,
+  timelineLimite: 8,
+  listaFiltrada:  [],
+  calMes:  new Date().getMonth(),
+  calAno:  new Date().getFullYear(),
+  idDetalhe: null,
+};
+ 
+/* ── UTILITÁRIOS ─────────────────────────────────────── */
+function ag3fmtData(data) {
+  if (!data) return '—';
+  var p = data.split('-');
+  return p[2] + '/' + p[1] + '/' + p[0];
+}
+function ag3fmtDia(data) {
+  if (!data) return '—';
+  var p = data.split('-');
+  return p[2] + '/' + p[1];
+}
+function ag3fmtBRL(v) {
+  if (!v || isNaN(v) || Number(v) <= 0) return null;
+  return 'R$\u00A0' + Number(v).toLocaleString('pt-BR', {
+    minimumFractionDigits: 2, maximumFractionDigits: 2
+  });
+}
+function ag3avatarCor(nome) {
+  var pals = [
+    ['#1d4ed8','#3b82f6'],['#7c3aed','#8b5cf6'],['#0e7490','#06b6d4'],
+    ['#15803d','#22c55e'],['#b45309','#f59e0b'],['#be185d','#ec4899'],
+    ['#0369a1','#38bdf8'],['#6d28d9','#a78bfa'],['#9f1239','#f43f5e']
+  ];
+  var h = 0;
+  for (var i = 0; i < (nome || 'A').length; i++)
+    h = ((h << 5) - h) + (nome || 'A').charCodeAt(i);
+  return pals[Math.abs(h) % pals.length];
+}
+function ag3statusLabel(s) {
+  return { confirmado:'confirmado', concluido:'concluído',
+           cancelado:'cancelado', pendente:'pendente' }[s] || s;
+}
+function ag3badgeHtml(status) {
+  var bg  = { confirmado:'var(--green-bg)',  concluido:'rgba(139,92,246,0.12)',
+              cancelado:'var(--red-bg)',     pendente:'var(--yellow-bg)' };
+  var cor = { confirmado:'var(--green)',     concluido:'#a78bfa',
+              cancelado:'var(--red)',        pendente:'var(--yellow)' };
+  var bd  = { confirmado:'var(--green-border)', concluido:'rgba(139,92,246,0.25)',
+              cancelado:'var(--red-border)',    pendente:'var(--yellow-border)' };
+  return '<span class="badge" style="background:'+(bg[status]||'rgba(255,255,255,0.06)')+
+    ';color:'+(cor[status]||'var(--text3)')+';border-color:'+(bd[status]||'var(--border2)')+'">'+
+    ag3statusLabel(status)+'</span>';
+}
+ 
+/* ── FILTRAGEM ───────────────────────────────────────── */
+function ag3Filtrar() {
+  var ags  = window.todosAgendamentos || [];
+  var hoje = new Date().toISOString().split('T')[0];
+  var ama  = new Date(Date.now() + 86400000).toISOString().split('T')[0];
+  var semI = (function(){ var d=new Date(); d.setDate(d.getDate()-d.getDay()); return d.toISOString().split('T')[0]; })();
+  var semF = (function(){ var d=new Date(); d.setDate(d.getDate()+(6-d.getDay())); return d.toISOString().split('T')[0]; })();
+  var mes  = new Date().toISOString().slice(0,7);
+ 
+  var lista = ags.slice();
+ 
+  if (ag3.dataFiltro) {
+    lista = lista.filter(function(a){ return a.data === ag3.dataFiltro; });
+  } else {
+    if      (ag3.periodoAtivo === 'hoje')   lista = lista.filter(function(a){ return a.data === hoje; });
+    else if (ag3.periodoAtivo === 'amanha') lista = lista.filter(function(a){ return a.data === ama; });
+    else if (ag3.periodoAtivo === 'semana') lista = lista.filter(function(a){ return a.data >= semI && a.data <= semF; });
+    else if (ag3.periodoAtivo === 'mes')    lista = lista.filter(function(a){ return a.data && a.data.startsWith(mes); });
+    /* 'todos' sem filtro de data */
+  }
+ 
+  if (ag3.statusAtivo !== 'todos')
+    lista = lista.filter(function(a){ return a.status === ag3.statusAtivo; });
+ 
+  if (ag3.buscaTermo) {
+    var t = ag3.buscaTermo.toLowerCase();
+    lista = lista.filter(function(a){
+      return (a.pacienteNome||'').toLowerCase().includes(t) ||
+             (a.servico||'').toLowerCase().includes(t) ||
+             (a.pacienteTelefone||'').includes(t) ||
+             (a.data||'').includes(t) || (a.hora||'').includes(t);
+    });
+  }
+ 
+  lista.sort(function(a,b){
+    var ka = (a.data||'')+(a.hora||'');
+    var kb = (b.data||'')+(b.hora||'');
+    if (ag3.periodoAtivo==='hoje'||ag3.periodoAtivo==='amanha') return ka.localeCompare(kb);
+    return kb.localeCompare(ka);
+  });
+ 
+  ag3.listaFiltrada = lista;
+  ag3.paginaAtual   = 1;
+}
+ 
+/* ── STATS ───────────────────────────────────────────── */
+function ag3RenderStats() {
+  var ags  = window.todosAgendamentos || [];
+  var hoje = new Date().toISOString().split('T')[0];
+  var semI = (function(){ var d=new Date(); d.setDate(d.getDate()-d.getDay()); return d.toISOString().split('T')[0]; })();
+  var semF = new Date(Date.now()+6*86400000).toISOString().split('T')[0];
+  var mes  = new Date().toISOString().slice(0,7);
+ 
+  var numHoje   = ags.filter(function(a){ return a.data===hoje; }).length;
+  var numSemana = ags.filter(function(a){ return a.data>=semI&&a.data<=semF; }).length;
+  var numConf   = ags.filter(function(a){ return a.status==='confirmado'&&a.data&&a.data.startsWith(mes); }).length;
+  var numCanc   = ags.filter(function(a){ return a.status==='cancelado'&&a.data&&a.data.startsWith(mes); }).length;
+  var fatMes    = ags.filter(function(a){ return a.status==='concluido'&&a.data&&a.data.startsWith(mes); })
+                     .reduce(function(s,a){ return s+(Number(a.preco)||0); },0);
+ 
+  function sv(id,v){ var el=document.getElementById(id); if(el) el.textContent=v; }
+  sv('ag3-num-hoje',   numHoje);
+  sv('ag3-num-semana', numSemana);
+  sv('ag3-num-conf',   numConf);
+  sv('ag3-num-canc',   numCanc);
+  sv('ag3-num-fat',    fatMes>=1000
+    ? 'R$\u00A0'+(fatMes/1000).toFixed(1).replace(/\.0$/,'')+'k'
+    : 'R$\u00A0'+fatMes.toFixed(0));
+ 
+  sv('ag3-count-todos', ags.length);
+  sv('ag3-count-conf',  ags.filter(function(a){ return a.status==='confirmado'; }).length);
+  sv('ag3-count-conc',  ags.filter(function(a){ return a.status==='concluido';  }).length);
+  sv('ag3-count-canc2', ags.filter(function(a){ return a.status==='cancelado';  }).length);
+  sv('ag3-count-pend',  ags.filter(function(a){ return a.status==='pendente';   }).length);
+ 
+  ag3RenderTopServicos(ags, mes);
+}
+ 
+function ag3RenderTopServicos(ags, mes) {
+  var cont = document.getElementById('ag3-top-servicos');
+  if (!cont) return;
+  var doMes = ags.filter(function(a){ return a.data&&a.data.startsWith(mes); });
+  var freq  = {};
+  doMes.forEach(function(a){
+    if (!a.servico) return;
+    if (!freq[a.servico]) freq[a.servico]={qtd:0,fat:0};
+    freq[a.servico].qtd++;
+    freq[a.servico].fat += Number(a.preco)||0;
+  });
+  var lista = Object.keys(freq)
+    .map(function(k){ return {nome:k,qtd:freq[k].qtd,fat:freq[k].fat}; })
+    .sort(function(a,b){ return b.qtd-a.qtd; }).slice(0,5);
+  if (!lista.length){ cont.innerHTML='<div class="ag3-top-vazio">Sem dados neste mês</div>'; return; }
+  var maxQtd = lista[0].qtd || 1;
+  var cores  = ['#3b82f6','#8b5cf6','#10b981','#f59e0b','#ec4899'];
+  cont.innerHTML = lista.map(function(sv,i){
+    var pct    = Math.round((sv.qtd/maxQtd)*100);
+    var fatStr = sv.fat>0 ? ' · R$'+sv.fat.toFixed(0) : '';
+    return '<div class="ag3-top-item">'+
+      '<div class="ag3-top-row">'+
+        '<span class="ag3-top-nome">'+sv.nome+'</span>'+
+        '<span class="ag3-top-qtd">'+sv.qtd+'x'+fatStr+'</span>'+
+      '</div>'+
+      '<div class="ag3-top-bar-wrap">'+
+        '<div class="ag3-top-bar" style="width:'+pct+'%;background:'+cores[i]+'"></div>'+
+      '</div>'+
+    '</div>';
+  }).join('');
+}
+ 
+/* ── INFO DE RESULTADO ───────────────────────────────── */
+function ag3RenderResultInfo() {
+  var el   = document.getElementById('ag3-result-count');
+  var btnC = document.getElementById('ag3-clear-filtros');
+  var n    = ag3.listaFiltrada.length;
+  if (el) el.textContent = n + ' agendamento' + (n!==1?'s':'');
+  var temFiltro = ag3.buscaTermo || ag3.dataFiltro || ag3.statusAtivo!=='todos';
+  if (btnC) btnC.style.display = temFiltro ? '' : 'none';
+}
+ 
+/* ── RENDER LISTA ────────────────────────────────────── */
+/*
+  REGRA: aba "Hoje" sem filtros → mostra SÓ a timeline (limitada).
+  Qualquer outro filtro → mostra SÓ a lista paginada.
+  Nunca as duas ao mesmo tempo → sem duplicatas.
+*/
+function ag3RenderLista() {
+  var hoje  = new Date().toISOString().split('T')[0];
+  var lista = ag3.listaFiltrada;
+  var wrap  = document.getElementById('ag3-cards-lista');
+  var vazel = document.getElementById('ag3-vazio');
+  var vazsb = document.getElementById('ag3-vazio-sub');
+  var pag   = document.getElementById('ag3-paginacao');
+  var tl    = document.getElementById('ag3-hoje-timeline');
+ 
+  var usarTimeline = (
+    ag3.periodoAtivo === 'hoje' &&
+    !ag3.dataFiltro &&
+    !ag3.buscaTermo &&
+    ag3.statusAtivo === 'todos'
+  );
+ 
+  /* ── TIMELINE ── */
+  if (tl) {
+    var deHoje = (window.todosAgendamentos || [])
+      .filter(function(a){ return a.data === hoje; })
+      .sort(function(a,b){ return (a.hora||'').localeCompare(b.hora||''); });
+ 
+    if (usarTimeline && deHoje.length) {
+      tl.style.display = '';
+      var lbl = document.getElementById('ag3-hoje-data-label');
+      if (lbl) lbl.textContent = new Date().toLocaleDateString('pt-BR',
+        {weekday:'long',day:'numeric',month:'long'});
+ 
+      var tlWrap = document.getElementById('ag3-timeline-hoje');
+      if (tlWrap) {
+        var lim  = ag3.timelineLimite;
+        var sl   = deHoje.slice(0, lim);
+        var rst  = deHoje.length - lim;
+        var html = sl.map(ag3HtmlTimeline).join('');
+        if (rst > 0) {
+          html += '<div style="padding:12px 0 4px;text-align:center">' +
+            '<button class="ag3-btn-export" ' +
+            'onclick="ag3MudarPeriodo(\'todos\',document.querySelector(\'.ag3-tab[data-periodo=\\\"todos\\\"]\'))"' +
+            ' type="button">Ver mais ' + rst + ' agendamento' + (rst!==1?'s':'') + ' ›</button>' +
+            '</div>';
+        }
+        tlWrap.innerHTML = html;
+      }
+    } else {
+      tl.style.display = 'none';
+    }
+  }
+ 
+  /* quando timeline ativa, oculta lista e sai */
+  if (usarTimeline) {
+    if (wrap)  wrap.innerHTML = '';
+    if (vazel) vazel.style.display = 'none';
+    if (pag)   pag.style.display   = 'none';
+    return;
+  }
+ 
+  /* ── LISTA PAGINADA ── */
+  var ini   = (ag3.paginaAtual - 1) * ag3.porPagina;
+  var fim   = ini + ag3.porPagina;
+  var fatia = lista.slice(ini, fim);
+ 
+  if (!lista.length) {
+    if (wrap)  wrap.innerHTML = '';
+    if (vazel) vazel.style.display = '';
+    if (pag)   pag.style.display   = 'none';
+    if (vazsb) {
+      if (ag3.buscaTermo)          vazsb.textContent = 'Nenhum resultado para "'+ag3.buscaTermo+'".';
+      else if (ag3.dataFiltro)     vazsb.textContent = 'Sem agendamentos em '+ag3fmtData(ag3.dataFiltro)+'.';
+      else if (ag3.periodoAtivo==='amanha') vazsb.textContent = 'Nenhum agendamento para amanhã.';
+      else                         vazsb.textContent = 'Tente outro filtro ou crie um novo agendamento.';
+    }
+    return;
+  }
+ 
+  if (vazel) vazel.style.display = 'none';
+  if (wrap)  wrap.innerHTML = fatia.map(ag3HtmlCard).join('');
+ 
+  var totalPgs = Math.ceil(lista.length / ag3.porPagina);
+  if (pag) {
+    pag.style.display = totalPgs > 1 ? 'flex' : 'none';
+    var infoEl = document.getElementById('ag3-pag-info');
+    var btnsEl = document.getElementById('ag3-pag-btns');
+    if (infoEl) infoEl.textContent = (ini+1)+'–'+Math.min(fim,lista.length)+' de '+lista.length;
+    if (btnsEl) {
+      var btns = '<button class="ag3-pag-btn" onclick="ag3IrPagina('+(ag3.paginaAtual-1)+')" '+
+        (ag3.paginaAtual===1?'disabled':'')+' type="button">‹</button>';
+      for (var i=1;i<=totalPgs;i++){
+        if (totalPgs<=7||i===1||i===totalPgs||Math.abs(i-ag3.paginaAtual)<=1)
+          btns+='<button class="ag3-pag-btn '+(i===ag3.paginaAtual?'ativo':'')+
+            '" onclick="ag3IrPagina('+i+')" type="button">'+i+'</button>';
+        else if (Math.abs(i-ag3.paginaAtual)===2)
+          btns+='<span style="color:var(--text3);font-size:12px;padding:0 2px">…</span>';
+      }
+      btns+='<button class="ag3-pag-btn" onclick="ag3IrPagina('+(ag3.paginaAtual+1)+')" '+
+        (ag3.paginaAtual===totalPgs?'disabled':'')+' type="button">›</button>';
+      btnsEl.innerHTML = btns;
+    }
+  }
+}
+ 
+/* ── HTML: ITEM TIMELINE ─────────────────────────────── */
+function ag3HtmlTimeline(a) {
+  var agora   = new Date();
+  var passado = false;
+  if (a.data && a.hora) {
+    var p=a.data.split('-'), h=a.hora.split(':');
+    passado = new Date(p[0],p[1]-1,p[2],h[0],h[1]).getTime() < agora.getTime();
+  }
+  var cores = ag3avatarCor(a.pacienteNome);
+  var ini   = (a.pacienteNome||'C')[0].toUpperCase();
+  var idS   = (a._id||'').replace(/'/g,"\\'");
+  var nmS   = (a.pacienteNome||'').replace(/'/g,"\\'");
+  var tlS   = (a.pacienteTelefone||'').replace(/'/g,"\\'");
+  var preco = ag3fmtBRL(a.preco);
+ 
+  var acoes = (a.status==='confirmado' && !passado)
+    ? '<button class="ag3-btn-acao ag3-btn-conc" onclick="event.stopPropagation();atualizar(\''+idS+'\',\'concluido\')" type="button">Concluir</button>'+
+      '<button class="ag3-btn-acao ag3-btn-canc" onclick="event.stopPropagation();cancelarComAviso(\''+idS+'\',\''+nmS+'\',\''+tlS+'\',\''+(a.data||'')+'\',\''+(a.hora||'')+'\')" type="button">Cancelar</button>'
+    : ag3badgeHtml(a.status);
+ 
+  return '<div class="ag3-tl-item">'+
+    '<div class="ag3-tl-left">'+
+      '<span class="ag3-tl-hora">'+(a.hora||'--')+'</span>'+
+      '<div class="ag3-tl-avatar" style="background:linear-gradient(135deg,'+cores[0]+','+cores[1]+')">'+ini+'</div>'+
+    '</div>'+
+    '<div class="ag3-tl-content" onclick="ag3AbrirDetalhe(\''+idS+'\')" style="'+(passado?'opacity:.65':'')+'">' +
+      '<div class="ag3-tl-nome">'+(a.pacienteNome||'—')+'</div>'+
+      '<div class="ag3-tl-servico">'+(a.servico||'—')+(preco?' · <strong style="color:var(--green)">'+preco+'</strong>':'')+'</div>'+
+      '<div class="ag3-tl-footer">'+
+        '<span class="ag3-tl-chip">'+(a.hora||'—')+'</span>'+
+        (a.pacienteTelefone?'<span class="ag3-tl-chip">'+a.pacienteTelefone+'</span>':'')+
+        '<div class="ag3-tl-actions" onclick="event.stopPropagation()">'+acoes+'</div>'+
+      '</div>'+
+    '</div>'+
+  '</div>';
+}
+ 
+/* ── HTML: CARD LISTA ────────────────────────────────── */
+function ag3HtmlCard(a) {
+  var hoje  = new Date().toISOString().split('T')[0];
+  var agora = new Date();
+  var passado = false;
+  if (a.data && a.hora) {
+    var p=a.data.split('-'), hh=a.hora.split(':');
+    passado = new Date(p[0],p[1]-1,p[2],hh[0],hh[1]).getTime() < agora.getTime();
+  }
+  var deHojeItem = a.data === hoje;
+  var cores = ag3avatarCor(a.pacienteNome);
+  var ini   = (a.pacienteNome||'C')[0].toUpperCase();
+  var idS   = (a._id||'').replace(/'/g,"\\'");
+  var nmS   = (a.pacienteNome||'').replace(/'/g,"\\'");
+  var tlS   = (a.pacienteTelefone||'').replace(/'/g,"\\'");
+  var preco = ag3fmtBRL(a.preco);
+  var tel   = a.pacienteTelefone ? a.pacienteTelefone.replace(/\D/g,'') : '';
+ 
+  var acoes = '';
+  if (a.status==='confirmado') {
+    acoes += '<button class="ag3-btn-acao ag3-btn-conc" onclick="event.stopPropagation();atualizar(\''+idS+'\',\'concluido\')" type="button">Concluir</button>';
+    acoes += '<button class="ag3-btn-acao ag3-btn-canc" onclick="event.stopPropagation();cancelarComAviso(\''+idS+'\',\''+nmS+'\',\''+tlS+'\',\''+(a.data||'')+'\',\''+(a.hora||'')+'\')" type="button">Cancelar</button>';
+  } else {
+    acoes += ag3badgeHtml(a.status);
+  }
+  if (tel) {
+    var msg = encodeURIComponent('Olá '+(a.pacienteNome||'')+'!');
+    acoes += '<a href="https://wa.me/55'+tel+'?text='+msg+'" target="_blank" '+
+      'onclick="event.stopPropagation()" class="ag3-btn-wpp" title="WhatsApp">'+
+      '<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">'+
+      '<path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>'+
+      '<path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.118 1.528 5.852L.057 23.885l6.204-1.628A11.945 11.945 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.808 9.808 0 0 1-5.001-1.366l-.359-.213-3.682.966.983-3.594-.234-.371A9.818 9.818 0 0 1 2.182 12C2.182 6.57 6.57 2.182 12 2.182S21.818 6.57 21.818 12 17.43 21.818 12 21.818z"/>'+
+      '</svg></a>';
+  }
+ 
+  var clss = 'ag3-card-item' +
+    (deHojeItem ? ' ag3-item-hoje' : '') +
+    (passado && a.status==='concluido' ? ' ag3-item-passado' : '');
+ 
+  return '<div class="'+clss+'" onclick="ag3AbrirDetalhe(\''+idS+'\')">'+
+    '<div class="ag3-card-avatar" style="background:linear-gradient(135deg,'+cores[0]+','+cores[1]+')">'+ini+'</div>'+
+    '<div class="ag3-card-info">'+
+      '<div class="ag3-card-nome">'+(a.pacienteNome||'—')+'</div>'+
+      '<div class="ag3-card-tel">'+(a.pacienteTelefone||'Sem telefone')+'</div>'+
+    '</div>'+
+    '<div class="ag3-card-middle">'+
+      '<div class="ag3-card-servico">'+(a.servico||'—')+'</div>'+
+      '<div class="ag3-card-dt">'+ag3fmtData(a.data)+' às '+(a.hora||'—')+'</div>'+
+    '</div>'+
+    '<div class="ag3-card-preco'+(preco?'':' sem-preco')+'">'+(preco||'—')+'</div>'+
+    '<div class="ag3-card-acoes" onclick="event.stopPropagation()">'+acoes+'</div>'+
+  '</div>';
+}
+ 
+/* ── KANBAN ──────────────────────────────────────────── */
+function ag3RenderKanban() {
+  var lista = ag3.listaFiltrada;
+  var cols  = ['confirmado','pendente','concluido','cancelado'];
+  function sv(id,v){ var el=document.getElementById(id); if(el) el.textContent=v; }
+  cols.forEach(function(status){
+    var items   = lista.filter(function(a){ return a.status===status; });
+    var shortId = {confirmado:'conf',pendente:'pend',concluido:'conc',cancelado:'canc'}[status];
+    sv('ag3-k-count-'+shortId, items.length);
+    var cont = document.getElementById('ag3-k-'+status);
+    if (!cont) return;
+    if (!items.length){ cont.innerHTML='<div class="ag3-kanban-vazio">Nenhum item</div>'; return; }
+    cont.innerHTML = items.slice(0,20).map(function(a){
+      var idS   = (a._id||'').replace(/'/g,"\\'");
+      var preco = ag3fmtBRL(a.preco);
+      return '<div class="ag3-kanban-card" onclick="ag3AbrirDetalhe(\''+idS+'\')">'+
+        '<div class="ag3-kc-nome">'+(a.pacienteNome||'—')+'</div>'+
+        '<div class="ag3-kc-serv">'+(a.servico||'—')+'</div>'+
+        '<div class="ag3-kc-row">'+
+          '<span class="ag3-kc-chip">'+ag3fmtDia(a.data)+'</span>'+
+          '<span class="ag3-kc-chip">'+(a.hora||'—')+'</span>'+
+          (preco?'<span class="ag3-kc-preco">'+preco+'</span>':'')+
+        '</div>'+
+      '</div>';
+    }).join('');
+  });
+}
+ 
+/* ── CALENDÁRIO ──────────────────────────────────────── */
+function ag3RenderCal() {
+  var grid  = document.getElementById('ag3-cal-grid');
+  var lblEl = document.getElementById('ag3-cal-mes-label');
+  if (!grid) return;
+  var ano  = ag3.calAno, mes = ag3.calMes;
+  var nomes= ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  if (lblEl) lblEl.textContent = nomes[mes]+' '+ano;
+  var hoje = new Date().toISOString().split('T')[0];
+  var ags  = window.todosAgendamentos || [];
+  var agDias = {};
+  ags.forEach(function(a){
+    if (!a.data) return;
+    var p = a.data.split('-');
+    if (parseInt(p[0])===ano && parseInt(p[1])===mes+1) agDias[parseInt(p[2])]=true;
+  });
+  var primeiroDia = new Date(ano,mes,1).getDay();
+  var diasNoMes   = new Date(ano,mes+1,0).getDate();
+  var diasAntMes  = new Date(ano,mes,0).getDate();
+  var mesPad = String(mes+1).padStart(2,'0');
+  var sel    = ag3.dataFiltro;
+  var cells  = [];
+  for (var i=0;i<primeiroDia;i++) cells.push({d:diasAntMes-primeiroDia+1+i,outro:true});
+  for (var d=1;d<=diasNoMes;d++)  cells.push({d:d,outro:false});
+  var rem = cells.length%7; if(rem) for(var j=1;j<=7-rem;j++) cells.push({d:j,outro:true});
+  grid.innerHTML = cells.map(function(cell){
+    if (cell.outro) return '<div class="ag3-cal-dia ag3-cal-outro">'+cell.d+'</div>';
+    var ds  = ano+'-'+mesPad+'-'+String(cell.d).padStart(2,'0');
+    var cls = 'ag3-cal-dia';
+    if (ds===hoje) cls+=' ag3-cal-hoje';
+    if (ds===sel && ds!==hoje) cls+=' ag3-cal-selecionado';
+    if (agDias[cell.d]) cls+=' ag3-cal-tem-ag';
+    return '<div class="'+cls+'" onclick="ag3CalClicar(\''+ds+'\')" title="'+ag3fmtData(ds)+'">'+cell.d+'</div>';
+  }).join('');
+}
+ 
+function ag3CalClicar(data) {
+  if (ag3.dataFiltro === data) {
+    ag3.dataFiltro   = '';
+    ag3.periodoAtivo = 'hoje';
+    var inp = document.getElementById('ag3-data-filtro'); if(inp) inp.value='';
+    document.querySelectorAll('.ag3-tab').forEach(function(b){ b.classList.remove('ativo'); b.setAttribute('aria-selected','false'); });
+    var t = document.querySelector('.ag3-tab[data-periodo="hoje"]');
+    if(t){ t.classList.add('ativo'); t.setAttribute('aria-selected','true'); }
+  } else {
+    ag3.dataFiltro   = data;
+    ag3.periodoAtivo = '';
+    var inp2 = document.getElementById('ag3-data-filtro'); if(inp2) inp2.value=data;
+    document.querySelectorAll('.ag3-tab').forEach(function(b){ b.classList.remove('ativo'); b.setAttribute('aria-selected','false'); });
+  }
+  ag3Atualizar();
+}
+ 
+/* ── LINK ────────────────────────────────────────────── */
+function ag3AtualizarLink() {
+  if (!window.negocioAtual) return;
+  var url = 'https://agendorapido.com.br/agendar.html?id='+window.negocioAtual._id;
+  var elU = document.getElementById('ag3-link-url');
+  var elW = document.getElementById('ag3-link-wpp');
+  if (elU) elU.textContent = url;
+  if (elW) elW.href = 'https://wa.me/?text='+encodeURIComponent('Agende agora: '+url);
+}
+ 
+window.ag3CopiarLink = function() {
+  if (!window.negocioAtual) return;
+  var url = 'https://agendorapido.com.br/agendar.html?id='+window.negocioAtual._id;
+  navigator.clipboard.writeText(url).then(function(){
+    var btn = document.getElementById('ag3-btn-copiar-link');
+    if (btn){
+      var orig=btn.innerHTML;
+      btn.innerHTML='✓'; btn.style.color='var(--green)';
+      setTimeout(function(){ btn.innerHTML=orig; btn.style.color=''; },2000);
+    }
+  });
+};
+ 
+/* ── MODAL DETALHE ───────────────────────────────────── */
+window.ag3AbrirDetalhe = function(id) {
+  var ags = window.todosAgendamentos || [];
+  var a   = ags.find(function(x){ return x._id===id; });
+  if (!a) return;
+  ag3.idDetalhe = id;
+  var cores = ag3avatarCor(a.pacienteNome);
+  var ini   = (a.pacienteNome||'C')[0].toUpperCase();
+  var elAv  = document.getElementById('ag3-det-avatar');
+  if (elAv){ elAv.textContent=ini; elAv.style.background='linear-gradient(135deg,'+cores[0]+','+cores[1]+')'; }
+  function sv(id,v){ var el=document.getElementById(id); if(el) el.textContent=v; }
+  sv('ag3-det-nome',    a.pacienteNome||'—');
+  sv('ag3-det-tel',     a.pacienteTelefone||'Sem telefone');
+  sv('ag3-det-servico', a.servico||'—');
+  sv('ag3-det-data',    ag3fmtData(a.data));
+  sv('ag3-det-hora',    a.hora||'—');
+  sv('ag3-det-preco',   ag3fmtBRL(a.preco)||'Não informado');
+  var badgeEl = document.getElementById('ag3-det-badge');
+  if (badgeEl) badgeEl.innerHTML = ag3badgeHtml(a.status);
+  var pagRow = document.getElementById('ag3-det-pag-row');
+  if (a.pagamento && a.pagamento.status) {
+    if (pagRow) pagRow.style.display='';
+    sv('ag3-det-pag', a.pagamento.status==='pago'
+      ? '✓ Pago · '+(ag3fmtBRL(a.pagamento.valor)||'') : 'Pendente');
+  } else { if (pagRow) pagRow.style.display='none'; }
+  var acEl = document.getElementById('ag3-det-acoes');
+  if (acEl) {
+    var idS = id.replace(/'/g,"\\'");
+    var nmS = (a.pacienteNome||'').replace(/'/g,"\\'");
+    var tlS = (a.pacienteTelefone||'').replace(/'/g,"\\'");
+    var btns = '';
+    if (a.status==='confirmado'){
+      btns += '<button class="ag3-det-btn ag3-det-btn-conc" onclick="atualizar(\''+idS+'\',\'concluido\');ag3FecharDetalhe()" type="button">✓ Concluir</button>';
+      btns += '<button class="ag3-det-btn ag3-det-btn-canc" onclick="ag3FecharDetalhe();cancelarComAviso(\''+idS+'\',\''+nmS+'\',\''+tlS+'\',\''+(a.data||'')+'\',\''+(a.hora||'')+'\')" type="button">✕ Cancelar</button>';
+    }
+    if (a.pacienteTelefone){
+      var tel2 = a.pacienteTelefone.replace(/\D/g,'');
+      var msg2 = encodeURIComponent('Olá '+(a.pacienteNome||'')+'! 😊');
+      btns += '<a href="https://wa.me/55'+tel2+'?text='+msg2+'" target="_blank" class="ag3-det-btn ag3-det-btn-wpp" onclick="ag3FecharDetalhe()">WhatsApp</a>';
+    }
+    if (!btns) btns='<button class="ag3-det-btn" onclick="ag3FecharDetalhe()" type="button">Fechar</button>';
+    acEl.innerHTML = btns;
+  }
+  var modal = document.getElementById('ag3-modal-detalhe');
+  if (modal){ modal.style.display='flex'; document.body.classList.add('modal-open'); }
+};
+ 
+window.ag3FecharDetalhe = function() {
+  var modal = document.getElementById('ag3-modal-detalhe');
+  if (modal){ modal.style.display='none'; document.body.classList.remove('modal-open'); }
+  ag3.idDetalhe = null;
+};
+ 
+/* ── ATUALIZAR TUDO ──────────────────────────────────── */
+function ag3Atualizar() {
+  ag3Filtrar();
+  ag3RenderResultInfo();
+  ag3RenderCal();
+  if (ag3.viewAtiva==='lista') ag3RenderLista();
+  else                         ag3RenderKanban();
+  ag3AtualizarLink();
+}
+ 
+/* ── FUNÇÕES GLOBAIS ─────────────────────────────────── */
+window.ag3FiltrarStatus = function(status, btn) {
+  ag3.statusAtivo = status;
+  document.querySelectorAll('.ag3-fstatus').forEach(function(b){ b.classList.remove('ativo'); });
+  if (btn) btn.classList.add('ativo');
+  ag3Atualizar();
+};
+ 
+window.ag3MudarPeriodo = function(periodo, btn) {
+  ag3.periodoAtivo = periodo;
+  ag3.dataFiltro   = '';
+  var inp = document.getElementById('ag3-data-filtro'); if(inp) inp.value='';
+  document.querySelectorAll('.ag3-tab').forEach(function(b){
+    b.classList.remove('ativo'); b.setAttribute('aria-selected','false');
+  });
+  if (btn){ btn.classList.add('ativo'); btn.setAttribute('aria-selected','true'); }
+  ag3Atualizar();
+};
+ 
+window.ag3FiltrarPorData = function(val) {
+  ag3.dataFiltro   = val;
+  ag3.periodoAtivo = val ? '' : 'hoje';
+  if (!val) {
+    var tab = document.querySelector('.ag3-tab[data-periodo="hoje"]');
+    if (tab){ tab.classList.add('ativo'); tab.setAttribute('aria-selected','true'); }
+  } else {
+    document.querySelectorAll('.ag3-tab').forEach(function(b){
+      b.classList.remove('ativo'); b.setAttribute('aria-selected','false');
+    });
+  }
+  ag3Atualizar();
+};
+ 
+window.ag3Buscar = function(val) {
+  ag3.buscaTermo = val;
+  var btn = document.getElementById('ag3-busca-clear');
+  if (btn) btn.style.display = val ? '' : 'none';
+  ag3Atualizar();
+};
+ 
+window.ag3LimparBusca = function() {
+  ag3.buscaTermo = '';
+  var inp = document.getElementById('ag3-busca');       if(inp) inp.value='';
+  var btn = document.getElementById('ag3-busca-clear'); if(btn) btn.style.display='none';
+  ag3Atualizar();
+};
+ 
+window.ag3LimparFiltros = function() {
+  ag3.buscaTermo   = '';
+  ag3.statusAtivo  = 'todos';
+  ag3.dataFiltro   = '';
+  ag3.periodoAtivo = 'hoje';
+  var inp = document.getElementById('ag3-busca');       if(inp) inp.value='';
+  var dt  = document.getElementById('ag3-data-filtro'); if(dt)  dt.value='';
+  document.querySelectorAll('.ag3-tab').forEach(function(b){
+    b.classList.remove('ativo'); b.setAttribute('aria-selected','false');
+  });
+  var tabH = document.querySelector('.ag3-tab[data-periodo="hoje"]');
+  if (tabH){ tabH.classList.add('ativo'); tabH.setAttribute('aria-selected','true'); }
+  document.querySelectorAll('.ag3-fstatus').forEach(function(b){ b.classList.remove('ativo'); });
+  var todos = document.querySelector('.ag3-fstatus[data-status="todos"]');
+  if (todos) todos.classList.add('ativo');
+  ag3Atualizar();
+};
+ 
+window.ag3MudarView = function(view, btn) {
+  ag3.viewAtiva = view;
+  document.querySelectorAll('.ag3-view-btn').forEach(function(b){ b.classList.remove('ativo'); });
+  if (btn) btn.classList.add('ativo');
+  var listaWrap  = document.getElementById('ag3-view-lista-wrap');
+  var kanbanWrap = document.getElementById('ag3-view-kanban-wrap');
+  if (listaWrap)  listaWrap.style.display  = view==='lista'  ? '' : 'none';
+  if (kanbanWrap) kanbanWrap.style.display = view==='kanban' ? '' : 'none';
+  ag3Atualizar();
+};
+ 
+window.ag3IrPagina = function(n) {
+  var total = Math.ceil(ag3.listaFiltrada.length/ag3.porPagina);
+  if (n<1||n>total) return;
+  ag3.paginaAtual = n;
+  ag3RenderLista();
+  var pg = document.getElementById('page-agendamentos');
+  if (pg) pg.scrollIntoView({behavior:'smooth',block:'start'});
+};
+ 
+window.ag3ExportarCSV = function() {
+  var lista = ag3.listaFiltrada.length ? ag3.listaFiltrada : (window.todosAgendamentos||[]);
+  var linhas = [['Nome','Telefone','Serviço','Data','Hora','Status','Valor (R$)']];
+  lista.forEach(function(a){
+    linhas.push([a.pacienteNome||'',a.pacienteTelefone||'',a.servico||'',
+                 a.data||'',a.hora||'',a.status||'',
+                 a.preco?Number(a.preco).toFixed(2):'']);
+  });
+  var csv  = linhas.map(function(l){
+    return l.map(function(c){ return '"'+String(c).replace(/"/g,'""')+'"'; }).join(',');
+  }).join('\n');
+  var blob = new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});
+  var url  = URL.createObjectURL(blob);
+  var link = document.createElement('a');
+  link.href=url; link.download='agendamentos.csv'; link.click();
+  setTimeout(function(){ URL.revokeObjectURL(url); },500);
+};
+ 
+/* ── NAV CALENDÁRIO + MODAL ──────────────────────────── */
+document.addEventListener('DOMContentLoaded', function(){
+  var prev = document.getElementById('ag3-cal-prev');
+  var next = document.getElementById('ag3-cal-next');
+  if (prev) prev.onclick = function(){
+    ag3.calMes--; if(ag3.calMes<0){ag3.calMes=11;ag3.calAno--;} ag3RenderCal();
+  };
+  if (next) next.onclick = function(){
+    ag3.calMes++; if(ag3.calMes>11){ag3.calMes=0;ag3.calAno++;} ag3RenderCal();
+  };
+  var mdModal = document.getElementById('ag3-modal-detalhe');
+  if (mdModal) mdModal.addEventListener('click', function(e){
+    if(e.target===mdModal) ag3FecharDetalhe();
+  });
+});
+ 
+/* ── HOOK ÚNICO em renderDashboardHoje ───────────────── */
+;(function(){
+  var _origRender = window.renderDashboardHoje;
+  window.renderDashboardHoje = function(){
+    if (typeof _origRender==='function') _origRender.apply(this,arguments);
+    if (document.getElementById('ag3-cards-lista')){
+      ag3RenderStats();
+      ag3Atualizar();
     }
   };
+})();
  
-  /* ──────────────────────────────────────────────
-     FILTRO PROFISSIONAL
-  ────────────────────────────────────────────── */
-  function popularProfSel() {
-    var sel = el('ag2-prof-sel');
-    if (!sel) return;
-    var profs = new Set();
-    (window.todosAgendamentos || []).forEach(function (a) {
-      if (a.profissional) profs.add(a.profissional);
-    });
-    var opts = '<option value="todos">Todos os profissionais</option>';
-    profs.forEach(function (p) { opts += '<option value="' + p + '">' + p + '</option>'; });
-    sel.innerHTML = opts;
-    sel.value = S.profFiltro;
-  }
- 
-  /* ──────────────────────────────────────────────
-     REFRESH GERAL
-  ────────────────────────────────────────────── */
-  function refreshTudo() {
-    renderStats();
-    renderCal();
-    renderLista();
-    renderResumo();
-    renderDonut();
-    atualizarLink();
-    popularProfSel();
-    atualizarDateRange();
-  }
- 
-  /* ──────────────────────────────────────────────
-     HOOKS: conecta ao sistema existente do painel
-  ────────────────────────────────────────────── */
- 
-  /* Hook irPara */
-  ;(function () {
-    var _orig = window.irPara;
-    if (typeof _orig !== 'function') return;
-    window.irPara = function (pagina, btn) {
-      _orig.apply(this, arguments);
-      if (pagina === 'agendamentos') {
-        setTimeout(refreshTudo, 80);
-      }
-    };
-  })();
- 
-  /* Hook carregarAgendamentos — atualiza a view após carregar dados */
-  ;(function () {
-    var _orig = window.carregarAgendamentos;
-    if (typeof _orig !== 'function') return;
-    window.carregarAgendamentos = function () {
-      var res = _orig.apply(this, arguments);
-      if (res && typeof res.then === 'function') {
-        res.then(function () { refreshTudo(); });
-      } else {
-        setTimeout(refreshTudo, 350);
-      }
-      return res;
-    };
-  })();
- 
-  /* Hook trocarNegocio */
-  ;(function () {
-    var _orig = window.trocarNegocio;
-    if (typeof _orig !== 'function') return;
-    window.trocarNegocio = function (id) {
-      _orig.apply(this, arguments);
-      setTimeout(refreshTudo, 500);
-    };
-  })();
- 
-  /* ──────────────────────────────────────────────
-     INIT
-  ────────────────────────────────────────────── */
-  document.addEventListener('DOMContentLoaded', function () {
-    atualizarDateRange();
- 
-    /* Aguarda dados estarem disponíveis (máx 6s) */
-    var tentativas = 0;
-    var check = setInterval(function () {
-      tentativas++;
-      var temDados = Array.isArray(window.todosAgendamentos);
-      var temNeg   = !!window.negocioAtual;
-      if ((temDados && temNeg) || tentativas > 20) {
-        clearInterval(check);
-        refreshTudo();
-      }
-    }, 300);
-  });
+/* ── HOOK ÚNICO em irPara ────────────────────────────── */
+;(function(){
+  var _origIrPara = window.irPara;
+  window.irPara = function(pagina, btn){
+    _origIrPara.apply(this,arguments);
+    if (pagina==='agendamentos'){
+      setTimeout(function(){
+        ag3.periodoAtivo = 'hoje';
+        ag3.statusAtivo  = 'todos';
+        ag3.buscaTermo   = '';
+        ag3.dataFiltro   = '';
+        var inp = document.getElementById('ag3-busca');       if(inp) inp.value='';
+        var dt  = document.getElementById('ag3-data-filtro'); if(dt)  dt.value='';
+        document.querySelectorAll('.ag3-tab').forEach(function(b){
+          b.classList.remove('ativo'); b.setAttribute('aria-selected','false');
+        });
+        var tabH = document.querySelector('.ag3-tab[data-periodo="hoje"]');
+        if (tabH){ tabH.classList.add('ativo'); tabH.setAttribute('aria-selected','true'); }
+        document.querySelectorAll('.ag3-fstatus').forEach(function(b){ b.classList.remove('ativo'); });
+        var todos = document.querySelector('.ag3-fstatus[data-status="todos"]');
+        if (todos) todos.classList.add('ativo');
+        ag3RenderStats();
+        ag3Atualizar();
+        ag3AtualizarLink();
+      }, 60);
+    }
+  };
+})();
  
 })();

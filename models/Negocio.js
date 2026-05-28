@@ -7,6 +7,16 @@ const ServicoSchema = new mongoose.Schema({
   duracao: { type: Number, default: 0 },
 }, { _id: false })
 
+// ✅ NOVO: bloqueios pontuais (feriados, folgas, treinamentos)
+const BloqueioSchema = new mongoose.Schema({
+  data:    { type: String, required: true },          // 'YYYY-MM-DD'
+  label:   { type: String, default: 'Indisponível' }, // 'Feriado', 'Treinamento'
+  allDay:  { type: Boolean, default: true },
+  startH:  { type: String, default: '' },              // 'HH:MM' (se !allDay)
+  endH:    { type: String, default: '' },              // 'HH:MM' (se !allDay)
+  cor:     { type: String, default: '#dc2626' },
+})
+
 const NegocioSchema = new mongoose.Schema({
   userId:   { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   nome:     { type: String, required: true },
@@ -17,6 +27,9 @@ const NegocioSchema = new mongoose.Schema({
   intervalo:          { type: Number, default: 30 },
   pausas:             { type: [mongoose.Schema.Types.Mixed], default: [] },
   intervalosServicos: { type: mongoose.Schema.Types.Mixed, default: {} },
+
+  // ✅ NOVO: bloqueios pontuais
+  bloqueios: { type: [BloqueioSchema], default: [] },
 
   bio: {
     foto:      { type: String, default: '' },
@@ -39,7 +52,6 @@ const NegocioSchema = new mongoose.Schema({
     mensagem: { type: String,  default: '' },
   },
 
-  // Pix legado
   pixConfig: {
     chavePix:  { type: String, default: '' },
     tipoPix:   { type: String, default: 'cpf' },
@@ -47,21 +59,17 @@ const NegocioSchema = new mongoose.Schema({
     updatedAt: { type: Date },
   },
 
-  pagamentos: { type: mongoose.Schema.Types.Mixed, default: {} }, // legado
+  pagamentos: { type: mongoose.Schema.Types.Mixed, default: {} },
 
-  // ✅ NOVO: configurações da página de Pagamentos
   pagamentosConfig: {
-    // Pagamento adiantado
-    adiantado:       { type: Boolean, default: false },
-    tipoValor:       { type: String,  default: 'total', enum: ['total', 'personalizado', 'fixo'] },
-    porcentagem:     { type: Number,  default: 50, min: 0, max: 100 },
-    valorFixo:       { type: Number,  default: 0, min: 0 },
-    // Reembolso
+    adiantado:        { type: Boolean, default: false },
+    tipoValor:        { type: String,  default: 'total', enum: ['total', 'personalizado', 'fixo'] },
+    porcentagem:      { type: Number,  default: 50, min: 0, max: 100 },
+    valorFixo:        { type: Number,  default: 0, min: 0 },
     reembolso:        { type: Boolean, default: true },
     reembolsoCliente: { type: Boolean, default: true },
     reembolsoVoce:    { type: Boolean, default: true },
-
-    updatedAt: { type: Date },
+    updatedAt:        { type: Date },
   },
 
   criadoEm:     { type: Date, default: Date.now },
