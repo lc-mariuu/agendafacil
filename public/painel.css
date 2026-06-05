@@ -2542,7 +2542,6 @@ body.light-mode .ag2-acao { background: var(--bg-card); }
 .ag3-ic-green  { background: rgba(52,211,153,0.14); border: 1px solid rgba(52,211,153,0.25); }
 .ag3-ic-red    { background: rgba(239,68,68,0.14);  border: 1px solid rgba(239,68,68,0.25);  }
 .ag3-ic-yellow { background: rgba(245,158,11,0.14); border: 1px solid rgba(245,158,11,0.25); }
-.ag3-stat-body {}
 .ag3-stat-lbl {
   font-size: 10px;
   font-weight: 700;
@@ -2617,7 +2616,6 @@ body.light-mode .ag2-acao { background: var(--bg-card); }
 }
 
 /* ── MINI CALENDÁRIO ────────────────────────────────────── */
-.ag3-cal-card {}
 .ag3-cal-nav {
   display: flex;
   align-items: center;
@@ -3504,7 +3502,6 @@ body.light-mode .ag3-card { background: #fff; }
 .ag3-ic-green  { background: rgba(52,211,153,0.14); border: 1px solid rgba(52,211,153,0.25); }
 .ag3-ic-red    { background: rgba(239,68,68,0.14);  border: 1px solid rgba(239,68,68,0.25);  }
 .ag3-ic-yellow { background: rgba(245,158,11,0.14); border: 1px solid rgba(245,158,11,0.25); }
-.ag3-stat-body {}
 .ag3-stat-lbl {
   font-size: 10px;
   font-weight: 700;
@@ -3579,7 +3576,6 @@ body.light-mode .ag3-card { background: #fff; }
 }
  
 /* ── MINI CALENDÁRIO ────────────────────────────────────── */
-.ag3-cal-card {}
 .ag3-cal-nav {
   display: flex;
   align-items: center;
