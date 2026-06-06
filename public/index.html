@@ -33,10 +33,12 @@
       <a href="#contato">Contato</a>
     </nav>
     <div class="header__actions">
-      <a href="#" class="btn btn--ghost btn--sm hide-mobile">Entrar</a>
+      <!-- CORRIGIDO: botão Entrar aponta para /login -->
+      <a href="/auth.html" class="btn btn--ghost btn--sm hide-mobile">Entrar</a>
       <a href="#cta" class="btn btn--primary btn--sm magnetic">Começar Agora</a>
-      <button class="menu-toggle" id="menuToggle" aria-label="Menu">
-        <span></span><span></span>
+      <!-- CORRIGIDO: 3 spans para hambúrguer correto -->
+      <button class="menu-toggle" id="menuToggle" aria-label="Menu" aria-expanded="false">
+        <span></span><span></span><span></span>
       </button>
     </div>
   </div>
@@ -93,7 +95,7 @@
     <div class="dash-tilt" id="dashTilt">
       <div class="dash-glow" aria-hidden="true"></div>
 
-      <!-- floating side cards -->
+      <!-- floating side cards — ocultos em mobile via CSS -->
       <div class="float-card float-card--wa" data-depth="40">
         <div class="fc__icon fc__icon--wa"></div>
         <div class="fc__body">
@@ -238,7 +240,7 @@
               <div class="ai-orb"></div>
               <div class="panel__ai-body">
                 <span class="panel__ai-tag">Assistente IA</span>
-                <p>“Encaixei a Júlia às 15:30 e enviei a confirmação no WhatsApp. Sua tarde está 86% ocupada.”</p>
+                <p>"Encaixei a Júlia às 15:30 e enviei a confirmação no WhatsApp. Sua tarde está 86% ocupada."</p>
               </div>
             </div>
           </div>
@@ -551,7 +553,7 @@
         <div class="plan__border" aria-hidden="true"></div>
         <h3 class="plan__name">Pro</h3>
         <p class="plan__desc">Para profissionais que querem automatizar tudo.</p>
-        <div class="plan__price"><span class="plan__cur">R$</span>97<span class="plan__per">/mês</span></div>
+        <div class="plan__price"><span class="plan__cur">R$</span>29<span class="plan__per">/mês</span></div>
         <a href="#cta" class="btn btn--primary btn--block magnetic">Testar 14 dias grátis</a>
         <ul class="plan__feats">
           <li><span class="check"></span> Agendamentos ilimitados</li>
@@ -565,7 +567,7 @@
       <article class="plan reveal" data-reveal>
         <h3 class="plan__name">Business</h3>
         <p class="plan__desc">Para várias unidades e equipes maiores.</p>
-        <div class="plan__price"><span class="plan__cur">R$</span>247<span class="plan__per">/mês</span></div>
+        <div class="plan__price"><span class="plan__cur">R$</span>49<span class="plan__per">/mês</span></div>
         <a href="#cta" class="btn btn--glass btn--block">Falar com vendas</a>
         <ul class="plan__feats">
           <li><span class="check"></span> Tudo do Pro</li>
@@ -586,7 +588,7 @@
       <span class="eyebrow">Dúvidas frequentes</span>
       <h2 class="section__title">Tudo que você precisa saber.</h2>
       <p class="section__lead">Ainda com dúvidas? Fale com a gente no WhatsApp — respondemos em minutos.</p>
-      <a href="#" class="btn btn--glass btn--sm">Falar no WhatsApp</a>
+      <a href="https://wa.me/5535999359269" class="btn btn--glass btn--sm">Falar no WhatsApp</a>
     </div>
     <div class="faq__list reveal" data-reveal>
       <div class="faq-item"><button class="faq-item__q">Preciso de cartão de crédito para testar?<span class="faq-item__plus"></span></button><div class="faq-item__a"><p>Não. Você cria sua conta e testa todos os recursos sem informar cartão. Só assina quando decidir continuar.</p></div></div>
@@ -609,7 +611,7 @@
     <span class="pill"><span class="pill__dot"></span> Comece hoje, grátis</span>
     <h2 class="cta__title">Comece a automatizar seus<br /><span class="grad-text">agendamentos hoje.</span></h2>
     <p class="cta__sub">Junte-se a mais de 2.500 negócios que transformaram a agenda em crescimento automático.</p>
-    <a href="#" class="btn btn--primary btn--xl magnetic">Criar Minha Conta Gratuitamente <span class="btn__shine"></span></a>
+    <a href="/cadastro" class="btn btn--primary btn--xl magnetic">Criar Minha Conta Gratuitamente <span class="btn__shine"></span></a>
     <div class="cta__badges">
       <span><span class="check"></span> Sem cartão</span>
       <span><span class="check"></span> 5 min de setup</span>
@@ -630,10 +632,10 @@
       </a>
       <p>A plataforma que transforma sua agenda em uma máquina automática de crescimento.</p>
       <div class="footer__social">
-        <a href="#" aria-label="Instagram" class="soc soc--ig"></a>
+        <a href="https://instagram.com/agendorapido" aria-label="Instagram" class="soc soc--ig"></a>
         <a href="#" aria-label="LinkedIn" class="soc soc--in"></a>
         <a href="#" aria-label="YouTube" class="soc soc--yt"></a>
-        <a href="#" aria-label="WhatsApp" class="soc soc--wa"></a>
+        <a href="https://wa.me/5535999359269" aria-label="WhatsApp" class="soc soc--wa"></a>
       </div>
     </div>
     <div class="footer__cols">
@@ -649,19 +651,19 @@
         <a href="#">Sobre nós</a>
         <a href="#">Blog</a>
         <a href="#">Carreiras</a>
-        <a href="#">Contato</a>
+        <a href="https://wa.me/5535999359269">Contato</a>
       </div>
       <div class="footer__col">
         <h5>Suporte</h5>
-        <a href="#">Central de ajuda</a>
+        <a href="#contato">Central de ajuda</a>
         <a href="#">Status</a>
-        <a href="#">WhatsApp</a>
-        <a href="#"><span class="__cf_email__" data-cfemail="1764626778656372577670727973786576677e73783974787a">[email&#160;protected]</span></a>
+        <a href="https://wa.me/5535999359269">WhatsApp</a>
+        <a href="mailto:contato@agendorapido.com.br">contato@agendorapido.com.br</a>
       </div>
       <div class="footer__col">
         <h5>Legal</h5>
-        <a href="#">Termos de uso</a>
-        <a href="#">Privacidade</a>
+        <a href="/public/termos.html">Termos de uso</a>
+        <a href="/public/politica.html">Privacidade</a>
         <a href="#">Cookies</a>
         <a href="#">LGPD</a>
       </div>
@@ -673,6 +675,6 @@
   </div>
 </footer>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="script.js"></script>
+<script src="script.js"></script>
 </body>
 </html>

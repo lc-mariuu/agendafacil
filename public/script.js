@@ -15,9 +15,36 @@
   window.addEventListener('scroll', onScroll, { passive: true });
 
   /* ---------- Mobile menu ---------- */
-  const nav = $('#nav'), toggle = $('#menuToggle');
-  toggle.addEventListener('click', () => nav.classList.toggle('open'));
-  $$('#nav a').forEach(a => a.addEventListener('click', () => nav.classList.remove('open')));
+  const nav = $('#nav');
+  const toggle = $('#menuToggle');
+
+  // CORRIGIDO: toggle da classe is-open no botão (anima as 3 barras)
+  // e aria-expanded para acessibilidade
+  toggle.addEventListener('click', () => {
+    const isOpen = nav.classList.toggle('open');
+    toggle.classList.toggle('is-open', isOpen);
+    toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    // Impede scroll do body quando menu aberto em mobile
+    document.body.style.overflow = isOpen ? 'hidden' : '';
+  });
+
+  // Fecha ao clicar em qualquer link
+  $$('#nav a').forEach(a => a.addEventListener('click', () => {
+    nav.classList.remove('open');
+    toggle.classList.remove('is-open');
+    toggle.setAttribute('aria-expanded', 'false');
+    document.body.style.overflow = '';
+  }));
+
+  // Fecha ao redimensionar para desktop
+  window.addEventListener('resize', () => {
+    if (window.innerWidth > 768) {
+      nav.classList.remove('open');
+      toggle.classList.remove('is-open');
+      toggle.setAttribute('aria-expanded', 'false');
+      document.body.style.overflow = '';
+    }
+  });
 
   /* ---------- Cursor glow ---------- */
   const glow = $('#cursorGlow');
@@ -35,7 +62,6 @@
   const io = new IntersectionObserver((entries) => {
     entries.forEach((en, i) => {
       if (en.isIntersecting) {
-        const sibs = $$('[data-reveal]', en.target.parentElement).filter(el => el === en.target);
         en.target.style.transitionDelay = (en.target.dataset.delay || (i % 4) * 70) + 'ms';
         en.target.classList.add('in');
         io.unobserve(en.target);
@@ -81,23 +107,21 @@
   }
 
   /* ---------- Dashboard 3D tilt (mouse parallax) ---------- */
+  // CORRIGIDO: só ativa em telas não-touch (pointer:fine) e largura suficiente
   const tilt = $('#dashTilt');
-  if (tilt && !reduce && matchMedia('(pointer:fine)').matches) {
+  if (tilt && !reduce && matchMedia('(pointer:fine)').matches && window.innerWidth > 768) {
     const stage = $('.dash-stage');
-    let tx = 0, ty = 0, ctxv = 0, ctyv = 0, active = false;
+    let tx = 0, ty = 0, ctxv = 0, ctyv = 0;
     stage.addEventListener('mousemove', e => {
       const r = stage.getBoundingClientRect();
       tx = ((e.clientX - r.left) / r.width - 0.5);
       ty = ((e.clientY - r.top) / r.height - 0.5);
-      active = true;
     });
     stage.addEventListener('mouseleave', () => { tx = 0; ty = 0; });
     (function raf() {
       ctxv = lerp(ctxv, tx, 0.08); ctyv = lerp(ctyv, ty, 0.08);
-      const baseX = 6; // resting tilt for depth
-      tilt.style.transform =
-        `rotateX(${baseX - ctyv * 10}deg) rotateY(${ctxv * 12}deg)`;
-      // parallax floating cards
+      const baseX = 6;
+      tilt.style.transform = `rotateX(${baseX - ctyv * 10}deg) rotateY(${ctxv * 12}deg)`;
       $$('.float-card', tilt).forEach(c => {
         const d = +c.dataset.depth || 30;
         c.style.transform = `translate3d(${ctxv * d}px, ${ctyv * d}px, 60px)`;
@@ -105,7 +129,8 @@
       requestAnimationFrame(raf);
     })();
   } else if (tilt) {
-    tilt.style.transform = 'rotateX(6deg)';
+    // Mobile: sem tilt
+    tilt.style.transform = 'none';
   }
 
   /* ---------- Feature card glow + tilt ---------- */
@@ -132,8 +157,12 @@
       es.forEach(en => {
         if (en.isIntersecting) {
           setInterval(() => {
-            flowSteps.forEach((s, i) => s.querySelector('.flow-step__node').style.boxShadow =
-              i === fi ? '0 18px 44px -10px rgba(37,99,235,.9)' : '');
+            flowSteps.forEach((s, i) => {
+              const node = s.querySelector('.flow-step__node');
+              if (node) {
+                node.style.boxShadow = i === fi ? '0 18px 44px -10px rgba(37,99,235,.9)' : '';
+              }
+            });
             flowSteps.forEach((s, i) => s.style.opacity = i <= fi ? '1' : '.55');
             fi = (fi + 1) % flowSteps.length;
           }, 900);
@@ -159,6 +188,7 @@
 
   function runDemo() {
     if (demoTimer) return;
+    if (!waThread) return;
     waThread.innerHTML = '';
     demoRows.forEach(r => r.classList.remove('active'));
     if (demoProgress) demoProgress.style.width = '0%';
@@ -182,6 +212,7 @@
       if (step >= total) { clearInterval(demoTimer); demoTimer = null; }
     }, 850);
   }
+
   function addMsg(i) {
     const m = script[i];
     const div = document.createElement('div');
@@ -189,16 +220,22 @@
     div.innerHTML = m.html;
     waThread.appendChild(div);
   }
+
   function activateRow(i) {
     const row = demoRows.find(r => +r.dataset.row === i);
     if (row) row.classList.add('active');
   }
+
   if (demoPlay) demoPlay.addEventListener('click', () => { clearInterval(demoTimer); demoTimer = null; runDemo(); });
+
   if (waThread) {
-    const demoIO = new IntersectionObserver((es) => {
-      es.forEach(en => { if (en.isIntersecting) { runDemo(); demoIO.disconnect(); } });
-    }, { threshold: 0.4 });
-    demoIO.observe($('.demo'));
+    const demoSection = $('.demo');
+    if (demoSection) {
+      const demoIO = new IntersectionObserver((es) => {
+        es.forEach(en => { if (en.isIntersecting) { runDemo(); demoIO.disconnect(); } });
+      }, { threshold: 0.3 });
+      demoIO.observe(demoSection);
+    }
   }
 
   /* ---------- FAQ accordion ---------- */
@@ -207,7 +244,11 @@
     const a = $('.faq-item__a', item);
     q.addEventListener('click', () => {
       const open = item.classList.contains('open');
-      $$('.faq-item').forEach(o => { o.classList.remove('open'); $('.faq-item__a', o).style.maxHeight = null; });
+      $$('.faq-item').forEach(o => {
+        o.classList.remove('open');
+        const oa = $('.faq-item__a', o);
+        if (oa) oa.style.maxHeight = null;
+      });
       if (!open) { item.classList.add('open'); a.style.maxHeight = a.scrollHeight + 'px'; }
     });
   });
@@ -219,7 +260,8 @@
     let w, h, dpr = Math.min(2, window.devicePixelRatio || 1), pts = [];
     function resize() {
       const r = canvas.getBoundingClientRect();
-      w = canvas.width = r.width * dpr; h = canvas.height = r.height * dpr;
+      w = canvas.width = r.width * dpr;
+      h = canvas.height = r.height * dpr;
     }
     function build() {
       pts = Array.from({ length: count }, () => ({
@@ -244,7 +286,7 @@
       requestAnimationFrame(draw);
     }
     resize(); build(); draw();
-    window.addEventListener('resize', () => { resize(); build(); });
+    window.addEventListener('resize', () => { resize(); build(); }, { passive: true });
   }
   particles($('#heroParticles'), 70, '147,197,253');
   particles($('#ctaParticles'), 60, '147,197,253');
@@ -253,11 +295,12 @@
   $$('a[href^="#"]').forEach(a => {
     a.addEventListener('click', e => {
       const id = a.getAttribute('href');
-      if (id.length < 2) return;
+      if (!id || id.length < 2) return;
       const el = document.querySelector(id);
       if (!el) return;
       e.preventDefault();
-      const y = el.getBoundingClientRect().top + window.scrollY - 80;
+      const headerH = header ? header.offsetHeight : 80;
+      const y = el.getBoundingClientRect().top + window.scrollY - headerH;
       window.scrollTo({ top: y, behavior: 'smooth' });
     });
   });
