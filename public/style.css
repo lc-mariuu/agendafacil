@@ -676,6 +676,61 @@ header,main,footer{ position:relative; z-index:2; }
   .hero__cta .btn--lg{ font-size:.92rem; padding:.85rem 1.2rem; }
 }
 
+/* Os botões CTA dentro do menu só aparecem no mobile */
+.nav__cta-mobile { display: none; }
+ 
+@media (max-width:1024px){
+  /* Mostra os botões dentro do drawer quando o menu abre */
+  .nav.open .nav__cta-mobile{
+    display:block;
+    margin-top:.5rem;
+    text-align:center;
+    padding:.9rem 1rem;
+    border-radius:12px;
+    font-weight:700;
+    font-size:1rem;
+  }
+  .nav.open .nav__cta-mobile{
+    background:rgba(255,255,255,.05);
+    border:1px solid var(--line);
+    color:var(--ink);
+  }
+  .nav.open .nav__cta-mobile--primary{
+    background:linear-gradient(180deg,#3b82f6,#2563eb);
+    border:none;
+    color:#fff;
+    box-shadow:var(--shadow-blue);
+  }
+  /* Separa visualmente os links de navegação dos botões */
+  .nav.open .nav__cta-mobile:first-of-type{
+    margin-top:1rem;
+    border-top:1px solid var(--line);
+    padding-top:1.2rem;
+    border-radius:0 0 12px 12px;
+  }
+}
+ 
+/* Garante que o header nunca estoure a largura no mobile */
+@media (max-width:768px){
+  .header__inner{
+    gap:.5rem;
+  }
+  .header__actions{
+    gap:.4rem;
+    flex-shrink:0;
+  }
+  /* O hambúrguer fica garantidamente visível e clicável */
+  .menu-toggle{
+    display:flex !important;
+    margin-left:auto;
+  }
+  /* Logo não encolhe nem quebra */
+  .logo{
+    font-size:1.05rem;
+    flex-shrink:0;
+  }
+}
+
 /* ============================================================
    Reduced motion
    ============================================================ */
