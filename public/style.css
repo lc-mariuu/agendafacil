@@ -643,3 +643,35 @@ header,main,footer{ position:relative; z-index:2; }
   *{ animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.1ms !important; }
   .reveal{ opacity:1; transform:none; }
 }
+
+@media (max-width:1024px){
+ 
+  /* Garante que o hambúrguer fique SEMPRE visível e estável.
+     O !important vence qualquer regra anterior que esteja
+     ligando/desligando o display e causando o "pisca-pisca". */
+  .menu-toggle{
+    display:flex !important;
+    opacity:1 !important;
+    visibility:visible !important;
+    /* Isola o botão do repaint do header (camada própria no GPU) */
+    transform:translateZ(0);
+    will-change:auto;
+  }
+ 
+  /* As barrinhas NÃO devem ter transição quando o menu está fechado.
+     A transição só vale para a animação de virar X ao abrir. */
+  .menu-toggle span{
+    transition:none;
+  }
+  .menu-toggle.is-open span{
+    transition:transform .3s ease, opacity .3s ease;
+  }
+ 
+  /* Header: remove o backdrop-filter que força repaint constante
+     no mobile (principal causa do flicker). Mantém só o fundo sólido. */
+  .header.scrolled{
+    backdrop-filter:none !important;
+    -webkit-backdrop-filter:none !important;
+    background:rgba(5,10,24,.95) !important;
+  }
+}
