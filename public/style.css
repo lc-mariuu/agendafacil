@@ -644,59 +644,67 @@ header,main,footer{ position:relative; z-index:2; }
   .reveal{ opacity:1; transform:none; }
 }
 
-@media (max-width:1024px){
- 
-  /* Garante que o hambúrguer fique SEMPRE visível e estável.
-     O !important vence qualquer regra anterior que esteja
-     ligando/desligando o display e causando o "pisca-pisca". */
-  .menu-toggle{
-    display:flex !important;
-    opacity:1 !important;
-    visibility:visible !important;
-    /* Isola o botão do repaint do header (camada própria no GPU) */
-    transform:translateZ(0);
-    will-change:auto;
-  }
- 
-  /* As barrinhas NÃO devem ter transição quando o menu está fechado.
-     A transição só vale para a animação de virar X ao abrir. */
-  .menu-toggle span{
-    transition:none;
-  }
-  .menu-toggle.is-open span{
-    transition:transform .3s ease, opacity .3s ease;
-  }
- 
-  /* Header: remove o backdrop-filter que força repaint constante
-     no mobile (principal causa do flicker). Mantém só o fundo sólido. */
-  .header.scrolled{
-    backdrop-filter:none !important;
-    -webkit-backdrop-filter:none !important;
-    background:rgba(5,10,24,.95) !important;
-  }
+/* ============================================================
+   FIXES MOBILE CONSOLIDADOS (menu + overflow/zoom)
+   Tudo que estava em arquivos "adicionar-ao-final" agora vive aqui.
+   ============================================================ */
+
+/* ---- 1) Trava overflow horizontal na raiz (causa do zoom) ---- */
+html, body{
+  max-width:100%;
+  overflow-x:hidden;
+  width:100%;
 }
 
 @media (max-width:1024px){
- 
-  /* ---- Header sempre estável, sem blur que causa flicker ---- */
+
+  /* ---- 2) Nada pode ser mais largo que a tela ---- */
+  body *{ max-width:100vw; }
+
+  /* Elementos decorativos de largura FIXA que furam o overflow */
+  .hero__aurora,
+  .light-rays,
+  .particles,
+  .cursor-glow,
+  .cta__aurora{
+    max-width:100vw !important;
+    overflow:hidden;
+  }
+  .light-rays{ width:100% !important; left:0 !important; transform:none !important; }
+  .aurora{ max-width:90vw !important; }
+  .container{ max-width:100%; }
+
+  /* Dashboard mockup — maior vilão do overflow no celular */
+  .dash-stage,
+  .dash,
+  .dash-tilt{
+    max-width:100% !important;
+    overflow:hidden;
+  }
+  .demo__inner,
+  .wa-flow,
+  .cmp{ max-width:100%; overflow:hidden; }
+  .reveal{ max-width:100%; }
+
+  /* ---- 3) Header estável (sem blur que pisca) ---- */
   .header.scrolled{
     backdrop-filter:none !important;
     -webkit-backdrop-filter:none !important;
     background:rgba(5,10,24,.95) !important;
   }
- 
-  /* ---- Hambúrguer SEMPRE visível (inclusive com menu aberto) ---- */
+
+  /* ---- 4) Hambúrguer SEMPRE visível, inclusive com menu aberto ---- */
   .menu-toggle{
     display:flex !important;
     opacity:1 !important;
     visibility:visible !important;
-    z-index:101;            /* acima do drawer */
+    z-index:101;
     position:relative;
   }
   .menu-toggle span{ transition:none; }
   .menu-toggle.is-open span{ transition:transform .3s ease, opacity .3s ease; }
- 
-  /* ---- Drawer do menu ---- */
+
+  /* ---- 5) Drawer do menu ---- */
   .nav.open{
     display:flex;
     flex-direction:column;
@@ -709,9 +717,8 @@ header,main,footer{ position:relative; z-index:2; }
     z-index:99;
     max-height:calc(100vh - 64px);
     overflow-y:auto;
+    max-width:100vw;
   }
- 
-  /* Links de navegação — todos alinhados à ESQUERDA, mesma altura */
   .nav.open a{
     display:block;
     text-align:left;
@@ -721,9 +728,6 @@ header,main,footer{ position:relative; z-index:2; }
     border-radius:10px;
     margin:0;
   }
- 
-  /* ---- Botões CTA dentro do menu ---- */
-  /* "Entrar" — vira um botão de contorno, alinhado igual aos demais */
   .nav.open .nav__cta-mobile{
     display:block;
     text-align:center;
@@ -734,7 +738,6 @@ header,main,footer{ position:relative; z-index:2; }
     border-radius:12px;
     margin:0;
   }
-  /* Separador antes do primeiro botão (o "Entrar") */
   .nav.open .nav__cta-mobile:first-of-type{
     margin-top:1.1rem;
     padding-top:1.1rem;
@@ -744,7 +747,6 @@ header,main,footer{ position:relative; z-index:2; }
     border-radius:12px;
     color:var(--ink);
   }
-  /* "Começar Agora" — botão azul, com respiro nas laterais */
   .nav.open .nav__cta-mobile--primary{
     margin-top:.6rem;
     background:linear-gradient(180deg,#3b82f6,#2563eb);
@@ -753,4 +755,58 @@ header,main,footer{ position:relative; z-index:2; }
     box-shadow:var(--shadow-blue);
   }
 }
+
+
+/* 1) Trava o overflow horizontal na raiz (html + body) */
+html, body{
+  max-width:100%;
+  overflow-x:hidden;
+}
  
+/* 2) No mobile, nada pode ser mais largo que a tela */
+@media (max-width:1024px){
+ 
+  /* Trava geral: nenhum filho estoura a largura da viewport */
+  body *{
+    max-width:100vw;
+  }
+ 
+  /* Elementos decorativos de largura FIXA que furam o overflow.
+     Em vez de escondê-los um a um, limitamos a 100% da tela. */
+  .hero__aurora,
+  .light-rays,
+  .particles,
+  .cursor-glow,
+  .cta__aurora{
+    max-width:100vw !important;
+    overflow:hidden;
+  }
+  .light-rays{ width:100% !important; left:0 !important; transform:none !important; }
+ 
+  /* As "auroras" têm largura fixa (620px etc). Reduz pra caber. */
+  .aurora{ max-width:90vw !important; }
+ 
+  /* Containers de seção nunca passam da tela */
+  .container{ max-width:100%; }
+ 
+  /* O dashboard mockup é o maior vilão do overflow no celular.
+     Garante que ele e tudo dentro fique contido. */
+  .dash-stage,
+  .dash,
+  .dash-tilt{
+    max-width:100% !important;
+    overflow:hidden;
+  }
+ 
+  /* Demo, WA flow e comparison também podem estourar — contém */
+  .demo__inner,
+  .wa-flow,
+  .cmp{
+    max-width:100%;
+    overflow:hidden;
+  }
+}
+ 
+/* 3) Reforço: impede que o conteúdo empurre a largura mesmo
+      durante a animação de "reveal" (translateY/X) */
+.reveal{ max-width:100%; }
