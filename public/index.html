@@ -30,12 +30,13 @@
       <a href="#planos">Planos</a>
       <a href="#depoimentos">Depoimentos</a>
       <a href="#contato">Contato</a>
+      <!-- Botões que só aparecem dentro do menu mobile -->
+      <a href="/auth.html" class="nav__cta-mobile">Entrar</a>
+      <a href="/auth.html" class="nav__cta-mobile nav__cta-mobile--primary">Começar Agora</a>
     </nav>
     <div class="header__actions">
-      <!-- CORRIGIDO: href aponta para /login -->
       <a href="/auth.html" class="btn btn--ghost btn--sm hide-mobile">Entrar</a>
-      <a href="#cta" class="btn btn--primary btn--sm magnetic">Começar Agora</a>
-      <!-- CORRIGIDO: 3 spans para hambúrguer funcionar corretamente -->
+      <a href="/auth.html" class="btn btn--primary btn--sm magnetic hide-mobile">Começar Agora</a>
       <button class="menu-toggle" id="menuToggle" aria-label="Abrir menu" aria-expanded="false">
         <span></span><span></span><span></span>
       </button>
@@ -94,7 +95,6 @@
     <div class="dash-tilt" id="dashTilt">
       <div class="dash-glow" aria-hidden="true"></div>
 
-      <!-- Float cards: ocultos em mobile via CSS -->
       <div class="float-card float-card--wa" data-depth="40">
         <div class="fc__icon fc__icon--wa"></div>
         <div class="fc__body">
@@ -532,7 +532,7 @@
         <h3 class="plan__name">Starter</h3>
         <p class="plan__desc">Para quem está começando a organizar a agenda.</p>
         <div class="plan__price"><span class="plan__cur">R$</span>0<span class="plan__per">/mês</span></div>
-        <a href="#cta" class="btn btn--glass btn--block">Começar grátis</a>
+        <a href="/auth.html" class="btn btn--glass btn--block">Começar grátis</a>
         <ul class="plan__feats">
           <li><span class="check"></span> Agendamento online</li>
           <li><span class="check"></span> Até 50 agendamentos/mês</li>
@@ -545,8 +545,8 @@
         <div class="plan__border" aria-hidden="true"></div>
         <h3 class="plan__name">Pro</h3>
         <p class="plan__desc">Para profissionais que querem automatizar tudo.</p>
-        <div class="plan__price"><span class="plan__cur">R$</span>29<span class="plan__per">/mês</span></div>
-        <a href="#cta" class="btn btn--primary btn--block magnetic">Testar 14 dias grátis</a>
+        <div class="plan__price"><span class="plan__cur">R$</span>97<span class="plan__per">/mês</span></div>
+        <a href="/auth.html" class="btn btn--primary btn--block magnetic">Testar 14 dias grátis</a>
         <ul class="plan__feats">
           <li><span class="check"></span> Agendamentos ilimitados</li>
           <li><span class="check"></span> WhatsApp automático completo</li>
@@ -558,8 +558,8 @@
       <article class="plan reveal" data-reveal>
         <h3 class="plan__name">Business</h3>
         <p class="plan__desc">Para várias unidades e equipes maiores.</p>
-        <div class="plan__price"><span class="plan__cur">R$</span>49<span class="plan__per">/mês</span></div>
-        <a href="#cta" class="btn btn--glass btn--block">Falar com vendas</a>
+        <div class="plan__price"><span class="plan__cur">R$</span>247<span class="plan__per">/mês</span></div>
+        <a href="https://wa.me/5535999359269" class="btn btn--glass btn--block">Falar com vendas</a>
         <ul class="plan__feats">
           <li><span class="check"></span> Tudo do Pro</li>
           <li><span class="check"></span> Multiempresa ilimitado</li>

@@ -1,18 +1,30 @@
 /* ============================================================
-   AgendoRápido — interactions  (versão corrigida)
+   AgendoRápido — interactions (otimizado p/ mobile)
    ============================================================ */
 (function () {
   'use strict';
 
-  const $ = (s, c = document) => c.querySelector(s);
+  const $  = (s, c = document) => c.querySelector(s);
   const $$ = (s, c = document) => [...c.querySelectorAll(s)];
-  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const reduce   = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // Dispositivo "desktop com mouse" — só aí rodam os efeitos pesados
+  const isDesktop = window.matchMedia('(pointer:fine)').matches && window.innerWidth > 1024;
+  const heavyFX  = !reduce && isDesktop;
+
   const lerp = (a, b, t) => a + (b - a) * t;
-  const isMobile = () => window.innerWidth <= 768;
 
   /* ---------- Header scroll ---------- */
   const header = $('#header');
-  const onScroll = () => header && header.classList.toggle('scrolled', window.scrollY > 30);
+  let ticking = false;
+  const onScroll = () => {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => {
+      if (header) header.classList.toggle('scrolled', window.scrollY > 30);
+      ticking = false;
+    });
+  };
   onScroll();
   window.addEventListener('scroll', onScroll, { passive: true });
 
@@ -21,37 +33,53 @@
   const toggle = $('#menuToggle');
 
   function closeMenu() {
+    if (!nav) return;
     nav.classList.remove('open');
-    toggle.classList.remove('is-open');
-    toggle.setAttribute('aria-expanded', 'false');
-    document.body.style.overflow = '';
+    if (toggle) {
+      toggle.classList.remove('is-open');
+      toggle.setAttribute('aria-expanded', 'false');
+    }
   }
-
-  toggle.addEventListener('click', () => {
-    const opening = !nav.classList.contains('open');
-    if (opening) {
-      nav.classList.add('open');
+  function openMenu() {
+    if (!nav) return;
+    nav.classList.add('open');
+    if (toggle) {
       toggle.classList.add('is-open');
       toggle.setAttribute('aria-expanded', 'true');
-      document.body.style.overflow = 'hidden';
-    } else {
-      closeMenu();
     }
-  });
+  }
 
-  $$('#nav a').forEach(a => a.addEventListener('click', closeMenu));
+  if (toggle && nav) {
+    toggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (nav.classList.contains('open')) closeMenu();
+      else openMenu();
+    });
+    // Fecha ao clicar em qualquer link do menu
+    $$('#nav a').forEach(a => a.addEventListener('click', closeMenu));
+  }
 
+  /* ---------- Resize: só reage a mudança REAL de largura ----------
+     (no mobile a barra de endereço dispara resize ao rolar — isso
+     mudava só a altura e causava o "tremido". Aqui ignoramos.) */
+  let lastWidth = window.innerWidth;
+  let resizeTimer = null;
   window.addEventListener('resize', () => {
-    if (window.innerWidth > 1024) closeMenu();
-  });
+    const w = window.innerWidth;
+    if (w === lastWidth) return;      // largura não mudou → ignora
+    lastWidth = w;
+    if (w > 1024) closeMenu();
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => { if (window.rebuildParticles) window.rebuildParticles(); }, 200);
+  }, { passive: true });
 
-  /* ---------- Cursor glow (apenas desktop) ---------- */
+  /* ---------- Cursor glow (só desktop) ---------- */
   const glow = $('#cursorGlow');
-  let gx = innerWidth / 2, gy = innerHeight / 2, cx = gx, cy = gy;
-  if (!reduce && matchMedia('(pointer:fine)').matches) {
+  if (glow && heavyFX) {
+    let gx = innerWidth / 2, gy = innerHeight / 2, cx = gx, cy = gy;
     window.addEventListener('mousemove', e => {
       gx = e.clientX; gy = e.clientY; glow.style.opacity = '1';
-    });
+    }, { passive: true });
     (function rafGlow() {
       cx = lerp(cx, gx, 0.12); cy = lerp(cy, gy, 0.12);
       glow.style.transform = `translate(${cx}px,${cy}px) translate(-50%,-50%)`;
@@ -59,7 +87,7 @@
     })();
   }
 
-  /* ---------- Reveal on scroll ---------- */
+  /* ---------- Reveal on scroll (todos os dispositivos) ---------- */
   const revealIO = new IntersectionObserver((entries) => {
     entries.forEach((en, i) => {
       if (en.isIntersecting) {
@@ -93,8 +121,8 @@
   }, { threshold: 0.6 });
   $$('[data-count]').forEach(el => countIO.observe(el));
 
-  /* ---------- Magnetic buttons (somente pointer:fine) ---------- */
-  if (!reduce && matchMedia('(pointer:fine)').matches) {
+  /* ---------- Magnetic buttons (só desktop) ---------- */
+  if (heavyFX) {
     $$('.magnetic').forEach(btn => {
       btn.addEventListener('mousemove', e => {
         const r = btn.getBoundingClientRect();
@@ -104,10 +132,10 @@
     });
   }
 
-  /* ---------- Dashboard 3D tilt — SOMENTE desktop ---------- */
+  /* ---------- Dashboard 3D tilt (só desktop) ---------- */
   const tilt = $('#dashTilt');
   if (tilt) {
-    if (!reduce && matchMedia('(pointer:fine)').matches && !isMobile()) {
+    if (heavyFX) {
       const stage = $('.dash-stage');
       let tx = 0, ty = 0, ctxv = 0, ctyv = 0;
       stage.addEventListener('mousemove', e => {
@@ -126,13 +154,12 @@
         requestAnimationFrame(rafTilt);
       })();
     } else {
-      /* Mobile: sem nenhuma transformação 3D */
       tilt.style.transform = 'none';
     }
   }
 
-  /* ---------- Feature card tilt (somente pointer:fine) ---------- */
-  if (!reduce && matchMedia('(pointer:fine)').matches) {
+  /* ---------- Feature card tilt (só desktop) ---------- */
+  if (heavyFX) {
     $$('.tilt').forEach(card => {
       card.addEventListener('mousemove', e => {
         const r = card.getBoundingClientRect();
@@ -146,9 +173,9 @@
     });
   }
 
-  /* ---------- Flow step stepping ---------- */
+  /* ---------- Flow step stepping (leve — roda em todos) ---------- */
   const flowSteps = $$('.flow-step');
-  if (flowSteps.length) {
+  if (flowSteps.length && !reduce) {
     let fi = 0;
     const flowIO = new IntersectionObserver(es => {
       es.forEach(en => {
@@ -172,7 +199,7 @@
   const demoRows = $$('.demo-row');
   const demoProgress = $('#demoProgress');
   const demoPlay = $('#demoPlay');
-  const script = [
+  const demoScript = [
     { side: 'in',  html: 'Oi! Queria marcar um corte 😄' },
     { side: 'out', html: 'Olá! Claro 😊 Tenho horário <b>amanhã 15:30</b>. Pode ser?' },
     { side: 'in',  html: 'Pode sim!' },
@@ -182,7 +209,7 @@
 
   function addMsg(i) {
     if (!waThread) return;
-    const m = script[i];
+    const m = demoScript[i];
     const div = document.createElement('div');
     div.className = 'wa-msg wa-msg--' + m.side;
     div.innerHTML = m.html;
@@ -199,26 +226,17 @@
     if (demoProgress) demoProgress.style.width = '0%';
     let step = 0;
     const seq = [
-      () => addMsg(0),
-      () => addMsg(1),
-      () => activateRow(0),
-      () => addMsg(2),
-      () => addMsg(3),
-      () => activateRow(1),
-      () => activateRow(2),
-      () => activateRow(3),
-      () => activateRow(4),
+      () => addMsg(0), () => addMsg(1), () => activateRow(0),
+      () => addMsg(2), () => addMsg(3), () => activateRow(1),
+      () => activateRow(2), () => activateRow(3), () => activateRow(4),
     ];
     demoTimer = setInterval(() => {
-      seq[step]();
-      step++;
+      seq[step](); step++;
       if (demoProgress) demoProgress.style.width = (step / seq.length * 100) + '%';
       if (step >= seq.length) { clearInterval(demoTimer); demoTimer = null; }
     }, 850);
   }
-
   if (demoPlay) demoPlay.addEventListener('click', () => { clearInterval(demoTimer); demoTimer = null; runDemo(); });
-
   if (waThread) {
     const demoSection = $('.demo');
     if (demoSection) {
@@ -245,9 +263,10 @@
     });
   });
 
-  /* ---------- Particle canvas ---------- */
+  /* ---------- Particle canvas (SÓ desktop) ---------- */
+  const particleInstances = [];
   function particles(canvas, count, color) {
-    if (!canvas || reduce) return;
+    if (!canvas || !heavyFX) return;
     const ctx = canvas.getContext('2d');
     const dpr = Math.min(2, window.devicePixelRatio || 1);
     let w, h, pts = [];
@@ -279,12 +298,16 @@
       requestAnimationFrame(draw);
     }
     resize(); build(); draw();
-    window.addEventListener('resize', () => { resize(); build(); }, { passive: true });
+    particleInstances.push({ resize, build });
   }
-  particles($('#heroParticles'), isMobile() ? 30 : 70, '147,197,253');
-  particles($('#ctaParticles'), isMobile() ? 20 : 60, '147,197,253');
+  // Reconstrói partículas só quando a largura muda de verdade (chamado pelo resize acima)
+  window.rebuildParticles = function () {
+    particleInstances.forEach(p => { p.resize(); p.build(); });
+  };
+  particles($('#heroParticles'), 70, '147,197,253');
+  particles($('#ctaParticles'), 60, '147,197,253');
 
-  /* ---------- Smooth scroll com offset do header fixo ---------- */
+  /* ---------- Smooth scroll com offset do header ---------- */
   $$('a[href^="#"]').forEach(a => {
     a.addEventListener('click', e => {
       const id = a.getAttribute('href');
@@ -292,18 +315,25 @@
       const target = document.querySelector(id);
       if (!target) return;
       e.preventDefault();
-      const offset = header ? header.offsetHeight : 74;
+      closeMenu();
+      const offset = header ? header.offsetHeight : 64;
       const y = target.getBoundingClientRect().top + window.scrollY - offset;
       window.scrollTo({ top: y, behavior: 'smooth' });
     });
   });
 
-  /* ---------- Hero parallax (somente desktop) ---------- */
-  if (!reduce && !isMobile()) {
+  /* ---------- Hero parallax (SÓ desktop) ---------- */
+  if (heavyFX) {
     const aurora = $('.hero__aurora');
+    let pTick = false;
     window.addEventListener('scroll', () => {
-      if (aurora && window.scrollY < 900)
-        aurora.style.transform = `translateY(${window.scrollY * 0.25}px)`;
+      if (pTick) return;
+      pTick = true;
+      requestAnimationFrame(() => {
+        if (aurora && window.scrollY < 900)
+          aurora.style.transform = `translateY(${window.scrollY * 0.25}px)`;
+        pTick = false;
+      });
     }, { passive: true });
   }
 
