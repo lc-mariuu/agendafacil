@@ -675,3 +675,82 @@ header,main,footer{ position:relative; z-index:2; }
     background:rgba(5,10,24,.95) !important;
   }
 }
+
+@media (max-width:1024px){
+ 
+  /* ---- Header sempre estável, sem blur que causa flicker ---- */
+  .header.scrolled{
+    backdrop-filter:none !important;
+    -webkit-backdrop-filter:none !important;
+    background:rgba(5,10,24,.95) !important;
+  }
+ 
+  /* ---- Hambúrguer SEMPRE visível (inclusive com menu aberto) ---- */
+  .menu-toggle{
+    display:flex !important;
+    opacity:1 !important;
+    visibility:visible !important;
+    z-index:101;            /* acima do drawer */
+    position:relative;
+  }
+  .menu-toggle span{ transition:none; }
+  .menu-toggle.is-open span{ transition:transform .3s ease, opacity .3s ease; }
+ 
+  /* ---- Drawer do menu ---- */
+  .nav.open{
+    display:flex;
+    flex-direction:column;
+    position:fixed;
+    top:64px; left:0; right:0;
+    padding:1.2rem 16px 1.6rem;
+    gap:.15rem;
+    background:rgba(3,7,20,.98);
+    border-bottom:1px solid var(--line);
+    z-index:99;
+    max-height:calc(100vh - 64px);
+    overflow-y:auto;
+  }
+ 
+  /* Links de navegação — todos alinhados à ESQUERDA, mesma altura */
+  .nav.open a{
+    display:block;
+    text-align:left;
+    width:100%;
+    padding:.85rem 1rem;
+    font-size:1rem;
+    border-radius:10px;
+    margin:0;
+  }
+ 
+  /* ---- Botões CTA dentro do menu ---- */
+  /* "Entrar" — vira um botão de contorno, alinhado igual aos demais */
+  .nav.open .nav__cta-mobile{
+    display:block;
+    text-align:center;
+    width:100%;
+    padding:.9rem 1rem;
+    font-size:1rem;
+    font-weight:700;
+    border-radius:12px;
+    margin:0;
+  }
+  /* Separador antes do primeiro botão (o "Entrar") */
+  .nav.open .nav__cta-mobile:first-of-type{
+    margin-top:1.1rem;
+    padding-top:1.1rem;
+    border-top:1px solid var(--line);
+    background:rgba(255,255,255,.05);
+    border:1px solid var(--line);
+    border-radius:12px;
+    color:var(--ink);
+  }
+  /* "Começar Agora" — botão azul, com respiro nas laterais */
+  .nav.open .nav__cta-mobile--primary{
+    margin-top:.6rem;
+    background:linear-gradient(180deg,#3b82f6,#2563eb);
+    border:none;
+    color:#fff;
+    box-shadow:var(--shadow-blue);
+  }
+}
+ 
