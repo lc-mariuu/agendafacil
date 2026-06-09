@@ -12,7 +12,6 @@
 </head>
 <body>
 
-<!-- ============ GLOBAL ATMOSPHERE ============ -->
 <div class="noise" aria-hidden="true"></div>
 <div class="cursor-glow" id="cursorGlow" aria-hidden="true"></div>
 <div class="grid-bg" aria-hidden="true"></div>
@@ -33,11 +32,11 @@
       <a href="#contato">Contato</a>
     </nav>
     <div class="header__actions">
-      <!-- CORRIGIDO: botão Entrar aponta para /login -->
+      <!-- CORRIGIDO: href aponta para /login -->
       <a href="/auth.html" class="btn btn--ghost btn--sm hide-mobile">Entrar</a>
       <a href="#cta" class="btn btn--primary btn--sm magnetic">Começar Agora</a>
-      <!-- CORRIGIDO: 3 spans para hambúrguer correto -->
-      <button class="menu-toggle" id="menuToggle" aria-label="Menu" aria-expanded="false">
+      <!-- CORRIGIDO: 3 spans para hambúrguer funcionar corretamente -->
+      <button class="menu-toggle" id="menuToggle" aria-label="Abrir menu" aria-expanded="false">
         <span></span><span></span><span></span>
       </button>
     </div>
@@ -90,12 +89,12 @@
     </ul>
   </div>
 
-  <!-- ===== GIANT 3D DASHBOARD MOCKUP ===== -->
+  <!-- Dashboard Mockup -->
   <div class="dash-stage reveal" data-reveal>
     <div class="dash-tilt" id="dashTilt">
       <div class="dash-glow" aria-hidden="true"></div>
 
-      <!-- floating side cards — ocultos em mobile via CSS -->
+      <!-- Float cards: ocultos em mobile via CSS -->
       <div class="float-card float-card--wa" data-depth="40">
         <div class="fc__icon fc__icon--wa"></div>
         <div class="fc__body">
@@ -118,7 +117,6 @@
         </div>
       </div>
 
-      <!-- dashboard window -->
       <div class="dash" id="dashWindow">
         <aside class="dash__side">
           <div class="dash__brand">
@@ -178,7 +176,7 @@
               <span class="kpi__trend up">▲ 25%</span>
             </div>
             <div class="kpi">
-              <span class="kpi__label">Taxa de ocupação</span>
+              <span class="kpi__label">Ocupação</span>
               <strong class="kpi__val">86%</strong>
               <span class="kpi__trend up">▲ 9%</span>
             </div>
@@ -204,10 +202,8 @@
                       <stop offset="1" stop-color="#3b82f6" stop-opacity="0"/>
                     </linearGradient>
                   </defs>
-                  <path d="M0,60 C40,55 50,30 80,34 C120,40 130,12 170,20 C210,28 230,8 280,14"
-                        fill="none" stroke="#60a5fa" stroke-width="2.5"/>
-                  <path d="M0,60 C40,55 50,30 80,34 C120,40 130,12 170,20 C210,28 230,8 280,14 L280,80 L0,80 Z"
-                        fill="url(#lg)"/>
+                  <path d="M0,60 C40,55 50,30 80,34 C120,40 130,12 170,20 C210,28 230,8 280,14" fill="none" stroke="#60a5fa" stroke-width="2.5"/>
+                  <path d="M0,60 C40,55 50,30 80,34 C120,40 130,12 170,20 C210,28 230,8 280,14 L280,80 L0,80 Z" fill="url(#lg)"/>
                 </svg>
               </div>
             </div>
@@ -326,31 +322,30 @@
       <h2 class="section__title">Um fluxo que roda sozinho, do clique ao caixa.</h2>
       <p class="section__lead">Cada agendamento dispara uma reação em cadeia — sem você tocar no celular.</p>
     </div>
-
     <div class="flow reveal" data-reveal>
       <div class="flow__line"><span class="flow__pulse"></span></div>
       <div class="flow__steps">
-        <div class="flow-step" data-step="0">
+        <div class="flow-step">
           <div class="flow-step__node"><i class="fs-ic fs-ic--book"></i></div>
           <h4>Cliente agenda</h4>
           <p>Escolhe horário na sua página exclusiva.</p>
         </div>
-        <div class="flow-step" data-step="1">
+        <div class="flow-step">
           <div class="flow-step__node"><i class="fs-ic fs-ic--wa"></i></div>
           <h4>WhatsApp confirma</h4>
           <p>Mensagem automática de confirmação e lembrete.</p>
         </div>
-        <div class="flow-step" data-step="2">
+        <div class="flow-step">
           <div class="flow-step__node"><i class="fs-ic fs-ic--check"></i></div>
           <h4>Sistema registra</h4>
           <p>Cliente, serviço e horário salvos no CRM.</p>
         </div>
-        <div class="flow-step" data-step="3">
+        <div class="flow-step">
           <div class="flow-step__node"><i class="fs-ic fs-ic--money"></i></div>
           <h4>Financeiro atualiza</h4>
           <p>Pagamento e comissão lançados em tempo real.</p>
         </div>
-        <div class="flow-step" data-step="4">
+        <div class="flow-step">
           <div class="flow-step__node"><i class="fs-ic fs-ic--chart"></i></div>
           <h4>Dashboard atualiza</h4>
           <p>Métricas e ocupação recalculadas na hora.</p>
@@ -360,7 +355,7 @@
   </div>
 </section>
 
-<!-- ============ INTERACTIVE DEMO ============ -->
+<!-- ============ DEMO ============ -->
 <section class="section demo">
   <div class="container demo__inner">
     <div class="demo__copy reveal" data-reveal>
@@ -372,11 +367,10 @@
         <div class="demo__progress"><span id="demoProgress"></span></div>
       </div>
     </div>
-
     <div class="demo__phone reveal" data-reveal>
       <div class="phone">
         <div class="phone__notch"></div>
-        <div class="phone__screen" id="demoScreen">
+        <div class="phone__screen">
           <div class="wa-head">
             <span class="wa-avatar"></span>
             <div><b>AgendoRápido</b><i>online agora</i></div>
@@ -404,18 +398,18 @@
       <p class="section__lead">Doze módulos que trabalham juntos para você nunca mais perder um cliente.</p>
     </div>
     <div class="feat-grid">
-      <article class="feat tilt" data-feat><div class="feat__ic"><i class="dn-ic dn-ic--cal"></i></div><h3>Agendamento Online</h3><p>Página própria onde o cliente marca sozinho, 24 horas por dia.</p></article>
-      <article class="feat tilt" data-feat><div class="feat__ic"><i class="dn-ic dn-ic--wa"></i></div><h3>WhatsApp Automático</h3><p>Confirmações, lembretes e respostas disparadas na hora certa.</p></article>
-      <article class="feat tilt" data-feat><div class="feat__ic"><i class="dn-ic dn-ic--users"></i></div><h3>Gestão de Clientes</h3><p>Histórico, preferências e recorrência em um CRM completo.</p></article>
-      <article class="feat tilt" data-feat><div class="feat__ic"><i class="dn-ic dn-ic--money"></i></div><h3>Controle Financeiro</h3><p>Receitas, comissões e Pix conciliados automaticamente.</p></article>
-      <article class="feat tilt" data-feat><div class="feat__ic"><i class="dn-ic dn-ic--page"></i></div><h3>Página de Agendamento</h3><p>Link personalizado com sua marca, pronto para divulgar.</p></article>
-      <article class="feat tilt" data-feat><div class="feat__ic"><i class="dn-ic dn-ic--bell"></i></div><h3>Lembretes Automáticos</h3><p>Reduza faltas com avisos inteligentes antes do horário.</p></article>
-      <article class="feat tilt" data-feat><div class="feat__ic"><i class="dn-ic dn-ic--chart"></i></div><h3>Relatórios</h3><p>Veja faturamento, ocupação e crescimento em segundos.</p></article>
-      <article class="feat tilt" data-feat><div class="feat__ic"><i class="dn-ic dn-ic--home"></i></div><h3>Dashboard Inteligente</h3><p>Tudo que importa, resumido e atualizado em tempo real.</p></article>
-      <article class="feat tilt" data-feat><div class="feat__ic"><i class="dn-ic dn-ic--bolt"></i></div><h3>Automações</h3><p>Crie regras que executam tarefas repetitivas por você.</p></article>
-      <article class="feat tilt" data-feat><div class="feat__ic"><i class="dn-ic dn-ic--ai"></i></div><h3>Inteligência Artificial</h3><p>Um agente que conversa, agenda e organiza sozinho.</p></article>
-      <article class="feat tilt" data-feat><div class="feat__ic"><i class="dn-ic dn-ic--building"></i></div><h3>Multiempresa</h3><p>Gerencie várias unidades e equipes em uma só conta.</p></article>
-      <article class="feat tilt" data-feat><div class="feat__ic"><i class="dn-ic dn-ic--plug"></i></div><h3>Integrações</h3><p>Conecte Google Agenda, Pix, e suas ferramentas favoritas.</p></article>
+      <article class="feat tilt"><div class="feat__ic"><i class="dn-ic dn-ic--cal"></i></div><h3>Agendamento Online</h3><p>Página própria onde o cliente marca sozinho, 24 horas por dia.</p></article>
+      <article class="feat tilt"><div class="feat__ic"><i class="dn-ic dn-ic--wa"></i></div><h3>WhatsApp Automático</h3><p>Confirmações, lembretes e respostas disparadas na hora certa.</p></article>
+      <article class="feat tilt"><div class="feat__ic"><i class="dn-ic dn-ic--users"></i></div><h3>Gestão de Clientes</h3><p>Histórico, preferências e recorrência em um CRM completo.</p></article>
+      <article class="feat tilt"><div class="feat__ic"><i class="dn-ic dn-ic--money"></i></div><h3>Controle Financeiro</h3><p>Receitas, comissões e Pix conciliados automaticamente.</p></article>
+      <article class="feat tilt"><div class="feat__ic"><i class="dn-ic dn-ic--page"></i></div><h3>Página de Agendamento</h3><p>Link personalizado com sua marca, pronto para divulgar.</p></article>
+      <article class="feat tilt"><div class="feat__ic"><i class="dn-ic dn-ic--bell"></i></div><h3>Lembretes Automáticos</h3><p>Reduza faltas com avisos inteligentes antes do horário.</p></article>
+      <article class="feat tilt"><div class="feat__ic"><i class="dn-ic dn-ic--chart"></i></div><h3>Relatórios</h3><p>Veja faturamento, ocupação e crescimento em segundos.</p></article>
+      <article class="feat tilt"><div class="feat__ic"><i class="dn-ic dn-ic--home"></i></div><h3>Dashboard Inteligente</h3><p>Tudo que importa, resumido e atualizado em tempo real.</p></article>
+      <article class="feat tilt"><div class="feat__ic"><i class="dn-ic dn-ic--bolt"></i></div><h3>Automações</h3><p>Crie regras que executam tarefas repetitivas por você.</p></article>
+      <article class="feat tilt"><div class="feat__ic"><i class="dn-ic dn-ic--ai"></i></div><h3>Inteligência Artificial</h3><p>Um agente que conversa, agenda e organiza sozinho.</p></article>
+      <article class="feat tilt"><div class="feat__ic"><i class="dn-ic dn-ic--building"></i></div><h3>Multiempresa</h3><p>Gerencie várias unidades e equipes em uma só conta.</p></article>
+      <article class="feat tilt"><div class="feat__ic"><i class="dn-ic dn-ic--plug"></i></div><h3>Integrações</h3><p>Conecte Google Agenda, Pix, e suas ferramentas favoritas.</p></article>
     </div>
   </div>
 </section>
@@ -434,7 +428,6 @@
         <li><span class="check check--ai"></span> Reagenda e preenche horários vagos</li>
       </ul>
     </div>
-
     <div class="ai-chat reveal" data-reveal>
       <div class="ai-chat__halo"></div>
       <div class="ai-chat__head"><span class="ai-orb ai-orb--sm"></span> Agente AgendoRápido</div>
@@ -547,13 +540,12 @@
           <li><span class="check"></span> Lembretes por WhatsApp</li>
         </ul>
       </article>
-
       <article class="plan plan--pro reveal" data-reveal>
         <span class="plan__badge">Mais popular</span>
         <div class="plan__border" aria-hidden="true"></div>
         <h3 class="plan__name">Pro</h3>
         <p class="plan__desc">Para profissionais que querem automatizar tudo.</p>
-        <div class="plan__price"><span class="plan__cur">R$</span>29<span class="plan__per">/mês</span></div>
+        <div class="plan__price"><span class="plan__cur">R$</span>97<span class="plan__per">/mês</span></div>
         <a href="#cta" class="btn btn--primary btn--block magnetic">Testar 14 dias grátis</a>
         <ul class="plan__feats">
           <li><span class="check"></span> Agendamentos ilimitados</li>
@@ -563,11 +555,10 @@
           <li><span class="check"></span> Relatórios avançados</li>
         </ul>
       </article>
-
       <article class="plan reveal" data-reveal>
         <h3 class="plan__name">Business</h3>
         <p class="plan__desc">Para várias unidades e equipes maiores.</p>
-        <div class="plan__price"><span class="plan__cur">R$</span>49<span class="plan__per">/mês</span></div>
+        <div class="plan__price"><span class="plan__cur">R$</span>247<span class="plan__per">/mês</span></div>
         <a href="#cta" class="btn btn--glass btn--block">Falar com vendas</a>
         <ul class="plan__feats">
           <li><span class="check"></span> Tudo do Pro</li>
@@ -609,9 +600,9 @@
   <canvas class="particles" id="ctaParticles" aria-hidden="true"></canvas>
   <div class="container cta__inner reveal" data-reveal>
     <span class="pill"><span class="pill__dot"></span> Comece hoje, grátis</span>
-    <h2 class="cta__title">Comece a automatizar seus<br /><span class="grad-text">agendamentos hoje.</span></h2>
+    <h2 class="cta__title">Comece a automatizar seus<br><span class="grad-text">agendamentos hoje.</span></h2>
     <p class="cta__sub">Junte-se a mais de 2.500 negócios que transformaram a agenda em crescimento automático.</p>
-    <a href="/cadastro" class="btn btn--primary btn--xl magnetic">Criar Minha Conta Gratuitamente <span class="btn__shine"></span></a>
+    <a href="/auth.html" class="btn btn--primary btn--xl magnetic">Criar Minha Conta Gratuitamente <span class="btn__shine"></span></a>
     <div class="cta__badges">
       <span><span class="check"></span> Sem cartão</span>
       <span><span class="check"></span> 5 min de setup</span>

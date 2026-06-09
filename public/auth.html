@@ -6,6 +6,26 @@
 <title>Entrar — AgendoRapido</title>
 <meta name="theme-color" content="#0d2364">
 
+<!--
+  =====================================================================
+  CORREÇÃO ANTI-FLASH: este script roda ANTES de qualquer CSS ou DOM
+  ser pintado. Se o usuário já está logado, redireciona instantaneamente
+  para painel.html sem mostrar a tela de login nem por um frame.
+  =====================================================================
+-->
+<script>
+  (function () {
+    var token = localStorage.getItem('token');
+    var userId = localStorage.getItem('userId');
+    // Considera logado se token e userId existirem e token não for vazio
+    if (token && token.length > 10 && userId) {
+      // Redireciona antes de qualquer pintura — sem flash
+      window.location.replace('/painel.html');
+    }
+  })();
+</script>
+
+<!-- Fontes e CSS só carregam se chegou até aqui (não logado) -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -208,7 +228,6 @@
     margin-bottom: 28px;
   }
 
-  /* Steps indicator */
   .step-ind {
     display: flex;
     align-items: center;
@@ -254,7 +273,6 @@
     margin-bottom: 14px;
   }
 
-  /* OR divider */
   .or-divider {
     position: relative;
     text-align: center;
@@ -280,7 +298,6 @@
     font-weight: 600;
   }
 
-  /* Forgot link */
   .form-row {
     display: flex;
     justify-content: space-between;
@@ -305,7 +322,6 @@
     cursor: pointer;
   }
 
-  /* Code input */
   .code-grid {
     display: grid;
     grid-template-columns: repeat(6, 1fr);
@@ -327,7 +343,6 @@
   }
   .code-input:focus { border-color: var(--accent); }
 
-  /* Terms */
   .terms {
     text-align: center;
     margin-top: 24px;
@@ -336,7 +351,6 @@
   }
   .terms a { color: var(--accent); }
 
-  /* Mobile */
   @media (max-width: 900px) {
     body { grid-template-columns: 1fr; }
     .left { display: none; }
@@ -420,7 +434,6 @@
       <button class="tab-btn" id="tab-signup" onclick="setMode('signup')">Criar conta</button>
     </div>
 
-    <!-- Conteúdo -->
     <div id="form-content"></div>
 
     <div class="terms">
@@ -433,8 +446,8 @@
 <script>
 const { api, el, $, toast, icon } = AR;
 
-let mode = 'login'; // login | signup | forgot
-let step = 1; // for signup multi-step
+let mode = 'login';
+let step = 1;
 
 const signupData = {
   negocio: '',
@@ -465,7 +478,6 @@ function setMode(m) {
 }
 
 function render() {
-  // Tab visibility
   $('#tab-login').classList.toggle('active', mode === 'login');
   $('#tab-signup').classList.toggle('active', mode === 'signup');
 
@@ -547,7 +559,6 @@ function renderSignup(root) {
   root.appendChild(el('h2', {}, 'Crie sua conta grátis'));
   root.appendChild(el('div', { class: 'sub-text' }, '14 dias grátis. Sem cartão. Sem compromisso.'));
 
-  // Step indicator
   const ind = el('div', { class: 'step-ind' });
   for (let s = 1; s <= 4; s++) {
     const c = el('div', { class: 'step-circle ' + (s === step ? 'active' : s < step ? 'done' : '') });
@@ -566,7 +577,6 @@ function renderSignup(root) {
   if (step === 3) renderSignupStep3(root);
   if (step === 4) renderSignupStep4(root);
 
-  // Nav buttons
   const err = el('div', { class: 'field-error', id: 'signup-err' });
   root.appendChild(err);
 
@@ -813,7 +823,6 @@ async function doForgotSend() {
   setBtnLoading('forgot-btn', true);
   try {
     await api.post('/auth/recuperar-senha', { email: forgotData.email }, { auth: false });
-    await api.post('/auth/verificar-codigo', { email: forgotData.email, codigo: '000000', tipo: 'recuperacao' }, { auth: false }).catch(() => {});
     toast('Se o e-mail existir, você receberá um código');
     forgotData.step = 2;
     render();
@@ -844,12 +853,8 @@ function showForgotErr(msg) {
   if (e) { e.textContent = msg; e.classList.add('show'); setTimeout(() => e.classList.remove('show'), 5000); }
 }
 
-// Já está logado? Redireciona
-if (AR.isLoggedIn()) {
-  window.location.href = '/painel.html';
-} else {
-  render();
-}
+// Renderiza normalmente (usuário não está logado — o check no <head> já tratou o caso contrário)
+render();
 </script>
 
 </body>
