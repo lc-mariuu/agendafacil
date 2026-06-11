@@ -3912,31 +3912,92 @@ document.addEventListener('DOMContentLoaded', function(){
     return '';
   }
 
+  function acoesHTML(a) {
+    var nomeSafe = escapeJs(a.pacienteNome), telSafe = escapeJs(a.pacienteTelefone);
+    if (a.status === 'confirmado') {
+      return '<button class="btn-acao concluir" type="button" ' +
+               'onclick="event.stopPropagation();atualizar(\'' + a._id + '\',\'concluido\')">' +
+               'Concluir</button>' +
+             '<button class="btn-acao cancelar" type="button" ' +
+               'onclick="event.stopPropagation();cancelarComAviso(\'' + a._id + '\',\'' + nomeSafe + '\',\'' + telSafe + '\',\'' + (a.data||'') + '\',\'' + (a.hora||'') + '\')">' +
+               'Cancelar</button>';
+    }
+    if (a.status === 'pendente') {
+      return '<button class="btn-acao concluir" type="button" ' +
+               'onclick="event.stopPropagation();atualizar(\'' + a._id + '\',\'confirmado\')">' +
+               'Confirmar</button>' +
+             '<button class="btn-acao cancelar" type="button" ' +
+               'onclick="event.stopPropagation();cancelarComAviso(\'' + a._id + '\',\'' + nomeSafe + '\',\'' + telSafe + '\',\'' + (a.data||'') + '\',\'' + (a.hora||'') + '\')">' +
+               'Cancelar</button>';
+    }
+    // concluído ou cancelado: só badge
+    var si = statusInfo(a.status);
+    return '<span class="arag-badge" style="color:' + si.cor + ';background:' + si.bg + '">' +
+             '<span class="arag-badge-dot" style="background:' + si.dot + '"></span>' + si.label +
+           '</span>';
+  }
+ 
   function rowHTML(a) {
     var cor = avatarCor(a.pacienteNome), si = statusInfo(a.status);
-    var d = parseData(a.data), dataFmt = d ? (String(d.getDate()).padStart(2, '0') + ' ' + MES_ABBR[d.getMonth()]) : '—';
+    var d = a.data ? a.data.split('-') : [];
+    var MES = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+    var dataFmt = d.length === 3 ? (parseInt(d[2],10) + ' ' + MES[parseInt(d[1],10)-1]) : '—';
+ 
     return '<div class="arag-row">' +
-      '<div class="arag-row-cli"><div class="arag-avatar" style="width:34px;height:34px;font-size:12px;background:linear-gradient(135deg,' + cor[0] + ',' + cor[1] + ')">' + iniciais(a.pacienteNome) + '</div>' +
-        '<div style="min-width:0"><div class="arag-row-nome">' + esc(a.pacienteNome || '—') + '</div><div class="arag-row-tel">' + esc(a.pacienteTelefone || '') + '</div></div></div>' +
-      '<div class="arag-row-serv">' + esc(a.servico || '—') + '</div>' +
+      /* 1 - Cliente */
+      '<div class="arag-row-cli">' +
+        '<div class="arag-avatar" style="width:34px;height:34px;font-size:12px;background:linear-gradient(135deg,' + cor[0] + ',' + cor[1] + ')">' + iniciais(a.pacienteNome) + '</div>' +
+        '<div style="min-width:0">' +
+          '<div class="arag-row-nome">' + esc(a.pacienteNome||'—') + '</div>' +
+          '<div class="arag-row-tel">' + esc(a.pacienteTelefone||'') + '</div>' +
+        '</div>' +
+      '</div>' +
+      /* 2 - Serviço */
+      '<div class="arag-row-serv">' + esc(a.servico||'—') + '</div>' +
+      /* 3 - Profissional */
       '<div class="arag-row-prof">' + esc(profDe(a)) + '</div>' +
-      '<div><div class="arag-row-data">' + dataFmt + '</div><div class="arag-row-hora">' + (a.hora || '') + '</div></div>' +
-      '<div><span class="arag-badge" style="color:' + si.cor + ';background:' + si.bg + '"><span class="arag-badge-dot" style="background:' + si.dot + '"></span>' + si.label + '</span></div>' +
+      /* 4 - Data/Hora */
+      '<div><div class="arag-row-data">' + dataFmt + '</div><div class="arag-row-hora">' + (a.hora||'') + '</div></div>' +
+      /* 5 - Status */
+      '<div><span class="arag-badge" style="color:' + si.cor + ';background:' + si.bg + '">' +
+        '<span class="arag-badge-dot" style="background:' + si.dot + '"></span>' + si.label +
+      '</span></div>' +
+      /* 6 - Valor */
       '<div class="arag-row-val">' + fmtBRLnum(precoDe(a)) + '</div>' +
-      '</div>';
+      /* 7 - Ações ← COLUNA NOVA */
+      '<div class="arag-row-acoes">' + acoesHTML(a) + '</div>' +
+    '</div>';
   }
-
+ 
   function mcardHTML(a) {
     var cor = avatarCor(a.pacienteNome), si = statusInfo(a.status);
-    var d = parseData(a.data), dataFmt = d ? (String(d.getDate()).padStart(2, '0') + '/' + String(d.getMonth() + 1).padStart(2, '0')) : '—';
-    var ac = acoesHTML(a);
+    var d = a.data ? a.data.split('-') : [];
+    var dataFmt = d.length === 3 ? (String(d[2]).padStart(2,'0') + '/' + String(d[1]).padStart(2,'0')) : '—';
+ 
     return '<div class="arag-mcard">' +
-      '<div class="arag-mcard-top"><div class="arag-mcard-cli"><div class="arag-avatar" style="width:34px;height:34px;font-size:12px;background:linear-gradient(135deg,' + cor[0] + ',' + cor[1] + ')">' + iniciais(a.pacienteNome) + '</div>' +
-        '<div style="min-width:0"><div class="arag-row-nome">' + esc(a.pacienteNome || '—') + '</div><div class="arag-row-tel">' + esc(a.pacienteTelefone || '') + '</div></div></div>' +
-        '<span class="arag-badge" style="color:' + si.cor + ';background:' + si.bg + '"><span class="arag-badge-dot" style="background:' + si.dot + '"></span>' + si.label + '</span></div>' +
-      '<div class="arag-mcard-chips"><span class="arag-mchip">' + dataFmt + '</span><span class="arag-mchip">' + (a.hora || '—') + '</span><span class="arag-mchip">' + esc(a.servico || '—') + '</span><span class="arag-mchip" style="font-weight:700;color:var(--text)">' + fmtBRLnum(precoDe(a)) + '</span></div>' +
-      (ac ? '<div style="display:flex;gap:6px;margin-top:10px">' + ac + '</div>' : '') +
-      '</div>';
+      '<div class="arag-mcard-top">' +
+        '<div class="arag-mcard-cli">' +
+          '<div class="arag-avatar" style="width:36px;height:36px;font-size:13px;background:linear-gradient(135deg,' + cor[0] + ',' + cor[1] + ')">' + iniciais(a.pacienteNome) + '</div>' +
+          '<div style="min-width:0">' +
+            '<div class="arag-row-nome">' + esc(a.pacienteNome||'—') + '</div>' +
+            '<div class="arag-row-tel">' + esc(a.pacienteTelefone||'') + '</div>' +
+          '</div>' +
+        '</div>' +
+        '<span class="arag-badge" style="color:' + si.cor + ';background:' + si.bg + '">' +
+          '<span class="arag-badge-dot" style="background:' + si.dot + '"></span>' + si.label +
+        '</span>' +
+      '</div>' +
+      '<div class="arag-mcard-chips">' +
+        '<span class="arag-mchip">' + dataFmt + '</span>' +
+        '<span class="arag-mchip">' + (a.hora||'—') + '</span>' +
+        '<span class="arag-mchip">' + esc(a.servico||'—') + '</span>' +
+        '<span class="arag-mchip" style="font-weight:700;color:var(--text)">' + fmtBRLnum(precoDe(a)) + '</span>' +
+      '</div>' +
+      /* Botões de ação apenas para confirmado/pendente */
+      ((a.status === 'confirmado' || a.status === 'pendente')
+        ? '<div style="display:flex;gap:7px;margin-top:10px">' + acoesHTML(a) + '</div>'
+        : '') +
+    '</div>';
   }
 
   function aragRenderLista() {

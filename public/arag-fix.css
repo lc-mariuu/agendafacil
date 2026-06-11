@@ -1,0 +1,146 @@
+
+/* ── TABELA DESKTOP: adiciona coluna de ações ── */
+ 
+/* Header: 7 colunas — última para Ações */
+.arag-thead {
+  grid-template-columns: 2fr 1.5fr 1.2fr 1.1fr .85fr .9fr 160px !important;
+}
+ 
+/* Rows: mesma proporção */
+.arag-row {
+  grid-template-columns: 2fr 1.5fr 1.2fr 1.1fr .85fr .9fr 160px !important;
+  align-items: center;
+}
+ 
+/* Container de ações dentro da row */
+.arag-row-acoes {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  justify-content: flex-end;
+}
+ 
+/* Botões Concluir / Cancelar dentro da tabela */
+.arag-row-acoes .btn-acao {
+  padding: 5px 11px;
+  border-radius: 7px;
+  font-size: 11.5px;
+  font-weight: 700;
+  cursor: pointer;
+  border: 1px solid var(--border2);
+  background: rgba(255,255,255,0.04);
+  color: var(--text2);
+  white-space: nowrap;
+  font-family: inherit;
+  transition: all .12s;
+  line-height: 1;
+}
+ 
+body.light-mode .arag-row-acoes .btn-acao {
+  background: var(--bg-card);
+}
+ 
+.arag-row-acoes .btn-acao.concluir:hover {
+  background: var(--green-bg);
+  color: var(--green);
+  border-color: var(--green-border);
+}
+ 
+.arag-row-acoes .btn-acao.cancelar:hover {
+  background: var(--red-bg);
+  color: var(--red);
+  border-color: var(--red-border);
+}
+ 
+/* Badge de status quando não tem ação */
+.arag-row-acoes .arag-badge {
+  font-size: 11px;
+  padding: 4px 9px;
+}
+ 
+/* ── MOBILE CARDS: botões de ação ── */
+.arag-mcard-actions {
+  display: flex;
+  gap: 7px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+ 
+.arag-mcard-actions .btn-acao {
+  flex: 1;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  border: 1px solid var(--border2);
+  background: rgba(255,255,255,0.04);
+  color: var(--text2);
+  font-family: inherit;
+  text-align: center;
+  transition: all .12s;
+}
+ 
+body.light-mode .arag-mcard-actions .btn-acao {
+  background: var(--bg-card);
+}
+ 
+.arag-mcard-actions .btn-acao.concluir {
+  background: var(--green-bg);
+  color: var(--green);
+  border-color: var(--green-border);
+}
+ 
+.arag-mcard-actions .btn-acao.concluir:hover {
+  filter: brightness(1.1);
+}
+ 
+.arag-mcard-actions .btn-acao.cancelar {
+  background: var(--red-bg);
+  color: var(--red);
+  border-color: var(--red-border);
+}
+ 
+.arag-mcard-actions .btn-acao.cancelar:hover {
+  filter: brightness(1.1);
+}
+ 
+/* ── ASSISTENTE IA: estilos dos blocos ── */
+.arag-ai-body > div {
+  min-height: 0;
+}
+ 
+/* Mensagem quando não há dados */
+.arag-ia-empty {
+  font-size: 12px;
+  color: var(--text3);
+  font-style: italic;
+  padding: 4px 0;
+}
+ 
+/* ── RESPONSIVO: esconde coluna ações em telas < 1024px ── */
+@media (max-width: 1024px) {
+  .arag-thead {
+    grid-template-columns: 2fr 1.5fr 1fr 1.1fr .85fr 160px !important;
+  }
+  .arag-row {
+    grid-template-columns: 2fr 1.5fr 1fr 1.1fr .85fr 160px !important;
+  }
+  /* oculta coluna "Profissional" */
+  .arag-thead > div:nth-child(3),
+  .arag-row > div:nth-child(3) {
+    display: none;
+  }
+}
+ 
+@media (max-width: 768px) {
+  .arag-thead {
+    display: none !important;
+  }
+  .arag-table-scroll {
+    display: none !important;
+  }
+  .arag-mcards {
+    display: flex !important;
+  }
+}
