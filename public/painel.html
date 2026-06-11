@@ -48,9 +48,6 @@
     "operatingSystem": "Web"
   }
   </script>
-
-  <!-- ✅ CORREÇÃO: painel.js removido do <head> e movido para o final do <body>
-       para garantir que document.body existe quando o script executa. -->
 </head>
 <body>
 
@@ -414,8 +411,6 @@
  
   <!-- STAT CARDS -->
   <div class="dash-stats-row">
- 
-    <!-- Faturamento Hoje -->
     <div class="dash-stat-card" style="animation-delay:.05s">
       <div class="dash-stat-label">
         <div class="dash-stat-icon" style="background:rgba(59,130,246,0.15)">
@@ -433,8 +428,6 @@
         <span class="dash-stat-compare">vs ontem</span>
       </div>
     </div>
- 
-    <!-- Agendamentos -->
     <div class="dash-stat-card" style="animation-delay:.10s">
       <div class="dash-stat-label">
         <div class="dash-stat-icon" style="background:rgba(245,158,11,0.15)">
@@ -451,8 +444,6 @@
         <span id="dash-ag-semana-label">0 esta semana</span>
       </div>
     </div>
- 
-    <!-- Clientes Ativos -->
     <div class="dash-stat-card" style="animation-delay:.15s">
       <div class="dash-stat-label">
         <div class="dash-stat-icon" style="background:rgba(16,185,129,0.15)">
@@ -469,8 +460,6 @@
         <span>base de clientes</span>
       </div>
     </div>
- 
-    <!-- Ticket Médio -->
     <div class="dash-stat-card" style="animation-delay:.20s">
       <div class="dash-stat-label">
         <div class="dash-stat-icon" style="background:rgba(139,92,246,0.15)">
@@ -486,16 +475,11 @@
         <span>este mês</span>
       </div>
     </div>
- 
-  </div><!-- /dash-stats-row -->
+  </div>
  
   <!-- CHART + DIREITA -->
   <div class="dash-main-grid">
- 
-    <!-- COLUNA ESQUERDA: Gráfico + Bottom -->
     <div class="dash-col-left">
- 
-      <!-- GRÁFICO -->
       <div class="dash-chart-card">
         <div class="dash-chart-header">
           <div class="dash-chart-title">Faturamento</div>
@@ -517,7 +501,6 @@
           </div>
         </div>
         <div style="display:flex;gap:14px">
-          <!-- Y labels -->
           <div class="dash-y-labels" id="dash-y-labels">
             <span>R$25k</span>
             <span>R$20k</span>
@@ -545,11 +528,7 @@
           </div>
         </div>
       </div>
- 
-      <!-- GRID INFERIOR -->
       <div class="dash-bottom-grid">
- 
-        <!-- PRÓXIMOS AGENDAMENTOS -->
         <div class="dash-card">
           <div class="dash-card-header">
             <div class="dash-card-title">Próximos agendamentos</div>
@@ -559,8 +538,6 @@
             <div style="text-align:center;color:var(--text3);padding:28px 16px;font-size:12.5px">Nenhum agendamento hoje</div>
           </div>
         </div>
- 
-        <!-- AÇÕES RÁPIDAS -->
         <div class="dash-card">
           <div class="dash-card-header">
             <div class="dash-card-title">Ações rápidas</div>
@@ -568,54 +545,37 @@
           <div class="dash-acoes-grid">
             <div class="dash-acao-btn" onclick="abrirModalNovoAgendamento()">
               <div class="dash-acao-icon" style="background:rgba(59,130,246,0.15)">
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                  <rect x="2" y="2.5" width="12" height="11" rx="2" stroke="#60a5fa" stroke-width="1.3"/>
-                  <path d="M2 6.5h12M8 2.5v11M5 9.5h2M9 9.5h2" stroke="#60a5fa" stroke-width="1.3" stroke-linecap="round"/>
-                </svg>
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="2.5" width="12" height="11" rx="2" stroke="#60a5fa" stroke-width="1.3"/><path d="M2 6.5h12M8 2.5v11M5 9.5h2M9 9.5h2" stroke="#60a5fa" stroke-width="1.3" stroke-linecap="round"/></svg>
               </div>
               <div class="dash-acao-nome">Novo agendamento</div>
               <div class="dash-acao-desc">Criar um agendamento</div>
             </div>
             <div class="dash-acao-btn" onclick="irPara('clientes', document.getElementById('menu-clientes'))">
               <div class="dash-acao-icon" style="background:rgba(16,185,129,0.15)">
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                  <circle cx="7" cy="5.5" r="2.5" stroke="#34d399" stroke-width="1.3"/>
-                  <path d="M2 14c0-2.8 2.2-5 5-5s5 2.2 5 5" stroke="#34d399" stroke-width="1.3" stroke-linecap="round"/>
-                  <path d="M12 2l2 2-3.5 3.5" stroke="#34d399" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="5.5" r="2.5" stroke="#34d399" stroke-width="1.3"/><path d="M2 14c0-2.8 2.2-5 5-5s5 2.2 5 5" stroke="#34d399" stroke-width="1.3" stroke-linecap="round"/><path d="M12 2l2 2-3.5 3.5" stroke="#34d399" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
               </div>
               <div class="dash-acao-nome">Novo cliente</div>
               <div class="dash-acao-desc">Cadastrar cliente</div>
             </div>
             <div class="dash-acao-btn" onclick="irPara('whatsapp', document.getElementById('menu-whatsapp'))">
               <div class="dash-acao-icon" style="background:rgba(37,211,102,0.15)">
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                  <path d="M13.5 10.5c0 .4-.3 1-.8 1.3l-.6.7c-.3.3-.7.5-1.1.5-1.7 0-3.4-.7-4.7-2C5.1 9.7 4.2 8 4.2 6.3c0-.4.2-.8.5-1.1l.6-.6c.3-.4.8-.8 1.3-.8l1.4 1.4c.3.3.3.8 0 1.2l-.5.5c-.1.1-.1.3 0 .4.5.6 1.1 1.2 1.7 1.7.1.1.2.1.3 0l.5-.5c.3-.3.8-.3 1.2 0l1.3 1.5Z" stroke="#25d366" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M13.5 10.5c0 .4-.3 1-.8 1.3l-.6.7c-.3.3-.7.5-1.1.5-1.7 0-3.4-.7-4.7-2C5.1 9.7 4.2 8 4.2 6.3c0-.4.2-.8.5-1.1l.6-.6c.3-.4.8-.8 1.3-.8l1.4 1.4c.3.3.3.8 0 1.2l-.5.5c-.1.1-.1.3 0 .4.5.6 1.1 1.2 1.7 1.7.1.1.2.1.3 0l.5-.5c.3-.3.8-.3 1.2 0l1.3 1.5Z" stroke="#25d366" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
               </div>
               <div class="dash-acao-nome">Enviar mensagem</div>
               <div class="dash-acao-desc">WhatsApp ou SMS</div>
             </div>
             <div class="dash-acao-btn" onclick="irPara('pagamentos', document.getElementById('menu-pagamentos'))">
               <div class="dash-acao-icon" style="background:rgba(139,92,246,0.15)">
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                  <rect x="2" y="4" width="12" height="9" rx="1.5" stroke="#a78bfa" stroke-width="1.3"/>
-                  <path d="M5 8.5h4M5 11h2" stroke="#a78bfa" stroke-width="1.3" stroke-linecap="round"/>
-                </svg>
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="4" width="12" height="9" rx="1.5" stroke="#a78bfa" stroke-width="1.3"/><path d="M5 8.5h4M5 11h2" stroke="#a78bfa" stroke-width="1.3" stroke-linecap="round"/></svg>
               </div>
               <div class="dash-acao-nome">Ver relatórios</div>
               <div class="dash-acao-desc">Desempenho do negócio</div>
             </div>
           </div>
         </div>
- 
-      </div><!-- /dash-bottom-grid -->
-    </div><!-- /dash-col-left -->
- 
-    <!-- COLUNA DIREITA -->
+      </div>
+    </div>
     <div class="dash-col-right">
- 
-      <!-- SALDO DISPONÍVEL -->
       <div class="dash-saldo-card">
         <div class="dash-saldo-label">
           Saldo disponível
@@ -641,8 +601,6 @@
           </button>
         </div>
       </div>
- 
-      <!-- TRANSAÇÕES RECENTES -->
       <div class="dash-trans-card">
         <div class="dash-card-header">
           <div class="dash-card-title">Transações recentes</div>
@@ -652,8 +610,6 @@
           <div style="text-align:center;color:var(--text3);padding:24px 16px;font-size:12px">Sem transações recentes</div>
         </div>
       </div>
- 
-      <!-- INSIGHTS -->
       <div class="dash-insights-card">
         <div class="dash-card-header">
           <div class="dash-card-title">Insights do seu negócio</div>
@@ -677,382 +633,207 @@
           </div>
         </div>
       </div>
- 
-    </div><!-- /dash-col-right -->
-  </div><!-- /dash-main-grid -->
+    </div>
+  </div>
  
 </section>
 
   <!-- ══════════════════ PAGE: AGENDAMENTOS ══════════════════ -->
   <section class="page" id="page-agendamentos" aria-label="Agendamentos">
- 
-  <!-- ─── HERO ─────────────────────────────────────── -->
-  <div class="ag3-hero">
-    <div class="ag3-hero-left">
-      <div class="ag3-hero-icon">
-        <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
-          <rect x="2.5" y="3.5" width="17" height="15" rx="3" stroke="white" stroke-width="1.6"/>
-          <path d="M2.5 8h17M7.5 2v3M14.5 2v3" stroke="white" stroke-width="1.6" stroke-linecap="round"/>
-          <path d="M6.5 12h3M6.5 15h5" stroke="white" stroke-width="1.4" stroke-linecap="round"/>
-        </svg>
-      </div>
-      <div>
-        <h1 class="ag3-hero-title">Agendamentos</h1>
-        <p class="ag3-hero-sub">Gerencie todos os atendimentos do seu negócio</p>
-      </div>
+
+<!-- HERO -->
+<div class="arag-hero">
+  <div class="arag-hero-left">
+    <div class="arag-hero-icon" aria-hidden="true">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="3.5" width="19" height="17" rx="3.5"/><path d="M2.5 9h19M7.5 2v3M16.5 2v3M7 13h3M7 16.5h6"/></svg>
     </div>
-    <div class="ag3-hero-right">
-      <button class="ag3-btn-export" onclick="ag3ExportarCSV()" type="button">
-        <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
-          <path d="M7 2v8M4.5 7.5L7 10l2.5-2.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M2 11h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-        </svg>
-        Exportar CSV
-      </button>
-      <button class="ag3-btn-novo" onclick="abrirModalNovoAgendamento()" type="button">
-        <svg width="13" height="13" viewBox="0 0 12 12" fill="none">
-          <path d="M6 1v10M1 6h10" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
-        </svg>
-        Novo agendamento
-      </button>
+    <div>
+      <h1 class="arag-hero-title">Agendamentos</h1>
+      <p class="arag-hero-sub">Gerencie todos os atendimentos do seu negócio em um só lugar.</p>
     </div>
   </div>
- 
-  <!-- ─── STATS CARDS ──────────────────────────────── -->
-  <div class="ag3-stats">
-    <div class="ag3-stat" id="ag3-stat-hoje">
-      <div class="ag3-stat-icon ag3-ic-blue">
-        <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
-          <circle cx="10" cy="10" r="7.5" stroke="#60a5fa" stroke-width="1.6"/>
-          <path d="M10 6.5V11l2.5 2" stroke="#60a5fa" stroke-width="1.6" stroke-linecap="round"/>
-        </svg>
-      </div>
-      <div class="ag3-stat-body">
-        <div class="ag3-stat-lbl">Hoje</div>
-        <div class="ag3-stat-num" id="ag3-num-hoje">0</div>
-        <div class="ag3-stat-sub" id="ag3-sub-hoje">agendamentos</div>
-      </div>
+  <div class="arag-hero-actions">
+    <button class="arag-btn" type="button" onclick="aragCompartilhar()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg>
+      Compartilhar link
+    </button>
+    <button class="arag-btn" type="button" onclick="aragExportar()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M8 11l4 4 4-4M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
+      Exportar agenda
+    </button>
+    <button class="arag-btn arag-btn-primary" type="button" onclick="abrirModalNovoAgendamento()">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+      Novo agendamento
+    </button>
+  </div>
+</div>
+
+<!-- MÉTRICAS -->
+<div class="arag-metrics">
+  <div class="arag-metric">
+    <div class="arag-metric-ic arag-ic-blue" aria-hidden="true">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent-2)" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
     </div>
-    <div class="ag3-stat" id="ag3-stat-semana">
-      <div class="ag3-stat-icon ag3-ic-purple">
-        <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
-          <rect x="2.5" y="3.5" width="15" height="13" rx="2.5" stroke="#a78bfa" stroke-width="1.6"/>
-          <path d="M2.5 7.5h15M7 2v3M13 2v3" stroke="#a78bfa" stroke-width="1.6" stroke-linecap="round"/>
-        </svg>
-      </div>
-      <div class="ag3-stat-body">
-        <div class="ag3-stat-lbl">Esta semana</div>
-        <div class="ag3-stat-num" id="ag3-num-semana">0</div>
-        <div class="ag3-stat-sub" id="ag3-sub-semana">agendamentos</div>
-      </div>
-    </div>
-    <div class="ag3-stat" id="ag3-stat-confirmados">
-      <div class="ag3-stat-icon ag3-ic-green">
-        <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
-          <path d="M3 10l5 5 9-9" stroke="#34d399" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </div>
-      <div class="ag3-stat-body">
-        <div class="ag3-stat-lbl">Confirmados</div>
-        <div class="ag3-stat-num" id="ag3-num-conf">0</div>
-        <div class="ag3-stat-sub ag3-green" id="ag3-sub-conf">este mês</div>
-      </div>
-    </div>
-    <div class="ag3-stat" id="ag3-stat-cancelados">
-      <div class="ag3-stat-icon ag3-ic-red">
-        <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
-          <circle cx="10" cy="10" r="7.5" stroke="#f87171" stroke-width="1.6"/>
-          <path d="M7 7l6 6M13 7l-6 6" stroke="#f87171" stroke-width="1.6" stroke-linecap="round"/>
-        </svg>
-      </div>
-      <div class="ag3-stat-body">
-        <div class="ag3-stat-lbl">Cancelados</div>
-        <div class="ag3-stat-num" id="ag3-num-canc">0</div>
-        <div class="ag3-stat-sub ag3-red" id="ag3-sub-canc">este mês</div>
-      </div>
-    </div>
-    <div class="ag3-stat" id="ag3-stat-faturamento">
-      <div class="ag3-stat-icon ag3-ic-yellow">
-        <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
-          <path d="M10 3v14M7 6h4.5a2.5 2.5 0 0 1 0 5H7m0 0h5.5a2.5 2.5 0 0 1 0 5H7" stroke="#fbbf24" stroke-width="1.6" stroke-linecap="round"/>
-        </svg>
-      </div>
-      <div class="ag3-stat-body">
-        <div class="ag3-stat-lbl">Faturamento</div>
-        <div class="ag3-stat-num ag3-stat-num-sm" id="ag3-num-fat">R$0</div>
-        <div class="ag3-stat-sub ag3-yellow" id="ag3-sub-fat">este mês</div>
-      </div>
+    <div class="arag-metric-body">
+      <div class="arag-metric-lbl">Hoje</div>
+      <div class="arag-metric-num" id="arag-m-hoje">0</div>
+      <div class="arag-metric-foot up"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M7 14l5-5 5 5"/></svg>12% <span class="muted">vs ontem</span></div>
     </div>
   </div>
- 
-  <!-- ─── CONTEÚDO PRINCIPAL ────────────────────────── -->
-  <div class="ag3-layout">
- 
-    <!-- ─── COLUNA ESQUERDA: Filtros + Mini-cal + Insights ─── -->
-    <aside class="ag3-sidebar">
- 
-      <!-- Mini Calendário -->
-      <div class="ag3-card ag3-cal-card">
-        <div class="ag3-card-hdr">
-          <span class="ag3-card-title">Calendário</span>
-          <div class="ag3-cal-nav">
-            <button class="ag3-cal-nav-btn" id="ag3-cal-prev" type="button">&#8249;</button>
-            <span class="ag3-cal-mes-label" id="ag3-cal-mes-label">Mai 2026</span>
-            <button class="ag3-cal-nav-btn" id="ag3-cal-next" type="button">&#8250;</button>
-          </div>
-        </div>
-        <div class="ag3-cal-dias-semana">
-          <span>D</span><span>S</span><span>T</span><span>Q</span><span>Q</span><span>S</span><span>S</span>
-        </div>
-        <div class="ag3-cal-grid" id="ag3-cal-grid"></div>
-        <div class="ag3-cal-legenda">
-          <span class="ag3-leg-item"><span class="ag3-leg-dot" style="background:#3b82f6"></span>Agendado</span>
-          <span class="ag3-leg-item"><span class="ag3-leg-dot" style="background:#10b981"></span>Concluído</span>
-          <span class="ag3-leg-item"><span class="ag3-leg-dot" style="background:#ef4444"></span>Cancelado</span>
-        </div>
-      </div>
- 
-      <!-- Filtro Rápido por Status -->
-      <div class="ag3-card ag3-filtro-card">
-        <div class="ag3-card-hdr">
-          <span class="ag3-card-title">Filtrar por status</span>
-        </div>
-        <div class="ag3-filtros-status">
-          <button class="ag3-fstatus ativo" data-status="todos" onclick="ag3FiltrarStatus('todos',this)" type="button">
-            <span class="ag3-fstatus-dot" style="background:var(--accent)"></span>Todos
-            <span class="ag3-fstatus-count" id="ag3-count-todos">0</span>
-          </button>
-          <button class="ag3-fstatus" data-status="confirmado" onclick="ag3FiltrarStatus('confirmado',this)" type="button">
-            <span class="ag3-fstatus-dot" style="background:#10b981"></span>Confirmados
-            <span class="ag3-fstatus-count" id="ag3-count-conf">0</span>
-          </button>
-          <button class="ag3-fstatus" data-status="concluido" onclick="ag3FiltrarStatus('concluido',this)" type="button">
-            <span class="ag3-fstatus-dot" style="background:#8b5cf6"></span>Concluídos
-            <span class="ag3-fstatus-count" id="ag3-count-conc">0</span>
-          </button>
-          <button class="ag3-fstatus" data-status="cancelado" onclick="ag3FiltrarStatus('cancelado',this)" type="button">
-            <span class="ag3-fstatus-dot" style="background:#ef4444"></span>Cancelados
-            <span class="ag3-fstatus-count" id="ag3-count-canc2">0</span>
-          </button>
-          <button class="ag3-fstatus" data-status="pendente" onclick="ag3FiltrarStatus('pendente',this)" type="button">
-            <span class="ag3-fstatus-dot" style="background:#f59e0b"></span>Pendentes
-            <span class="ag3-fstatus-count" id="ag3-count-pend">0</span>
-          </button>
-        </div>
-      </div>
- 
-      <!-- Top Serviços -->
-      <div class="ag3-card ag3-insights-card">
-        <div class="ag3-card-hdr">
-          <span class="ag3-card-title">Top serviços</span>
-          <span class="ag3-card-badge" id="ag3-top-mes-label">este mês</span>
-        </div>
-        <div id="ag3-top-servicos" class="ag3-top-list">
-          <div class="ag3-top-vazio">Carregando...</div>
-        </div>
-      </div>
- 
-      <!-- Link de agendamento -->
-      <div class="ag3-card ag3-link-card">
-        <div class="ag3-card-hdr">
-          <span class="ag3-card-title">Seu link</span>
-        </div>
-        <div class="ag3-link-box">
-          <span class="ag3-link-url" id="ag3-link-url">—</span>
-          <button class="ag3-link-copy" id="ag3-btn-copiar-link" onclick="ag3CopiarLink()" type="button" title="Copiar link">
-            <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
-              <rect x="4.5" y="4.5" width="8" height="8" rx="1.5" stroke="currentColor" stroke-width="1.3"/>
-              <path d="M1.5 9V3a1.5 1.5 0 0 1 1.5-1.5H9" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
-            </svg>
-          </button>
-        </div>
-        <div class="ag3-link-btns">
-          <a id="ag3-link-wpp" href="#" target="_blank" class="ag3-lnkbtn ag3-lnkbtn-wpp">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.118 1.528 5.852L.057 23.885l6.204-1.628A11.945 11.945 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.808 9.808 0 0 1-5.001-1.366l-.359-.213-3.682.966.983-3.594-.234-.371A9.818 9.818 0 0 1 2.182 12C2.182 6.57 6.57 2.182 12 2.182S21.818 6.57 21.818 12 17.43 21.818 12 21.818z"/></svg>
-            WhatsApp
-          </a>
-          <button class="ag3-lnkbtn" onclick="ag3CopiarLink()" type="button">Copiar link</button>
-        </div>
-      </div>
- 
-    </aside>
- 
-    <!-- ─── COLUNA PRINCIPAL ────────────────────────── -->
-    <div class="ag3-main">
- 
-      <!-- Barra de busca + Filtro de data + Views -->
-      <div class="ag3-toolbar">
-        <div class="ag3-busca-wrap">
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-            <circle cx="6" cy="6" r="4.5" stroke="var(--text3)" stroke-width="1.4"/>
-            <path d="M9.5 9.5L12 12" stroke="var(--text3)" stroke-width="1.4" stroke-linecap="round"/>
-          </svg>
-          <input type="search" class="ag3-busca-input" id="ag3-busca" placeholder="Buscar por nome, serviço ou telefone..." oninput="ag3Buscar(this.value)" autocomplete="off">
-          <button class="ag3-busca-clear" id="ag3-busca-clear" onclick="ag3LimparBusca()" type="button" style="display:none">×</button>
-        </div>
-        <div class="ag3-toolbar-right">
-          <input type="date" class="ag3-date-input" id="ag3-data-filtro" onchange="ag3FiltrarPorData(this.value)" title="Filtrar por data">
-          <div class="ag3-views">
-            <button class="ag3-view-btn ativo" id="ag3-view-lista" onclick="ag3MudarView('lista',this)" type="button" title="Visualização lista">
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                <path d="M2 3.5h10M2 7h10M2 10.5h10" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
-              </svg>
-            </button>
-            <button class="ag3-view-btn" id="ag3-view-kanban" onclick="ag3MudarView('kanban',this)" type="button" title="Visualização kanban">
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                <rect x="1" y="1.5" width="3.5" height="11" rx="1" stroke="currentColor" stroke-width="1.3"/>
-                <rect x="5.5" y="1.5" width="3.5" height="7" rx="1" stroke="currentColor" stroke-width="1.3"/>
-                <rect x="10" y="1.5" width="3.5" height="9" rx="1" stroke="currentColor" stroke-width="1.3"/>
-              </svg>
-            </button>
-          </div>
-        </div>
-      </div>
- 
-      <!-- Tabs de Período -->
-      <div class="ag3-tabs-wrap" role="tablist">
-        <button class="ag3-tab" role="tab" aria-selected="true" data-periodo="hoje" onclick="ag3MudarPeriodo('hoje',this)" type="button">Hoje</button>
-        <button class="ag3-tab" role="tab" aria-selected="false" data-periodo="amanha" onclick="ag3MudarPeriodo('amanha',this)" type="button">Amanhã</button>
-        <button class="ag3-tab" role="tab" aria-selected="false" data-periodo="semana" onclick="ag3MudarPeriodo('semana',this)" type="button">Esta semana</button>
-        <button class="ag3-tab" role="tab" aria-selected="false" data-periodo="mes" onclick="ag3MudarPeriodo('mes',this)" type="button">Este mês</button>
-        <button class="ag3-tab" role="tab" aria-selected="false" data-periodo="todos" onclick="ag3MudarPeriodo('todos',this)" type="button">Todos</button>
-      </div>
- 
-      <!-- Info resultados -->
-      <div class="ag3-result-info" id="ag3-result-info">
-        <span id="ag3-result-count">0 agendamentos</span>
-        <button class="ag3-clear-filtros" id="ag3-clear-filtros" onclick="ag3LimparFiltros()" type="button" style="display:none">
-          Limpar filtros
-          <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-            <path d="M2 2l6 6M8 2l-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-          </svg>
-        </button>
-      </div>
- 
-      <!-- ─── VIEW LISTA ─── -->
-      <div id="ag3-view-lista-wrap">
- 
-        <!-- Agendamentos de HOJE com linha do tempo -->
-        <div id="ag3-hoje-timeline" class="ag3-hoje-section" style="display:none">
-          <div class="ag3-hoje-header">
-            <span class="ag3-hoje-title">
-              <span class="ag3-hoje-dot"></span>
-              Agenda de hoje
-            </span>
-            <span class="ag3-hoje-data" id="ag3-hoje-data-label"></span>
-          </div>
-          <div class="ag3-timeline-wrap" id="ag3-timeline-hoje"></div>
-        </div>
- 
-        <!-- Lista completa com cards -->
-        <div id="ag3-cards-lista" class="ag3-cards-grid"></div>
- 
-        <!-- Estado vazio -->
-        <div id="ag3-vazio" class="ag3-vazio" style="display:none">
-          <div class="ag3-vazio-icon">
-            <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
-              <rect x="5" y="7" width="30" height="27" rx="4" stroke="var(--text3)" stroke-width="1.5"/>
-              <path d="M5 13h30M13 5v5M27 5v5" stroke="var(--text3)" stroke-width="1.5" stroke-linecap="round"/>
-              <path d="M13 21h8M13 27h5" stroke="var(--text3)" stroke-width="1.5" stroke-linecap="round"/>
-            </svg>
-          </div>
-          <div class="ag3-vazio-title">Nenhum agendamento encontrado</div>
-          <div class="ag3-vazio-sub" id="ag3-vazio-sub">Tente outro filtro ou crie um novo agendamento.</div>
-          <button class="ag3-btn-novo ag3-vazio-btn" onclick="abrirModalNovoAgendamento()" type="button">
-            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="white" stroke-width="1.8" stroke-linecap="round"/></svg>
-            Novo agendamento
-          </button>
-        </div>
- 
-        <!-- Paginação -->
-        <div class="ag3-paginacao" id="ag3-paginacao" style="display:none">
-          <span class="ag3-pag-info" id="ag3-pag-info"></span>
-          <div class="ag3-pag-btns" id="ag3-pag-btns"></div>
-        </div>
- 
-      </div>
- 
-      <!-- ─── VIEW KANBAN ─── -->
-      <div id="ag3-view-kanban-wrap" style="display:none">
-        <div class="ag3-kanban">
-          <div class="ag3-kanban-col">
-            <div class="ag3-kanban-col-hdr ag3-kcol-conf">
-              <span class="ag3-kanban-col-title">Confirmados</span>
-              <span class="ag3-kanban-badge-conf ag3-kanban-count" id="ag3-k-count-conf">0</span>
-            </div>
-            <div class="ag3-kanban-cards" id="ag3-k-confirmado"></div>
-          </div>
-          <div class="ag3-kanban-col">
-            <div class="ag3-kanban-col-hdr ag3-kcol-pend">
-              <span class="ag3-kanban-col-title">Pendentes</span>
-              <span class="ag3-kanban-badge-pend ag3-kanban-count" id="ag3-k-count-pend">0</span>
-            </div>
-            <div class="ag3-kanban-cards" id="ag3-k-pendente"></div>
-          </div>
-          <div class="ag3-kanban-col">
-            <div class="ag3-kanban-col-hdr ag3-kcol-conc">
-              <span class="ag3-kanban-col-title">Concluídos</span>
-              <span class="ag3-kanban-badge-conc ag3-kanban-count" id="ag3-k-count-conc">0</span>
-            </div>
-            <div class="ag3-kanban-cards" id="ag3-k-concluido"></div>
-          </div>
-          <div class="ag3-kanban-col">
-            <div class="ag3-kanban-col-hdr ag3-kcol-canc">
-              <span class="ag3-kanban-col-title">Cancelados</span>
-              <span class="ag3-kanban-badge-canc ag3-kanban-count" id="ag3-k-count-canc">0</span>
-            </div>
-            <div class="ag3-kanban-cards" id="ag3-k-cancelado"></div>
-          </div>
-        </div>
-      </div>
- 
+  <div class="arag-metric">
+    <div class="arag-metric-ic arag-ic-green" aria-hidden="true">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--green-2)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+    </div>
+    <div class="arag-metric-body">
+      <div class="arag-metric-lbl">Confirmados</div>
+      <div class="arag-metric-num" id="arag-m-conf" style="color:var(--green-2)">0</div>
+      <div class="arag-metric-foot"><span class="muted" id="arag-m-conf-pct">0% do total</span></div>
     </div>
   </div>
- 
-  <!-- ─── MODAL DETALHE AGENDAMENTO ─────────────────── -->
-  <div class="modal-overlay" id="ag3-modal-detalhe" style="display:none" role="dialog" aria-modal="true" aria-label="Detalhes do agendamento">
-    <div class="ag3-modal-detalhe-box">
-      <div class="ag3-modal-dh">
-        <div class="ag3-modal-dh-left">
-          <div class="ag3-modal-avatar" id="ag3-det-avatar">C</div>
-          <div>
-            <div class="ag3-modal-dnome" id="ag3-det-nome">—</div>
-            <div class="ag3-modal-dtel" id="ag3-det-tel">—</div>
-          </div>
-        </div>
-        <button class="modal-close" onclick="ag3FecharDetalhe()" type="button">×</button>
-      </div>
-      <div class="ag3-modal-dbody">
-        <div class="ag3-modal-drow">
-          <span class="ag3-modal-dlbl">Serviço</span>
-          <span class="ag3-modal-dval" id="ag3-det-servico">—</span>
-        </div>
-        <div class="ag3-modal-drow">
-          <span class="ag3-modal-dlbl">Data</span>
-          <span class="ag3-modal-dval" id="ag3-det-data">—</span>
-        </div>
-        <div class="ag3-modal-drow">
-          <span class="ag3-modal-dlbl">Horário</span>
-          <span class="ag3-modal-dval" id="ag3-det-hora">—</span>
-        </div>
-        <div class="ag3-modal-drow">
-          <span class="ag3-modal-dlbl">Valor</span>
-          <span class="ag3-modal-dval ag3-green" id="ag3-det-preco">—</span>
-        </div>
-        <div class="ag3-modal-drow">
-          <span class="ag3-modal-dlbl">Status</span>
-          <span id="ag3-det-badge">—</span>
-        </div>
-        <div class="ag3-modal-drow" id="ag3-det-pag-row" style="display:none">
-          <span class="ag3-modal-dlbl">Pagamento</span>
-          <span class="ag3-modal-dval" id="ag3-det-pag">—</span>
-        </div>
-      </div>
-      <div class="ag3-modal-dfooter" id="ag3-det-acoes"></div>
+  <div class="arag-metric">
+    <div class="arag-metric-ic arag-ic-yellow" aria-hidden="true">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--yellow)" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+    </div>
+    <div class="arag-metric-body">
+      <div class="arag-metric-lbl">Pendentes</div>
+      <div class="arag-metric-num" id="arag-m-pend" style="color:var(--yellow)">0</div>
+      <div class="arag-metric-foot"><span class="muted">aguardando</span></div>
     </div>
   </div>
- 
+  <div class="arag-metric">
+    <div class="arag-metric-ic arag-ic-red" aria-hidden="true">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f87171" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M15 9l-6 6M9 9l6 6"/></svg>
+    </div>
+    <div class="arag-metric-body">
+      <div class="arag-metric-lbl">Cancelados</div>
+      <div class="arag-metric-num" id="arag-m-canc" style="color:#f87171">0</div>
+      <div class="arag-metric-foot"><span class="muted">este mês</span></div>
+    </div>
+  </div>
+  <div class="arag-metric arag-metric-receita">
+    <div class="arag-metric-ic" aria-hidden="true">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l5-6 4 3 5-7"/><path d="M16 7h4v4"/></svg>
+    </div>
+    <div class="arag-metric-body">
+      <div class="arag-metric-lbl">Receita prevista</div>
+      <div class="arag-metric-num" id="arag-m-receita">R$ 0</div>
+      <div class="arag-metric-foot"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M7 14l5-5 5 5"/></svg>18% <span class="muted">esta semana</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- GRID PRINCIPAL: calendário + lateral -->
+<div class="arag-grid">
+  <!-- CALENDÁRIO -->
+  <section class="arag-cal-section">
+    <div class="arag-cal-hdr">
+      <div class="arag-cal-nav">
+        <div class="arag-cal-navbtns">
+          <button class="arag-iconbtn" type="button" title="Anterior" onclick="aragCalNav(-1)"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 6l-6 6 6 6"/></svg></button>
+          <button class="arag-iconbtn" type="button" title="Próximo" onclick="aragCalNav(1)"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg></button>
+        </div>
+        <div>
+          <div class="arag-cal-range" id="arag-cal-range">—</div>
+          <div class="arag-cal-month" id="arag-cal-month">—</div>
+        </div>
+      </div>
+      <div class="arag-seg" role="tablist" aria-label="Visualização do calendário">
+        <button class="arag-seg-btn" type="button" data-arag-view="dia"    onclick="aragSetView('dia')">Dia</button>
+        <button class="arag-seg-btn ativo" type="button" data-arag-view="semana" onclick="aragSetView('semana')">Semana</button>
+        <button class="arag-seg-btn" type="button" data-arag-view="mes"    onclick="aragSetView('mes')">Mês</button>
+      </div>
+    </div>
+    <div id="arag-cal-body"><!-- render dinâmico --></div>
+  </section>
+
+  <!-- LATERAL -->
+  <aside class="arag-side">
+    <!-- Agenda do dia -->
+    <div class="arag-card">
+      <div class="arag-card-hd">
+        <div>
+          <div class="arag-card-title">Agenda do dia</div>
+          <div class="arag-card-sub" id="arag-day-date">—</div>
+        </div>
+        <span class="arag-pill-count" id="arag-day-count">0 hoje</span>
+      </div>
+      <div class="arag-day-list" id="arag-day-list"><!-- render dinâmico --></div>
+    </div>
+
+    <!-- Assistente IA -->
+    <div class="arag-card">
+      <div class="arag-ai-hd">
+        <div class="arag-ai-ic" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="#fff"><path d="M12 2l1.6 4.8L18 8.4l-4.4 1.6L12 15l-1.6-4.9L6 8.4l4.4-1.6z"/><path d="M18.5 14l.8 2.3 2.2.8-2.2.8-.8 2.3-.8-2.3-2.2-.8 2.2-.8z"/></svg>
+        </div>
+        <div style="flex:1">
+          <div class="arag-ai-title">Assistente IA</div>
+          <div class="arag-ai-tag">Insights da sua agenda</div>
+        </div>
+        <span class="arag-ai-badge"><span class="arag-ai-dot"></span>ativo</span>
+      </div>
+      <div class="arag-ai-body">
+        <div>
+          <div class="arag-ai-label">Horários livres hoje</div>
+          <div class="arag-chips" id="arag-ai-free"><!-- render --></div>
+        </div>
+        <div>
+          <div class="arag-ai-label">Horários mais procurados</div>
+          <div id="arag-ai-popular"><!-- render --></div>
+        </div>
+        <div>
+          <div class="arag-ai-label">Dias mais movimentados</div>
+          <div class="arag-busy" id="arag-ai-busy"><!-- render --></div>
+        </div>
+        <div>
+          <div class="arag-ai-label">Sugestões automáticas</div>
+          <div id="arag-ai-sug"><!-- render --></div>
+        </div>
+      </div>
+    </div>
+  </aside>
+</div>
+
+<!-- LISTA -->
+<section class="arag-list">
+  <div class="arag-list-hd">
+    <div class="arag-list-title">Lista de agendamentos <span class="arag-list-count" id="arag-list-count">0</span></div>
+    <div class="arag-list-tools">
+      <div class="arag-search">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>
+        <input type="search" id="arag-search-input" placeholder="Buscar cliente ou serviço..." oninput="aragBuscar(this.value)" autocomplete="off">
+      </div>
+      <select class="arag-sort" id="arag-sort" onchange="aragSetSort(this.value)">
+        <option value="horario">Ordenar: Horário</option>
+        <option value="cliente">Ordenar: Cliente A-Z</option>
+        <option value="valor">Ordenar: Maior valor</option>
+      </select>
+    </div>
+  </div>
+  <div class="arag-chips-row" role="group" aria-label="Filtrar por status">
+    <button class="arag-fchip ativo" type="button" data-arag-status="todos"      onclick="aragSetStatus('todos')">Todos</button>
+    <button class="arag-fchip" type="button" data-arag-status="confirmado" onclick="aragSetStatus('confirmado')">Confirmados</button>
+    <button class="arag-fchip" type="button" data-arag-status="pendente"   onclick="aragSetStatus('pendente')">Pendentes</button>
+    <button class="arag-fchip" type="button" data-arag-status="concluido"  onclick="aragSetStatus('concluido')">Concluídos</button>
+    <button class="arag-fchip" type="button" data-arag-status="cancelado"  onclick="aragSetStatus('cancelado')">Cancelados</button>
+  </div>
+
+  <!-- tabela (desktop) -->
+  <div class="arag-table-scroll">
+    <div class="arag-table">
+      <div class="arag-thead">
+        <div>Cliente</div><div>Serviço</div><div>Profissional</div><div>Data / Hora</div><div>Status</div><div class="ar-right">Valor</div>
+      </div>
+      <div id="arag-rows"><!-- render dinâmico --></div>
+    </div>
+  </div>
+  <!-- cards (mobile) -->
+  <div class="arag-mcards" id="arag-mcards"><!-- render dinâmico --></div>
+
+  <div id="arag-pag-wrap"><!-- paginação dinâmica --></div>
 </section>
+
+  </section>
 
   <!-- ══════════════════ PAGE: CLIENTES ══════════════════ -->
   <section class="page" id="page-clientes" aria-label="Clientes">
@@ -1123,7 +904,6 @@
 
     <div class="horarios-content-grid">
       <div class="horarios-col-left">
-        <!-- INTERVALO PADRÃO -->
         <div class="section-block">
           <div class="section-block-header">
             <div class="section-block-icon" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7.5" stroke="var(--accent)" stroke-width="1.6"/><path d="M10 6v5l3 3" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round"/></svg></div>
@@ -1155,7 +935,6 @@
           </div>
         </div>
 
-        <!-- INTERVALO POR SERVIÇO -->
         <div class="section-block">
           <div class="section-block-header" style="justify-content:space-between">
             <div style="display:flex;align-items:center;gap:13px">
@@ -1558,8 +1337,6 @@ Estamos te esperando! 🙏</textarea>
 
   <!-- ══════════════════ PAGE: PAGAMENTOS ══════════════════ -->
   <section class="page" id="page-pagamentos" aria-label="Pagamentos">
- 
-  <!-- HERO -->
   <div class="mpag-hero">
     <div class="mpag-hero-left">
       <div class="mpag-hero-icon-wrap">
@@ -1619,15 +1396,10 @@ Estamos te esperando! 🙏</textarea>
       </div>
     </div>
   </div>
- 
-  <!-- MAIN GRID -->
   <div class="mpag-grid">
     <div class="mpag-col-left">
- 
-      <!-- BLOCO 1: Pagamento adiantado -->
       <div class="mpag-block">
         <div class="mpag-block-body">
-          <!-- Toggle row -->
           <div class="mpag-toggle-main-row">
             <div>
               <div class="mpag-section-title">Pagamento adiantado</div>
@@ -1638,40 +1410,26 @@ Estamos te esperando! 🙏</textarea>
               <span class="mpag-toggle-track"><span class="mpag-toggle-thumb"></span></span>
             </label>
           </div>
- 
           <div id="mpag-adiantado-content">
-            <!-- Valor a ser cobrado -->
             <div class="mpag-subsection-title">Valor a ser cobrado</div>
             <div class="mpag-subsection-sub">Escolha quanto do valor do serviço será cobrado antecipadamente.</div>
- 
             <div class="mpag-radio-grid">
               <label class="mpag-radio-opt mpag-radio-active" id="mpag-opt-total">
                 <input type="radio" name="mpag-valor" value="total" checked hidden>
                 <div class="mpag-radio-dot mpag-radio-dot-active"></div>
-                <div>
-                  <div class="mpag-radio-label">Valor total</div>
-                  <div class="mpag-radio-desc">100% do valor do serviço</div>
-                </div>
+                <div><div class="mpag-radio-label">Valor total</div><div class="mpag-radio-desc">100% do valor do serviço</div></div>
               </label>
               <label class="mpag-radio-opt" id="mpag-opt-personalizado">
                 <input type="radio" name="mpag-valor" value="personalizado" hidden>
                 <div class="mpag-radio-dot"></div>
-                <div>
-                  <div class="mpag-radio-label">Valor personalizado</div>
-                  <div class="mpag-radio-desc">Definir uma porcentagem</div>
-                </div>
+                <div><div class="mpag-radio-label">Valor personalizado</div><div class="mpag-radio-desc">Definir uma porcentagem</div></div>
               </label>
               <label class="mpag-radio-opt" id="mpag-opt-fixo">
                 <input type="radio" name="mpag-valor" value="fixo" hidden>
                 <div class="mpag-radio-dot"></div>
-                <div>
-                  <div class="mpag-radio-label">Valor fixo</div>
-                  <div class="mpag-radio-desc">Definir um valor específico</div>
-                </div>
+                <div><div class="mpag-radio-label">Valor fixo</div><div class="mpag-radio-desc">Definir um valor específico</div></div>
               </label>
             </div>
- 
-            <!-- Porcentagem do serviço -->
             <div class="mpag-pct-row">
               <div>
                 <div class="mpag-subsection-title" style="margin-bottom:2px">Porcentagem do serviço</div>
@@ -1683,8 +1441,6 @@ Estamos te esperando! 🙏</textarea>
                 <button class="mpag-pct-btn" onclick="mpagChangePct(10)">+</button>
               </div>
             </div>
- 
-            <!-- Info -->
             <div class="mpag-info-bar">
               <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="#60a5fa" stroke-width="1.4"/><path d="M8 7v4M8 5.5v.5" stroke="#60a5fa" stroke-width="1.5" stroke-linecap="round"/></svg>
               <span id="mpag-info-text">O cliente pagará 50% do valor do serviço para confirmar o agendamento.</span>
@@ -1692,36 +1448,21 @@ Estamos te esperando! 🙏</textarea>
           </div>
         </div>
       </div>
- 
-      <!-- BLOCO 2: Forma de pagamento -->
       <div class="mpag-block">
         <div class="mpag-block-body">
           <div class="mpag-subsection-title" style="margin-bottom:4px">Forma de pagamento</div>
           <div class="mpag-subsection-sub" style="margin-bottom:14px">Receba pagamentos via Mercado Pago.</div>
- 
           <div class="mpag-fp-card">
             <div class="mpag-fp-row">
-              <!-- Ícone MP -->
               <div class="mpag-fp-icon">
-                <svg width="22" height="22" viewBox="0 0 32 32" fill="none">
-                  <rect width="32" height="32" rx="8" fill="#009ee3"/>
-                  <path d="M8 16a8 8 0 1 1 16 0" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
-                  <circle cx="16" cy="16" r="3" fill="white"/>
-                </svg>
+                <svg width="22" height="22" viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="8" fill="#009ee3"/><path d="M8 16a8 8 0 1 1 16 0" stroke="white" stroke-width="2.5" stroke-linecap="round"/><circle cx="16" cy="16" r="3" fill="white"/></svg>
               </div>
-              <!-- Info -->
               <div class="mpag-fp-info">
-                <div class="mpag-fp-name">
-                  PIX
-                  <span class="mpag-fp-badge-mp">Mercado Pago</span>
-                </div>
+                <div class="mpag-fp-name">PIX <span class="mpag-fp-badge-mp">Mercado Pago</span></div>
                 <div class="mpag-fp-sub">Pagamento instantâneo</div>
               </div>
-              <!-- Divider vertical -->
               <div class="mpag-fp-divider"></div>
-              <!-- Desc -->
               <div class="mpag-fp-desc">O pagamento é confirmado na hora e o agendamento é liberado automaticamente.</div>
-              <!-- Status -->
               <div class="mpag-fp-status">
                 <span class="mpag-badge-ativo">Ativo</span>
                 <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M6 4l4 4-4 4" stroke="rgba(255,255,255,0.35)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -1734,11 +1475,8 @@ Estamos te esperando! 🙏</textarea>
           </div>
         </div>
       </div>
- 
-      <!-- BLOCO 3: Reembolso automático -->
       <div class="mpag-block">
         <div class="mpag-block-body">
-          <!-- Toggle row -->
           <div class="mpag-toggle-main-row" style="margin-bottom:20px">
             <div>
               <div class="mpag-section-title">Reembolso automático</div>
@@ -1749,147 +1487,69 @@ Estamos te esperando! 🙏</textarea>
               <span class="mpag-toggle-track"><span class="mpag-toggle-thumb"></span></span>
             </label>
           </div>
- 
           <div class="mpag-subsection-title" style="margin-bottom:2px">Reembolsar automaticamente quando</div>
           <div class="mpag-subsection-sub" style="margin-bottom:14px">O reembolso será processado de forma automática nas situações abaixo.</div>
- 
           <div class="mpag-reimb-list">
-            <!-- Item 1 -->
             <div class="mpag-reimb-item">
               <div class="mpag-reimb-icon mpag-reimb-purple">
-                <svg width="17" height="17" viewBox="0 0 20 20" fill="none">
-                  <rect x="2" y="2" width="16" height="16" rx="8" fill="rgba(139,92,246,0.2)"/>
-                  <path d="M7 13l6-6M13 13L7 7" stroke="#a78bfa" stroke-width="1.6" stroke-linecap="round"/>
-                </svg>
+                <svg width="17" height="17" viewBox="0 0 20 20" fill="none"><rect x="2" y="2" width="16" height="16" rx="8" fill="rgba(139,92,246,0.2)"/><path d="M7 13l6-6M13 13L7 7" stroke="#a78bfa" stroke-width="1.6" stroke-linecap="round"/></svg>
               </div>
               <div class="mpag-reimb-text">
                 <div class="mpag-reimb-name">Cancelamento pelo cliente</div>
                 <div class="mpag-reimb-sub">Reembolso automático quando o cliente cancelar o agendamento.</div>
               </div>
-              <label class="mpag-toggle-sw">
-                <input type="checkbox" checked>
-                <span class="mpag-toggle-track"><span class="mpag-toggle-thumb"></span></span>
-              </label>
+              <label class="mpag-toggle-sw"><input type="checkbox" checked><span class="mpag-toggle-track"><span class="mpag-toggle-thumb"></span></span></label>
             </div>
-            <!-- Item 2 -->
             <div class="mpag-reimb-item">
               <div class="mpag-reimb-icon mpag-reimb-orange">
-                <svg width="17" height="17" viewBox="0 0 20 20" fill="none">
-                  <circle cx="10" cy="10" r="8" fill="rgba(249,115,22,0.2)"/>
-                  <path d="M10 7v4" stroke="#fb923c" stroke-width="1.8" stroke-linecap="round"/>
-                  <circle cx="10" cy="14" r="0.8" fill="#fb923c"/>
-                </svg>
+                <svg width="17" height="17" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" fill="rgba(249,115,22,0.2)"/><path d="M10 7v4" stroke="#fb923c" stroke-width="1.8" stroke-linecap="round"/><circle cx="10" cy="14" r="0.8" fill="#fb923c"/></svg>
               </div>
               <div class="mpag-reimb-text">
                 <div class="mpag-reimb-name">Cancelamento por você</div>
                 <div class="mpag-reimb-sub">Reembolso automático quando o agendamento for cancelado por você.</div>
               </div>
-              <label class="mpag-toggle-sw">
-                <input type="checkbox" checked>
-                <span class="mpag-toggle-track"><span class="mpag-toggle-thumb"></span></span>
-              </label>
+              <label class="mpag-toggle-sw"><input type="checkbox" checked><span class="mpag-toggle-track"><span class="mpag-toggle-thumb"></span></span></label>
             </div>
           </div>
- 
           <div class="mpag-info-bar" style="margin-top:16px">
             <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="#60a5fa" stroke-width="1.4"/><path d="M8 7v4M8 5.5v.5" stroke="#60a5fa" stroke-width="1.5" stroke-linecap="round"/></svg>
             <span>O reembolso será feito automaticamente via PIX para a conta do cliente.</span>
           </div>
         </div>
       </div>
- 
-    </div><!-- /col-left -->
- 
-    <!-- COLUNA DIREITA -->
+    </div>
     <div class="mpag-col-right">
- 
-      <!-- Como funciona -->
       <div class="mpag-side-block">
         <div class="mpag-side-title">Como funciona</div>
         <div class="mpag-steps">
- 
           <div class="mpag-step">
-            <div class="mpag-step-icon mpag-step-purple">
-              <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
-                <rect x="2.5" y="3.5" width="15" height="13.5" rx="2.5" stroke="#a78bfa" stroke-width="1.6"/>
-                <path d="M2.5 7.5h15M7 2v3M13 2v3" stroke="#a78bfa" stroke-width="1.6" stroke-linecap="round"/>
-              </svg>
-            </div>
-            <div class="mpag-step-body">
-              <div class="mpag-step-title">Cliente faz o agendamento</div>
-              <div class="mpag-step-desc">O cliente escolhe o serviço, data e horário.</div>
-            </div>
+            <div class="mpag-step-icon mpag-step-purple"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><rect x="2.5" y="3.5" width="15" height="13.5" rx="2.5" stroke="#a78bfa" stroke-width="1.6"/><path d="M2.5 7.5h15M7 2v3M13 2v3" stroke="#a78bfa" stroke-width="1.6" stroke-linecap="round"/></svg></div>
+            <div class="mpag-step-body"><div class="mpag-step-title">Cliente faz o agendamento</div><div class="mpag-step-desc">O cliente escolhe o serviço, data e horário.</div></div>
           </div>
- 
           <div class="mpag-step">
-            <div class="mpag-step-icon mpag-step-blue">
-              <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
-                <rect x="2" y="5" width="16" height="13" rx="2.5" stroke="#60a5fa" stroke-width="1.6"/>
-                <path d="M2 9h16M6 13h4" stroke="#60a5fa" stroke-width="1.6" stroke-linecap="round"/>
-              </svg>
-            </div>
-            <div class="mpag-step-body">
-              <div class="mpag-step-title">Pagamento antecipado</div>
-              <div class="mpag-step-desc">O cliente realiza o pagamento via PIX e o agendamento é confirmado.</div>
-            </div>
+            <div class="mpag-step-icon mpag-step-blue"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><rect x="2" y="5" width="16" height="13" rx="2.5" stroke="#60a5fa" stroke-width="1.6"/><path d="M2 9h16M6 13h4" stroke="#60a5fa" stroke-width="1.6" stroke-linecap="round"/></svg></div>
+            <div class="mpag-step-body"><div class="mpag-step-title">Pagamento antecipado</div><div class="mpag-step-desc">O cliente realiza o pagamento via PIX e o agendamento é confirmado.</div></div>
           </div>
- 
           <div class="mpag-step">
-            <div class="mpag-step-icon mpag-step-green">
-              <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
-                <circle cx="10" cy="10" r="7.5" stroke="#34d399" stroke-width="1.6"/>
-                <path d="M6.5 10l2.5 2.5 5-5" stroke="#34d399" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </div>
-            <div class="mpag-step-body">
-              <div class="mpag-step-title">Você recebe o pagamento</div>
-              <div class="mpag-step-desc">O valor entra na sua conta via Mercado Pago.</div>
-            </div>
+            <div class="mpag-step-icon mpag-step-green"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7.5" stroke="#34d399" stroke-width="1.6"/><path d="M6.5 10l2.5 2.5 5-5" stroke="#34d399" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div class="mpag-step-body"><div class="mpag-step-title">Você recebe o pagamento</div><div class="mpag-step-desc">O valor entra na sua conta via Mercado Pago.</div></div>
           </div>
- 
           <div class="mpag-step">
-            <div class="mpag-step-icon mpag-step-orange">
-              <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
-                <circle cx="10" cy="10" r="7.5" stroke="#fb923c" stroke-width="1.6"/>
-                <path d="M10 7v4" stroke="#fb923c" stroke-width="1.8" stroke-linecap="round"/>
-                <circle cx="10" cy="14.5" r="0.9" fill="#fb923c"/>
-              </svg>
-            </div>
-            <div class="mpag-step-body">
-              <div class="mpag-step-title">Cancelamento e reembolso</div>
-              <div class="mpag-step-desc">Se houver cancelamento, o reembolso é feito automaticamente via PIX.</div>
-            </div>
+            <div class="mpag-step-icon mpag-step-orange"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7.5" stroke="#fb923c" stroke-width="1.6"/><path d="M10 7v4" stroke="#fb923c" stroke-width="1.8" stroke-linecap="round"/><circle cx="10" cy="14.5" r="0.9" fill="#fb923c"/></svg></div>
+            <div class="mpag-step-body"><div class="mpag-step-title">Cancelamento e reembolso</div><div class="mpag-step-desc">Se houver cancelamento, o reembolso é feito automaticamente via PIX.</div></div>
           </div>
- 
         </div>
       </div>
- 
-      <!-- Resumo -->
       <div class="mpag-side-block mpag-resumo-block">
         <div class="mpag-side-title">Resumo</div>
         <div class="mpag-resumo-rows">
-          <div class="mpag-resumo-row">
-            <span class="mpag-resumo-key">Meio de pagamento</span>
-            <span class="mpag-resumo-val">PIX via Mercado Pago</span>
-          </div>
-          <div class="mpag-resumo-row">
-            <span class="mpag-resumo-key">Taxa por transação</span>
-            <span class="mpag-resumo-val">0,99%</span>
-          </div>
-          <div class="mpag-resumo-row">
-            <span class="mpag-resumo-key">Prazo para recebimento</span>
-            <span class="mpag-resumo-val">Na hora</span>
-          </div>
-          <div class="mpag-resumo-row">
-            <span class="mpag-resumo-key">Reembolso automático</span>
-            <span class="mpag-resumo-val mpag-resumo-green">Ativado</span>
-          </div>
+          <div class="mpag-resumo-row"><span class="mpag-resumo-key">Meio de pagamento</span><span class="mpag-resumo-val">PIX via Mercado Pago</span></div>
+          <div class="mpag-resumo-row"><span class="mpag-resumo-key">Taxa por transação</span><span class="mpag-resumo-val">0,99%</span></div>
+          <div class="mpag-resumo-row"><span class="mpag-resumo-key">Prazo para recebimento</span><span class="mpag-resumo-val">Na hora</span></div>
+          <div class="mpag-resumo-row"><span class="mpag-resumo-key">Reembolso automático</span><span class="mpag-resumo-val mpag-resumo-green">Ativado</span></div>
         </div>
         <div class="mpag-ver-btn">
-          <span style="display:flex;align-items:center;gap:8px">
-            <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M2 12.5L13 7.5 2 2.5v4l8 1-8 1v4Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
-            Ver pagamentos recebidos
-          </span>
+          <span style="display:flex;align-items:center;gap:8px"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M2 12.5L13 7.5 2 2.5v4l8 1-8 1v4Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>Ver pagamentos recebidos</span>
           <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </div>
         <div class="mpag-mp-footer">
@@ -1901,11 +1561,9 @@ Estamos te esperando! 🙏</textarea>
           </div>
         </div>
       </div>
- 
-    </div><!-- /col-right -->
-  </div><!-- /mpag-grid -->
- 
-</section>
+    </div>
+  </div>
+  </section>
 
   <!-- ══════════════════ PAGE: SUPORTE ══════════════════ -->
   <section class="page" id="page-suporte" aria-label="Suporte">
@@ -1971,13 +1629,9 @@ Estamos te esperando! 🙏</textarea>
   </button>
 </div>
 
-<!-- ✅ CORREÇÃO PRINCIPAL: painel.js carregado aqui, no final do <body>,
-     garantindo que document.body já existe quando o script executa.
-     Isso corrige o erro: Cannot read properties of null (reading 'classList') -->
 <script src="./painel.js"></script>
 <script src="./pagamentos-fix.js"></script>
 
-<!-- Script de assinatura (usa a variável API definida no painel.js acima) -->
 <script>
 async function assinar(plano) {
   const token = localStorage.getItem('token')

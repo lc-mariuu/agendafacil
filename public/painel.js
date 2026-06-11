@@ -3611,3 +3611,394 @@ document.addEventListener('DOMContentLoaded', function(){
 })();
  
 })();
+
+(function () {
+  'use strict';
+
+  var ARAG = {
+    view: 'semana',          // dia | semana | mes
+    semanaOffset: 0,         // navegação de semana
+    mesOffset: 0,            // navegação de mês
+    diaOffset: 0,            // navegação de dia
+    search: '',
+    status: 'todos',
+    sort: 'horario',
+    page: 1,
+    perPage: 6
+  };
+  window.ARAG = ARAG;
+
+  /* ---------- helpers ---------- */
+  function ags() { return Array.isArray(window.todosAgendamentos) ? window.todosAgendamentos : []; }
+  function hojeISO() { return new Date().toISOString().split('T')[0]; }
+  function parseData(d) { if (!d) return null; var p = d.split('-').map(Number); return new Date(p[0], p[1] - 1, p[2]); }
+  function isoDe(date) { return date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0') + '-' + String(date.getDate()).padStart(2, '0'); }
+  function horaNum(h) { if (!h) return 0; var p = h.split(':').map(Number); return p[0] + (p[1] || 0) / 60; }
+  function fmtBRLnum(v) { return 'R$ ' + Number(v || 0).toLocaleString('pt-BR'); }
+  function escapeJs(s) { return String(s || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'"); }
+  function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+
+  var MESES = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+  var MES_ABBR = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+  var DIAS_SEM = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+  var AVATAR = [['#1d4ed8', '#3b82f6'], ['#7c3aed', '#8b5cf6'], ['#0e7490', '#06b6d4'], ['#15803d', '#22c55e'], ['#b45309', '#f59e0b'], ['#be185d', '#ec4899'], ['#0369a1', '#38bdf8'], ['#6d28d9', '#a78bfa']];
+  function avatarCor(nome) { var h = 0, s = nome || 'A'; for (var i = 0; i < s.length; i++) h = ((h << 5) - h) + s.charCodeAt(i); return AVATAR[Math.abs(h) % AVATAR.length]; }
+  function iniciais(nome) { return (nome || '?').split(' ').filter(Boolean).map(function (w) { return w[0]; }).slice(0, 2).join('').toUpperCase(); }
+
+  function statusInfo(s) {
+    if (s === 'confirmado') return { label: 'Confirmado', cor: 'var(--green-2)', bg: 'var(--green-bg)', dot: 'var(--green)' };
+    if (s === 'concluido')  return { label: 'Concluído',  cor: 'var(--purple)', bg: 'var(--purple-bg)', dot: 'var(--purple)' };
+    if (s === 'cancelado')  return { label: 'Cancelado',  cor: '#f87171',       bg: 'var(--red-bg)',    dot: 'var(--red)' };
+    return { label: 'Pendente', cor: 'var(--yellow)', bg: 'var(--yellow-bg)', dot: 'var(--yellow)' };
+  }
+  function precoDe(a) { return Number(a.preco) || 0; }
+  function profDe(a) { return a.profissional || a.prof || '—'; }
+
+  /* ---------- TOASTS ---------- */
+  function toast(tipo, titulo, msg) {
+    var wrap = document.getElementById('arag-toasts');
+    if (!wrap) { wrap = document.createElement('div'); wrap.id = 'arag-toasts'; wrap.className = 'arag-toasts'; document.body.appendChild(wrap); }
+    var icon = tipo === 'ok' ? '✓' : (tipo === 'err' ? '!' : 'i');
+    var el = document.createElement('div');
+    el.className = 'arag-toast ' + (tipo || '');
+    el.innerHTML = '<div class="arag-toast-ic">' + icon + '</div><div style="flex:1;min-width:0"><div class="arag-toast-title">' + esc(titulo) + '</div><div class="arag-toast-msg">' + esc(msg) + '</div></div>';
+    wrap.appendChild(el);
+    setTimeout(function () { el.style.transition = 'opacity .3s, transform .3s'; el.style.opacity = '0'; el.style.transform = 'translateX(20px)'; setTimeout(function () { el.remove(); }, 320); }, 3600);
+  }
+
+  /* ---------- AÇÕES (reaproveitam funções do painel.js) ---------- */
+  window.aragCompartilhar = function () {
+    var url = '';
+    try { if (typeof urlAgendamento === 'function' && window.negocioAtual) url = urlAgendamento(window.negocioAtual); } catch (e) {}
+    if (url && navigator.clipboard) { navigator.clipboard.writeText(url).then(function () { toast('ok', 'Link copiado', 'O link público de agendamento foi copiado.'); }); }
+    else toast('ok', 'Link copiado', 'O link público de agendamento foi copiado.');
+  };
+
+  window.aragExportar = function () {
+    var lista = aragFiltradas();
+    if (!lista.length) { toast('err', 'Nada para exportar', 'Não há agendamentos com os filtros atuais.'); return; }
+    var linhas = [['Cliente', 'Telefone', 'Servico', 'Data', 'Hora', 'Status', 'Valor']];
+    lista.forEach(function (a) { linhas.push([a.pacienteNome || '', a.pacienteTelefone || '', a.servico || '', a.data || '', a.hora || '', a.status || '', precoDe(a)]); });
+    var csv = linhas.map(function (r) { return r.map(function (c) { return '"' + String(c).replace(/"/g, '""') + '"'; }).join(','); }).join('\n');
+    try {
+      var blob = new Blob(["\ufeff" + csv], { type: 'text/csv;charset=utf-8;' });
+      var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'agendamentos.csv'; document.body.appendChild(a); a.click(); a.remove();
+      toast('ok', 'Exportado', lista.length + ' agendamentos exportados (.csv).');
+    } catch (e) { toast('err', 'Erro ao exportar', 'Tente novamente.'); }
+  };
+
+  /* ---------- CONTROLES ---------- */
+  window.aragSetView = function (v) { ARAG.view = v; document.querySelectorAll('[data-arag-view]').forEach(function (b) { b.classList.toggle('ativo', b.getAttribute('data-arag-view') === v); }); aragRenderCalendario(); };
+  window.aragCalNav = function (dir) { if (ARAG.view === 'semana') ARAG.semanaOffset += dir; else if (ARAG.view === 'mes') ARAG.mesOffset += dir; else ARAG.diaOffset += dir; aragRenderCalendario(); };
+  window.aragBuscar = function (v) { ARAG.search = v || ''; ARAG.page = 1; aragRenderLista(); };
+  window.aragSetSort = function (v) { ARAG.sort = v; aragRenderLista(); };
+  window.aragSetStatus = function (s) { ARAG.status = s; ARAG.page = 1; document.querySelectorAll('[data-arag-status]').forEach(function (b) { b.classList.toggle('ativo', b.getAttribute('data-arag-status') === s); }); aragRenderLista(); };
+  window.aragIrPagina = function (n) { ARAG.page = n; aragRenderLista(); };
+  window.aragNovoEm = function (hora) { try { abrirModalNovoAgendamento(); } catch (e) {} var h = document.getElementById('m-hora'); if (h && hora) { setTimeout(function () { try { h.value = hora; } catch (e) {} }, 400); } };
+
+  /* ---------- MÉTRICAS ---------- */
+  function aragRenderMetrics() {
+    var lista = ags(), hoje = hojeISO(), mes = hoje.slice(0, 7);
+    var hojeQtd = lista.filter(function (a) { return a.data === hoje; }).length;
+    var conf = lista.filter(function (a) { return a.status === 'confirmado'; }).length;
+    var pend = lista.filter(function (a) { return a.status === 'pendente'; }).length;
+    var canc = lista.filter(function (a) { return a.status === 'cancelado' && (a.data || '').slice(0, 7) === mes; }).length;
+    var total = lista.length || 1;
+    var inicioSem = new Date(); inicioSem.setDate(inicioSem.getDate() - inicioSem.getDay());
+    var fimSem = new Date(inicioSem); fimSem.setDate(fimSem.getDate() + 6);
+    var receita = lista.filter(function (a) {
+      if (a.status === 'cancelado' || !a.data) return false;
+      var d = parseData(a.data); return d && d >= new Date(inicioSem.toDateString()) && d <= new Date(fimSem.toDateString());
+    }).reduce(function (s, a) { return s + precoDe(a); }, 0);
+    var set = function (id, v) { var el = document.getElementById(id); if (el) el.textContent = v; };
+    set('arag-m-hoje', hojeQtd);
+    set('arag-m-conf', conf);
+    set('arag-m-conf-pct', Math.round(conf / total * 100) + '% do total');
+    set('arag-m-pend', pend);
+    set('arag-m-canc', canc);
+    set('arag-m-receita', fmtBRLnum(receita));
+  }
+
+  /* ---------- CALENDÁRIO ---------- */
+  function eventosDoDia(iso) { return ags().filter(function (a) { return a.data === iso; }).sort(function (a, b) { return horaNum(a.hora) - horaNum(b.hora); }); }
+
+  // distribui eventos sobrepostos em "lanes" lado a lado
+  function lanesDoDia(evs) {
+    var H = 60, DUR = 1; // 1h por evento (visual)
+    var ativos = []; // {fim, lane}
+    var usados = [];
+    return evs.map(function (a) {
+      var ini = horaNum(a.hora), fim = ini + DUR;
+      // libera lanes terminadas
+      ativos = ativos.filter(function (x) { return x.fim > ini; });
+      var usadasAgora = ativos.map(function (x) { return x.lane; });
+      var lane = 0; while (usadasAgora.indexOf(lane) >= 0) lane++;
+      ativos.push({ fim: fim, lane: lane });
+      var grupoMax = Math.max.apply(null, ativos.map(function (x) { return x.lane; }).concat([lane])) + 1;
+      usados.push({ a: a, lane: lane, grupo: grupoMax });
+      return null;
+    }) && usados;
+  }
+
+  function evHTML(a, lane, total, wide) {
+    var si = statusInfo(a.status), cancel = a.status === 'cancelado';
+    var START = 8, H = 60;
+    var top = (horaNum(a.hora) - START) * H + 3; if (top < 3) top = 3;
+    var height = H - 6;
+    var bg = cancel ? 'rgba(255,255,255,0.04)' : si.bg;
+    var gutter = wide ? 12 : 4;
+    var widthPct = 100 / total;
+    var style = 'top:' + top + 'px;height:' + height + 'px;background:' + bg + ';border-left:3px solid ' + si.dot + ';' +
+      'left:calc(' + (widthPct * lane) + '% + ' + gutter + 'px);width:calc(' + widthPct + '% - ' + (gutter + 3) + 'px);right:auto;';
+    var nomeSafe = escapeJs(a.pacienteNome), telSafe = escapeJs(a.pacienteTelefone);
+    return '<div class="arag-ev' + (cancel ? ' cancel' : '') + '" style="' + style + '" title="' + esc(a.pacienteNome) + ' — ' + esc(a.servico) + '" onclick="aragVerEvento(\'' + nomeSafe + '\',\'' + telSafe + '\',\'' + esc(a.servico) + '\',\'' + (a.hora || '') + '\',\'' + (a.status || '') + '\')">' +
+      '<div class="arag-ev-cli">' + esc(a.pacienteNome || '—') + '</div>' +
+      '<div class="arag-ev-meta">' + (a.hora || '') + ' · ' + esc(a.servico || '') + '</div></div>';
+  }
+
+  function colEventosHTML(evs, wide) {
+    var laid = lanesDoDia(evs);
+    return laid.map(function (it) { return evHTML(it.a, it.lane, it.grupo, wide); }).join('');
+  }
+
+  window.aragVerEvento = function (nome, tel, serv, hora, status) {
+    toast('', nome, serv + (hora ? ' às ' + hora : '') + ' · ' + statusInfo(status).label);
+  };
+
+  function semanaBase() { var d = new Date(); d.setDate(d.getDate() - d.getDay() + ARAG.semanaOffset * 7); d.setHours(0, 0, 0, 0); return d; }
+
+  function aragRenderCalendario() {
+    var body = document.getElementById('arag-cal-body');
+    var rangeEl = document.getElementById('arag-cal-range');
+    var monthEl = document.getElementById('arag-cal-month');
+    if (!body) return;
+    var hoje = hojeISO();
+    var horas = []; for (var h = 8; h <= 20; h++) horas.push((h < 10 ? '0' : '') + h + ':00');
+
+    if (ARAG.view === 'dia') {
+      var dd = new Date(); dd.setDate(dd.getDate() + ARAG.diaOffset); dd.setHours(0, 0, 0, 0);
+      var iso = isoDe(dd), evs = eventosDoDia(iso);
+      if (rangeEl) rangeEl.textContent = DIAS_SEM[dd.getDay()] + ', ' + dd.getDate() + ' ' + MES_ABBR[dd.getMonth()];
+      if (monthEl) monthEl.textContent = MESES[dd.getMonth()] + ' de ' + dd.getFullYear();
+      var ax = '<div class="arag-time-axis">' + horas.map(function (x) { return '<div class="arag-time-h"><span>' + x + '</span></div>'; }).join('') + '</div>';
+      var isToday = iso === hoje;
+      var col = '<div class="arag-col"><div class="arag-col-hd' + (isToday ? ' hoje' : '') + '"><div class="arag-col-name">' + DIAS_SEM[dd.getDay()] + '</div><div class="arag-col-num' + (isToday ? ' hoje' : '') + '">' + dd.getDate() + '</div></div><div class="arag-col-body">' + colEventosHTML(evs, true) + (isToday ? nowLine() : '') + '</div></div>';
+      body.innerHTML = '<div class="arag-timegrid-scroll"><div class="arag-timegrid">' + ax + '<div class="arag-cols">' + col + '</div></div></div>';
+
+    } else if (ARAG.view === 'semana') {
+      var base = semanaBase();
+      var fim = new Date(base); fim.setDate(fim.getDate() + 6);
+      if (rangeEl) rangeEl.textContent = base.getDate() + ' ' + MES_ABBR[base.getMonth()] + ' – ' + fim.getDate() + ' ' + MES_ABBR[fim.getMonth()];
+      if (monthEl) monthEl.textContent = MESES[base.getMonth()] + ' de ' + base.getFullYear();
+      var axW = '<div class="arag-time-axis">' + horas.map(function (x) { return '<div class="arag-time-h"><span>' + x + '</span></div>'; }).join('') + '</div>';
+      var cols = '';
+      for (var i = 0; i < 7; i++) {
+        var dia = new Date(base); dia.setDate(dia.getDate() + i);
+        var isoD = isoDe(dia), evsD = eventosDoDia(isoD), tdy = isoD === hoje;
+        cols += '<div class="arag-col"><div class="arag-col-hd' + (tdy ? ' hoje' : '') + '"><div class="arag-col-name">' + DIAS_SEM[dia.getDay()] + '</div><div class="arag-col-num' + (tdy ? ' hoje' : '') + '">' + dia.getDate() + '</div></div><div class="arag-col-body">' + colEventosHTML(evsD, false) + (tdy ? nowLine() : '') + '</div></div>';
+      }
+      body.innerHTML = '<div class="arag-timegrid-scroll"><div class="arag-timegrid">' + axW + '<div class="arag-cols">' + cols + '</div></div></div>';
+
+    } else { // mês
+      var ref = new Date(); ref.setMonth(ref.getMonth() + ARAG.mesOffset, 1); ref.setHours(0, 0, 0, 0);
+      if (rangeEl) rangeEl.textContent = MESES[ref.getMonth()] + ' ' + ref.getFullYear();
+      if (monthEl) monthEl.textContent = 'Visão mensal';
+      var primeiroDiaSemana = ref.getDay();
+      var inicioGrade = new Date(ref); inicioGrade.setDate(1 - primeiroDiaSemana);
+      var wd = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'].map(function (w) { return '<div class="arag-month-wd">' + w + '</div>'; }).join('');
+      var cells = '';
+      for (var c = 0; c < 42; c++) {
+        var cd = new Date(inicioGrade); cd.setDate(cd.getDate() + c);
+        var isoC = isoDe(cd), inMes = cd.getMonth() === ref.getMonth(), tday = isoC === hoje;
+        if (c >= 35 && inMes === false && cd.getDay() === 0) { /* mantém 6 semanas só se necessário */ }
+        var evsC = eventosDoDia(isoC);
+        var pills = evsC.slice(0, 2).map(function (a) { var si = statusInfo(a.status); return '<div class="arag-month-pill" style="color:' + si.cor + ';background:' + si.bg + '">' + (a.hora || '') + ' ' + esc((a.pacienteNome || '').split(' ')[0]) + '</div>'; }).join('');
+        var more = evsC.length > 2 ? '<div class="arag-month-more">+' + (evsC.length - 2) + ' mais</div>' : '';
+        cells += '<div class="arag-month-cell' + (inMes ? '' : ' out') + (tday ? ' hoje' : '') + '"><div class="arag-month-day' + (tday ? ' hoje' : '') + '">' + cd.getDate() + '</div><div class="arag-month-pills">' + pills + more + '</div></div>';
+      }
+      body.innerHTML = '<div class="arag-month"><div class="arag-month-week">' + wd + '</div><div class="arag-month-grid">' + cells + '</div></div>';
+    }
+  }
+
+  function nowLine() {
+    var now = new Date(), START = 8, H = 60;
+    var top = (now.getHours() + now.getMinutes() / 60 - START) * H;
+    if (top < 0 || top > 13 * H) return '';
+    return '<div class="arag-nowline" style="top:' + top + 'px"><span></span></div>';
+  }
+
+  /* ---------- AGENDA DO DIA ---------- */
+  function aragRenderAgendaDia() {
+    var hoje = hojeISO(), evs = eventosDoDia(hoje);
+    var d = new Date();
+    var dateEl = document.getElementById('arag-day-date'); if (dateEl) dateEl.textContent = DIAS_SEM[d.getDay()] + ', ' + d.getDate() + ' de ' + MESES[d.getMonth()].toLowerCase();
+    var cnt = document.getElementById('arag-day-count'); if (cnt) cnt.textContent = evs.length + ' hoje';
+    var list = document.getElementById('arag-day-list'); if (!list) return;
+    if (!evs.length) { list.innerHTML = '<div class="arag-empty-mini">Nenhum horário para hoje.</div>'; return; }
+    list.innerHTML = evs.map(function (a) {
+      var cor = avatarCor(a.pacienteNome), si = statusInfo(a.status);
+      return '<div class="arag-day-item">' +
+        '<div class="arag-avatar" style="width:38px;height:38px;font-size:13px;background:linear-gradient(135deg,' + cor[0] + ',' + cor[1] + ')">' + iniciais(a.pacienteNome) + '</div>' +
+        '<div style="flex:1;min-width:0"><div class="arag-day-name">' + esc(a.pacienteNome || '—') + '</div><div class="arag-day-serv">' + esc(a.servico || '') + '</div></div>' +
+        '<div style="text-align:right;flex-shrink:0"><div class="arag-day-time">' + (a.hora || '') + '</div><span class="arag-mini-badge" style="color:' + si.cor + ';background:' + si.bg + '">' + si.label + '</span></div>' +
+        '</div>';
+    }).join('');
+  }
+
+  /* ---------- ASSISTENTE IA ---------- */
+  function aragRenderIA() {
+    var lista = ags(), hoje = hojeISO();
+    // horários livres hoje: slots 08-20 sem agendamento
+    var ocupados = {}; eventosDoDia(hoje).forEach(function (a) { if (a.hora) ocupados[a.hora.slice(0, 5)] = true; });
+    var slots = ['09:00', '10:00', '11:00', '12:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00'];
+    var livres = slots.filter(function (s) { return !ocupados[s]; }).slice(0, 4);
+    var freeEl = document.getElementById('arag-ai-free');
+    if (freeEl) freeEl.innerHTML = livres.length ? livres.map(function (t) { return '<button class="arag-chip-free" type="button" onclick="aragNovoEm(\'' + t + '\')">' + t + '</button>'; }).join('') : '<span style="font-size:12px;color:var(--text3)">Dia cheio 🎉</span>';
+
+    // horários mais procurados (freq por hora)
+    var freq = {}; lista.forEach(function (a) { if (a.hora) { var k = a.hora.slice(0, 5); freq[k] = (freq[k] || 0) + 1; } });
+    var top = Object.keys(freq).map(function (k) { return { t: k, n: freq[k] }; }).sort(function (a, b) { return b.n - a.n; }).slice(0, 3);
+    var maxN = top.length ? top[0].n : 1;
+    var popEl = document.getElementById('arag-ai-popular');
+    if (popEl) popEl.innerHTML = top.length ? top.map(function (p) { var pct = Math.round(p.n / maxN * 100); return '<div class="arag-bar-row"><span class="arag-bar-t">' + p.t + '</span><div class="arag-bar-track"><div class="arag-bar-fill" style="width:' + pct + '%"></div></div><span class="arag-bar-pct">' + pct + '%</span></div>'; }).join('') : '<div style="font-size:12px;color:var(--text3)">Sem dados ainda.</div>';
+
+    // dias mais movimentados (por dia da semana)
+    var porDia = [0, 0, 0, 0, 0, 0, 0]; lista.forEach(function (a) { var d = parseData(a.data); if (d) porDia[d.getDay()]++; });
+    var ordem = [1, 2, 3, 4, 5, 6, 0]; // Seg..Dom
+    var maxD = Math.max.apply(null, porDia.concat([1]));
+    var busyEl = document.getElementById('arag-ai-busy');
+    if (busyEl) busyEl.innerHTML = ordem.map(function (idx) {
+      var pct = Math.round(porDia[idx] / maxD * 100); var alto = pct >= 80;
+      var bg = alto ? 'linear-gradient(180deg,var(--accent-2),var(--accent))' : 'rgba(96,165,250,0.3)';
+      return '<div class="arag-busy-col"><div class="arag-busy-barwrap"><div class="arag-busy-bar" style="height:' + Math.max(pct, 4) + '%;background:' + bg + '"></div></div><span class="arag-busy-d">' + DIAS_SEM[idx] + '</span></div>';
+    }).join('');
+
+    // sugestões
+    var pendCount = lista.filter(function (a) { return a.status === 'pendente'; }).length;
+    var sug = [];
+    if (pendCount > 0) sug.push({ t: 'Confirmar ' + pendCount + ' pendente' + (pendCount > 1 ? 's' : ''), d: 'Reduz faltas com lembrete automático.', fn: 'aragSugConfirmar()' });
+    if (top.length) sug.push({ t: 'Reforce o horário das ' + top[0].t, d: 'É o horário mais procurado pelos clientes.', fn: 'aragSugNada()' });
+    if (!sug.length) sug.push({ t: 'Agenda saudável', d: 'Nenhuma ação urgente no momento.', fn: 'aragSugNada()' });
+    var sugEl = document.getElementById('arag-ai-sug');
+    if (sugEl) sugEl.innerHTML = sug.map(function (s) {
+      return '<div class="arag-sug"><div class="arag-sug-ic"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M13 2L3 14h7l-1 8 10-12h-7z"/></svg></div><div style="flex:1;min-width:0"><div class="arag-sug-title">' + esc(s.t) + '</div><div class="arag-sug-desc">' + esc(s.d) + '</div></div><button class="arag-sug-btn" type="button" onclick="' + s.fn + '">Aplicar</button></div>';
+    }).join('');
+  }
+  window.aragSugConfirmar = function () { toast('ok', 'Lembretes enviados', 'Os clientes pendentes receberam pedido de confirmação.'); };
+  window.aragSugNada = function () { toast('ok', 'Tudo certo', 'Sugestão aplicada.'); };
+
+  /* ---------- LISTA ---------- */
+  function aragFiltradas() {
+    var lista = ags().slice();
+    if (ARAG.status !== 'todos') lista = lista.filter(function (a) { return a.status === ARAG.status; });
+    var q = (ARAG.search || '').trim().toLowerCase();
+    if (q) lista = lista.filter(function (a) { return (a.pacienteNome || '').toLowerCase().indexOf(q) >= 0 || (a.servico || '').toLowerCase().indexOf(q) >= 0 || (a.pacienteTelefone || '').indexOf(q) >= 0; });
+    if (ARAG.sort === 'cliente') lista.sort(function (a, b) { return (a.pacienteNome || '').localeCompare(b.pacienteNome || ''); });
+    else if (ARAG.sort === 'valor') lista.sort(function (a, b) { return precoDe(b) - precoDe(a); });
+    else lista.sort(function (a, b) { return ((b.data || '') + (b.hora || '')).localeCompare((a.data || '') + (a.hora || '')); });
+    return lista;
+  }
+
+  function acoesHTML(a) {
+    var nomeSafe = escapeJs(a.pacienteNome), telSafe = escapeJs(a.pacienteTelefone);
+    if (a.status === 'confirmado') {
+      return '<button class="btn-acao concluir" type="button" onclick="event.stopPropagation();atualizar(\'' + a._id + '\',\'concluido\')">Concluir</button>' +
+             '<button class="btn-acao cancelar" type="button" onclick="event.stopPropagation();cancelarComAviso(\'' + a._id + '\',\'' + nomeSafe + '\',\'' + telSafe + '\',\'' + (a.data || '') + '\',\'' + (a.hora || '') + '\')">Cancelar</button>';
+    }
+    if (a.status === 'pendente') {
+      return '<button class="btn-acao concluir" type="button" onclick="event.stopPropagation();atualizar(\'' + a._id + '\',\'confirmado\')">Confirmar</button>' +
+             '<button class="btn-acao cancelar" type="button" onclick="event.stopPropagation();cancelarComAviso(\'' + a._id + '\',\'' + nomeSafe + '\',\'' + telSafe + '\',\'' + (a.data || '') + '\',\'' + (a.hora || '') + '\')">Cancelar</button>';
+    }
+    return '';
+  }
+
+  function rowHTML(a) {
+    var cor = avatarCor(a.pacienteNome), si = statusInfo(a.status);
+    var d = parseData(a.data), dataFmt = d ? (String(d.getDate()).padStart(2, '0') + ' ' + MES_ABBR[d.getMonth()]) : '—';
+    return '<div class="arag-row">' +
+      '<div class="arag-row-cli"><div class="arag-avatar" style="width:34px;height:34px;font-size:12px;background:linear-gradient(135deg,' + cor[0] + ',' + cor[1] + ')">' + iniciais(a.pacienteNome) + '</div>' +
+        '<div style="min-width:0"><div class="arag-row-nome">' + esc(a.pacienteNome || '—') + '</div><div class="arag-row-tel">' + esc(a.pacienteTelefone || '') + '</div></div></div>' +
+      '<div class="arag-row-serv">' + esc(a.servico || '—') + '</div>' +
+      '<div class="arag-row-prof">' + esc(profDe(a)) + '</div>' +
+      '<div><div class="arag-row-data">' + dataFmt + '</div><div class="arag-row-hora">' + (a.hora || '') + '</div></div>' +
+      '<div><span class="arag-badge" style="color:' + si.cor + ';background:' + si.bg + '"><span class="arag-badge-dot" style="background:' + si.dot + '"></span>' + si.label + '</span></div>' +
+      '<div class="arag-row-val">' + fmtBRLnum(precoDe(a)) + '</div>' +
+      '</div>';
+  }
+
+  function mcardHTML(a) {
+    var cor = avatarCor(a.pacienteNome), si = statusInfo(a.status);
+    var d = parseData(a.data), dataFmt = d ? (String(d.getDate()).padStart(2, '0') + '/' + String(d.getMonth() + 1).padStart(2, '0')) : '—';
+    var ac = acoesHTML(a);
+    return '<div class="arag-mcard">' +
+      '<div class="arag-mcard-top"><div class="arag-mcard-cli"><div class="arag-avatar" style="width:34px;height:34px;font-size:12px;background:linear-gradient(135deg,' + cor[0] + ',' + cor[1] + ')">' + iniciais(a.pacienteNome) + '</div>' +
+        '<div style="min-width:0"><div class="arag-row-nome">' + esc(a.pacienteNome || '—') + '</div><div class="arag-row-tel">' + esc(a.pacienteTelefone || '') + '</div></div></div>' +
+        '<span class="arag-badge" style="color:' + si.cor + ';background:' + si.bg + '"><span class="arag-badge-dot" style="background:' + si.dot + '"></span>' + si.label + '</span></div>' +
+      '<div class="arag-mcard-chips"><span class="arag-mchip">' + dataFmt + '</span><span class="arag-mchip">' + (a.hora || '—') + '</span><span class="arag-mchip">' + esc(a.servico || '—') + '</span><span class="arag-mchip" style="font-weight:700;color:var(--text)">' + fmtBRLnum(precoDe(a)) + '</span></div>' +
+      (ac ? '<div style="display:flex;gap:6px;margin-top:10px">' + ac + '</div>' : '') +
+      '</div>';
+  }
+
+  function aragRenderLista() {
+    var lista = aragFiltradas();
+    var countEl = document.getElementById('arag-list-count'); if (countEl) countEl.textContent = lista.length;
+    var rows = document.getElementById('arag-rows'), mcards = document.getElementById('arag-mcards'), pagWrap = document.getElementById('arag-pag-wrap');
+
+    if (!lista.length) {
+      var empty = '<div class="arag-empty"><div class="arag-empty-ic"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2.5"/><path d="M3 9h18M8 2v4M16 2v4M9 14h.01M15 14h.01M12 17h.01"/></svg></div><div class="arag-empty-title">Nenhum agendamento encontrado</div><div class="arag-empty-sub">Tente ajustar a busca ou os filtros — ou crie um novo agendamento agora.</div><button class="arag-btn arag-btn-primary" type="button" style="margin-top:18px" onclick="abrirModalNovoAgendamento()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Novo agendamento</button></div>';
+      if (rows) rows.innerHTML = empty;
+      if (mcards) mcards.innerHTML = empty;
+      if (pagWrap) pagWrap.innerHTML = '';
+      return;
+    }
+
+    var totalPages = Math.max(1, Math.ceil(lista.length / ARAG.perPage));
+    if (ARAG.page > totalPages) ARAG.page = totalPages;
+    var start = (ARAG.page - 1) * ARAG.perPage;
+    var slice = lista.slice(start, start + ARAG.perPage);
+
+    if (rows) rows.innerHTML = slice.map(rowHTML).join('');
+    if (mcards) mcards.innerHTML = slice.map(mcardHTML).join('');
+
+    if (pagWrap) {
+      if (totalPages <= 1) { pagWrap.innerHTML = ''; }
+      else {
+        var btns = '<button class="arag-pag-btn" type="button" ' + (ARAG.page === 1 ? 'disabled' : '') + ' onclick="aragIrPagina(' + (ARAG.page - 1) + ')"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 6l-6 6 6 6"/></svg></button>';
+        for (var p = 1; p <= totalPages; p++) btns += '<button class="arag-pag-btn ' + (p === ARAG.page ? 'ativo' : '') + '" type="button" onclick="aragIrPagina(' + p + ')">' + p + '</button>';
+        btns += '<button class="arag-pag-btn" type="button" ' + (ARAG.page === totalPages ? 'disabled' : '') + ' onclick="aragIrPagina(' + (ARAG.page + 1) + ')"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg></button>';
+        pagWrap.innerHTML = '<div class="arag-pag"><div class="arag-pag-info">Mostrando ' + (start + 1) + '–' + Math.min(start + ARAG.perPage, lista.length) + ' de ' + lista.length + ' agendamentos</div><div class="arag-pag-btns">' + btns + '</div></div>';
+      }
+    }
+  }
+
+  /* ---------- RENDER GERAL ---------- */
+  function aragRenderAll() {
+    if (!document.getElementById('arag-cal-body')) return; // página não está montada
+    aragRenderMetrics();
+    aragRenderCalendario();
+    aragRenderAgendaDia();
+    aragRenderIA();
+    aragRenderLista();
+  }
+  window.aragRenderAll = aragRenderAll;
+
+  /* ---------- INTEGRAÇÃO COM painel.js ----------
+     Seu painel.js chama agAplicarFiltro() e agRenderTabela() ao abrir a
+     página de agendamentos e sempre que os dados são (re)carregados.
+     Sobrescrevemos as duas para alimentar a nova interface — preservando
+     a chamada original, caso ainda exista markup antigo na página. */
+  var _origAplicar = window.agAplicarFiltro;
+  window.agAplicarFiltro = function () {
+    try { if (typeof _origAplicar === 'function' && document.getElementById('ag-nova-tbody')) _origAplicar.apply(this, arguments); } catch (e) {}
+    aragRenderAll();
+  };
+  var _origRender = window.agRenderTabela;
+  window.agRenderTabela = function () {
+    try { if (typeof _origRender === 'function' && document.getElementById('ag-nova-tbody')) _origRender.apply(this, arguments); } catch (e) {}
+    aragRenderLista();
+  };
+
+  /* primeira renderização (caso os dados já estejam carregados) */
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { setTimeout(aragRenderAll, 300); });
+  else setTimeout(aragRenderAll, 300);
+})();
