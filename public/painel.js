@@ -4063,3 +4063,385 @@ document.addEventListener('DOMContentLoaded', function(){
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { setTimeout(aragRenderAll, 300); });
   else setTimeout(aragRenderAll, 300);
 })();
+
+(function () {
+  'use strict';
+
+  var ROOT = document.getElementById('hz');
+  if (!ROOT) return;
+
+  var STORE_KEY = 'hz-horarios';
+  var WMIN = 360, SPAN = 1080; // janela visual do timeline: 06h → 24h
+
+  /* ---------- estado padrão ---------- */
+  var DEFAULT = {
+    dias: [
+      { nome: 'Segunda', short: 'Seg', aberto: true,  blocos: [{ i: '09:00', f: '12:00' }, { i: '13:00', f: '18:00' }] },
+      { nome: 'Terça',   short: 'Ter', aberto: true,  blocos: [{ i: '09:00', f: '18:00' }] },
+      { nome: 'Quarta',  short: 'Qua', aberto: true,  blocos: [{ i: '09:00', f: '18:00' }] },
+      { nome: 'Quinta',  short: 'Qui', aberto: true,  blocos: [{ i: '09:00', f: '12:00' }, { i: '13:00', f: '19:00' }] },
+      { nome: 'Sexta',   short: 'Sex', aberto: true,  blocos: [{ i: '09:00', f: '20:00' }] },
+      { nome: 'Sábado',  short: 'Sáb', aberto: true,  blocos: [{ i: '09:00', f: '14:00' }] },
+      { nome: 'Domingo', short: 'Dom', aberto: false, blocos: [{ i: '09:00', f: '13:00' }] }
+    ],
+    intervalo: 30,
+    buffer: 0,
+    antecedencia: 60,
+    janela: 30,
+    previewDia: 0
+  };
+
+  var state, savedState, dirty = false;
+
+  function load() {
+    try {
+      var raw = localStorage.getItem(STORE_KEY);
+      if (raw) return JSON.parse(raw);
+    } catch (e) {}
+    return JSON.parse(JSON.stringify(DEFAULT));
+  }
+  function persist() {
+    try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch (e) {}
+  }
+
+  state = load();
+  savedState = JSON.stringify(state);
+
+  /* aplica accent / nome do negócio vindos dos data-attrs */
+  var ACCENT = ROOT.getAttribute('data-accent') || '#5b8cff';
+  var BUSINESS = ROOT.getAttribute('data-business') || 'Seu negócio';
+  ROOT.style.setProperty('--accent', ACCENT);
+
+  /* ---------- helpers ---------- */
+  function toMin(t) { if (!t) return 0; var p = String(t).split(':'); return (+p[0]) * 60 + (+p[1]); }
+  function fmt(m) { m = ((m % 1440) + 1440) % 1440; var h = Math.floor(m / 60), mm = m % 60; return pad(h) + ':' + pad(mm); }
+  function pad(n) { return (n < 10 ? '0' : '') + n; }
+  function durLabel(m) { if (m <= 0) return '—'; var h = Math.floor(m / 60), mm = m % 60; if (h === 0) return mm + ' min'; if (mm === 0) return h + 'h'; return h + 'h' + pad(mm); }
+  function diaMin(d) { return d.aberto ? d.blocos.reduce(function (s, b) { return s + Math.max(0, toMin(b.f) - toMin(b.i)); }, 0) : 0; }
+  function el(tag, cls, html) { var n = document.createElement(tag); if (cls) n.className = cls; if (html != null) n.innerHTML = html; return n; }
+  function q(sel) { return ROOT.querySelector(sel); }
+
+  /* marca alteração (mostra a barra de salvar) */
+  function touch() {
+    persist();
+    dirty = JSON.stringify(state) !== savedState;
+    render();
+  }
+
+  /* ============================================================
+     RENDER
+     ============================================================ */
+  function render() {
+    renderHeaderBits();
+    renderStats();
+    renderStatus();
+    renderDays();
+    renderSlotOptions();
+    renderSelects();
+    renderMaya();
+    renderPreview();
+    renderSaveBar();
+  }
+
+  function renderHeaderBits() {
+    q('[data-biz]').textContent = BUSINESS;
+    q('[data-prev-name]').textContent = BUSINESS;
+    q('[data-prev-ini]').textContent = (BUSINESS[0] || 'N').toUpperCase();
+  }
+
+  function totals() {
+    var totalWeek = state.dias.reduce(function (a, d) { return a + diaMin(d); }, 0);
+    var diasAbertos = state.dias.filter(function (d) { return d.aberto; }).length;
+    var step = state.intervalo + state.buffer;
+    var vagas = state.dias.reduce(function (a, d) {
+      if (!d.aberto) return a;
+      return a + d.blocos.reduce(function (x, b) {
+        var dur = toMin(b.f) - toMin(b.i);
+        return x + (dur >= state.intervalo ? Math.floor((dur - state.intervalo) / step) + 1 : 0);
+      }, 0);
+    }, 0);
+    return { totalWeek: totalWeek, diasAbertos: diasAbertos, vagas: vagas, step: step };
+  }
+
+  function renderStats() {
+    var t = totals();
+    q('[data-stat-dias]').textContent = t.diasAbertos;
+    q('[data-stat-horas]').textContent = durLabel(t.totalWeek);
+    q('[data-stat-slot]').textContent = state.intervalo + ' min';
+    q('[data-stat-vagas]').textContent = '~' + t.vagas;
+  }
+
+  function renderStatus() {
+    var now = new Date(), nm = now.getHours() * 60 + now.getMinutes(), ti = (now.getDay() + 6) % 7;
+    var today = state.dias[ti], aberto = false, label = 'Fechado agora', detail = '';
+    if (today.aberto) {
+      var blk = today.blocos.find(function (b) { return toMin(b.i) <= nm && nm < toMin(b.f); });
+      if (blk) { aberto = true; label = 'Aberto agora'; detail = 'Fecha às ' + blk.f; }
+    }
+    if (!aberto) {
+      var found = null;
+      for (var off = 0; off < 8 && !found; off++) {
+        var d = state.dias[(ti + off) % 7];
+        if (!d.aberto) continue;
+        var cand = d.blocos.map(function (b) { return toMin(b.i); })
+          .filter(function (mi) { return off > 0 || mi > nm; }).sort(function (a, b) { return a - b; })[0];
+        if (cand != null) found = { quando: off === 0 ? 'hoje' : (off === 1 ? 'amanhã' : d.short), hora: fmt(cand) };
+      }
+      if (found) detail = 'Abre ' + found.quando + ' às ' + found.hora;
+    }
+    var color = aberto ? 'var(--green)' : 'var(--amber)';
+    Array.prototype.forEach.call(ROOT.querySelectorAll('[data-status-dot]'), function (n) { n.style.background = color; });
+    var lbl = q('[data-status-label]'); lbl.textContent = label; lbl.style.color = color;
+    q('[data-status-detail]').textContent = detail;
+  }
+
+  /* ---------- editor semanal ---------- */
+  function renderDays() {
+    var host = q('[data-days]');
+    host.innerHTML = '';
+    state.dias.forEach(function (d, i) {
+      var row = el('div', 'hz-day' + (d.aberto ? ' on' : ''));
+
+      /* identidade + toggle */
+      var id = el('div', 'hz-day-id');
+      var sw = el('button', 'hz-switch' + (d.aberto ? ' on' : ''));
+      sw.type = 'button';
+      sw.setAttribute('role', 'switch');
+      sw.setAttribute('aria-checked', d.aberto);
+      sw.setAttribute('aria-label', d.nome);
+      sw.innerHTML = '<b></b>';
+      sw.addEventListener('click', function () { toggleDia(i); });
+      var idtxt = el('div');
+      idtxt.appendChild(el('div', 'hz-day-name', d.nome));
+      idtxt.appendChild(el('div', 'hz-day-meta',
+        '<span class="' + (d.aberto ? 'open' : 'closed') + '">' + (d.aberto ? 'Aberto' : 'Fechado') + '</span> · ' + durLabel(diaMin(d))));
+      id.appendChild(sw); id.appendChild(idtxt);
+      row.appendChild(id);
+
+      if (d.aberto) {
+        /* blocos */
+        var blocks = el('div', 'hz-blocks');
+        d.blocos.forEach(function (b, bi) {
+          var bl = el('div', 'hz-block');
+          var t1 = el('input'); t1.type = 'time'; t1.value = b.i; t1.setAttribute('aria-label', 'Início');
+          t1.addEventListener('change', function (e) { setBloco(i, bi, 'i', e.target.value); });
+          var arr = el('span', 'arr', '→');
+          var t2 = el('input'); t2.type = 'time'; t2.value = b.f; t2.setAttribute('aria-label', 'Fim');
+          t2.addEventListener('change', function (e) { setBloco(i, bi, 'f', e.target.value); });
+          bl.appendChild(t1); bl.appendChild(arr); bl.appendChild(t2);
+          if (d.blocos.length > 1) {
+            var rm = el('button', 'rm', '×'); rm.type = 'button'; rm.setAttribute('aria-label', 'Remover período');
+            rm.addEventListener('click', function () { removeBloco(i, bi); });
+            bl.appendChild(rm);
+          }
+          blocks.appendChild(bl);
+        });
+        var add = el('button', 'hz-add', '<svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M6 1.5v9M1.5 6h9"/></svg>período');
+        add.type = 'button';
+        add.addEventListener('click', function () { addBloco(i); });
+        blocks.appendChild(add);
+        row.appendChild(blocks);
+      } else {
+        row.appendChild(el('div', 'hz-closed-note', 'Fechado — clientes não verão este dia'));
+      }
+
+      /* timeline */
+      var tl = el('div', 'hz-timeline');
+      if (d.aberto) {
+        d.blocos.forEach(function (b) {
+          var ii = Math.max(toMin(b.i), WMIN), ff = Math.min(toMin(b.f), WMIN + SPAN);
+          if (ff <= ii) return;
+          var seg = el('div', 'hz-seg');
+          seg.style.left = (Math.max(0, (ii - WMIN) / SPAN * 100)).toFixed(2) + '%';
+          seg.style.width = (Math.max(0, (ff - ii) / SPAN * 100)).toFixed(2) + '%';
+          tl.appendChild(seg);
+        });
+      }
+      row.appendChild(tl);
+
+      /* copiar para todos */
+      var cp = el('button', 'hz-copy', '<svg width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="5" y="5" width="8.5" height="8.5" rx="2" stroke="currentColor" stroke-width="1.4"/><path d="M2.5 11V4.2A1.7 1.7 0 0 1 4.2 2.5H10.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>');
+      cp.type = 'button';
+      cp.title = 'Aplicar este dia a toda a semana';
+      cp.setAttribute('aria-label', 'Copiar para todos os dias');
+      cp.addEventListener('click', function () { copyToAll(i); });
+      row.appendChild(cp);
+
+      host.appendChild(row);
+    });
+  }
+
+  /* ---------- opções de duração ---------- */
+  function renderSlotOptions() {
+    var host = q('[data-slots]');
+    host.innerHTML = '';
+    [15, 20, 30, 45, 60, 90].forEach(function (v) {
+      var label = v < 60 ? v + ' min' : (v === 60 ? '1 hora' : '1h30');
+      var c = el('button', 'hz-chip' + (v === state.intervalo ? ' on' : ''), label);
+      c.type = 'button';
+      c.setAttribute('aria-pressed', v === state.intervalo);
+      c.addEventListener('click', function () { state.intervalo = v; touch(); });
+      host.appendChild(c);
+    });
+  }
+
+  /* ---------- selects ---------- */
+  function fillSelect(sel, opts, value, onChange) {
+    sel.innerHTML = '';
+    opts.forEach(function (o) {
+      var op = el('option', null, o[1]); op.value = o[0];
+      if (o[0] === value) op.selected = true;
+      sel.appendChild(op);
+    });
+    sel.onchange = function (e) { onChange(+e.target.value); };
+  }
+  function renderSelects() {
+    fillSelect(q('[data-buffer]'),
+      [[0, 'Sem intervalo'], [5, '5 minutos'], [10, '10 minutos'], [15, '15 minutos']],
+      state.buffer, function (v) { state.buffer = v; touch(); });
+    fillSelect(q('[data-ant]'),
+      [[0, 'Sem antecedência'], [30, '30 minutos'], [60, '1 hora'], [120, '2 horas'], [1440, '1 dia']],
+      state.antecedencia, function (v) { state.antecedencia = v; touch(); });
+    fillSelect(q('[data-janela]'),
+      [[7, '7 dias'], [14, '14 dias'], [30, '30 dias'], [60, '60 dias'], [0, 'Sem limite']],
+      state.janela, function (v) { state.janela = v; touch(); });
+  }
+
+  /* ---------- Maya ---------- */
+  function renderMaya() {
+    var t = totals();
+    var insights = [
+      'Você atende ' + t.diasAbertos + ' ' + (t.diasAbertos === 1 ? 'dia' : 'dias') + ' por semana, somando ' + durLabel(t.totalWeek) + ' de disponibilidade.',
+      'Com slots de ' + state.intervalo + ' min, sua agenda comporta cerca de ' + t.vagas + ' atendimentos por semana.'
+    ];
+    var host = q('[data-insights]');
+    host.innerHTML = '';
+    insights.forEach(function (tx) {
+      var card = el('div', 'hz-insight');
+      card.appendChild(el('div', 'hz-insight-ic', '<svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round"><path d="M2 8.5l3.5 3.5L14 3.5"/></svg>'));
+      card.appendChild(el('div', 'hz-insight-tx', tx));
+      host.appendChild(card);
+    });
+
+    var sug, acao = null, label = '';
+    if (!state.dias[5].aberto) { sug = 'Sábados costumam ter alta procura. Que tal abrir das 09h às 14h?'; acao = function () { abrirDia(5); }; label = 'Abrir sábado'; }
+    else if (!state.dias[6].aberto) { sug = 'Domingos podem render agendamentos extras. Experimente um horário reduzido.'; acao = function () { abrirDia(6); }; label = 'Abrir domingo'; }
+    else { sug = 'Sua agenda cobre a semana inteira e está bem distribuída. Tudo certo por aqui!'; }
+
+    var sh = q('[data-sug]');
+    sh.innerHTML = '';
+    var box = el('div', 'hz-sug');
+    box.appendChild(el('div', 'hz-sug-kicker', '<svg width="12" height="12" viewBox="0 0 24 24" fill="var(--accent)"><path d="M12 2l1.7 5.4L19 9.2l-5.3 1.8L12 16l-1.7-5L5 9.2l5.3-1.8z"/></svg>Sugestão'));
+    box.appendChild(el('div', 'hz-sug-tx', sug));
+    if (acao) {
+      var btn = el('button', 'hz-sug-btn', label + '<svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 8h9M8.5 4l4 4-4 4"/></svg>');
+      btn.type = 'button';
+      btn.addEventListener('click', acao);
+      box.appendChild(btn);
+    }
+    sh.appendChild(box);
+  }
+
+  /* ---------- prévia do cliente ---------- */
+  function renderPreview() {
+    var pills = q('[data-prev-pills]');
+    pills.innerHTML = '';
+    state.dias.forEach(function (d, i) {
+      var p = el('button', 'hz-prev-pill' + (i === state.previewDia ? ' on' : '') + (!d.aberto ? ' closed' : ''), d.short);
+      p.type = 'button';
+      p.addEventListener('click', function () { state.previewDia = i; persist(); renderPreview(); });
+      pills.appendChild(p);
+    });
+
+    var pd = state.dias[state.previewDia];
+    q('[data-prev-dayname]').textContent = pd.nome;
+    var body = q('[data-prev-body]');
+    body.innerHTML = '';
+
+    if (!pd.aberto) {
+      body.appendChild(el('div', 'hz-prev-empty', 'Fechado neste dia'));
+      return;
+    }
+    var step = state.intervalo + state.buffer;
+    var grid = el('div', 'hz-prev-slots');
+    var n = 0;
+    pd.blocos.forEach(function (b) {
+      var t = toMin(b.i), end = toMin(b.f);
+      while (t + state.intervalo <= end) {
+        var busy = ((state.previewDia * 5 + n) % 6) === 2;
+        grid.appendChild(el('div', 'hz-slot' + (busy ? ' busy' : ''), fmt(t)));
+        t += step; n++;
+      }
+    });
+    if (!grid.children.length) body.appendChild(el('div', 'hz-prev-empty', 'Sem horários neste dia'));
+    else body.appendChild(grid);
+  }
+
+  /* ---------- barra de salvar ---------- */
+  function renderSaveBar() {
+    q('[data-savebar]').classList.toggle('hz-hidden', !dirty);
+  }
+
+  /* ============================================================
+     MUTAÇÕES
+     ============================================================ */
+  function toggleDia(i) {
+    var d = state.dias[i];
+    d.aberto = !d.aberto;
+    if (d.aberto && (!d.blocos || !d.blocos.length)) d.blocos = [{ i: '09:00', f: '14:00' }];
+    touch();
+  }
+  function setBloco(i, bi, k, v) { state.dias[i].blocos[bi][k] = v; touch(); }
+  function addBloco(i) {
+    var d = state.dias[i], last = d.blocos[d.blocos.length - 1];
+    var st = toMin(last ? last.f : '14:00'); if (st >= 1380) st = 780;
+    var en = Math.min(st + 60, 1410);
+    d.blocos.push({ i: fmt(st), f: fmt(en) });
+    touch();
+  }
+  function removeBloco(i, bi) {
+    var d = state.dias[i];
+    if (d.blocos.length > 1) { d.blocos.splice(bi, 1); touch(); }
+  }
+  function copyToAll(i) {
+    var src = state.dias[i];
+    state.dias.forEach(function (d) {
+      d.aberto = src.aberto;
+      d.blocos = src.blocos.map(function (b) { return { i: b.i, f: b.f }; });
+    });
+    touch();
+  }
+  function abrirDia(i) {
+    var d = state.dias[i];
+    d.aberto = true;
+    if (!d.blocos || !d.blocos.length) d.blocos = [{ i: '09:00', f: '14:00' }];
+    touch();
+  }
+
+  /* ---------- salvar / descartar ---------- */
+  var toastTimer;
+  q('[data-save]').addEventListener('click', function () {
+    savedState = JSON.stringify(state);
+    persist();
+    dirty = false;
+    renderSaveBar();
+    var toast = q('[data-toast]');
+    toast.classList.remove('hz-hidden');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { toast.classList.add('hz-hidden'); }, 2400);
+    /* >>> Aqui você integra com seu backend, ex.:
+       fetch('/api/horarios', {method:'POST', body: savedState}) */
+  });
+  q('[data-discard]').addEventListener('click', function () {
+    state = JSON.parse(savedState);
+    persist();
+    dirty = false;
+    render();
+  });
+
+  /* ---------- atualiza status "aberto agora" a cada minuto ---------- */
+  setInterval(renderStatus, 60000);
+
+  /* ---------- go ---------- */
+  render();
+})();

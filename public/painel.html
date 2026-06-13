@@ -4,41 +4,30 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>AgendoRapido — Painel de Controle</title>
-
-  <!-- SEO Meta Tags -->
   <meta name="description" content="AgendoRapido: sistema de agendamento online completo para barbearias, clínicas, salões e pequenos negócios. Gerencie clientes, horários e pagamentos.">
   <meta name="keywords" content="agendamento online, barbearia, clínica, salão de beleza, sistema de agendamento, agenda digital">
   <meta name="robots" content="noindex, nofollow">
   <meta name="author" content="AgendoRapido">
-
-  <!-- Open Graph -->
   <meta property="og:type" content="website">
   <meta property="og:title" content="AgendoRapido — Painel de Controle">
   <meta property="og:description" content="Sistema de agendamento online completo para pequenos negócios.">
   <meta property="og:site_name" content="AgendoRapido">
-
-  <!-- PWA / Theme -->
   <meta name="theme-color" content="#0b0f1a" media="(prefers-color-scheme: dark)">
   <meta name="theme-color" content="#f0f4f8" media="(prefers-color-scheme: light)">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="AgendoRapido">
-
   <link rel="manifest" href="/manifest.json">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230f172a'/%3E%3Crect x='13' y='18' width='38' height='32' rx='5' fill='none' stroke='%232563eb' stroke-width='3'/%3E%3Cpath d='M13 27h38' stroke='%232563eb' stroke-width='2.5' stroke-linecap='round'/%3E%3Cpath d='M23 14v6M41 14v6' stroke='%2360a5fa' stroke-width='3' stroke-linecap='round'/%3E%3Cpath d='M21 36h8M21 42h14' stroke='%2360a5fa' stroke-width='2.5' stroke-linecap='round'/%3E%3Ccircle cx='44' cy='42' r='7' fill='%232563eb'/%3E%3Cpath d='M41.5 42l2 2 4-4' stroke='white' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
-
-  <!-- Preconnect for fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
   <link rel="stylesheet" href="/painel.css">
   <link rel="stylesheet" href="/painel-premium.css">
   <link rel="stylesheet" href="/painel-light-fix.css">
   <link rel="stylesheet" href="/arag-fix.css">
-
-  <!-- Structured Data -->
+  <link rel="stylesheet" href="/horarios.css">
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -62,12 +51,10 @@
       <path d="M2 4h14M2 9h14M2 14h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
     </svg>
   </button>
-
   <div class="topbar-mobile-info">
     <div class="topbar-mobile-page-title" id="topbar-mobile-title">Dashboard</div>
     <div class="topbar-mobile-page-sub" id="topbar-mobile-sub">Painel de controle do seu negócio</div>
   </div>
-
   <div class="topbar-mobile-right">
     <button class="topbar-mobile-btn" onclick="toggleTema()" type="button" aria-label="Tema">
       <svg width="14" height="14" viewBox="0 0 15 15" fill="none">
@@ -391,7 +378,7 @@
 
   <!-- ══════════════════ PAGE: DASHBOARD ══════════════════ -->
   <section class="page ativo" id="page-dashboard" aria-label="Dashboard">
- 
+
   <!-- HEADER -->
   <div class="dash-header">
     <div class="dash-greeting">
@@ -409,7 +396,7 @@
       </svg>
     </button>
   </div>
- 
+
   <!-- STAT CARDS -->
   <div class="dash-stats-row">
     <div class="dash-stat-card" style="animation-delay:.05s">
@@ -477,7 +464,7 @@
       </div>
     </div>
   </div>
- 
+
   <!-- CHART + DIREITA -->
   <div class="dash-main-grid">
     <div class="dash-col-left">
@@ -503,12 +490,7 @@
         </div>
         <div style="display:flex;gap:14px">
           <div class="dash-y-labels" id="dash-y-labels">
-            <span>R$25k</span>
-            <span>R$20k</span>
-            <span>R$15k</span>
-            <span>R$10k</span>
-            <span>R$5k</span>
-            <span>R$0</span>
+            <span>R$25k</span><span>R$20k</span><span>R$15k</span><span>R$10k</span><span>R$5k</span><span>R$0</span>
           </div>
           <div style="flex:1;min-width:0">
             <div class="dash-chart-wrap">
@@ -519,12 +501,7 @@
               </div>
             </div>
             <div class="dash-x-labels" id="dash-x-labels">
-              <span>1 Abr</span>
-              <span>5 Abr</span>
-              <span>10 Abr</span>
-              <span>15 Abr</span>
-              <span>20 Abr</span>
-              <span id="dash-x-last">hoje</span>
+              <span>1 Abr</span><span>5 Abr</span><span>10 Abr</span><span>15 Abr</span><span>20 Abr</span><span id="dash-x-last">hoje</span>
             </div>
           </div>
         </div>
@@ -636,8 +613,8 @@
       </div>
     </div>
   </div>
- 
-</section>
+
+  </section>
 
   <!-- ══════════════════ PAGE: AGENDAMENTOS ══════════════════ -->
   <section class="page" id="page-agendamentos" aria-label="Agendamentos">
@@ -723,9 +700,8 @@
   </div>
 </div>
 
-<!-- GRID PRINCIPAL: calendário + lateral -->
+<!-- GRID PRINCIPAL -->
 <div class="arag-grid">
-  <!-- CALENDÁRIO -->
   <section class="arag-cal-section">
     <div class="arag-cal-hdr">
       <div class="arag-cal-nav">
@@ -739,17 +715,14 @@
         </div>
       </div>
       <div class="arag-seg" role="tablist" aria-label="Visualização do calendário">
-        <button class="arag-seg-btn" type="button" data-arag-view="dia"    onclick="aragSetView('dia')">Dia</button>
+        <button class="arag-seg-btn" type="button" data-arag-view="dia" onclick="aragSetView('dia')">Dia</button>
         <button class="arag-seg-btn ativo" type="button" data-arag-view="semana" onclick="aragSetView('semana')">Semana</button>
-        <button class="arag-seg-btn" type="button" data-arag-view="mes"    onclick="aragSetView('mes')">Mês</button>
+        <button class="arag-seg-btn" type="button" data-arag-view="mes" onclick="aragSetView('mes')">Mês</button>
       </div>
     </div>
-    <div id="arag-cal-body"><!-- render dinâmico --></div>
+    <div id="arag-cal-body"></div>
   </section>
-
-  <!-- LATERAL -->
   <aside class="arag-side">
-    <!-- Agenda do dia -->
     <div class="arag-card">
       <div class="arag-card-hd">
         <div>
@@ -758,10 +731,8 @@
         </div>
         <span class="arag-pill-count" id="arag-day-count">0 hoje</span>
       </div>
-      <div class="arag-day-list" id="arag-day-list"><!-- render dinâmico --></div>
+      <div class="arag-day-list" id="arag-day-list"></div>
     </div>
-
-    <!-- Assistente IA -->
     <div class="arag-card">
       <div class="arag-ai-hd">
         <div class="arag-ai-ic" aria-hidden="true">
@@ -774,22 +745,10 @@
         <span class="arag-ai-badge"><span class="arag-ai-dot"></span>ativo</span>
       </div>
       <div class="arag-ai-body">
-        <div>
-          <div class="arag-ai-label">Horários livres hoje</div>
-          <div class="arag-chips" id="arag-ai-free"><!-- render --></div>
-        </div>
-        <div>
-          <div class="arag-ai-label">Horários mais procurados</div>
-          <div id="arag-ai-popular"><!-- render --></div>
-        </div>
-        <div>
-          <div class="arag-ai-label">Dias mais movimentados</div>
-          <div class="arag-busy" id="arag-ai-busy"><!-- render --></div>
-        </div>
-        <div>
-          <div class="arag-ai-label">Sugestões automáticas</div>
-          <div id="arag-ai-sug"><!-- render --></div>
-        </div>
+        <div><div class="arag-ai-label">Horários livres hoje</div><div class="arag-chips" id="arag-ai-free"></div></div>
+        <div><div class="arag-ai-label">Horários mais procurados</div><div id="arag-ai-popular"></div></div>
+        <div><div class="arag-ai-label">Dias mais movimentados</div><div class="arag-busy" id="arag-ai-busy"></div></div>
+        <div><div class="arag-ai-label">Sugestões automáticas</div><div id="arag-ai-sug"></div></div>
       </div>
     </div>
   </aside>
@@ -812,26 +771,22 @@
     </div>
   </div>
   <div class="arag-chips-row" role="group" aria-label="Filtrar por status">
-    <button class="arag-fchip ativo" type="button" data-arag-status="todos"      onclick="aragSetStatus('todos')">Todos</button>
+    <button class="arag-fchip ativo" type="button" data-arag-status="todos" onclick="aragSetStatus('todos')">Todos</button>
     <button class="arag-fchip" type="button" data-arag-status="confirmado" onclick="aragSetStatus('confirmado')">Confirmados</button>
-    <button class="arag-fchip" type="button" data-arag-status="pendente"   onclick="aragSetStatus('pendente')">Pendentes</button>
-    <button class="arag-fchip" type="button" data-arag-status="concluido"  onclick="aragSetStatus('concluido')">Concluídos</button>
-    <button class="arag-fchip" type="button" data-arag-status="cancelado"  onclick="aragSetStatus('cancelado')">Cancelados</button>
+    <button class="arag-fchip" type="button" data-arag-status="pendente" onclick="aragSetStatus('pendente')">Pendentes</button>
+    <button class="arag-fchip" type="button" data-arag-status="concluido" onclick="aragSetStatus('concluido')">Concluídos</button>
+    <button class="arag-fchip" type="button" data-arag-status="cancelado" onclick="aragSetStatus('cancelado')">Cancelados</button>
   </div>
-
-  <!-- tabela (desktop) -->
   <div class="arag-table-scroll">
     <div class="arag-table">
       <div class="arag-thead">
         <div>Cliente</div><div>Serviço</div><div>Profissional</div><div>Data / Hora</div><div>Status</div><div class="ar-right">Valor</div>
       </div>
-      <div id="arag-rows"><!-- render dinâmico --></div>
+      <div id="arag-rows"></div>
     </div>
   </div>
-  <!-- cards (mobile) -->
-  <div class="arag-mcards" id="arag-mcards"><!-- render dinâmico --></div>
-
-  <div id="arag-pag-wrap"><!-- paginação dinâmica --></div>
+  <div class="arag-mcards" id="arag-mcards"></div>
+  <div id="arag-pag-wrap"></div>
 </section>
 
   </section>
@@ -853,150 +808,142 @@
   </section>
 
   <!-- ══════════════════ PAGE: HORÁRIOS ══════════════════ -->
-  <section class="page" id="page-horarios" aria-label="Configuração de horários">
-    <div class="horarios-hero">
-      <div class="horarios-hero-left">
-        <div class="horarios-hero-icon-row">
-          <div class="horarios-hero-icon-bg" aria-hidden="true">
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7.5" stroke="#60a5fa" stroke-width="1.8"/><path d="M10 6v5l3 3" stroke="#60a5fa" stroke-width="1.8" stroke-linecap="round"/></svg>
-          </div>
-        </div>
-        <h1 class="horarios-hero-title">Horários</h1>
-        <p class="horarios-hero-sub">Configure dias e horários que seu negócio atende</p>
-        <p class="horarios-hero-sub2">Defina sua disponibilidade para receber mais agendamentos.</p>
-      </div>
-      <div class="horarios-hero-right" aria-hidden="true">
-        <div class="horarios-hero-illustration">
-          <svg width="190" height="130" viewBox="0 0 190 130" fill="none" aria-hidden="true">
-            <rect x="22" y="24" width="95" height="85" rx="13" fill="rgba(0,0,0,0.3)"/>
-            <rect x="18" y="20" width="95" height="85" rx="13" fill="#1e3a8a" stroke="rgba(59,130,246,0.4)" stroke-width="1.5"/>
-            <rect x="18" y="20" width="95" height="32" rx="13" fill="#2563eb"/>
-            <rect x="18" y="38" width="95" height="14" fill="#2563eb"/>
-            <rect x="42" y="13" width="7" height="15" rx="3.5" fill="#93c5fd"/>
-            <rect x="79" y="13" width="7" height="15" rx="3.5" fill="#93c5fd"/>
-            <circle cx="40" cy="70" r="4.5" fill="rgba(147,197,253,0.45)"/>
-            <circle cx="57" cy="70" r="4.5" fill="rgba(147,197,253,0.45)"/>
-            <circle cx="74" cy="70" r="6" fill="rgba(255,255,255,0.85)"/>
-            <circle cx="91" cy="70" r="4.5" fill="rgba(147,197,253,0.45)"/>
-            <circle cx="40" cy="86" r="4.5" fill="rgba(147,197,253,0.45)"/>
-            <circle cx="57" cy="86" r="5" fill="#3b82f6"/>
-            <circle cx="74" cy="86" r="4.5" fill="rgba(147,197,253,0.45)"/>
-            <circle cx="91" cy="86" r="4.5" fill="rgba(147,197,253,0.3)"/>
-            <circle cx="148" cy="80" r="33" fill="rgba(0,0,0,0.3)"/>
-            <circle cx="144" cy="76" r="33" fill="#1d4ed8" stroke="rgba(96,165,250,0.35)" stroke-width="2"/>
-            <circle cx="144" cy="76" r="27" fill="#1e40af"/>
-            <path d="M144 52v4M144 96v4M120 76h4M164 76h4" stroke="rgba(147,197,253,0.4)" stroke-width="1.5" stroke-linecap="round"/>
-            <path d="M144 60v17" stroke="#93c5fd" stroke-width="2.5" stroke-linecap="round"/>
-            <path d="M144 76l10 10" stroke="#60a5fa" stroke-width="2.5" stroke-linecap="round"/>
-            <circle cx="144" cy="76" r="3.5" fill="#60a5fa"/>
-          </svg>
-        </div>
-        <div class="horarios-tip-card">
-          <div class="horarios-tip-icon" aria-hidden="true">
-            <svg width="13" height="13" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="7.5" r="5.5" stroke="#60a5fa" stroke-width="1.4"/><path d="M7.5 5v3M7.5 10v.5" stroke="#60a5fa" stroke-width="1.5" stroke-linecap="round"/></svg>
-          </div>
-          <div>
-            <div class="horarios-tip-title">Dica rápida</div>
-            <div class="horarios-tip-text">Horários bem definidos geram até 35% mais agendamentos!</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="horarios-content-grid">
-      <div class="horarios-col-left">
-        <div class="section-block">
-          <div class="section-block-header">
-            <div class="section-block-icon" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7.5" stroke="var(--accent)" stroke-width="1.6"/><path d="M10 6v5l3 3" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round"/></svg></div>
+  <section class="page" id="page-horarios" aria-label="Horários de atendimento">
+    <div class="hz-root" id="hz" data-accent="#5b8cff">
+      <div class="hz-glow" aria-hidden="true"></div>
+      <div class="hz-wrap">
+        <header class="hz-header hz-anim">
+          <div class="hz-head-left">
+            <div class="hz-logo">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3.2 2"/></svg>
+            </div>
             <div>
-              <div class="section-block-title">Intervalo padrão entre atendimentos</div>
-              <div class="section-block-sub">Tempo reservado quando o serviço não tem intervalo próprio.</div>
+              <h1 class="hz-title">Horários de atendimento</h1>
+              <p class="hz-sub">Defina quando você recebe clientes. <span data-biz>Seu negócio</span> fica disponível para agendamentos online automaticamente.</p>
             </div>
           </div>
-          <div class="section-block-body">
-            <div class="intervalo-grid" role="group" aria-label="Selecionar intervalo padrão">
-              <button class="intervalo-btn" onclick="selecionarIntervalo(this,15)" type="button">15 min</button>
-              <button class="intervalo-btn" onclick="selecionarIntervalo(this,20)" type="button">20 min</button>
-              <button class="intervalo-btn" onclick="selecionarIntervalo(this,30)" type="button">30 min</button>
-              <button class="intervalo-btn" onclick="selecionarIntervalo(this,45)" type="button">45 min</button>
-              <button class="intervalo-btn" onclick="selecionarIntervalo(this,60)" type="button">1 hora</button>
-              <button class="intervalo-btn" onclick="selecionarIntervalo(this,90)" type="button">1h30</button>
-              <button class="intervalo-btn" onclick="selecionarIntervalo(this,120)" type="button">2 horas</button>
-              <button class="intervalo-btn custom-btn" id="btn-custom-intervalo" onclick="selecionarIntervaloCustom(this)" type="button">
-                <svg width="11" height="11" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
-                Personalizado
-              </button>
+          <div class="hz-status">
+            <span class="hz-dot"><i data-status-dot></i><i class="ping" data-status-dot></i></span>
+            <div>
+              <div class="hz-status-label" data-status-label>—</div>
+              <div class="hz-status-detail" data-status-detail></div>
             </div>
-            <div class="intervalo-custom-wrap" id="intervalo-custom-wrap" aria-hidden="true">
-              <label class="intervalo-custom-label" for="intervalo-custom">Duração:</label>
-              <input type="number" id="intervalo-custom" min="5" max="480" step="5" placeholder="60"
-                     oninput="atualizarIntervaloCustom(this.value)" aria-label="Duração personalizada em minutos" inputmode="numeric">
-              <span class="intervalo-custom-suffix">minutos</span>
-            </div>
+          </div>
+        </header>
+        <div class="hz-stats">
+          <div class="hz-stat hz-anim hz-d1">
+            <div class="hz-stat-top"><div class="hz-stat-ic a"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="4.5" width="18" height="16" rx="3"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/></svg></div><div class="hz-stat-kicker">Dias abertos</div></div>
+            <div class="hz-stat-num"><span data-stat-dias>0</span><small> / 7</small></div>
+            <div class="hz-stat-cap">dias por semana</div>
+          </div>
+          <div class="hz-stat hz-anim hz-d2">
+            <div class="hz-stat-top"><div class="hz-stat-ic g"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3.2 2"/></svg></div><div class="hz-stat-kicker">Horas / semana</div></div>
+            <div class="hz-stat-num" data-stat-horas>—</div>
+            <div class="hz-stat-cap">tempo disponível</div>
+          </div>
+          <div class="hz-stat hz-anim hz-d3">
+            <div class="hz-stat-top"><div class="hz-stat-ic y"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="13" r="8"/><path d="M12 13V9M9 2.5h6"/></svg></div><div class="hz-stat-kicker">Duração do slot</div></div>
+            <div class="hz-stat-num" data-stat-slot>—</div>
+            <div class="hz-stat-cap">por atendimento</div>
+          </div>
+          <div class="hz-stat hz-anim hz-d4">
+            <div class="hz-stat-top"><div class="hz-stat-ic p"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="1.7" stroke-linejoin="round"><path d="M12 3l9 5-9 5-9-5 9-5z"/><path d="M3 13l9 5 9-5"/></svg></div><div class="hz-stat-kicker">Capacidade</div></div>
+            <div class="hz-stat-num" data-stat-vagas>—</div>
+            <div class="hz-stat-cap">vagas por semana</div>
           </div>
         </div>
-
-        <div class="section-block">
-          <div class="section-block-header" style="justify-content:space-between">
-            <div style="display:flex;align-items:center;gap:13px">
-              <div class="section-block-icon" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M3 5h14M3 10h8M3 15h10" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round"/></svg></div>
-              <div>
-                <div class="section-block-title">Intervalo por serviço</div>
-                <div class="section-block-sub">Configure durações específicas para cada serviço (opcional).</div>
+        <div class="hz-grid">
+          <div class="hz-col-main">
+            <section class="hz-card hz-anim hz-d5">
+              <div class="hz-card-head">
+                <div class="hz-card-ic a"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="4.5" width="18" height="16" rx="3"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4M8 14h3"/></svg></div>
+                <div style="flex:1;min-width:0"><div class="hz-card-title">Disponibilidade semanal</div><div class="hz-card-desc">Ative os dias e defina os períodos de atendimento</div></div>
               </div>
-            </div>
-            <button class="horarios-add-servico-btn" onclick="irPara('configuracoes', document.getElementById('menu-configuracoes'))" type="button" aria-label="Ir para configurações de serviços">
-              <svg width="11" height="11" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
-              Adicionar serviço
-            </button>
+              <div class="hz-card-body" data-days></div>
+            </section>
+            <section class="hz-card hz-anim hz-d6">
+              <div class="hz-card-head">
+                <div class="hz-card-ic y"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="13" r="8"/><path d="M12 13V9M9 2.5h6"/></svg></div>
+                <div style="flex:1;min-width:0"><div class="hz-card-title">Duração dos agendamentos</div><div class="hz-card-desc">Quanto tempo cada atendimento ocupa na agenda</div></div>
+              </div>
+              <div style="padding:20px">
+                <div class="hz-field-label">Duração do slot</div>
+                <div class="hz-seg-row" data-slots></div>
+                <div class="hz-row hz-row-top">
+                  <div class="hz-row-txt"><h4>Intervalo entre atendimentos</h4><p>Tempo de preparo reservado entre um cliente e o próximo</p></div>
+                  <select class="hz-select" data-buffer></select>
+                </div>
+              </div>
+            </section>
+            <section class="hz-card hz-anim hz-d7">
+              <div class="hz-card-head">
+                <div class="hz-card-ic p"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h9M19 7h1M4 17h1M11 17h9"/><circle cx="16" cy="7" r="2.4"/><circle cx="8" cy="17" r="2.4"/></svg></div>
+                <div style="flex:1;min-width:0"><div class="hz-card-title">Regras de agendamento</div><div class="hz-card-desc">Controle como e quando clientes podem reservar</div></div>
+              </div>
+              <div style="padding:6px 20px 8px">
+                <div class="hz-row hz-row-pad hz-row-bd">
+                  <div class="hz-row-txt"><h4>Antecedência mínima</h4><p>Tempo mínimo antes do horário para aceitar reservas</p></div>
+                  <select class="hz-select" data-ant></select>
+                </div>
+                <div class="hz-row hz-row-pad hz-row-bd">
+                  <div class="hz-row-txt"><h4>Janela de agendamento</h4><p>Quão longe no futuro clientes podem agendar</p></div>
+                  <select class="hz-select" data-janela></select>
+                </div>
+                <div class="hz-row hz-row-pad">
+                  <div class="hz-row-txt"><h4>Fuso horário</h4><p>Base usada para exibir os horários aos clientes</p></div>
+                  <div class="hz-tz"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--ink3)" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18 14 14 0 0 1 0-18z" stroke-linecap="round"/></svg>América/São Paulo <span>(GMT−3)</span></div>
+                </div>
+              </div>
+            </section>
           </div>
-          <div class="horarios-servico-table-head" aria-hidden="true">
-            <span>Serviço</span>
-            <span>Duração</span>
-            <span>Ação</span>
-          </div>
-          <div class="servicos-intervalos-grid" id="servicos-intervalos-grid" role="list" aria-label="Serviços e suas durações">
-            <div class="servicos-vazio"><div class="servicos-vazio-icon" aria-hidden="true">🛠️</div>Adicione serviços em <strong>Configurações → Serviços</strong>.</div>
-          </div>
-          <div class="section-block-body" style="padding-top:14px;padding-bottom:14px">
-            <div class="intervalo-info-box" role="note">
-              <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.4"/><path d="M8 7v4M8 5.5v.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-              <span>Quando um serviço tem duração própria, ele substitui o <strong>intervalo padrão</strong>.</span>
-            </div>
-          </div>
-          <div class="horarios-save-row">
-            <button class="btn-salvar horarios-btn-salvar-verde" onclick="salvarIntervalosServicos()" type="button">
-              <svg width="13" height="13" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M2 7l3.5 3.5L12 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              Salvar alterações
-            </button>
-            <div class="horarios-autosave" aria-live="polite">
-              Alterações salvas automaticamente
-              <svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="8" stroke="rgba(16,185,129,0.4)" stroke-width="1.5"/><path d="M6 10l3 3 5-5" stroke="#10b981" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </div>
+          <div class="hz-col-side">
+            <section class="hz-card hz-maya hz-anim hz-d3">
+              <div class="hz-maya-glow" aria-hidden="true"></div>
+              <div class="hz-maya-head">
+                <div class="hz-maya-av"><svg width="19" height="19" viewBox="0 0 24 24" fill="#fff"><path d="M12 2l1.7 5.4L19 9.2l-5.3 1.8L12 16l-1.7-5L5 9.2l5.3-1.8z"/><path d="M18.5 14l.9 2.6 2.6.9-2.6.9-.9 2.6-.9-2.6-2.6-.9 2.6-.9z"/></svg></div>
+                <div style="flex:1;min-width:0">
+                  <div style="display:flex;align-items:center;gap:7px"><span class="hz-maya-name">Maya</span><span class="hz-badge">IA</span></div>
+                  <div class="hz-maya-role">Assistente de agenda</div>
+                </div>
+                <span class="hz-maya-on"><i></i>ativo</span>
+              </div>
+              <div class="hz-maya-body">
+                <div class="hz-maya-intro">Analisei sua disponibilidade 👋</div>
+                <div data-insights></div>
+                <div data-sug></div>
+              </div>
+            </section>
+            <section class="hz-card hz-anim hz-d8">
+              <div class="hz-card-head">
+                <div class="hz-card-ic g"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="1.8"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7z" stroke-linejoin="round"/><circle cx="12" cy="12" r="3"/></svg></div>
+                <div style="flex:1;min-width:0"><div class="hz-card-title">Prévia do cliente</div><div class="hz-card-desc">Como aparece ao agendar</div></div>
+              </div>
+              <div class="hz-prev-inner">
+                <div class="hz-prev-card">
+                  <div class="hz-prev-biz">
+                    <div class="hz-prev-av" data-prev-ini>B</div>
+                    <div style="min-width:0"><div class="hz-prev-bizname" data-prev-name>Negócio</div><div class="hz-prev-bizsub">Escolha um horário</div></div>
+                  </div>
+                  <div class="hz-prev-pills" data-prev-pills></div>
+                  <div class="hz-prev-dayname" data-prev-dayname>—</div>
+                  <div data-prev-body></div>
+                  <div class="hz-prev-legend">
+                    <span><span class="hz-leg-av"></span>Disponível</span>
+                    <span><span class="hz-leg-busy"></span>Ocupado</span>
+                  </div>
+                </div>
+              </div>
+            </section>
           </div>
         </div>
+        <div style="height:40px"></div>
       </div>
-
-      <div class="horarios-col-right">
-        <div class="horarios-dias-card">
-          <div class="horarios-dias-card-header">
-            <div class="horarios-dias-card-icon" aria-hidden="true">
-              <svg width="17" height="17" viewBox="0 0 20 20" fill="none"><rect x="2.5" y="3.5" width="15" height="13.5" rx="2.5" stroke="var(--green)" stroke-width="1.6"/><path d="M2.5 7.5h15M7 2v3M13 2v3" stroke="var(--green)" stroke-width="1.6" stroke-linecap="round"/></svg>
-            </div>
-            <div>
-              <div class="horarios-dias-card-title">Seu horário de funcionamento</div>
-              <div class="horarios-dias-card-sub">Configure os dias em que você atende.</div>
-            </div>
-          </div>
-          <div id="horarios-dias-lista" aria-live="polite"></div>
-          <div style="padding:0 18px 16px">
-            <button class="horarios-gerenciar-btn" onclick="abrirGerenciarDias()" type="button" aria-label="Abrir configuração completa de dias e horários">
-              <svg width="13" height="13" viewBox="0 0 15 15" fill="none" aria-hidden="true"><rect x="1.5" y="2.5" width="12" height="11" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M5 1.5v2M10 1.5v2M1.5 5.5h12" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
-              Gerenciar dias e horários
-            </button>
-          </div>
-        </div>
+      <div class="hz-savebar hz-hidden" data-savebar>
+        <span class="hz-savebar-txt">Alterações não salvas</span>
+        <button type="button" class="hz-discard" data-discard>Descartar</button>
+        <button type="button" class="hz-save" data-save><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 8.5l3.5 3.5L13.5 4.5"/></svg>Salvar alterações</button>
       </div>
+      <div class="hz-toast hz-hidden" data-toast><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="var(--green)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 8.5l3.5 3.5L13.5 4.5"/></svg><span>Horários salvos com sucesso</span></div>
     </div>
   </section>
 
@@ -1046,25 +993,19 @@
         <div class="auto-tipo-icon green" aria-hidden="true">🔔</div>
         <div class="auto-tipo-nome">Lembrete 24h antes <span class="auto-tipo-badge ativo">Ativo</span></div>
         <div class="auto-tipo-desc">Avise seus clientes com antecedência.</div>
-        <div class="auto-tipo-toggle on" id="toggle-24h" onclick="event.stopPropagation();toggleAutoTipo('24h',this)" role="switch" aria-checked="true" aria-label="Ativar lembrete 24 horas antes">
-          <div class="auto-tipo-toggle-thumb"></div>
-        </div>
+        <div class="auto-tipo-toggle on" id="toggle-24h" onclick="event.stopPropagation();toggleAutoTipo('24h',this)" role="switch" aria-checked="true" aria-label="Ativar lembrete 24 horas antes"><div class="auto-tipo-toggle-thumb"></div></div>
       </div>
       <div class="auto-tipo-card" onclick="selecionarTipoAuto('1h', this)" role="listitem" tabindex="0" onkeydown="if(event.key==='Enter')selecionarTipoAuto('1h',this)">
         <div class="auto-tipo-icon blue" aria-hidden="true">📅</div>
         <div class="auto-tipo-nome">Lembrete 1h antes <span class="auto-tipo-badge ativo">Ativo</span></div>
         <div class="auto-tipo-desc">Reforce o compromisso do cliente.</div>
-        <div class="auto-tipo-toggle on" id="toggle-1h" onclick="event.stopPropagation();toggleAutoTipo('1h',this)" role="switch" aria-checked="true" aria-label="Ativar lembrete 1 hora antes">
-          <div class="auto-tipo-toggle-thumb"></div>
-        </div>
+        <div class="auto-tipo-toggle on" id="toggle-1h" onclick="event.stopPropagation();toggleAutoTipo('1h',this)" role="switch" aria-checked="true" aria-label="Ativar lembrete 1 hora antes"><div class="auto-tipo-toggle-thumb"></div></div>
       </div>
       <div class="auto-tipo-card" onclick="selecionarTipoAuto('pos', this)" role="listitem" tabindex="0" onkeydown="if(event.key==='Enter')selecionarTipoAuto('pos',this)">
         <div class="auto-tipo-icon red" aria-hidden="true">❤️</div>
         <div class="auto-tipo-nome">Mensagem pós-atendimento <span class="auto-tipo-badge inativo">Inativo</span></div>
         <div class="auto-tipo-desc">Agradeça e incentive novas visitas.</div>
-        <div class="auto-tipo-toggle off" id="toggle-pos" onclick="event.stopPropagation();toggleAutoTipo('pos',this)" role="switch" aria-checked="false" aria-label="Ativar mensagem pós-atendimento">
-          <div class="auto-tipo-toggle-thumb"></div>
-        </div>
+        <div class="auto-tipo-toggle off" id="toggle-pos" onclick="event.stopPropagation();toggleAutoTipo('pos',this)" role="switch" aria-checked="false" aria-label="Ativar mensagem pós-atendimento"><div class="auto-tipo-toggle-thumb"></div></div>
       </div>
     </div>
 
@@ -1077,9 +1018,7 @@
           </div>
           <div class="auto-editor-header-right">
             <span class="auto-ativo-label" id="auto-ativo-label">Ativo</span>
-            <div class="auto-tipo-toggle on" id="toggle-editor-main" onclick="toggleEditorMain(this)" role="switch" aria-checked="true" aria-label="Ativar este tipo de mensagem" style="width:44px;height:24px">
-              <div class="auto-tipo-toggle-thumb"></div>
-            </div>
+            <div class="auto-tipo-toggle on" id="toggle-editor-main" onclick="toggleEditorMain(this)" role="switch" aria-checked="true" aria-label="Ativar este tipo de mensagem" style="width:44px;height:24px"><div class="auto-tipo-toggle-thumb"></div></div>
           </div>
         </div>
         <div class="auto-editor-body">
@@ -1119,7 +1058,6 @@ Estamos te esperando! 🙏</textarea>
           </button>
         </div>
       </div>
-
       <div>
         <div class="auto-dicas-card">
           <div class="auto-dicas-title">Dicas para melhores resultados</div>
@@ -1139,7 +1077,6 @@ Estamos te esperando! 🙏</textarea>
       </div>
     </div>
 
-    <!-- Hidden legacy toggle for JS compat -->
     <input type="checkbox" id="toggle-lembrete" style="display:none" aria-hidden="true">
     <div id="lembrete-info" style="display:none"><textarea id="lembrete-msg" style="display:none"></textarea></div>
   </section>
@@ -1249,7 +1186,6 @@ Estamos te esperando! 🙏</textarea>
         </button>
       </div>
       <div class="cfg-add-erro" id="cfg-add-erro" role="alert" aria-live="assertive"></div>
-
       <div id="cfg-servicos-lista" class="cfg-servicos-lista" aria-live="polite"></div>
 
       <div class="cfg-dicas-section">
@@ -1258,18 +1194,9 @@ Estamos te esperando! 🙏</textarea>
           Dicas rápidas
         </div>
         <div class="cfg-dicas-grid">
-          <div class="cfg-dica-item">
-            <div class="cfg-dica-icon" style="background:rgba(139,92,246,0.12);border-color:rgba(139,92,246,0.22)" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M3 5h10M3 11h6" stroke="#a78bfa" stroke-width="1.4" stroke-linecap="round"/></svg></div>
-            <div><div class="cfg-dica-nome">Use nomes claros</div><div class="cfg-dica-desc">Seus clientes entendem na hora.</div></div>
-          </div>
-          <div class="cfg-dica-item">
-            <div class="cfg-dica-icon" style="background:rgba(16,185,129,0.12);border-color:rgba(16,185,129,0.22)" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="2" y="4" width="12" height="9" rx="1.5" stroke="#10b981" stroke-width="1.3"/><path d="M2 7h12M6 10.5h4" stroke="#10b981" stroke-width="1.3" stroke-linecap="round"/></svg></div>
-            <div><div class="cfg-dica-nome">Preços justos</div><div class="cfg-dica-desc">Pesquise o mercado da sua região.</div></div>
-          </div>
-          <div class="cfg-dica-item">
-            <div class="cfg-dica-icon" style="background:rgba(245,158,11,0.12);border-color:rgba(245,158,11,0.22)" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="#f59e0b" stroke-width="1.3"/><path d="M8 5v3.5l2.5 2.5" stroke="#f59e0b" stroke-width="1.4" stroke-linecap="round"/></svg></div>
-            <div><div class="cfg-dica-nome">Mantenha atualizado</div><div class="cfg-dica-desc">Serviços desatualizados geram dúvidas.</div></div>
-          </div>
+          <div class="cfg-dica-item"><div class="cfg-dica-icon" style="background:rgba(139,92,246,0.12);border-color:rgba(139,92,246,0.22)" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M3 5h10M3 11h6" stroke="#a78bfa" stroke-width="1.4" stroke-linecap="round"/></svg></div><div><div class="cfg-dica-nome">Use nomes claros</div><div class="cfg-dica-desc">Seus clientes entendem na hora.</div></div></div>
+          <div class="cfg-dica-item"><div class="cfg-dica-icon" style="background:rgba(16,185,129,0.12);border-color:rgba(16,185,129,0.22)" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="2" y="4" width="12" height="9" rx="1.5" stroke="#10b981" stroke-width="1.3"/><path d="M2 7h12M6 10.5h4" stroke="#10b981" stroke-width="1.3" stroke-linecap="round"/></svg></div><div><div class="cfg-dica-nome">Preços justos</div><div class="cfg-dica-desc">Pesquise o mercado da sua região.</div></div></div>
+          <div class="cfg-dica-item"><div class="cfg-dica-icon" style="background:rgba(245,158,11,0.12);border-color:rgba(245,158,11,0.22)" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="#f59e0b" stroke-width="1.3"/><path d="M8 5v3.5l2.5 2.5" stroke="#f59e0b" stroke-width="1.4" stroke-linecap="round"/></svg></div><div><div class="cfg-dica-nome">Mantenha atualizado</div><div class="cfg-dica-desc">Serviços desatualizados geram dúvidas.</div></div></div>
         </div>
       </div>
 
@@ -1358,42 +1285,20 @@ Estamos te esperando! 🙏</textarea>
         <div class="mpag-card-white-sub">Processado pelo</div>
         <div class="mpag-card-white-logos">
           <div class="mpag-logo-mp">
-            <svg width="22" height="22" viewBox="0 0 32 32" fill="none">
-              <circle cx="16" cy="16" r="14" fill="#009ee3"/>
-              <path d="M9 16a7 7 0 1 1 14 0" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
-              <circle cx="16" cy="16" r="2.5" fill="white"/>
-            </svg>
+            <svg width="22" height="22" viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="14" fill="#009ee3"/><path d="M9 16a7 7 0 1 1 14 0" stroke="white" stroke-width="2.5" stroke-linecap="round"/><circle cx="16" cy="16" r="2.5" fill="white"/></svg>
             <div class="mpag-logo-mp-text"><span>mercado</span><span>pago</span></div>
           </div>
           <div class="mpag-logo-pix">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-              <path d="M12 3L3 12l9 9 9-9-9-9Z" stroke="#32BCAD" stroke-width="1.8" stroke-linejoin="round"/>
-              <path d="M8 12l2 2 4-4" stroke="#32BCAD" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 3L3 12l9 9 9-9-9-9Z" stroke="#32BCAD" stroke-width="1.8" stroke-linejoin="round"/><path d="M8 12l2 2 4-4" stroke="#32BCAD" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
             <span class="mpag-logo-pix-text">PIX</span>
           </div>
         </div>
       </div>
       <div class="mpag-hero-phone">
-        <svg width="72" height="130" viewBox="0 0 72 130" fill="none">
-          <rect x="2" y="2" width="68" height="126" rx="12" fill="#0a1628" stroke="rgba(255,255,255,0.15)" stroke-width="1.5"/>
-          <rect x="8" y="10" width="56" height="110" rx="8" fill="#0f1e35"/>
-          <rect x="26" y="4" width="20" height="4" rx="2" fill="rgba(255,255,255,0.1)"/>
-          <rect x="14" y="22" width="44" height="6" rx="3" fill="rgba(59,130,246,0.3)"/>
-          <rect x="14" y="32" width="30" height="4" rx="2" fill="rgba(255,255,255,0.12)"/>
-          <rect x="14" y="44" width="44" height="32" rx="6" fill="rgba(59,130,246,0.15)" stroke="rgba(59,130,246,0.25)" stroke-width="1"/>
-          <path d="M26 60l4 4 8-8" stroke="#34d399" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          <rect x="14" y="84" width="20" height="4" rx="2" fill="rgba(255,255,255,0.12)"/>
-          <rect x="14" y="92" width="34" height="4" rx="2" fill="rgba(255,255,255,0.08)"/>
-          <rect x="14" y="102" width="44" height="10" rx="5" fill="rgba(59,130,246,0.3)"/>
-        </svg>
+        <svg width="72" height="130" viewBox="0 0 72 130" fill="none"><rect x="2" y="2" width="68" height="126" rx="12" fill="#0a1628" stroke="rgba(255,255,255,0.15)" stroke-width="1.5"/><rect x="8" y="10" width="56" height="110" rx="8" fill="#0f1e35"/><rect x="26" y="4" width="20" height="4" rx="2" fill="rgba(255,255,255,0.1)"/><rect x="14" y="22" width="44" height="6" rx="3" fill="rgba(59,130,246,0.3)"/><rect x="14" y="32" width="30" height="4" rx="2" fill="rgba(255,255,255,0.12)"/><rect x="14" y="44" width="44" height="32" rx="6" fill="rgba(59,130,246,0.15)" stroke="rgba(59,130,246,0.25)" stroke-width="1"/><path d="M26 60l4 4 8-8" stroke="#34d399" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><rect x="14" y="84" width="20" height="4" rx="2" fill="rgba(255,255,255,0.12)"/><rect x="14" y="92" width="34" height="4" rx="2" fill="rgba(255,255,255,0.08)"/><rect x="14" y="102" width="44" height="10" rx="5" fill="rgba(59,130,246,0.3)"/></svg>
       </div>
       <div class="mpag-hero-shield">
-        <svg width="38" height="38" viewBox="0 0 48 48" fill="none">
-          <circle cx="24" cy="24" r="22" fill="#1e3a8a" stroke="rgba(96,165,250,0.5)" stroke-width="2"/>
-          <path d="M24 8L10 14v10c0 9 6.5 17 14 19.5C31.5 41 38 33 38 24V14L24 8Z" fill="#2563eb" stroke="rgba(96,165,250,0.4)" stroke-width="1.5" stroke-linejoin="round"/>
-          <path d="M18 24l4 4 8-8" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
+        <svg width="38" height="38" viewBox="0 0 48 48" fill="none"><circle cx="24" cy="24" r="22" fill="#1e3a8a" stroke="rgba(96,165,250,0.5)" stroke-width="2"/><path d="M24 8L10 14v10c0 9 6.5 17 14 19.5C31.5 41 38 33 38 24V14L24 8Z" fill="#2563eb" stroke="rgba(96,165,250,0.4)" stroke-width="1.5" stroke-linejoin="round"/><path d="M18 24l4 4 8-8" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </div>
     </div>
   </div>
@@ -1406,36 +1311,18 @@ Estamos te esperando! 🙏</textarea>
               <div class="mpag-section-title">Pagamento adiantado</div>
               <div class="mpag-section-sub">Ative para solicitar pagamento antecipado no momento do agendamento.</div>
             </div>
-            <label class="mpag-toggle-sw">
-              <input type="checkbox" checked id="mpag-toggle-adiantado">
-              <span class="mpag-toggle-track"><span class="mpag-toggle-thumb"></span></span>
-            </label>
+            <label class="mpag-toggle-sw"><input type="checkbox" checked id="mpag-toggle-adiantado"><span class="mpag-toggle-track"><span class="mpag-toggle-thumb"></span></span></label>
           </div>
           <div id="mpag-adiantado-content">
             <div class="mpag-subsection-title">Valor a ser cobrado</div>
             <div class="mpag-subsection-sub">Escolha quanto do valor do serviço será cobrado antecipadamente.</div>
             <div class="mpag-radio-grid">
-              <label class="mpag-radio-opt mpag-radio-active" id="mpag-opt-total">
-                <input type="radio" name="mpag-valor" value="total" checked hidden>
-                <div class="mpag-radio-dot mpag-radio-dot-active"></div>
-                <div><div class="mpag-radio-label">Valor total</div><div class="mpag-radio-desc">100% do valor do serviço</div></div>
-              </label>
-              <label class="mpag-radio-opt" id="mpag-opt-personalizado">
-                <input type="radio" name="mpag-valor" value="personalizado" hidden>
-                <div class="mpag-radio-dot"></div>
-                <div><div class="mpag-radio-label">Valor personalizado</div><div class="mpag-radio-desc">Definir uma porcentagem</div></div>
-              </label>
-              <label class="mpag-radio-opt" id="mpag-opt-fixo">
-                <input type="radio" name="mpag-valor" value="fixo" hidden>
-                <div class="mpag-radio-dot"></div>
-                <div><div class="mpag-radio-label">Valor fixo</div><div class="mpag-radio-desc">Definir um valor específico</div></div>
-              </label>
+              <label class="mpag-radio-opt mpag-radio-active" id="mpag-opt-total"><input type="radio" name="mpag-valor" value="total" checked hidden><div class="mpag-radio-dot mpag-radio-dot-active"></div><div><div class="mpag-radio-label">Valor total</div><div class="mpag-radio-desc">100% do valor do serviço</div></div></label>
+              <label class="mpag-radio-opt" id="mpag-opt-personalizado"><input type="radio" name="mpag-valor" value="personalizado" hidden><div class="mpag-radio-dot"></div><div><div class="mpag-radio-label">Valor personalizado</div><div class="mpag-radio-desc">Definir uma porcentagem</div></div></label>
+              <label class="mpag-radio-opt" id="mpag-opt-fixo"><input type="radio" name="mpag-valor" value="fixo" hidden><div class="mpag-radio-dot"></div><div><div class="mpag-radio-label">Valor fixo</div><div class="mpag-radio-desc">Definir um valor específico</div></div></label>
             </div>
             <div class="mpag-pct-row">
-              <div>
-                <div class="mpag-subsection-title" style="margin-bottom:2px">Porcentagem do serviço</div>
-                <div class="mpag-subsection-sub">Defina a porcentagem do valor do serviço que será cobrada antecipadamente.</div>
-              </div>
+              <div><div class="mpag-subsection-title" style="margin-bottom:2px">Porcentagem do serviço</div><div class="mpag-subsection-sub">Defina a porcentagem do valor do serviço que será cobrada antecipadamente.</div></div>
               <div class="mpag-pct-control">
                 <button class="mpag-pct-btn" onclick="mpagChangePct(-10)">−</button>
                 <div class="mpag-pct-value" id="mpag-pct-display">50%</div>
@@ -1455,60 +1342,33 @@ Estamos te esperando! 🙏</textarea>
           <div class="mpag-subsection-sub" style="margin-bottom:14px">Receba pagamentos via Mercado Pago.</div>
           <div class="mpag-fp-card">
             <div class="mpag-fp-row">
-              <div class="mpag-fp-icon">
-                <svg width="22" height="22" viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="8" fill="#009ee3"/><path d="M8 16a8 8 0 1 1 16 0" stroke="white" stroke-width="2.5" stroke-linecap="round"/><circle cx="16" cy="16" r="3" fill="white"/></svg>
-              </div>
-              <div class="mpag-fp-info">
-                <div class="mpag-fp-name">PIX <span class="mpag-fp-badge-mp">Mercado Pago</span></div>
-                <div class="mpag-fp-sub">Pagamento instantâneo</div>
-              </div>
+              <div class="mpag-fp-icon"><svg width="22" height="22" viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="8" fill="#009ee3"/><path d="M8 16a8 8 0 1 1 16 0" stroke="white" stroke-width="2.5" stroke-linecap="round"/><circle cx="16" cy="16" r="3" fill="white"/></svg></div>
+              <div class="mpag-fp-info"><div class="mpag-fp-name">PIX <span class="mpag-fp-badge-mp">Mercado Pago</span></div><div class="mpag-fp-sub">Pagamento instantâneo</div></div>
               <div class="mpag-fp-divider"></div>
               <div class="mpag-fp-desc">O pagamento é confirmado na hora e o agendamento é liberado automaticamente.</div>
-              <div class="mpag-fp-status">
-                <span class="mpag-badge-ativo">Ativo</span>
-                <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M6 4l4 4-4 4" stroke="rgba(255,255,255,0.35)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              </div>
+              <div class="mpag-fp-status"><span class="mpag-badge-ativo">Ativo</span><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M6 4l4 4-4 4" stroke="rgba(255,255,255,0.35)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
             </div>
-            <div class="mpag-fp-security">
-              <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M8 1.5L2 4v6c0 3.5 2.6 6.8 6 7.5 3.4-.7 6-4 6-7.5V4L8 1.5Z" stroke="rgba(255,255,255,0.25)" stroke-width="1.3" stroke-linejoin="round"/></svg>
-              <span>Seus pagamentos são processados com segurança pelo Mercado Pago.</span>
-            </div>
+            <div class="mpag-fp-security"><svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M8 1.5L2 4v6c0 3.5 2.6 6.8 6 7.5 3.4-.7 6-4 6-7.5V4L8 1.5Z" stroke="rgba(255,255,255,0.25)" stroke-width="1.3" stroke-linejoin="round"/></svg><span>Seus pagamentos são processados com segurança pelo Mercado Pago.</span></div>
           </div>
         </div>
       </div>
       <div class="mpag-block">
         <div class="mpag-block-body">
           <div class="mpag-toggle-main-row" style="margin-bottom:20px">
-            <div>
-              <div class="mpag-section-title">Reembolso automático</div>
-              <div class="mpag-section-sub">Configure o reembolso automático caso o cliente cancele o agendamento.</div>
-            </div>
-            <label class="mpag-toggle-sw">
-              <input type="checkbox" checked>
-              <span class="mpag-toggle-track"><span class="mpag-toggle-thumb"></span></span>
-            </label>
+            <div><div class="mpag-section-title">Reembolso automático</div><div class="mpag-section-sub">Configure o reembolso automático caso o cliente cancele o agendamento.</div></div>
+            <label class="mpag-toggle-sw"><input type="checkbox" checked><span class="mpag-toggle-track"><span class="mpag-toggle-thumb"></span></span></label>
           </div>
           <div class="mpag-subsection-title" style="margin-bottom:2px">Reembolsar automaticamente quando</div>
           <div class="mpag-subsection-sub" style="margin-bottom:14px">O reembolso será processado de forma automática nas situações abaixo.</div>
           <div class="mpag-reimb-list">
             <div class="mpag-reimb-item">
-              <div class="mpag-reimb-icon mpag-reimb-purple">
-                <svg width="17" height="17" viewBox="0 0 20 20" fill="none"><rect x="2" y="2" width="16" height="16" rx="8" fill="rgba(139,92,246,0.2)"/><path d="M7 13l6-6M13 13L7 7" stroke="#a78bfa" stroke-width="1.6" stroke-linecap="round"/></svg>
-              </div>
-              <div class="mpag-reimb-text">
-                <div class="mpag-reimb-name">Cancelamento pelo cliente</div>
-                <div class="mpag-reimb-sub">Reembolso automático quando o cliente cancelar o agendamento.</div>
-              </div>
+              <div class="mpag-reimb-icon mpag-reimb-purple"><svg width="17" height="17" viewBox="0 0 20 20" fill="none"><rect x="2" y="2" width="16" height="16" rx="8" fill="rgba(139,92,246,0.2)"/><path d="M7 13l6-6M13 13L7 7" stroke="#a78bfa" stroke-width="1.6" stroke-linecap="round"/></svg></div>
+              <div class="mpag-reimb-text"><div class="mpag-reimb-name">Cancelamento pelo cliente</div><div class="mpag-reimb-sub">Reembolso automático quando o cliente cancelar o agendamento.</div></div>
               <label class="mpag-toggle-sw"><input type="checkbox" checked><span class="mpag-toggle-track"><span class="mpag-toggle-thumb"></span></span></label>
             </div>
             <div class="mpag-reimb-item">
-              <div class="mpag-reimb-icon mpag-reimb-orange">
-                <svg width="17" height="17" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" fill="rgba(249,115,22,0.2)"/><path d="M10 7v4" stroke="#fb923c" stroke-width="1.8" stroke-linecap="round"/><circle cx="10" cy="14" r="0.8" fill="#fb923c"/></svg>
-              </div>
-              <div class="mpag-reimb-text">
-                <div class="mpag-reimb-name">Cancelamento por você</div>
-                <div class="mpag-reimb-sub">Reembolso automático quando o agendamento for cancelado por você.</div>
-              </div>
+              <div class="mpag-reimb-icon mpag-reimb-orange"><svg width="17" height="17" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" fill="rgba(249,115,22,0.2)"/><path d="M10 7v4" stroke="#fb923c" stroke-width="1.8" stroke-linecap="round"/><circle cx="10" cy="14" r="0.8" fill="#fb923c"/></svg></div>
+              <div class="mpag-reimb-text"><div class="mpag-reimb-name">Cancelamento por você</div><div class="mpag-reimb-sub">Reembolso automático quando o agendamento for cancelado por você.</div></div>
               <label class="mpag-toggle-sw"><input type="checkbox" checked><span class="mpag-toggle-track"><span class="mpag-toggle-thumb"></span></span></label>
             </div>
           </div>
@@ -1523,22 +1383,10 @@ Estamos te esperando! 🙏</textarea>
       <div class="mpag-side-block">
         <div class="mpag-side-title">Como funciona</div>
         <div class="mpag-steps">
-          <div class="mpag-step">
-            <div class="mpag-step-icon mpag-step-purple"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><rect x="2.5" y="3.5" width="15" height="13.5" rx="2.5" stroke="#a78bfa" stroke-width="1.6"/><path d="M2.5 7.5h15M7 2v3M13 2v3" stroke="#a78bfa" stroke-width="1.6" stroke-linecap="round"/></svg></div>
-            <div class="mpag-step-body"><div class="mpag-step-title">Cliente faz o agendamento</div><div class="mpag-step-desc">O cliente escolhe o serviço, data e horário.</div></div>
-          </div>
-          <div class="mpag-step">
-            <div class="mpag-step-icon mpag-step-blue"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><rect x="2" y="5" width="16" height="13" rx="2.5" stroke="#60a5fa" stroke-width="1.6"/><path d="M2 9h16M6 13h4" stroke="#60a5fa" stroke-width="1.6" stroke-linecap="round"/></svg></div>
-            <div class="mpag-step-body"><div class="mpag-step-title">Pagamento antecipado</div><div class="mpag-step-desc">O cliente realiza o pagamento via PIX e o agendamento é confirmado.</div></div>
-          </div>
-          <div class="mpag-step">
-            <div class="mpag-step-icon mpag-step-green"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7.5" stroke="#34d399" stroke-width="1.6"/><path d="M6.5 10l2.5 2.5 5-5" stroke="#34d399" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-            <div class="mpag-step-body"><div class="mpag-step-title">Você recebe o pagamento</div><div class="mpag-step-desc">O valor entra na sua conta via Mercado Pago.</div></div>
-          </div>
-          <div class="mpag-step">
-            <div class="mpag-step-icon mpag-step-orange"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7.5" stroke="#fb923c" stroke-width="1.6"/><path d="M10 7v4" stroke="#fb923c" stroke-width="1.8" stroke-linecap="round"/><circle cx="10" cy="14.5" r="0.9" fill="#fb923c"/></svg></div>
-            <div class="mpag-step-body"><div class="mpag-step-title">Cancelamento e reembolso</div><div class="mpag-step-desc">Se houver cancelamento, o reembolso é feito automaticamente via PIX.</div></div>
-          </div>
+          <div class="mpag-step"><div class="mpag-step-icon mpag-step-purple"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><rect x="2.5" y="3.5" width="15" height="13.5" rx="2.5" stroke="#a78bfa" stroke-width="1.6"/><path d="M2.5 7.5h15M7 2v3M13 2v3" stroke="#a78bfa" stroke-width="1.6" stroke-linecap="round"/></svg></div><div class="mpag-step-body"><div class="mpag-step-title">Cliente faz o agendamento</div><div class="mpag-step-desc">O cliente escolhe o serviço, data e horário.</div></div></div>
+          <div class="mpag-step"><div class="mpag-step-icon mpag-step-blue"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><rect x="2" y="5" width="16" height="13" rx="2.5" stroke="#60a5fa" stroke-width="1.6"/><path d="M2 9h16M6 13h4" stroke="#60a5fa" stroke-width="1.6" stroke-linecap="round"/></svg></div><div class="mpag-step-body"><div class="mpag-step-title">Pagamento antecipado</div><div class="mpag-step-desc">O cliente realiza o pagamento via PIX e o agendamento é confirmado.</div></div></div>
+          <div class="mpag-step"><div class="mpag-step-icon mpag-step-green"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7.5" stroke="#34d399" stroke-width="1.6"/><path d="M6.5 10l2.5 2.5 5-5" stroke="#34d399" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="mpag-step-body"><div class="mpag-step-title">Você recebe o pagamento</div><div class="mpag-step-desc">O valor entra na sua conta via Mercado Pago.</div></div></div>
+          <div class="mpag-step"><div class="mpag-step-icon mpag-step-orange"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7.5" stroke="#fb923c" stroke-width="1.6"/><path d="M10 7v4" stroke="#fb923c" stroke-width="1.8" stroke-linecap="round"/><circle cx="10" cy="14.5" r="0.9" fill="#fb923c"/></svg></div><div class="mpag-step-body"><div class="mpag-step-title">Cancelamento e reembolso</div><div class="mpag-step-desc">Se houver cancelamento, o reembolso é feito automaticamente via PIX.</div></div></div>
         </div>
       </div>
       <div class="mpag-side-block mpag-resumo-block">
@@ -1633,44 +1481,31 @@ Estamos te esperando! 🙏</textarea>
 <script src="./painel.js"></script>
 <script src="./pagamentos-fix.js"></script>
 <script src="./arag-fix.js"></script>
+<script src="./horarios.js"></script>
 
 <script>
 async function assinar(plano) {
   const token = localStorage.getItem('token')
-
   if (!token) {
     localStorage.setItem('plano_escolhido', plano)
     window.location.href = '/auth.html?redirect=planos'
     return
   }
-
   const btn = document.getElementById(`btn-${plano}`)
-  if (btn) {
-    btn.disabled     = true
-    btn.textContent  = 'Aguarde...'
-    btn.style.opacity = '0.7'
-  }
-
+  if (btn) { btn.disabled = true; btn.textContent = 'Aguarde...'; btn.style.opacity = '0.7' }
   try {
     const res = await fetch(`${API}/assinatura/criar`, {
       method: 'POST',
-      headers: {
-        'Content-Type':  'application/json',
-        'Authorization': `Bearer ${token}`,
-      },
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
       body: JSON.stringify({ plano }),
     })
-
     const data = await res.json()
-
     if (!res.ok) {
       alert('Erro ao iniciar assinatura: ' + (data.erro || 'Tente novamente'))
       if (btn) { btn.disabled = false; btn.textContent = 'Começar grátis'; btn.style.opacity = '1' }
       return
     }
-
     window.location.href = data.link
-
   } catch (err) {
     console.error('Erro:', err)
     alert('Erro de conexão. Tente novamente.')
@@ -1680,22 +1515,12 @@ async function assinar(plano) {
 
 window.addEventListener('DOMContentLoaded', () => {
   const params = new URLSearchParams(window.location.search)
-
   if (params.get('assinatura') === 'ok') {
     const banner = document.createElement('div')
-    banner.style.cssText = `
-      position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
-      background: #10b981; color: white; padding: 14px 28px;
-      border-radius: 12px; font-weight: 600; font-size: 15px;
-      z-index: 9999; box-shadow: 0 4px 20px rgba(16,185,129,0.4);
-      display: flex; align-items: center; gap: 10px;
-    `
+    banner.style.cssText = `position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#10b981;color:white;padding:14px 28px;border-radius:12px;font-weight:600;font-size:15px;z-index:9999;box-shadow:0 4px 20px rgba(16,185,129,0.4);display:flex;align-items:center;gap:10px;`
     banner.innerHTML = '✅ Assinatura ativada! Redirecionando...'
     document.body.appendChild(banner)
-
-    setTimeout(() => {
-      window.location.href = '/painel.html'
-    }, 2500)
+    setTimeout(() => { window.location.href = '/painel.html' }, 2500)
   }
 })
 </script>
